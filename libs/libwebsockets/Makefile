@@ -8,14 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libwebsockets
-PKG_VERSION:=2.4.1
-PKG_RELEASE:=2
+PKG_VERSION:=3.1.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=https://codeload.github.com/warmcat/libwebsockets/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=29414be4f79f6abc0e6aadccd09a4da0f0c431e3b5691f496acd081ae6a8240c
-
+PKG_HASH:=db948be74c78fc13f1f1a55e76707d7baae3a1c8f62b625f639e8f2736298324
 
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 

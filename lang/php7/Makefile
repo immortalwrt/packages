@@ -6,23 +6,25 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=php
-PKG_VERSION:=7.2.9
+PKG_VERSION:=7.2.18
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Michael Heimpold <mhei@heimpold.de>
 
 PKG_LICENSE:=PHPv3.01
 PKG_LICENSE_FILES:=LICENSE
+PKG_CPE_ID:=cpe:/a:php:php
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://www.php.net/distributions/
-PKG_HASH:=3585c1222e00494efee4f5a65a8e03a1e6eca3dfb834814236ee7f02c5248ae0
+PKG_HASH:=9970dbb3ab1298c9e6aac54bebfa841c8ad14b18eead65594a68fa841364cb8d
 
 PKG_FIXUP:=libtool autoreconf
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 PHP7_MODULES = \
+	bcmath \
 	calendar ctype curl \
 	fileinfo \
 	dom \
@@ -149,6 +151,22 @@ define Package/php7-mod-gd/config
 	default y
 endef
 
+define Package/php7-mod-intl/config
+  config PHP7_FULLICUDATA
+	bool "Add dependency to full ICU Data"
+	depends on PACKAGE_php7-mod-intl
+	default n
+endef
+
+define Package/php7-mod-intl/description
+  Note that this package depends in ICU library which is built without data
+  by default. This is to satisfy programs build and run dependencies but to
+  keep the installed footprint small on the target system(s).
+  However, the data is required to make the ICU library useful - and thus
+  directly affects PHPs ICU extension, too - so consider to also
+  select/install package 'icu-full-data'.
+endef
+
 # not everything groks --disable-nls
 DISABLE_NLS:=
 
@@ -158,6 +176,7 @@ CONFIGURE_ARGS+= \
 	--enable-fpm \
 	--enable-shared \
 	--disable-static \
+	--with-pic \
 	--disable-rpath \
 	--disable-debug \
 	--disable-phpdbg \
@@ -171,6 +190,12 @@ CONFIGURE_ARGS+= \
 	--with-pcre-regex="$(STAGING_DIR)/usr" \
 	--with-zlib="$(STAGING_DIR)/usr" \
 	  --with-zlib-dir="$(STAGING_DIR)/usr"
+
+ifneq ($(SDK)$(CONFIG_PACKAGE_php7-mod-bcmath),)
+  CONFIGURE_ARGS+= --enable-bcmath=shared
+else
+  CONFIGURE_ARGS+= --disable-bcmath
+endif
 
 ifneq ($(SDK)$(CONFIG_PACKAGE_php7-mod-calendar),)
   CONFIGURE_ARGS+= --enable-calendar=shared
@@ -590,6 +615,7 @@ $(eval $(call BuildPackage,php7-fastcgi))
 $(eval $(call BuildPackage,php7-fpm))
 
 #$(eval $(call BuildModule,NAME,TITLE[,PKG DEPENDS]))
+$(eval $(call BuildModule,bcmath,Bcmath))
 $(eval $(call BuildModule,calendar,Calendar))
 $(eval $(call BuildModule,ctype,Ctype))
 $(eval $(call BuildModule,curl,cURL,+PACKAGE_php7-mod-curl:libcurl))
@@ -603,14 +629,14 @@ $(eval $(call BuildModule,gmp,GMP,+PACKAGE_php7-mod-gmp:libgmp))
 $(eval $(call BuildModule,hash,Hash))
 $(eval $(call BuildModule,iconv,iConv,$(ICONV_DEPENDS)))
 $(eval $(call BuildModule,imap,IMAP,+PACKAGE_php7-mod-imap:libopenssl +PACKAGE_libpam:libpam +PACKAGE_php7-mod-imap:uw-imap))
-$(eval $(call BuildModule,intl,Internationalization Functions,+PACKAGE_php7-mod-intl:icu))
+$(eval $(call BuildModule,intl,Internationalization Functions,+PACKAGE_php7-mod-intl:icu +PHP7_FULLICUDATA:icu-full-data))
 $(eval $(call BuildModule,json,JSON))
 $(eval $(call BuildModule,ldap,LDAP,+PACKAGE_php7-mod-ldap:libopenldap +PACKAGE_php7-mod-ldap:libsasl2))
 $(eval $(call BuildModule,mbstring,MBString))
 $(eval $(call BuildModule,mysqli,MySQL Improved Extension,+PACKAGE_php7-mod-mysqli:php7-mod-mysqlnd,30))
 $(eval $(call BuildModule,mysqlnd,MySQL Native Driver,+php7-mod-hash))
 $(eval $(call BuildModule,opcache,OPcache,,,zend))
-$(eval $(call BuildModule,openssl,OpenSSL,+PACKAGE_php7-mod-openssl:libopenssl))
+$(eval $(call BuildModule,openssl,OpenSSL,+PACKAGE_php7-mod-openssl:libopenssl,15))
 $(eval $(call BuildModule,pcntl,PCNTL))
 $(eval $(call BuildModule,pdo,PHP Data Objects))
 $(eval $(call BuildModule,pdo-mysql,PDO driver for MySQL,+php7-mod-pdo +PACKAGE_php7-mod-pdo-mysql:php7-mod-mysqlnd))
