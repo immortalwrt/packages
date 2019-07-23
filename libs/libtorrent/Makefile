@@ -8,15 +8,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libtorrent
-PKG_VERSION:=0.13.7
+PKG_VERSION:=0.13.8
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/rakshasa/libtorrent/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=86b4b1753385aaddf9e59ad94f1292eee5102139eb57520e84d1af2f04693708
+PKG_HASH:=0f6c2e7ffd3a1723ab47fdac785ec40f85c0a5b5a42c1d002272205b988be722
+
+PKG_MAINTAINER:=Rosen Penev <rosenp@gmail.com>
+PKG_LICENSE:=GPL-2.0-or-later
+PKG_LICENSE_FILES:=COPYING
 
 PKG_FIXUP:=autoreconf
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
+PKG_REMOVE_FILES:=autogen.sh
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -26,7 +32,6 @@ define Package/libtorrent
   TITLE:=Rakshasa's BitTorrent library
   URL:=https://rakshasa.github.io/rtorrent/
   DEPENDS:=+libopenssl +libsigcxx +zlib
-  MAINTAINER:=Rosen Penev <rosenp@gmail.com>
 endef
 
 define Package/libtorrent/description
@@ -37,17 +42,18 @@ define Package/libtorrent/description
  official client.
 endef
 
-TARGET_LDFLAGS += $(LIBGCC_S)
-
-CONFIGURE_ARGS+= \
+CONFIGURE_ARGS += \
 	--enable-shared \
 	--enable-static \
 	--enable-aligned \
-	--disable-debug \
 	--enable-openssl \
+	--disable-debug \
 	--disable-instrumentation \
+	--with-epoll \
 	--with-zlib=$(STAGING_DIR)/usr \
-	--disable-ipv6
+	--without-kqueue
+
+TARGET_CXXFLAGS += -faligned-new
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
