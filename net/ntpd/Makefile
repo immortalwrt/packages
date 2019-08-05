@@ -8,19 +8,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ntp
-PKG_VERSION:=4.2.8p11
-PKG_RELEASE:=1
+PKG_VERSION:=4.2.8p13
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/
-PKG_HASH:=f14a39f753688252d683ff907035ffff106ba8d3db21309b742e09b5c3cd278e
+PKG_HASH:=288772cecfcd9a53694ffab108d1825a31ba77f3a8466b0401baeca3bc232a38
 
 PKG_LICENSE:=Unique
 PKG_LICENSE_FILES:=COPYRIGHT html/copyright.html
+PKG_CPE_ID:=cpe:/a:ntp:ntp
 
 PKG_FIXUP:=autoreconf
 PKG_LIBTOOL_PATHS:=. sntp
 PKG_CHECK_FORMAT_SECURITY:=0
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 

@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=collectd
-PKG_VERSION:=5.8.0
-PKG_RELEASE:=5
+PKG_VERSION:=5.9.0
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://collectd.org/files/ \
 	https://github.com/collectd/collectd/releases/download/collectd-$(PKG_VERSION)
-PKG_HASH:=b06ff476bbf05533cb97ae6749262cc3c76c9969f032bd8496690084ddeb15c9
+PKG_HASH:=7b220f8898a061f6e7f29a8c16697d1a198277f813da69474a67911097c0626b
 
 PKG_FIXUP:=autoreconf
 PKG_REMOVE_FILES:=aclocal.m4 libltdl/aclocal.m4
@@ -26,6 +26,7 @@ PKG_USE_MIPS16:=0
 
 COLLECTD_PLUGINS_DISABLED:= \
 	amqp \
+	ampq1 \
 	apple_sensors \
 	aquaero \
 	barometer \
@@ -39,11 +40,11 @@ COLLECTD_PLUGINS_DISABLED:= \
 	dpdkevents \
 	dpdkstat \
 	drbd \
-	ethstat \
 	fhcount \
 	genericjmx \
 	gmond \
 	gps \
+	gpu_nvidia \
 	grpc \
 	hddtemp \
 	hugepages \
@@ -54,7 +55,6 @@ COLLECTD_PLUGINS_DISABLED:= \
 	ipvs \
 	java \
 	log_logstash \
-	lua \
 	lvm \
 	lpar \
 	madwifi \
@@ -77,12 +77,12 @@ COLLECTD_PLUGINS_DISABLED:= \
 	oracle \
 	ovs_events \
 	ovs_stats \
+	pcie_errors \
 	perl \
 	pf \
 	pinba \
 	python \
 	redis \
-	routeros \
 	rrdcached \
 	serial \
 	sigrok \
@@ -105,6 +105,8 @@ COLLECTD_PLUGINS_DISABLED:= \
 	write_redis \
 	write_riemann \
 	write_sensu \
+	write_stackdriver \
+	write_syslog \
 	write_tsdb \
 	xencpu \
 	xmms \
@@ -129,6 +131,7 @@ COLLECTD_PLUGINS_SELECTED:= \
 	dns \
 	email \
 	entropy \
+	ethstat \
 	exec \
 	filecount \
 	fscache \
@@ -138,6 +141,7 @@ COLLECTD_PLUGINS_SELECTED:= \
 	iwinfo \
 	load \
 	logfile \
+	lua \
 	match_empty_counter \
 	match_hashed \
 	match_regex \
@@ -160,6 +164,7 @@ COLLECTD_PLUGINS_SELECTED:= \
 	powerdns \
 	processes \
 	protocols \
+	routeros \
 	rrdtool \
 	sensors \
 	snmp \
@@ -184,6 +189,8 @@ PKG_CONFIG_DEPENDS:= \
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/kernel.mk
+# collectd-mod-mysql needs iconv
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/collectd/Default
   SECTION:=utils
@@ -194,7 +201,12 @@ endef
 
 define Package/collectd
 $(call Package/collectd/Default)
-  DEPENDS:= +libpthread +zlib +libltdl +libip4tc
+  DEPENDS:= +libpthread \
+	  +zlib \
+	  +libltdl \
+	  +libip4tc \
+	  +jshn \
+	  +PACKAGE_collectd-mod-lua:liblua
   MENU:=1
 endef
 
@@ -211,10 +223,6 @@ define Package/collectd/config
 	select PACKAGE_collectd-mod-network
 endef
 
-ifneq ($(CONFIG_avr32),)
-  TARGET_CFLAGS += -fsigned-char
-endif
-
 # common configure args
 CONFIGURE_ARGS+= \
 	--disable-werror \
@@ -228,7 +236,12 @@ CONFIGURE_ARGS+= \
 CONFIGURE_VARS+= \
 	CFLAGS="$$$$CFLAGS $(FPIC)" \
 	LDFLAGS="$$$$LDFLAGS -lm -lz" \
-	KERNEL_DIR="$(LINUX_DIR)" \
+	KERNEL_DIR="$(LINUX_DIR)"
+
+ifneq ($(CONFIG_PACKAGE_collectd-mod-lua),)
+CONFIGURE_VARS+= \
+	LDFLAGS="$$$$LDFLAGS -llua"
+endif
 
 ifneq ($(CONFIG_PACKAGE_COLLECTD_ENCRYPTED_NETWORK),)
 CONFIGURE_ARGS+= \
@@ -291,18 +304,21 @@ endif
 
 define Package/collectd/conffiles
 /etc/collectd.conf
+/etc/config/collectd
 endef
 
 define Package/collectd/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/collectd $(1)/usr/sbin/
+
 	$(INSTALL_DIR) $(1)/usr/share/collectd
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/share/collectd/types.db $(1)/usr/share/collectd/
-	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_CONF) ./files/collectd.conf $(1)/etc/
+
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/collectd.init $(1)/etc/init.d/collectd
-	$(INSTALL_DIR) $(1)/etc/collectd/conf.d
+
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) files/collectd.uci $(1)/etc/config/collectd
 endef
 
 # 1: plugin name
@@ -326,6 +342,11 @@ define BuildPlugin
 			$(PKG_INSTALL_DIR)/usr/lib/collectd/$$$$$$$${m}.so \
 			$$(1)/usr/lib/collectd/ ; \
 	done
+	if [ -f ./files/usr/share/collectd/plugin/$(1).json ]; then \
+		$(INSTALL_DIR) $$(1)/usr/share/collectd/plugin ; \
+		$(INSTALL_DATA) ./files/usr/share/collectd/plugin/$(1).json \
+			$$(1)/usr/share/collectd/plugin/$(1).json ; \
+	fi
   endef
 
   $$(eval $$(call BuildPackage,collectd-mod-$(1)))
@@ -352,6 +373,7 @@ $(eval $(call BuildPlugin,disk,disk usage/timing input,disk,))
 $(eval $(call BuildPlugin,dns,DNS traffic input,dns,+PACKAGE_collectd-mod-dns:libpcap))
 $(eval $(call BuildPlugin,email,email output,email,))
 $(eval $(call BuildPlugin,entropy,Entropy amount input,entropy,))
+$(eval $(call BuildPlugin,ethstat,Ethernet adapter statistics input,ethstat,))
 $(eval $(call BuildPlugin,exec,process exec input,exec,))
 $(eval $(call BuildPlugin,filecount,file count input,filecount,))
 $(eval $(call BuildPlugin,fscache,file-system based caching framework input,fscache,))
@@ -361,6 +383,7 @@ $(eval $(call BuildPlugin,irq,interrupt usage input,irq,))
 $(eval $(call BuildPlugin,iwinfo,libiwinfo wireless statistics,iwinfo,+PACKAGE_collectd-mod-iwinfo:libiwinfo))
 $(eval $(call BuildPlugin,load,system load input,load,))
 $(eval $(call BuildPlugin,logfile,log files output,logfile,))
+$(eval $(call BuildPlugin,lua,lua input/output,lua,+PACKAGE_collectd-mod-lua:liblua))
 $(eval $(call BuildPlugin,match-empty-counter,empty-counter match,match_empty_counter,))
 $(eval $(call BuildPlugin,match-hashed,hashed match,match_hashed,))
 $(eval $(call BuildPlugin,match-regex,regex match,match_regex,))
@@ -381,8 +404,9 @@ $(eval $(call BuildPlugin,openvpn,OpenVPN traffic/compression input,openvpn,))
 $(eval $(call BuildPlugin,ping,ping status input,ping,+PACKAGE_collectd-mod-ping:liboping))
 $(eval $(call BuildPlugin,postgresql,PostgreSQL status input,postgresql,+PACKAGE_collectd-mod-postgresql:libpq))
 $(eval $(call BuildPlugin,powerdns,PowerDNS server status input,powerdns,))
-$(eval $(call BuildPlugin,processes,process status input,processes,))
+$(eval $(call BuildPlugin,processes,process status input,processes,+PACKAGE_collectd-mod-processes:libmnl))
 $(eval $(call BuildPlugin,protocols,network protocols input,protocols,))
+$(eval $(call BuildPlugin,routeros,MikroTik RouterOS input,routeros,+PACKAGE_collectd-mod-routeros:librouteros))
 $(eval $(call BuildPlugin,rrdtool,RRDtool output,rrdtool,+PACKAGE_collectd-mod-rrdtool:librrd1))
 $(eval $(call BuildPlugin,sensors,lm_sensors input,sensors,+PACKAGE_collectd-mod-sensors:libsensors))
 $(eval $(call BuildPlugin,snmp,SNMP input,snmp,+PACKAGE_collectd-mod-snmp:libnetsnmp))
@@ -391,7 +415,7 @@ $(eval $(call BuildPlugin,tail,tail input,tail,))
 $(eval $(call BuildPlugin,tail-csv,tail CSV input,tail_csv,))
 $(eval $(call BuildPlugin,table,table-like structured file input,table,))
 $(eval $(call BuildPlugin,teamspeak2,TeamSpeak2 input,teamspeak2,))
-$(eval $(call BuildPlugin,ted,The Energy Detective input,ted,@((!TARGET_avr32)||BROKEN))) # fails on avr32 because of warnings treated as errors
+$(eval $(call BuildPlugin,ted,The Energy Detective input,ted,))
 $(eval $(call BuildPlugin,tcpconns,TCP connection tracking input,tcpconns,))
 $(eval $(call BuildPlugin,thermal,system temperatures input,thermal,))
 $(eval $(call BuildPlugin,unixsock,unix socket output,unixsock,))

@@ -61,7 +61,7 @@
 
 "ddo.jp"		"http://free.ddo.jp/dnsupdate.php?dn=[DOMAIN]&pw=[PASSWORD]&ip=[IP]"
 
-"desec.io"		"http://update.dedyn.io/?username=[USERNAME]&password=[PASSWORD]&hostname=[DOMAIN]&myipv4=[IP]"	"good|nochg"
+"desec.io"		"http://update.dedyn.io/update?username=[USERNAME]&password=[PASSWORD]&hostname=[DOMAIN]&myipv4=[IP]"	"good|nochg"
 
 "dhis.org"		"http://[USERNAME]:[PASSWORD]@is.dhis.org/"
 
@@ -117,6 +117,8 @@
 "google.com"		"http://[USERNAME]:[PASSWORD]@domains.google.com/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
 
 "he.net"		"http://[DOMAIN]:[PASSWORD]@dyn.dns.he.net/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
+
+"inwx.de"		"http://[USERNAME]:[PASSWORD]@dyndns.inwx.com/nic/update?myip=[IP]"	"good|nochg"
 
 "joker.com"		"http://svc.joker.com/nic/update?username=[USERNAME]&password=[PASSWORD]&myip=[IP]&hostname=[DOMAIN]"	"good|nochg"
 

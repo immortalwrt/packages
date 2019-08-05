@@ -43,6 +43,12 @@ validate_track_method() {
 				return 1
 			}
 			;;
+		nping-*)
+			which nping 1>/dev/null 2>&1 || {
+				$LOG warn "Missing nping. Please install nping package."
+				return 1
+			}
+			;;
 		*)
 			$LOG warn "Unsupported tracking method: $track_method"
 			return 2
@@ -55,6 +61,7 @@ main() {
 	local recovery_interval down up size
 	local keep_failure_interval check_quality failure_latency
 	local recovery_latency failure_loss recovery_loss
+	local max_ttl
 
 	[ -z "$5" ] && echo "Error: should not be started manually" && exit 0
 
@@ -84,6 +91,7 @@ main() {
 	config_get down $1 down 5
 	config_get up $1 up 5
 	config_get size $1 size 56
+	config_get max_ttl $1 max_ttl 60
 	config_get failure_interval $1 failure_interval $interval
 	config_get_bool keep_failure_interval $1 keep_failure_interval 0
 	config_get recovery_interval $1 recovery_interval $interval
@@ -104,11 +112,15 @@ main() {
 	local loss=0
 	local latency=0
 
-	if [ "$STATUS" = "unknown" ]; then
-		echo "unknown" > /var/run/mwan3track/$1/STATUS
+	if [ "$STATUS" = "offline" ]; then
+		echo "offline" > /var/run/mwan3track/$1/STATUS
+		echo "0" > /var/run/mwan3track/$1/ONLINE
+		echo "$(get_uptime)" > /var/run/mwan3track/$1/OFFLINE
 		score=0
 	else
 		echo "online" > /var/run/mwan3track/$1/STATUS
+		echo "0" > /var/run/mwan3track/$1/OFFLINE
+		echo "$(get_uptime)" > /var/run/mwan3track/$1/ONLINE
 		env -i ACTION="connected" INTERFACE="$1" DEVICE="$2" /sbin/hotplug-call iface
 	fi
 	while true; do
@@ -120,10 +132,10 @@ main() {
 				case "$track_method" in
 					ping)
 						if [ $check_quality -eq 0 ]; then
-							ping -I $DEVICE -c $count -W $timeout -s $size -q $track_ip &> /dev/null
+							ping -I $DEVICE -c $count -W $timeout -s $size -t $max_ttl -q $track_ip &> /dev/null
 							result=$?
 						else
-							ping_result="$(ping -I $DEVICE -c $count -W $timeout -s $size -q $track_ip | tail -2)"
+							ping_result="$(ping -I $DEVICE -c $count -W $timeout -s $size -t $max_ttl -q $track_ip | tail -2)"
 							loss="$(echo "$ping_result" | grep "packet loss" |  cut -d "," -f3 | awk '{print $1}' | sed -e 's/%//')"
 							if [ "$loss" -eq 100 ]; then
 								latency=999999
@@ -139,6 +151,18 @@ main() {
 					httping)
 						httping -y $SRC_IP -c $count -t $timeout -q $track_ip &> /dev/null
 						result=$?
+					;;
+					nping-tcp)
+						result=$(nping -e $DEVICE -c $count $track_ip --tcp | grep Lost | awk '{print $12}')
+					;;
+					nping-udp)
+						result=$(nping -e $DEVICE -c $count $track_ip --udp | grep Lost | awk '{print $12}')
+					;;
+					nping-icmp)
+						result=$(nping -e $DEVICE -c $count $track_ip --icmp | grep Lost | awk '{print $12}')
+					;;
+					nping-arp)
+						result=$(nping -e $DEVICE -c $count $track_ip --arp | grep Lost | awk '{print $12}')
 					;;
 				esac
 				if [ $check_quality -eq 0 ]; then
@@ -197,9 +221,7 @@ main() {
 
 			if [ $score -eq $up ]; then
 				echo "offline" > /var/run/mwan3track/$1/STATUS
-				$LOG notice "Interface $1 ($2) is offline"
 				env -i ACTION=ifdown INTERFACE=$1 DEVICE=$2 /sbin/hotplug-call iface
-				env -i ACTION="disconnected" INTERFACE="$1" DEVICE="$2" /sbin/hotplug-call iface
 				score=0
 			fi
 		else
@@ -237,8 +259,12 @@ main() {
 		wait
 
 		if [ "${IFDOWN_EVENT}" -eq 1 ]; then
-			score=0
 			echo "offline" > /var/run/mwan3track/$1/STATUS
+			echo "$(get_uptime)" > /var/run/mwan3track/$1/OFFLINE
+			echo "0" > /var/run/mwan3track/$1/ONLINE
+			$LOG notice "Interface $1 ($2) is offline"
+			env -i ACTION="disconnected" INTERFACE="$1" DEVICE="$2" /sbin/hotplug-call iface
+			score=0
 			IFDOWN_EVENT=0
 		fi
 	done

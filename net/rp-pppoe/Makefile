@@ -9,8 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rp-pppoe
 PKG_VERSION:=3.12
-PKG_RELEASE:=4
-PKG_MAINTAINER:=Daniel Dickinson <lede@cshore.thecshore.com>
+PKG_RELEASE:=6
 PKG_LICENSE:=LGPL-2.0+
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -26,7 +25,7 @@ define Package/rp-pppoe/Default
   CATEGORY:=Network
   TITLE:=PPPoE (PPP over Ethernet)
   URL:=http://roaringpenguin.com/products/pppoe
-  SUBMENU:=dial-in/up
+  SUBMENU:=Dial-in/up
 endef
 
 define Package/rp-pppoe/Default/description

@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libxml2
-PKG_VERSION:=2.9.8
-PKG_RELEASE:=4
+PKG_VERSION:=2.9.9
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://xmlsoft.org/sources/
-PKG_HASH:=0b74e51595654f958148759cfef0993114ddccccbb6f31aee018f3558e8e2732
+PKG_HASH:=94fb70890143e3c6549f265cee93ec064c80a84c42ad0f23e85ee1fd6540a871
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -38,6 +38,34 @@ endef
 
 define Package/libxml2/description
   A library for manipulating XML and HTML resources.
+endef
+
+define Package/libxml2-dev
+  SECTION:=devel
+  CATEGORY:=Development
+  SUBMENU:=Libraries
+  TITLE:=Development files for libxml2
+  URL:=http://xmlsoft.org/
+  DEPENDS:=+libxml2
+endef
+
+define Package/libxml2-dev/description
+  A library for manipulating XML and HTML resources.
+
+  This package contains the headers and xml2-config binary.
+endef
+
+define Package/libxml2-utils
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=XML command line utilities (xmllint...)
+  URL:=http://xmlsoft.org/
+  DEPENDS:=+libxml2
+endef
+
+define Package/libxml2-utils/description
+  This package contains the binaries xmllint and xmlcatalog
+  from libxml2, a library for manipulating XML and HTML resources.
 endef
 
 TARGET_CFLAGS += $(FPIC)
@@ -130,7 +158,32 @@ endef
 
 define Package/libxml2/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libxml2.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libxml2.so.* $(1)/usr/lib/
+endef
+
+define Package/libxml2-dev/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/xml2-config $(1)/usr/bin/
+	$(SED) "s,$(STAGING_DIR),,g" $(1)/usr/bin/xml2-config
+
+	$(INSTALL_DIR) $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
+
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libxml2.so $(1)/usr/lib/
+
+	$(INSTALL_DIR) $(1)/usr/lib/{cmake,pkgconfig}
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/{cmake,pkgconfig} $(1)/usr/lib/
+	$(SED) "s,$(STAGING_DIR),,g" $(1)/usr/lib/pkgconfig/*.pc
+
+	$(INSTALL_DIR) $(1)/usr/share/aclocal
+	$(CP) $(PKG_INSTALL_DIR)/usr/share/aclocal/* $(1)/usr/share/aclocal
+endef
+
+define Package/libxml2-utils/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/xmllint $(1)/usr/bin/
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/xmlcatalog $(1)/usr/bin/
 endef
 
 define Host/Install
@@ -140,3 +193,5 @@ endef
 
 $(eval $(call HostBuild))
 $(eval $(call BuildPackage,libxml2))
+$(eval $(call BuildPackage,libxml2-dev))
+$(eval $(call BuildPackage,libxml2-utils))

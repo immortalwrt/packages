@@ -3,7 +3,7 @@
 # See /LICENSE for more information.
 #
 
-# 
+#
 # Original Boost 1.51 Makefile by Mirko Vogt <mirko@openwrt.org>
 # Dude, this "boost" is really one of the most crude stuff I ported yet.
 #
@@ -11,17 +11,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=boost
-PKG_VERSION:=1.68.0
-PKG_SOURCE_VERSION:=1_68_0
-PKG_RELEASE:=4
+PKG_VERSION:=1.70.0
+PKG_SOURCE_VERSION:=1_70_0
+PKG_RELEASE:=7
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_SOURCE_VERSION).tar.bz2
 PKG_SOURCE_URL:=@SF/$(PKG_NAME)/$(PKG_NAME)/$(PKG_VERSION) https://dl.bintray.com/boostorg/release/$(PKG_VERSION)/source/
+PKG_HASH:=430ae8354789de4fd19ee52f3b1f739e1fba576f0aded0897c3c2bc00fb38778
+
+PKG_MAINTAINER:=Carlos M. Ferreira <carlosmf.pt@gmail.com>
+PKG_LICENSE:=BSL-1.0
+PKG_LICENSE_FILES:=LICENSE_1_0.txt
+
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)_$(PKG_SOURCE_VERSION)
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)_$(PKG_SOURCE_VERSION)
-PKG_HASH:=7f6130bc3cf65f56a618888ce9d5ea704fa10b462be126ad053e80e553d6d8b7
-PKG_LICENSE:=Boost Software License <http://www.boost.org/users/license.html>
-PKG_MAINTAINER:=Carlos M. Ferreira <carlosmf.pt@gmail.com>
 
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
@@ -33,12 +36,12 @@ define Package/boost/Default
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=Boost C++ source library
-  URL:=http://www.boost.org
+  URL:=https://www.boost.org
   DEPENDS:=+libstdcpp +libpthread +librt
 endef
 
 define Package/boost/description
-This package provides the Boost v1.68.0 libraries.
+This package provides the Boost v1.70.0 libraries.
 Boost is a set of free, peer-reviewed, portable C++ source libraries.
 
 -----------------------------------------------------------------------------
@@ -57,7 +60,7 @@ This package provides the following run-time libraries:
  - chrono
  - container
  - context
- - contract 
+ - contract
  - coroutine (Deprecated - use Coroutine2)
  - - coroutine2 (Requires GCC v5 and up)
  - date_time
@@ -76,7 +79,6 @@ This package provides the following run-time libraries:
  - random
  - regex
  - serialization and wserialization
- - signals
  - stackstrace
  - system
  - thread
@@ -85,7 +87,7 @@ This package provides the following run-time libraries:
  - wave
 
 There are many more header-only libraries supported by Boost.
-See more at http://www.boost.org/doc/libs/1_67_0/
+See more at http://www.boost.org/doc/libs/1_70_0/
 endef
 
 PKG_BUILD_DEPENDS:=boost/host PACKAGE_python:python PACKAGE_python3:python3
@@ -130,6 +132,35 @@ define Package/boost/config
 		comment "Boost compilation options."
 
 		choice
+			prompt "Compile Visibility."
+				default boost-compile-visibility-hidden
+				help
+					Choose Boost symbols compilation visibility.
+					-> Global:
+						- a.k.a. "default" in gcc documentation. Global symbols are considered public,
+						 they are exported from shared libraries and can be redefined by another
+						 shared library or executable.
+					-> Protected:
+						- a.k.a. "symbolic". Protected symbols are exported from shared libraries but
+						 cannot be redefined by another shared library or executable. This mode is
+						 not supported on some platforms, for example OS X.
+					-> Hidden:
+						- Hidden symbols are not exported from shared libraries and cannot be
+						 redefined by a different shared library or executable loaded in a process.
+						 In this mode, public symbols have to be explicitly marked in the source code
+						 to be exported from shared libraries. This is the recommended mode.
+
+			config boost-compile-visibility-global
+				bool "Global"
+
+			config boost-compile-visibility-protected
+				bool "Protected"
+
+			config boost-compile-visibility-hidden
+				bool "Hidden"
+		endchoice
+
+		choice
 			prompt "Compile Boost libraries."
 				default boost-static-and-shared-libs
 				help
@@ -143,10 +174,10 @@ define Package/boost/config
 
 			config boost-shared-libs
 				bool "Shared"
-			
+
 			config boost-static-libs
 				bool "Static"
-			
+
 			config boost-static-and-shared-libs
 				bool "Both"
 		endchoice
@@ -161,18 +192,18 @@ define Package/boost/config
 					- Not available if Shared libs are to be built.
 				-> Use both runtimes.
 					- Not available if Shared libs are to be built.
-					- Two separate versions of Boost are built, linking each to a different runtime. 
+					- Two separate versions of Boost are built, linking each to a different runtime.
 					- This option requires "Use tagged names" option to be active.
 
 			config boost-runtime-shared
 				bool "Shared"
 
 			config boost-runtime-static
-				depends on @(!boost-shared-libs&&!boost-static-and-shared-libs)
-				bool "Static"		    	
+				depends on !boost-shared-libs&&!boost-static-and-shared-libs
+				bool "Static"
 
 			config boost-runtime-static-and-shared
-				depends on @(boost-use-name-tags&&!boost-shared-libs&&!boost-static-and-shared-libs)
+				depends on boost-use-name-tags&&!boost-shared-libs&&!boost-static-and-shared-libs
 				bool "Both"
 		endchoice
 
@@ -183,7 +214,7 @@ define Package/boost/config
 				Chooses which boost variant should be selected:
 				-> Release: Optimizes Boost for release.
 					- Optimization: Speed;  Debug Symbols: Off; Inlining: Full; Runtime Debugging: Off.
-				-> Debug: 
+				-> Debug:
 					- Optimization: Off; Debug Symbols: On; Inlining: Off; Runtime Debugging: On.
 				-> Profile:
 					- Profiling: On;  Debug Symbols: On.
@@ -200,7 +231,7 @@ define Package/boost/config
 
 		config boost-use-name-tags
 			bool "Use tagged names."
-			help 
+			help
 				Add name tags the lib files, to diferentiate each library version:
 				  "-mt" for multi-threading.
 				  "-d" for debugging.
@@ -209,16 +240,16 @@ define Package/boost/config
 			default n
 
 		config boost-single-thread
-			depends on @boost-use-name-tags
+			depends on boost-use-name-tags
 			bool "Single thread Support."
-			help 
+			help
 				Compile Boost libraries in single-thread mode.
 			default n
-			    
+
 		config boost-build-type-complete
-			depends on @boost-use-name-tags
+			depends on boost-use-name-tags
 			bool "Complete Boost Build."
-			help 
+			help
 				Builds both release and debug libs. It will take much longer to compile.
 			default n
 	endmenu
@@ -246,7 +277,7 @@ define Package/boost/config
 			select PACKAGE_boost-test
 
 		config boost-coroutine2
-			depends on !@GCC_VERSION_4_8
+			depends on !GCC_VERSION_4_8
 			bool "Boost couroutine2 support."
 			select PACKAGE_boost-coroutine
 			default n
@@ -314,7 +345,7 @@ $(eval $(call DefineBoostLibrary,date_time,,))
 $(eval $(call DefineBoostLibrary,fiber,coroutine filesystem,,!boost-fiber-exclude))
 $(eval $(call DefineBoostLibrary,filesystem,system,))
 $(eval $(call DefineBoostLibrary,graph,regex,))
-$(eval $(call DefineBoostLibrary,iostreams,,+zlib +liblzma +libbz2))
+$(eval $(call DefineBoostLibrary,iostreams,,+zlib +liblzma +libbz2 +zstd))
 $(eval $(call DefineBoostLibrary,locale,system,$(ICONV_DEPENDS),BUILD_NLS))
 $(eval $(call DefineBoostLibrary,log,system chrono date_time thread filesystem regex,))
 $(eval $(call DefineBoostLibrary,math,,))
@@ -326,7 +357,6 @@ $(eval $(call DefineBoostLibrary,random,system,))
 $(eval $(call DefineBoostLibrary,regex,,))
 $(eval $(call DefineBoostLibrary,serialization,,))
 $(eval $(call DefineBoostLibrary,wserialization,serialization,))
-$(eval $(call DefineBoostLibrary,signals,,))
 $(eval $(call DefineBoostLibrary,stacktrace,,))
 $(eval $(call DefineBoostLibrary,system,,))
 $(eval $(call DefineBoostLibrary,thread,system chrono atomic,))
@@ -339,6 +369,11 @@ include $(INCLUDE_DIR)/host-build.mk
 define Host/Compile
 	# b2 does not provide a configure-script nor a Makefile
 	( cd $(HOST_BUILD_DIR)/tools/build/src/engine ; ./build.sh gcc )
+
+	( cd $(HOST_BUILD_DIR) ; \
+		./bootstrap.sh --prefix=$(STAGING_DIR_HOSTPKG) \
+			--with-libraries=atomic,chrono,date_time,filesystem,headers,thread,system ;\
+		./b2 --ignore-site-config install )
 endef
 
 CONFIGURE_PREFIX:=$(PKG_INSTALL_DIR)
@@ -347,7 +382,7 @@ TARGET_LDFLAGS += -pthread -lrt
 TARGET_CFLAGS += \
 	$(if $(CONFIG_SOFT_FLOAT),-DBOOST_NO_FENV_H) -fPIC
 
-EXTRA_CXXFLAGS += $(if $(CONFIG_GCC_VERSION_4_8),-std=gnu++11,-std=gnu++14)
+EXTRA_CXXFLAGS += $(if $(CONFIG_GCC_USE_VERSION_5),-std=gnu++14,-std=gnu++17)
 
 ifneq ($(findstring mips,$(ARCH)),)
     BOOST_ABI = o32
@@ -365,15 +400,18 @@ endif
 comma := ,
 
 define Build/Compile
-	$(info Selected Boost API $(BOOST_ABI) for architecture $(ARCH) and cpu $(CONFIG_CPU_TYPE) $(if $(CONFIG_CPU_SUBTYPE),and cpu subtype $(CONFIG_CPU_SUBTYPE),))
+	$(info Selected Boost API $(BOOST_ABI) for architecture $(ARCH) and cpu type $(CONFIG_CPU_TYPE) $(if $(CONFIG_CPU_SUBTYPE),and cpu subtype $(CONFIG_CPU_SUBTYPE),))
 	( cd $(PKG_BUILD_DIR) ; \
-		echo "using gcc : $(ARCH) : $(GNU_TARGET_NAME)-gcc : <compileflags>\"$(TARGET_CFLAGS)\" <cxxflags>\"$(TARGET_CXXFLAGS) $(EXTRA_CXXFLAGS)\" <linkflags>\"$(TARGET_LDFLAGS)\" ;" > \
+		echo "using gcc : $(GCC_VERSION) : $(GNU_TARGET_NAME)-gcc : <compileflags>\"$(TARGET_CFLAGS)\" <cxxflags>\"$(TARGET_CXXFLAGS) $(EXTRA_CXXFLAGS)\" <linkflags>\"$(TARGET_LDFLAGS)\" ;" > \
 			tools/build/src/user-config.jam ; \
 		b2 \
 			$(CONFIGURE_ARGS) \
 			--ignore-site-config \
-			--toolset=gcc-$(ARCH) abi=$(BOOST_ABI) \
+			--toolset=gcc abi=$(BOOST_ABI) \
 			--disable-long-double \
+			$(if $(CONFIG_boost-compile-visibility-global), visibility=global,) \
+			$(if $(CONFIG_boost-compile-visibility-protected), visibility=protected,) \
+			$(if $(CONFIG_boost-compile-visibility-hidden), visibility=hidden,) \
 			$(if $(CONFIG_boost-variant-release), variant=release,) \
 			$(if $(CONFIG_boost-variant-debug), variant=debug,) \
 			$(if $(CONFIG_boost-variant-profile), variant=profile,) \
@@ -405,14 +443,14 @@ define Build/Compile
 				-sZLIB_LIBPATH=$(STAGING_DIR)/usr/lib) \
 			install ;\
 			$(if $(CONFIG_PACKAGE_boost-python), \
-				echo "using gcc : $(ARCH) : $(GNU_TARGET_NAME)-gcc : <compileflags>\"$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/python$(BOOST_PYTHON_VER)/ \" <cxxflags>\"$(TARGET_CXXFLAGS) $(EXTRA_CXXFLAGS)\" <linkflags>\"$(TARGET_LDFLAGS)\" ;" > \
+				echo "using gcc : $(GCC_VERSION) : $(GNU_TARGET_NAME)-gcc : <compileflags>\"$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/python$(BOOST_PYTHON_VER)/ \" <cxxflags>\"$(TARGET_CXXFLAGS) $(EXTRA_CXXFLAGS)\" <linkflags>\"$(TARGET_LDFLAGS)\" ;" > \
 					tools/build/src/user-config.jam ; \
 				echo "using python : $(BOOST_PYTHON_VER) : : $(STAGING_DIR)/usr/include/python$(BOOST_PYTHON_VER)/ : $(STAGING_DIR)/usr/lib/libpython$(BOOST_PYTHON_VER).so ;" >> \
 					tools/build/src/user-config.jam; \
 				b2 -a \
 					$(CONFIGURE_ARGS) \
 					--ignore-site-config \
-					--toolset=gcc-$(ARCH) abi=$(BOOST_ABI) \
+					--toolset=gcc abi=$(BOOST_ABI) \
 					--disable-long-double \
 					$(if $(CONFIG_boost-variant-release), variant=release,) \
 					$(if $(CONFIG_boost-variant-debug), variant=debug,) \
@@ -431,14 +469,14 @@ define Build/Compile
 				install ;\
 			,) \
 			$(if $(CONFIG_PACKAGE_boost-python3), \
-				echo "using gcc : $(ARCH) : $(GNU_TARGET_NAME)-gcc : <compileflags>\"$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/python$(BOOST_PYTHON3_VER)/ \" <cxxflags>\"$(TARGET_CXXFLAGS) $(EXTRA_CXXFLAGS)\" <linkflags>\"$(TARGET_LDFLAGS)\" ;" > \
+				echo "using gcc : $(GCC_VERSION) : $(GNU_TARGET_NAME)-gcc : <compileflags>\"$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/python$(BOOST_PYTHON3_VER)/ \" <cxxflags>\"$(TARGET_CXXFLAGS) $(EXTRA_CXXFLAGS)\" <linkflags>\"$(TARGET_LDFLAGS)\" ;" > \
 					tools/build/src/user-config.jam ; \
 				echo "using python : $(BOOST_PYTHON3_VER) : : $(STAGING_DIR)/usr/include/python$(BOOST_PYTHON3_VER)/ : $(STAGING_DIR)/usr/lib/libpython$(BOOST_PYTHON3_VER).so ;" >> \
 					tools/build/src/user-config.jam; \
 				b2 -a \
 					$(CONFIGURE_ARGS) \
 					--ignore-site-config \
-					--toolset=gcc-$(ARCH) abi=$(BOOST_ABI) \
+					--toolset=gcc abi=$(BOOST_ABI) \
 					--disable-long-double \
 					$(if $(CONFIG_boost-variant-release), variant=release,) \
 					$(if $(CONFIG_boost-variant-debug), variant=debug,) \
@@ -469,8 +507,8 @@ define Build/InstallDev
 		# copies _all_ header files - independent of <--with-library>-argument above
 
 	$(INSTALL_DIR) $(1)/usr/lib
-	# copies all compiled archive and shared object files
-	$(CP) -v $(PKG_INSTALL_DIR)/lib/*.{a,so*} $(1)/usr/lib/
+	# copies all cmake files, compiled archive and shared object files
+	$(CP) -v $(PKG_INSTALL_DIR)/lib/{*.{a,so*},cmake} $(1)/usr/lib/ || :
 endef
 
 define Host/Install
@@ -494,7 +532,7 @@ endef
 
 define BuildBoostLibrary
   define Package/boost-$(1)/install
-    $(call Package/boost/Default/install,$$(1),$(1)) 
+    $(call Package/boost/Default/install,$$(1),$(1))
   endef
 
   $$(eval $$(call BuildPackage,boost-$(1)))
