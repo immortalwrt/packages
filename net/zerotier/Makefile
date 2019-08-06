@@ -7,19 +7,16 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zerotier
 PKG_VERSION:=1.4.0
-<<<<<<< HEAD
-PKG_RELEASE:=1
-
-PKG_LICENSE:=GPL-3.0
-=======
 PKG_RELEASE:=3
->>>>>>> 3df38fc340b1db73019c0d76e5cb830ab3652450
 
 PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_HASH:=8823aca4e5bc7fef1c762539dce20a8961b09ef2638cb5d70961a085ca3040d4
 PKG_BUILD_DIR:=$(BUILD_DIR)/ZeroTierOne-$(PKG_VERSION)
 
+PKG_MAINTAINER:=Moritz Warning <moritzwarning@web.de>
+PKG_LICENSE:=GPL-3.0-or-later
+PKG_LICENSE_FILES:=LICENSE.txt
 
 PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/package.mk
@@ -31,7 +28,6 @@ define Package/zerotier
   TITLE:=Create flat virtual Ethernet networks of almost unlimited size
   URL:=https://www.zerotier.com
   SUBMENU:=VPN
-  MAINTAINER:=Moritz Warning <moritzwarning@web.de>
 endef
 
 define Package/zerotier/description
@@ -60,6 +56,10 @@ endef
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections
 
+define Package/zerotier/conffiles
+/etc/config/zerotier
+endef
+
 define Package/zerotier/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-one $(1)/usr/bin/
@@ -74,4 +74,3 @@ endif
 endef
 
 $(eval $(call BuildPackage,zerotier))
-
