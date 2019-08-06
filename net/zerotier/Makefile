@@ -7,9 +7,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zerotier
 PKG_VERSION:=1.4.0
+<<<<<<< HEAD
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-3.0
+=======
+PKG_RELEASE:=3
+>>>>>>> 3df38fc340b1db73019c0d76e5cb830ab3652450
 
 PKG_SOURCE_URL:=https://codeload.github.com/zerotier/ZeroTierOne/tar.gz/$(PKG_VERSION)?
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
