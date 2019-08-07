@@ -9,17 +9,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=i2pd
-PKG_VERSION:=2.18.0
-PKG_RELEASE:=2
+PKG_VERSION:=2.26.0
+PKG_RELEASE:=1
 PKG_BUILD_PARALLEL:=1
 
-PKG_SOURCE_PROTO:=git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_MIRROR_HASH:=1a04826b54e649ebb341d3feacdd05c0415335679d1aa787a74ea5995d419378
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_URL:=https://github.com/PurpleI2P/i2pd.git
-PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_LICENSE:=BSD-3-clause
+PKG_SOURCE_URL:=https://codeload.github.com/PurpleI2P/i2pd/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=2ae18978c8796bb6b45bc8cfe4e1f25377e0cfc9fcf9f46054b09dc3384eef63
+
+PKG_MAINTAINER:=David Yang <mmyangfl@gmail.com>
+PKG_LICENSE:=BSD-3-Clause
+PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -31,7 +31,6 @@ define Package/i2pd
 	TITLE:=full-featured C++ implementation of I2P client
 	URL:=https://github.com/PurpleI2P/i2pd
 	USERID:=i2pd:i2pd
-	MAINTAINER:=David Yang <mmyangfl@gmail.com>
 endef
 
 define Package/i2pd/description
@@ -41,8 +40,8 @@ define Package/i2pd/description
 endef
 
 define Package/i2pd/conffiles
+	/etc/config/i2pd
 	/etc/i2pd/i2pd.conf
-	/etc/i2pd/subscriptions.txt
 	/etc/i2pd/tunnels.conf
 endef
 
@@ -54,16 +53,15 @@ define Package/i2pd/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/i2pd $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/usr/share/i2pd
 	$(CP) $(PKG_BUILD_DIR)/contrib/certificates  $(1)/usr/share/i2pd
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) ./files/i2pd.config $(1)/etc/config/i2pd
 	$(INSTALL_DIR) $(1)/etc/i2pd
-	$(LN) /usr/share/i2pd/certificates $(1)/etc/i2pd/certificates
-	$(LN) /var/lib/i2pd/peerProfiles $(1)/etc/i2pd/peerProfiles
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/i2pd.conf $(1)/etc/i2pd
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/contrib/i2pd.conf $(1)/etc/i2pd
 	$(SED) ' \
 		s/127.0.0.1/192.168.1.1/g; \
 		s/datadir = \/var\/lib/datadir = \/etc/ \
 	' $(1)/etc/i2pd/i2pd.conf
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/subscriptions.txt $(1)/etc/i2pd
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/tunnels.conf $(1)/etc/i2pd
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/contrib/tunnels.conf $(1)/etc/i2pd
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/i2pd.init $(1)/etc/init.d/i2pd
 endef
