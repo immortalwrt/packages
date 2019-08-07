@@ -13,11 +13,7 @@ diff --git a/make-linux.mk b/make-linux.mk
 index a547125d..13244741 100644
 --- a/make-linux.mk
 +++ b/make-linux.mk
-<<<<<<< HEAD
-@@ -71,11 +71,11 @@ ifeq ($(ZT_DEBUG),1)
-=======
 @@ -77,11 +77,11 @@ ifeq ($(ZT_DEBUG),1)
->>>>>>> 01003ff26855fcbc549feba9f3b891dbc8c355da
  	# C25519 in particular is almost UNUSABLE in -O0 even on a 3ghz box!
  node/Salsa20.o node/SHA512.o node/C25519.o node/Poly1305.o: CXXFLAGS=-Wall -O2 -g -pthread $(INCLUDES) $(DEFS)
  else

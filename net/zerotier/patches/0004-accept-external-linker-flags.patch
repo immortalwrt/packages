@@ -11,11 +11,7 @@ diff --git a/make-linux.mk b/make-linux.mk
 index fd164dfa..29ff8813 100644
 --- a/make-linux.mk
 +++ b/make-linux.mk
-<<<<<<< HEAD
-@@ -75,7 +75,7 @@ else
-=======
 @@ -81,7 +81,7 @@ else
->>>>>>> 01003ff26855fcbc549feba9f3b891dbc8c355da
  	override CFLAGS+=-Wall -Wno-deprecated -pthread $(INCLUDES) -DNDEBUG $(DEFS)
  	CXXFLAGS?=-O3 -fstack-protector
  	override CXXFLAGS+=-Wall -Wno-deprecated -std=c++11 -pthread $(INCLUDES) -DNDEBUG $(DEFS)
