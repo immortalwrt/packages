@@ -16,12 +16,13 @@ PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=96996a97a5ba9cb2ad5fc5b249e2f653657e9c2bd6a45c8188ad64a76bf93340
 
-PKG_BUILD_DEPENDS:=node/host
-PKG_USE_MIPS16:=0
-
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+
+PKG_BUILD_DEPENDS:=node/host
+PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -30,12 +31,12 @@ define Package/node-serialport
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Node.js package to access serial ports
-  URL:=https://serialport.io/
-  DEPENDS:=+node +node-npm +node-serialport-bindings
+  URL:=https://www.npmjs.org/package/serialport
+  DEPENDS:=+node +node-serialport-bindings
 endef
 
 define Package/node-serialport/description
- Node.js package to access serial ports for reading and writing OR Welcome your robotic JavaScript overlords. Better yet, program them!
+ Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -45,6 +46,7 @@ NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 
 TARGET_CFLAGS+=$(FPIC)
+TARGET_CPPFLAGS+=$(FPIC)
 
 define Build/Compile
 	$(MAKE_VARS) \
