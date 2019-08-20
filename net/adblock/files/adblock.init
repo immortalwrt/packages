@@ -4,10 +4,11 @@
 START=30
 USE_PROCD=1
 
-EXTRA_COMMANDS="suspend resume query status"
+EXTRA_COMMANDS="suspend resume query report status"
 EXTRA_HELP="	suspend	Suspend adblock processing
 	resume	Resume adblock processing
 	query	<DOMAIN> Query active blocklists for specific domains
+	report	<SEARCH> Print dns query statistics with an optional search parameter
 	status	Print runtime information"
 
 adb_init="/etc/init.d/adblock"
@@ -51,7 +52,6 @@ reload_service()
 stop_service()
 {
 	rc_procd "${adb_script}" stop
-	rc_procd start_service
 }
 
 restart()
@@ -62,19 +62,25 @@ restart()
 suspend()
 {
 	[ -s "${adb_pidfile}" ] && return 1
-	rc_procd "${adb_script}" suspend
+	rc_procd start_service suspend
 }
 
 resume()
 {
 	[ -s "${adb_pidfile}" ] && return 1
-	rc_procd "${adb_script}" resume
+	rc_procd start_service resume
 }
 
 query()
 {
 	[ -s "${adb_pidfile}" ] && return 1
 	rc_procd "${adb_script}" query "${1}"
+}
+
+report()
+{
+	[ -s "${adb_pidfile}" ] && return 1
+	rc_procd "${adb_script}" report "${1:-"+"}" "${2:-"50"}" "${3:-"false"}" "${4:-"true"}"
 }
 
 status()
@@ -84,17 +90,17 @@ status()
 	rtfile="${rtfile:-"/tmp/adb_runtime.json"}"
 	if [ -s "${rtfile}" ]
 	then
-		printf "%s\n" "::: adblock runtime information"
+		printf "%s\\n" "::: adblock runtime information"
 		json_load_file "${rtfile}"
 		json_select data
 		json_get_keys keylist
 		for key in ${keylist}
 		do
 			json_get_var value "${key}"
-			printf "  + %-15s : %s\n" "${key}" "${value}"
+			printf "  + %-15s : %s\\n" "${key}" "${value}"
 		done
 	else
-		printf "%s\n" "::: no adblock runtime information available"
+		printf "%s\\n" "::: no adblock runtime information available"
 	fi
 }
 

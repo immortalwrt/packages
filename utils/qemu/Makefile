@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2016 OpenWrt.org
-# Copyright (C) 2016-2018 Yousong Zhou <yszhou4tech@gmail.com>
+# Copyright (C) 2016-2019 Yousong Zhou <yszhou4tech@gmail.com>
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -9,10 +9,10 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qemu
-PKG_VERSION:=3.1.0
-PKG_RELEASE:=2
+PKG_VERSION:=4.1.0
+PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_HASH:=6a0508df079a0a33c2487ca936a56c12122f105b8a96a44374704bef6c69abfc
+PKG_HASH:=656e60218689bdeec69903087fd7582d5d3e72238d02f4481d8dc6d79fd909c6
 PKG_SOURCE_URL:=http://download.qemu.org/
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE tcg/LICENSE
@@ -23,6 +23,7 @@ PKG_INSTALL:=1
 PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/uclibc++.mk
+include $(INCLUDE_DIR)/nls.mk
 include $(INCLUDE_DIR)/package.mk
 
 
@@ -52,10 +53,6 @@ define Package/qemu-ga
   DEPENDS:= +glib2 +virtio-console-helper $(CXX_DEPENDS) $(QEMU_DEPS_IN_GUEST)
 endef
 
-define Package/qemu-ga/description
-  This package contains the QEMU Guest Agent daemon
-endef
-
 define Package/qemu-ga/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/qemu-ga $(1)/usr/bin
@@ -65,20 +62,8 @@ define Package/qemu-ga/install
 	$(INSTALL_BIN) ./files/10-qemu-ga.hotplug $(1)/etc/hotplug.d/virtio-ports/10-qemu-ga
 endef
 
+PKG_CONFIG_DEPENDS += CONFIG_PACKAGE_qemu-ga
 
-define Package/qemu-blobs
-  SECTION:=utils
-  CATEGORY:=Utilities
-  SUBMENU:=Virtualization
-  TITLE:=QEMU blobs of BIOS, VGA BIOS and keymaps
-  URL:=http://www.qemu.org
-  DEPENDS:=$(QEMU_DEPS_IN_HOST)
-endef
-
-define Package/qemu-blobs/install
-	$(INSTALL_DIR) $(1)/usr/share/qemu
-	$(CP) $(PKG_INSTALL_DIR)/usr/share/qemu/* $(1)/usr/share/qemu
-endef
 
 define Package/qemu-bridge-helper
   SECTION:=utils
@@ -96,13 +81,14 @@ define Package/qemu-bridge-helper/install
 	$(INSTALL_DATA) ./files/bridge.conf $(1)/etc/qemu
 endef
 
+
 define Package/qemu-img
  SECTION:=utils
  CATEGORY:=Utilities
  SUBMENU:=Virtualization
  TITLE:=QEMU Image utility
  URL:=http://www.qemu.org
- DEPENDS:=+glib2 $(CXX_DEPENDS) $(QEMU_DEPS_IN_HOST)
+ DEPENDS:=+glib2 $(QEMU_DEPS_IN_HOST)
 endef
 
 define Package/qemu-img/install
@@ -110,13 +96,14 @@ define Package/qemu-img/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/qemu-img $(1)/usr/bin/qemu-img
 endef
 
+
 define Package/qemu-nbd
  SECTION:=utils
  CATEGORY:=Utilities
  SUBMENU:=Virtualization
  TITLE:=QEMU Network Block Device Utility
  URL:=http://www.qemu.org
- DEPENDS:=+glib2 $(CXX_DEPENDS) $(QEMU_DEPS_IN_HOST) +kmod-nbd
+ DEPENDS:=+glib2 $(QEMU_DEPS_IN_HOST) +kmod-nbd
 endef
 
 define Package/qemu-nbd/install
@@ -124,7 +111,41 @@ define Package/qemu-nbd/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/qemu-nbd $(1)/usr/sbin/qemu-nbd
 endef
 
-PKG_CONFIG_DEPENDS += CONFIG_PACKAGE_qemu-ga
+
+define qemu-firmware
+  QEMU_PACKAGES += qemu-firmware-$(1)
+
+  define Package/qemu-firmware-$(1)
+    SECTION:=utils
+    CATEGORY:=Utilities
+    SUBMENU:=Virtualization
+    TITLE:=$(qemu-firmware-$(1)-title)
+    URL:=http://www.qemu.org
+    DEPENDS:=$(QEMU_DEPS_IN_HOST)
+  endef
+
+  define Package/qemu-firmware-$(1)/install
+	$$(INSTALL_DIR) $$(1)/usr/share/qemu
+	$$(CP) $(foreach f,$(qemu-firmware-$(1)-files),$$(PKG_INSTALL_DIR)/usr/share/qemu/$(f)) $$(1)/usr/share/qemu
+  endef
+endef
+
+qemu-firmware-seabios-title:=QEMU build of SeaBIOS for x86 guest
+qemu-firmware-seabios-files:=bios.bin bios-256k.bin
+$(eval $(call qemu-firmware,seabios))
+
+qemu-firmware-seavgabios-title:=QEMU build of SeaVGABIOS
+qemu-firmware-seavgabios-files:=vgabios-*.bin
+$(eval $(call qemu-firmware,seavgabios))
+
+qemu-firmware-pxe-title:=QEMU build of iPXE PXE roms
+qemu-firmware-pxe-files:=pxe-*.rom
+$(eval $(call qemu-firmware,pxe))
+
+qemu-firmware-efi-title:=QEMU build of iPXE EFI roms
+qemu-firmware-efi-files:=efi-*.rom
+$(eval $(call qemu-firmware,efi))
+
 
 # Naming rules used in qemu Makefile.target
 define qemu-prog_
@@ -144,6 +165,7 @@ qemu-prog = $(strip $(call qemu-prog_,$(1)))
 #
 define qemu-target
   PKG_CONFIG_DEPENDS += CONFIG_PACKAGE_qemu-$(1)
+  QEMU_PACKAGES += qemu-$(1)
 
   define Package/qemu-$(1)
     SECTION:=utils
@@ -151,8 +173,8 @@ define qemu-target
     SUBMENU:=Virtualization
     TITLE:=QEMU target $(1)
     URL:=http://www.qemu.org
-    DEPENDS:= +glib2 +libpthread +zlib $(CXX_DEPENDS) $(QEMU_DEPS_IN_HOST) \
-	$(if $(filter %-softmmu,$(1)),+libncurses +libfdt +pixman +qemu-blobs)
+    DEPENDS:= +glib2 +libpthread +zlib $(CXX_DEPENDS) $(QEMU_DEPS_IN_HOST) $(qemu-target-$(1)-deps) \
+	$(if $(filter %-softmmu,$(1)),+libncurses +libfdt +pixman +qemu-firmware-efi $(ICONV_DEPENDS))
   endef
 
   define Package/qemu-$(1)/description
@@ -162,17 +184,33 @@ define qemu-target
   define Package/qemu-$(1)/install
 	$(INSTALL_DIR) $$(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(call qemu-prog,$(1)) $$(1)/usr/bin
+	$(foreach f,$(qemu-target-$(1)-extra-files),
+		$(INSTALL_DIR) $$(1)/$(dir $(f))
+		$(CP) $(PKG_INSTALL_DIR)/$(f) $$(1)/$(f)
+	)
   endef
 
 endef
 
-QEMU_TARGET_LIST :=	\
+qemu-target-list :=	\
 	x86_64-softmmu	\
 	arm-softmmu	\
 
-$(foreach target,$(QEMU_TARGET_LIST), \
+qemu-target-x86_64-softmmu-deps:= \
+	+qemu-firmware-pxe \
+	+qemu-firmware-seabios \
+	+qemu-firmware-seavgabios
+qemu-target-x86_64-softmmu-extra-files:= \
+	usr/share/qemu/kvmvapic.bin \
+	usr/share/qemu/linuxboot.bin \
+	usr/share/qemu/linuxboot_dma.bin \
+	usr/share/qemu/multiboot.bin \
+	usr/share/qemu/pvh.bin
+
+$(foreach target,$(qemu-target-list), \
   $(eval $(call qemu-target,$(target))) \
 )
+
 
 # QEMU configure script does not recognize these options
 CONFIGURE_ARGS:=$(filter-out	\
@@ -192,81 +230,142 @@ CONFIGURE_ARGS +=			\
 	--host-cc="$(HOSTCC)"		\
 	--disable-fortify-source	\
 	--disable-stack-protector	\
+	--extra-cflags="$(EXTRA_CFLAGS)"	\
+	--extra-cxxflags="$(EXTRA_CXXFLAGS)"	\
+	--extra-ldflags="$(EXTRA_LDFLAGS)"	\
 
-# Make a list from QEMU source code for reference
+# VHost features
+CONFIGURE_ARGS +=			\
+	--enable-vhost-crypto		\
+	--enable-vhost-kernel		\
+	--enable-vhost-net		\
+	--enable-vhost-scsi		\
+	--enable-vhost-user		\
+	--enable-vhost-vsock		\
+
+# Image formats support
+CONFIGURE_ARGS +=			\
+	--disable-bochs			\
+	--disable-cloop			\
+	--disable-dmg			\
+	--disable-qcow1			\
+	--disable-vdi			\
+	--disable-vvfat			\
+	--disable-qed			\
+	--disable-parallels		\
+
+# system/user-mode emulation
+CONFIGURE_ARGS +=			\
+	--disable-user			\
+	--disable-bsd-user		\
+	--disable-linux-user		\
+	--enable-system			\
+
+# accel
+CONFIGURE_ARGS +=			\
+	--disable-hax			\
+	--disable-hvf			\
+	--disable-whpx			\
+	--disable-xen			\
+	--enable-kvm			\
+	--enable-tcg			\
+
+# UI
+CONFIGURE_ARGS +=			\
+	--disable-cocoa			\
+	--disable-gtk			\
+	--disable-sdl			\
+	--disable-sdl-image		\
+	--disable-spice			\
+	--disable-virglrenderer		\
+	--disable-vnc			\
+	--disable-vnc-jpeg		\
+	--disable-vnc-png		\
+	--disable-vnc-sasl		\
+	--disable-vte			\
+	--enable-curses			\
+	--enable-iconv			\
+
+# Features for performance & no external dependency
+CONFIGURE_ARGS +=			\
+	--enable-coroutine-pool		\
+	--enable-crypto-afalg		\
+	--enable-live-block-migration	\
+	--enable-membarrier		\
+	--enable-replication		\
+
+# Review configure options not explicitly specified here
 #
-#	grep -E '^\s*--disable-[^)]+\)' configure | cut -f1 -d')' | sort -u
+#	openwrt_makefile=openwrt/packages/utils/qemu/Makefile
+#	qemu_configure=qemu/configure
+#	for arg in $(grep -E '^\s*--disable-[^)]+\)' "$qemu_configure" | cut -f1 -d')'); do
+#	  grep -qE "(--enable|--disable)${arg#--disable}" "$openwrt_makefile" || echo "$arg"
+#	done
 #
 CONFIGURE_ARGS +=			\
 	--audio-drv-list=''		\
 	--disable-attr			\
+	--disable-auth-pam		\
 	--disable-bluez			\
 	--disable-brlapi		\
-	--disable-bsd-user		\
 	--disable-bzip2			\
 	--disable-cap-ng		\
-	--disable-cocoa			\
+	--disable-capstone		\
 	--disable-curl			\
 	--disable-debug-info		\
+	--disable-debug-mutex		\
 	--disable-debug-tcg		\
 	--disable-docs			\
 	--disable-gcrypt		\
+	--disable-git-update		\
 	--disable-glusterfs		\
 	--disable-gnutls		\
-	--disable-gtk			\
 	--disable-guest-agent-msi	\
 	--disable-jemalloc		\
 	--disable-libiscsi		\
 	--disable-libnfs		\
 	--disable-libpmem		\
-	--disable-libssh2		\
+	--disable-libssh		\
 	--disable-libudev		\
 	--disable-libusb		\
 	--disable-libxml2		\
 	--disable-linux-aio		\
+	--disable-lzfse			\
 	--disable-lzo			\
 	--disable-modules		\
+	--disable-mpath			\
 	--disable-netmap		\
 	--disable-nettle		\
 	--disable-numa			\
 	--disable-opengl		\
+	--disable-pvrdma		\
 	--disable-qom-cast-debug	\
 	--disable-rbd			\
 	--disable-rdma			\
-	--disable-sdl			\
+	--disable-sanitizers		\
 	--disable-seccomp		\
+	--disable-sheepdog		\
 	--disable-smartcard		\
 	--disable-snappy		\
 	--disable-sparse		\
-	--disable-spice			\
 	--disable-strip			\
 	--disable-tcg-interpreter	\
 	--disable-tcmalloc		\
 	--disable-tools			\
 	--disable-tpm			\
 	--disable-usb-redir		\
-	--disable-uuid			\
 	--disable-vde			\
-	--disable-vhdx			\
-	--disable-virglrenderer		\
 	--disable-virtfs		\
-	--disable-vnc			\
-	--disable-vnc-jpeg		\
-	--disable-vnc-png		\
-	--disable-vnc-sasl		\
-	--disable-vte			\
+	--disable-vxhs			\
 	--disable-werror		\
-	--disable-xen			\
 	--disable-xen-pci-passthrough	\
-	--disable-xen-pv-domain-build	\
 	--disable-xfsctl		\
-	--disable-zlib-test		\
 
-CONFIGURE_ARGS += --target-list='$(foreach target,$(QEMU_TARGET_LIST),$(if $(CONFIG_PACKAGE_qemu-$(target)),$(target)))'
+CONFIGURE_ARGS += --target-list='$(foreach target,$(qemu-target-list),$(if $(CONFIG_PACKAGE_qemu-$(target)),$(target)))'
 CONFIGURE_ARGS += $(if $(CONFIG_PACKAGE_qemu-ga),--enable-guest-agent)
 
 TARGET_LDFLAGS += -Wl,--as-needed
-MAKE_VARS += V=s
+MAKE_VARS += V=1
 # ARCH is special in qemu's build system, e.g. ARCH mips64 will be translated
 # there to mips and stored in config-host.mak
 MAKE_FLAGS:=$(filter-out	\
@@ -278,7 +377,7 @@ QEMU_MAKE_TARGETS := \
 	$(if $(CONFIG_PACKAGE_qemu-bridge-helper),qemu-bridge-helper) \
 	$(if $(CONFIG_PACKAGE_qemu-img),qemu-img) \
 	$(if $(CONFIG_PACKAGE_qemu-nbd),qemu-nbd) \
-	$(foreach target,$(QEMU_TARGET_LIST),$(if $(CONFIG_PACKAGE_qemu-$(target)),subdir-$(target))) \
+	$(foreach target,$(qemu-target-list),$(if $(CONFIG_PACKAGE_qemu-$(target)),$(target)/all)) \
 
 define Build/Compile
 	$(if $(strip $(QEMU_MAKE_TARGETS)),$(call Build/Compile/Default,$(QEMU_MAKE_TARGETS)))
@@ -289,7 +388,6 @@ $(eval $(call BuildPackage,qemu-ga))
 $(eval $(call BuildPackage,qemu-bridge-helper))
 $(eval $(call BuildPackage,qemu-img))
 $(eval $(call BuildPackage,qemu-nbd))
-$(eval $(call BuildPackage,qemu-blobs))
-$(foreach target,$(QEMU_TARGET_LIST), \
-  $(eval $(call BuildPackage,qemu-$(target))) \
+$(foreach p,$(QEMU_PACKAGES), \
+  $(eval $(call BuildPackage,$(p))) \
 )
