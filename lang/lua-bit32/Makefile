@@ -1,6 +1,4 @@
 #
-# Copyright (C) 2016 OpenWrt.org
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
@@ -11,17 +9,19 @@ PKG_NAME:=lua-bit32
 PKG_VERSION:=5.3.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_URL:=git://github.com/keplerproject/lua-compat-5.2.git
-PKG_SOURCE_VERSION:=bitlib-5.3.0
 
-PKG_MAINTAINER:=Alex R <alex@maximum.guru>
-PKG_LICENSE=MIT
+PKG_SRC_NAME:=lua-compat-5.2
+PKG_SRC_VERSION:=0.3
+PKG_SOURCE_URL=https://codeload.github.com/keplerproject/$(PKG_SRC_NAME)/tar.gz/v$(PKG_SRC_VERSION)?
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_HASH:=627e842c488c1afece4383da9f9a839a7ddbc2f7fedfc456f76e3a590d4ca67f
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SRC_NAME)-$(PKG_SRC_VERSION)
 
-LUA_MODULE_PATH:=/usr/lib/lua
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_MAINTAINER:=Maxim Storchak <m.storchak@gmail.com>
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=LICENSE
+
+PKG_BUILD_DEPENDS:=luarocks/host
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -29,27 +29,31 @@ define Package/lua-bit32
   SUBMENU:=Lua
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=lua-bit32
-  URL:=http://www.lua.org/manual/5.2/manual.html#6.7
-  DEPENDS:= +lua
+  TITLE:=Lua 5.2 bit manipulation library
+  DEPENDS:=+lua
 endef
 
 define Package/lua-bit32/description
-   bit32 is the native Lua 5.2 bit manipulation library, in the version from Lua 5.3; it is compatible with Lua 5.1, 5.2 and 5.3.
+  lua-bit32 is the native Lua 5.2 bit manipulation library,
+  backported to Lua 5.1
 endef
 
-TARGET_CFLAGS += $(FPIC) -shared
-TARGET_LDFLAGS += -llua
-
-LUA_MODULE_PATH:=/usr/lib/lua
+TARGET_CFLAGS += \
+	-I$(STAGING_DIR)/usr/include
 
 define Build/Compile
-	$(TARGET_CROSS)gcc $(TARGET_CFLAGS) $(TARGET_LDFLAGS) -I $(PKG_BUILD_DIR)/c-api/ -o $(PKG_BUILD_DIR)/bit32.so $(PKG_BUILD_DIR)/lbitlib.c
+  cd $(PKG_BUILD_DIR) && \
+  luarocks make --pack-binary-rock bit32-scm-1.rockspec \
+    LUA_LIBDIR=$(STAGING_DIR)/usr/lib/lua \
+    LUA_PKGNAME=lua5.1 \
+	CFLAGS="$(TARGET_CFLAGS) $(FPIC)" \
+	LDFLAGS="$(TARGET_LDFLAGS)" \
+    CC="$(TARGET_CC)" LD="$(TARGET_CC)"
 endef
 
-define Package/lua-bit32/install
-	$(INSTALL_DIR) $(1)/$(LUA_MODULE_PATH)/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bit32.so $(1)/$(LUA_MODULE_PATH)/
+define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/lib/lua
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bit32.so $(1)/usr/lib/lua
 endef
 
 $(eval $(call BuildPackage,lua-bit32))
