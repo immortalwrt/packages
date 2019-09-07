@@ -7,9 +7,9 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=node
 
 ifeq ($(CONFIG_NODEJS_12),y)
-PKG_VERSION:=v12.9.0
+PKG_VERSION:=v12.10.0
 PKG_RELEASE:=1
-PKG_HASH:=e05fe8ba1bdf58e51cdb5d946ebb7a2dec567b3680da2752e120a763293a41c5
+PKG_HASH:=2515b87c60921f22514a58830e86e54831daa2453d0e82f2ed7ab02134ee30cd
 PATCH_DIR:=./patches/v12.x
 else
 ifeq ($(CONFIG_NODEJS_10),y)
@@ -52,7 +52,7 @@ define Package/node
   SUBMENU:=Node.js
   TITLE:=Node.js is a platform built on Chrome's JavaScript runtime
   URL:=https://nodejs.org/
-  DEPENDS:=@(HAS_FPU||KERNEL_MIPS_FPU_EMULATOR) @!arc @!armeb \
+  DEPENDS:=@(HAS_FPU||KERNEL_MIPS_FPU_EMULATOR) @!arc @!armeb @!powerpc \
            +libstdcpp +USE_UCLIBC:libpthread +USE_UCLIBC:librt +zlib \
            $(if $(filter reboot v19.07%, $(OW_VER)),+libopenssl,+NODEJS_8:libopenssl) \
            +NODEJS_ICU_SYSTEM:icu +NODEJS_ICU_SYSTEM:icu-full-data \
@@ -162,10 +162,7 @@ CONFIGURE_ARGS:= \
 	$(if $(findstring +vfpv4",$(CONFIG_CPU_TYPE)),--with-arm-fpu=vfpv3) \
 	--prefix=/usr
 
-HOST_CONFIGURE_VARS:= \
-	CC="$(HOSTCC) $(FORCE_32BIT)" \
-	CXX="$(HOSTCXX) $(FORCE_32BIT)"
-
+HOST_CONFIGURE_VARS:=
 HOST_CONFIGURE_ARGS:= \
 	--dest-os=$(if $(findstring Darwin,$(HOST_OS)),mac,linux) \
 	--with-intl=none \
@@ -174,6 +171,11 @@ HOST_CONFIGURE_ARGS:= \
 HOST_CONFIGURE_CMD:=python2 ./configure
 
 ifeq ($(CONFIG_NODEJS_12),y)
+
+HOST_CONFIGURE_VARS:= \
+	CC="$(HOSTCC) $(FORCE_32BIT)" \
+	CXX="$(HOSTCXX) $(FORCE_32BIT)"
+
 ifeq ($(CONFIG_NODEJS_ICU_NONE),y)
 
 HOST_EXE=$(HOST_BUILD_DIR)/out/Release/
