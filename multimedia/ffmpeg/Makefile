@@ -421,7 +421,7 @@ FFMPEG_CONFIGURE:= \
 	--enable-static \
 	--enable-pthreads \
 	--enable-zlib \
-	--with-openssl \
+	--enable-openssl \
 	--disable-doc \
 	--disable-debug \
 	\
