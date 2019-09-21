@@ -232,7 +232,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/ffmpeg/Default
  TITLE:=FFmpeg
  URL:=https://ffmpeg.org/
- DEPENDS+= +libpthread
+ DEPENDS+= +libpthread +libopenssl
 endef
 
 define Package/ffmpeg/Default/description
@@ -421,6 +421,7 @@ FFMPEG_CONFIGURE:= \
 	--enable-static \
 	--enable-pthreads \
 	--enable-zlib \
+	--with-openssl \
 	--disable-doc \
 	--disable-debug \
 	\
