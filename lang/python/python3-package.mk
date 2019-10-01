@@ -34,12 +34,21 @@ ifdef CONFIG_USE_MIPS16
   TARGET_CFLAGS += -mno-mips16 -mno-interlink-mips16
 endif
 
+define Py3Shebang
+$(SED) "1"'!'"b;s,^#"'!'".*python.*,#"'!'"/usr/bin/python3," -i --follow-symlinks $(1)
+endef
+
 define Py3Package
 
   define Package/$(1)-src
     $(call Package/$(1))
     DEPENDS:=
+    CONFLICTS:=
+    PROVIDES:=
+    EXTRA_DEPENDS:=
     TITLE+= (sources)
+    USERID:=
+    MENU:=
   endef
 
   define Package/$(1)-src/description
@@ -67,13 +76,15 @@ define Py3Package
   $(call shexport,Py3Package/$(1)/filespec)
 
   define Package/$(1)/install
-	$(call Py3Package/$(1)/install,$$(1))
-	find $(PKG_INSTALL_DIR) -name "*\.exe" | xargs rm -f
+	$$(call Py3Package/$(1)/install,$$(1))
 	$(SHELL) $(python3_mk_path)python-package-install.sh "3" \
 		"$(PKG_INSTALL_DIR)" "$$(1)" \
 		"$(HOST_PYTHON3_BIN)" "$$(2)" \
-		"$$$$$$$$$$(call shvar,Py3Package/$(1)/filespec)"
-  endef
+		"$$$$$$$$$$(call shvar,Py3Package/$(1)/filespec)" && \
+ 	if [ -d "$$(1)/usr/bin" ]; then \
+		$(call Py3Shebang,$$(1)/usr/bin/*) ; \
+	fi
+ endef
 
   define Package/$(1)-src/install
 	$$(call Package/$(1)/install,$$(1),sources)
@@ -112,17 +123,20 @@ define Build/Compile/Py3Mod
 		cd $(PKG_BUILD_DIR)/$(strip $(1)), \
 		./setup.py $(2), \
 		$(3))
-	find $(PKG_INSTALL_DIR) -name "*\.exe" | xargs rm -f
 endef
 
-PYTHON3_PKG_SETUP_ARGS:=--single-version-externally-managed
-PYTHON3_PKG_SETUP_VARS:=
+PYTHON3_PKG_SETUP_DIR ?=
+PYTHON3_PKG_SETUP_GLOABL_ARGS ?=
+PYTHON3_PKG_SETUP_ARGS ?= --single-version-externally-managed
+PYTHON3_PKG_SETUP_VARS ?=
 
 define Py3Build/Compile/Default
-	$(foreach pkg,$(HOST_PYTHON3_PACKAGE_BUILD_DEPENDS),
-		$(call host_python3_pip_install_host,$(pkg))
+	$(if $(HOST_PYTHON3_PACKAGE_BUILD_DEPENDS),
+		$(call Build/Compile/HostPy3PipInstall,$(HOST_PYTHON3_PACKAGE_BUILD_DEPENDS))
 	)
-	$(call Build/Compile/Py3Mod,, \
+	$(call Build/Compile/Py3Mod, \
+		$(PYTHON3_PKG_SETUP_DIR), \
+		$(PYTHON3_PKG_SETUP_GLOBAL_ARGS) \
 		install --prefix="/usr" --root="$(PKG_INSTALL_DIR)" \
 		$(PYTHON3_PKG_SETUP_ARGS), \
 		$(PYTHON3_PKG_SETUP_VARS) \
