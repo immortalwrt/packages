@@ -40,21 +40,12 @@ process_filespec() {
 	)
 }
 
-delete_empty_dirs() {
-	local dst_dir="$1"
-	if [ -d "$dst_dir/usr" ] ; then
-		find "$dst_dir/usr" -empty -type d -delete
-	fi
-}
-
 ver="$1"
 src_dir="$2"
 dst_dir="$3"
 python="$4"
 mode="$5"
 filespec="$6"
-
-find "$src_dir" -name "*.exe" -delete
 
 process_filespec "$src_dir" "$dst_dir" "$filespec" || {
 	echo "process filespec error-ed"
@@ -63,17 +54,18 @@ process_filespec "$src_dir" "$dst_dir" "$filespec" || {
 
 if [ "$mode" == "sources" ] ; then
 	# Copy only python source files
-	find "$dst_dir" -not -type d -not -name "*.py" -delete
+	find $dst_dir -not -type d -not -name "*\.py" | xargs rm -f
 
-	delete_empty_dirs "$dst_dir"
+	# Delete empty folders (if the case)
+	if [ -d "$dst_dir/usr" ] ; then
+		find $dst_dir/usr -type d | xargs rmdir --ignore-fail-on-non-empty
+		rmdir --ignore-fail-on-non-empty $dst_dir/usr
+	fi
 	exit 0
 fi
 
-if [ "$ver" == "3" ] ; then
-	legacy="-b"
-fi
-# default max recursion is 10
-max_recursion_level=20
+legacy=
+[ "$ver" == "3" ] && legacy="-b"
 
 # XXX [So that you won't goof as I did]
 # Note: Yes, I tried to use the -O & -OO flags here.
@@ -81,15 +73,19 @@ max_recursion_level=20
 #       So, we just stuck to un-optimized byte-codes,
 #       which is still way better/faster than running
 #       Python sources all the time.
-$python -m compileall -r "$max_recursion_level" $legacy -d '/' "$dst_dir" || {
+$python -m compileall $legacy -d '/' $dst_dir || {
 	echo "python -m compileall err-ed"
 	exit 1
 }
 
 # Delete source files and pyc [ un-optimized bytecode files ]
 # We may want to make this optimization thing configurable later, but not sure atm
-find "$dst_dir" -type f -name "*.py" -delete
+find $dst_dir -type f -name "*\.py" | xargs rm -f
 
-delete_empty_dirs "$dst_dir"
+# Delete empty folders (if the case)
+if [ -d "$dst_dir/usr" ] ; then
+	find $dst_dir/usr -type d | xargs rmdir --ignore-fail-on-non-empty
+	rmdir --ignore-fail-on-non-empty $dst_dir/usr
+fi
 
 exit 0

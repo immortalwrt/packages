@@ -8,17 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-pyopenssl
-PKG_VERSION:=19.0.0
+PKG_VERSION:=17.5.0
 PKG_RELEASE:=2
 
 PKG_SOURCE:=pyOpenSSL-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/p/pyOpenSSL
-PKG_HASH:=aeca66338f6de19d1aa46ed634c3b9ae519a64b458f8468aec688e7e3c20f200
+PKG_SOURCE_URL:=https://pypi.python.org/packages/3b/15/a5d90ab1a41075e8f0fae334f13452549528f82142b3b9d0c9d86ab7178c
+PKG_HASH:=2c10cfba46a52c0b0950118981d61e72c1e5b1aac451ca1bc77de1a679456773
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>, Alexandru Ardelean <ardeleanalex@gmail.com>
-PKG_CPE_ID:=cpe:/a:pyopenssl_project:pyopenssl
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-pyopenssl-$(PKG_VERSION)
 
@@ -32,26 +31,27 @@ define Package/python-pyopenssl/Default
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
-  TITLE:=OpenSSL wrapper
-  URL:=https://pyopenssl.org/
+  URL:=https://github.com/pyca/pyopenssl
 endef
 
 define Package/python-pyopenssl
 $(call Package/python-pyopenssl/Default)
+  TITLE:=python-pyopenssl
+  VARIANT:=python
   DEPENDS:= \
       +PACKAGE_python-pyopenssl:python-light \
       +PACKAGE_python-pyopenssl:python-cryptography \
       +PACKAGE_python-pyopenssl:python-six
-  VARIANT:=python
 endef
 
 define Package/python3-pyopenssl
 $(call Package/python-pyopenssl/Default)
+  TITLE:=python3-pyopenssl
+  VARIANT:=python3
   DEPENDS:= \
       +PACKAGE_python3-pyopenssl:python3-light \
       +PACKAGE_python3-pyopenssl:python3-cryptography \
       +PACKAGE_python3-pyopenssl:python3-six
-  VARIANT:=python3
 endef
 
 define Package/python-pyopenssl/description

@@ -5,17 +5,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-gnupg
-PKG_VERSION:=0.4.4
-PKG_RELEASE:=2
+PKG_VERSION:=0.4.1
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/p/python-gnupg
-PKG_HASH:=45daf020b370bda13a1429c859fcdff0b766c0576844211446f9266cae97fb0e
+PKG_SOURCE_URL:=https://pypi.python.org/packages/fc/f1/df6c06da34939f67ea622e0b31dbc5bdb5121b271ab530d151df59974425/
+PKG_HASH:=ef47b02eaf41dee3cf4b02ddf83130827318de9fe3eae89d01a3f05859e20e1a
 
-PKG_LICENSE:=GPL-3.0-or-later
+PKG_LICENSE:=GPL-3.0+
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Daniel Golle <daniel@makrotopia.org>
-PKG_CPE_ID:=cpe:/a:python-gnupg_project:python-gnupg
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-$(PKG_NAME)-$(PKG_VERSION)
 PKG_UNPACK=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
@@ -28,7 +27,7 @@ define Package/python-gnupg/Default
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
-  URL:=https://gnupg.readthedocs.io/en/latest/
+  URL:=https://github.com/isislovecruft/python-gnupg
   DEPENDS:=+gnupg
 endef
 

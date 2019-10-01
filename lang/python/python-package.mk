@@ -35,21 +35,12 @@ ifdef CONFIG_USE_MIPS16
   TARGET_CFLAGS += -mno-mips16 -mno-interlink-mips16
 endif
 
-define PyShebang
-$(SED) "1"'!'"b;s,^#"'!'".*python.*,#"'!'"/usr/bin/python2," -i --follow-symlinks $(1)
-endef
-
 define PyPackage
 
   define Package/$(1)-src
     $(call Package/$(1))
     DEPENDS:=
-    CONFLICTS:=
-    PROVIDES:=
-    EXTRA_DEPENDS:=
     TITLE+= (sources)
-    USERID:=
-    MENU:=
   endef
 
   define Package/$(1)-src/description
@@ -77,14 +68,12 @@ define PyPackage
   $(call shexport,PyPackage/$(1)/filespec)
 
   define Package/$(1)/install
-	$$(call PyPackage/$(1)/install,$$(1))
+	$(call PyPackage/$(1)/install,$$(1))
+	find $(PKG_INSTALL_DIR) -name "*\.exe" | xargs rm -f
 	$(SHELL) $(python_mk_path)python-package-install.sh "2" \
 		"$(PKG_INSTALL_DIR)" "$$(1)" \
 		"$(HOST_PYTHON_BIN)" "$$(2)" \
-		"$$$$$$$$$$(call shvar,PyPackage/$(1)/filespec)" && \
-	if [ -d "$$(1)/usr/bin" ]; then \
-		$(call PyShebang,$$(1)/usr/bin/*) ; \
-	fi
+		"$$$$$$$$$$(call shvar,PyPackage/$(1)/filespec)"
   endef
 
   define Package/$(1)-src/install
@@ -124,20 +113,17 @@ define Build/Compile/PyMod
 		cd $(PKG_BUILD_DIR)/$(strip $(1)), \
 		./setup.py $(2), \
 		$(3))
+	find $(PKG_INSTALL_DIR) -name "*\.exe" | xargs rm -f
 endef
 
-PYTHON_PKG_SETUP_DIR ?=
-PYTHON_PKG_SETUP_GLOBAL_ARGS ?=
-PYTHON_PKG_SETUP_ARGS ?= --single-version-externally-managed
-PYTHON_PKG_SETUP_VARS ?=
+PYTHON_PKG_SETUP_ARGS:=--single-version-externally-managed
+PYTHON_PKG_SETUP_VARS:=
 
 define PyBuild/Compile/Default
-	$(if $(HOST_PYTHON_PACKAGE_BUILD_DEPENDS),
-		$(call Build/Compile/HostPyPipInstall,$(HOST_PYTHON_PACKAGE_BUILD_DEPENDS))
+	$(foreach pkg,$(HOST_PYTHON_PACKAGE_BUILD_DEPENDS),
+		$(call host_python_pip_install_host,$(pkg))
 	)
-	$(call Build/Compile/PyMod, \
-		$(PYTHON_PKG_SETUP_DIR), \
-		$(PYTHON_PKG_SETUP_GLOBAL_ARGS) \
+	$(call Build/Compile/PyMod,, \
 		install --prefix="/usr" --root="$(PKG_INSTALL_DIR)" \
 		$(PYTHON_PKG_SETUP_ARGS), \
 		$(PYTHON_PKG_SETUP_VARS) \

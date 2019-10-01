@@ -8,60 +8,41 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-urllib3
-PKG_VERSION:=1.25.6
+PKG_VERSION:=1.22
 PKG_RELEASE:=1
-
-PKG_MAINTAINER:=Josef Schlehofer <pepe.schlehofer@gmail.com>
 PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE.txt
-PKG_CPE_ID:=cpe:/a:urllib3_project:urllib3
 
 PKG_SOURCE:=urllib3-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/u/urllib3
-PKG_HASH:=9a107b99a5393caf59c7aa3c1249c16e6879447533d0887f4336dde834c7be86
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-urllib3-$(PKG_VERSION)
+PKG_BUILD_DIR:=$(BUILD_DIR)/urllib3-$(PKG_VERSION)/
+PKG_SOURCE_URL:=https://pypi.python.org/packages/ee/11/7c59620aceedcc1ef65e156cc5ce5a24ef87be4107c2b74458464e437a5d/
+PKG_HASH:=cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f
 
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
-include ../python3-package.mk
 
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-
-define Package/python-urllib3/Default
+define Package/python-urllib3
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Sanity-friendly HTTP client
+  MAINTAINER:=Gergely Kiss <mail.gery@gmail.com>
+  TITLE:=HTTP library with thread-safe connection pooling, file post, and more.
   URL:=https://urllib3.readthedocs.io/
-endef
-
-define Package/python-urllib3
-$(call Package/python-urllib3/Default)
-  DEPENDS:=+PACKAGE_python-urllib3:python
-  VARIANT:=python
+  DEPENDS:=+python
 endef
 
 define Package/python-urllib3/description
   HTTP library with thread-safe connection pooling, file post, and more.
 endef
 
-define Package/python3-urllib3
-$(call Package/python-urllib3/Default)
-  DEPENDS:=+PACKAGE_python3-urllib3:python3
-  VARIANT:=python3
+define Build/Compile
+	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
 endef
 
-define Package/python3-urllib3/description
-$(call Package/python-urllib3/description)
-.
-(Variant for Python3)
+define Package/python-urllib3/install
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
+	    $(1)$(PYTHON_PKG_DIR)
 endef
 
-$(eval $(call PyPackage,python-urllib3))
 $(eval $(call BuildPackage,python-urllib3))
-$(eval $(call BuildPackage,python-urllib3-src))
-
-$(eval $(call Py3Package,python3-urllib3))
-$(eval $(call BuildPackage,python3-urllib3))
-$(eval $(call BuildPackage,python3-urllib3-src))

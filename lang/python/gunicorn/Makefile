@@ -8,113 +8,45 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gunicorn
-PKG_VERSION:=19.9.0
-PKG_RELEASE=2
+PKG_VERSION:=19.7.1
+PKG_RELEASE=1
+PKG_LICENSE:=MIT
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/g/gunicorn
-PKG_HASH:=fa2662097c66f920f53f70621c6c58ca4a3c4d3434205e608e121b5b3b71f4f3
-
-PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_URL:=https://pypi.python.org/packages/30/3a/10bb213cede0cc4d13ac2263316c872a64bf4c819000c8ccd801f1d5f822/
+PKG_HASH:=eee1169f0ca667be05db3351a0960765620dad53f53434262ff8901b68a1b622
 
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
-include ../python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-
-define Package/gunicorn/Default
-  SUBMENU:=Python
-  SECTION:=lang
-  CATEGORY:=Languages
-  TITLE:=WSGI HTTP Server for UNIX
-  URL:=https://gunicorn.org
-endef
-
-define Package/python-gunicorn
-$(call Package/gunicorn/Default)
-  DEPENDS:=+python
-  VARIANT:=python
-endef
-
-define Package/python-gunicorn/description
-    WSGI HTTP Server for UNIX (libraries)
-endef
-
-define PyPackage/python-gunicorn/filespec
-+|$(PYTHON_PKG_DIR)
--|$(PYTHON_PKG_DIR)/gunicorn/workers/_gaiohttp.py
-endef
-
-define Package/python3-gunicorn
-$(call Package/gunicorn/Default)
-  DEPENDS:=+python3
-  VARIANT:=python3
-endef
-
-define Package/python3-gunicorn/description
-$(call define Package/python-gunicorn/description)
-.
-(Variant for Python3)
-endef
-
-# Make sure that the binaries are not installed with the libraries
-# That means adding some empty Py[3]Package/gunicorn[3]/install rules
-define PyPackage/python-gunicorn/install
-	:
-endef
-
-define Py3Package/python3-gunicorn/install
-	:
-endef
 
 define Package/gunicorn
-$(call Package/gunicorn/Default)
-  DEPENDS:=+python +python-pkg-resources +python-gunicorn
+    SUBMENU:=Python
+    SECTION:=lang
+    CATEGORY:=Languages
+    TITLE:=WSGI HTTP Server for UNIX
+    MAINTAINER:=Gergely Kiss <mail.gery@gmail.com>
+    URL:=http://gunicorn.org/
+    DEPENDS:=+python +python-setuptools
 endef
 
 define Package/gunicorn/description
-    WSGI HTTP Server for UNIX (daemon)
+    WSGI HTTP Server for UNIX
+endef
+
+define Build/Compile
+	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
 endef
 
 define Package/gunicorn/install
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/bin/
-	$(call PyShebang,$(1)/usr/bin/*)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
+	    $(1)$(PYTHON_PKG_DIR)
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/gunicorn* \
+	    $(1)/usr/bin
+	# fix python exec path in scripts
+	$(SED) 's/#!.*/#!\/usr\/bin\/python/g' $(1)/usr/bin/gunicorn*
 endef
 
-define Package/gunicorn3
-$(call Package/gunicorn/Default)
-  DEPENDS:=+python3 +python3-pkg-resources +python3-gunicorn
-endef
-
-define Package/gunicorn3/description
-$(call define Package/gunicorn/description)
-.
-(Variant for Python3)
-endef
-
-define Package/gunicorn3/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) \
-		$(PKG_INSTALL_DIR)/usr/bin/gunicorn \
-		$(1)/usr/bin/gunicorn3
-	$(INSTALL_BIN) \
-		$(PKG_INSTALL_DIR)/usr/bin/gunicorn_paster \
-		$(1)/usr/bin/gunicorn3_paster
-	$(call Py3Shebang,$(1)/usr/bin/*)
-endef
-
-$(eval $(call PyPackage,python-gunicorn))
-$(eval $(call BuildPackage,python-gunicorn))
-$(eval $(call BuildPackage,python-gunicorn-src))
 $(eval $(call BuildPackage,gunicorn))
-
-$(eval $(call Py3Package,python3-gunicorn))
-$(eval $(call BuildPackage,python3-gunicorn))
-$(eval $(call BuildPackage,python3-gunicorn-src))
-$(eval $(call BuildPackage,gunicorn3))

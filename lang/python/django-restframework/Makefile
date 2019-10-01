@@ -8,65 +8,41 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=django-restframework
-PKG_VERSION:=3.9.0
-PKG_RELEASE:=4
+PKG_VERSION:=3.7.1
+PKG_RELEASE:=1
+PKG_LICENSE:=BSD-3-Clause
 
 PKG_SOURCE:=djangorestframework-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/d/djangorestframework
-PKG_HASH:=607865b0bb1598b153793892101d881466bd5a991de12bd6229abb18b1c86136
-
-PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
-PKG_LICENSE:=BSD-3-Clause
-PKG_LICENSE_FILES:=LICENSE.md
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_URL:=https://pypi.python.org/packages/d0/ab/8b991e7d3e26af7cf6327c84b341e60004fc56325d8a4d4019e1474f7456/
+PKG_BUILD_DIR:=$(BUILD_DIR)/djangorestframework-$(PKG_VERSION)
+PKG_HASH:=305b2c6564ca46d3b558ba21110ed717135c467adf1a6dfd192bd85f4bb04d50
 
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
-include ../python3-package.mk
 
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-
-define Package/$(PKG_NAME)/Default
+define Package/django-restframework
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
+  MAINTAINER:=Gergely Kiss <mail.gery@gmail.com>
   TITLE:=Web APIs for Django, made easy.
-  URL:=https://www.django-rest-framework.org
+  URL:=http://www.django-rest-framework.org/
+  DEPENDS:=+python +django
 endef
 
-define Package/python-$(PKG_NAME)
-$(call Package/$(PKG_NAME)/Default)
-  DEPENDS:= \
-	+PACKAGE_python-$(PKG_NAME):python \
-	python-django
-  VARIANT:=python
-  MDEPENDS:=python-django
-endef
-
-define Package/python-$(PKG_NAME)/description
+define Package/django-restframework/description
   Web APIs for Django, made easy.
 endef
 
-define Package/python3-$(PKG_NAME)
-$(call Package/$(PKG_NAME)/Default)
-  DEPENDS:= \
-	+PACKAGE_python3-$(PKG_NAME):python3 \
-	python3-django
-  VARIANT:=python3
-  MDEPENDS:=python3-django
+define Build/Compile
+	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
 endef
 
-define Package/python3-$(PKG_NAME)/description
-$(call define Package/python-$(PKG_NAME)/description)
-.
-(Variant for Python3)
+define Package/django-restframework/install
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
+	    $(1)$(PYTHON_PKG_DIR)
 endef
 
-$(eval $(call PyPackage,python-$(PKG_NAME)))
-$(eval $(call BuildPackage,python-$(PKG_NAME)))
-$(eval $(call BuildPackage,python-$(PKG_NAME)-src))
-
-$(eval $(call Py3Package,python3-$(PKG_NAME)))
-$(eval $(call BuildPackage,python3-$(PKG_NAME)))
-$(eval $(call BuildPackage,python3-$(PKG_NAME)-src))
+$(eval $(call BuildPackage,django-restframework))
