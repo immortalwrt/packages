@@ -54,7 +54,15 @@ endef
 
 # Make binary smaller
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
-TARGET_LDFLAGS += -Wl,--gc-sections
+TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
+
+ifdef CONFIG_USE_UCLIBC
+	TARGET_CFLAGS += -D'valloc(a)=aligned_alloc(getpagesize(),a)'
+endif
+
+define Package/zerotier/conffiles
+/etc/config/zerotier
+endef
 
 ifdef CONFIG_USE_UCLIBC
 	TARGET_CFLAGS += -D'valloc(a)=aligned_alloc(getpagesize(),a)'
