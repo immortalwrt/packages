@@ -11,9 +11,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=boost
+<<<<<<< HEAD
 PKG_VERSION:=1.70.0
 PKG_SOURCE_VERSION:=1_70_0
 PKG_RELEASE:=7
+=======
+PKG_VERSION:=1.69.0
+PKG_SOURCE_VERSION:=1_69_0
+PKG_RELEASE:=3
+>>>>>>> 7d5e905dacce4fe412efc1cfee0b0c1eb365eb8c
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_SOURCE_VERSION).tar.bz2
 PKG_SOURCE_URL:=@SF/$(PKG_NAME)/$(PKG_NAME)/$(PKG_VERSION) https://dl.bintray.com/boostorg/release/$(PKG_VERSION)/source/
@@ -25,6 +31,12 @@ PKG_LICENSE_FILES:=LICENSE_1_0.txt
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)_$(PKG_SOURCE_VERSION)
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)_$(PKG_SOURCE_VERSION)
+<<<<<<< HEAD
+=======
+PKG_HASH:=8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
+PKG_LICENSE:=Boost Software License <http://www.boost.org/users/license.html>
+PKG_MAINTAINER:=Carlos M. Ferreira <carlosmf.pt@gmail.com>
+>>>>>>> 7d5e905dacce4fe412efc1cfee0b0c1eb365eb8c
 
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
@@ -41,7 +53,11 @@ define Package/boost/Default
 endef
 
 define Package/boost/description
+<<<<<<< HEAD
 This package provides the Boost v1.70.0 libraries.
+=======
+This package provides the Boost v1.69.0 libraries.
+>>>>>>> 7d5e905dacce4fe412efc1cfee0b0c1eb365eb8c
 Boost is a set of free, peer-reviewed, portable C++ source libraries.
 
 -----------------------------------------------------------------------------
@@ -87,7 +103,11 @@ This package provides the following run-time libraries:
  - wave
 
 There are many more header-only libraries supported by Boost.
+<<<<<<< HEAD
 See more at http://www.boost.org/doc/libs/1_70_0/
+=======
+See more at http://www.boost.org/doc/libs/1_69_0/
+>>>>>>> 7d5e905dacce4fe412efc1cfee0b0c1eb365eb8c
 endef
 
 PKG_BUILD_DEPENDS:=boost/host PACKAGE_python:python PACKAGE_python3:python3
@@ -145,17 +165,28 @@ define Package/boost/config
 						 cannot be redefined by another shared library or executable. This mode is
 						 not supported on some platforms, for example OS X.
 					-> Hidden:
+<<<<<<< HEAD
 						- Hidden symbols are not exported from shared libraries and cannot be
+=======
+						- Hidden symbols are not exported from shared libraries and cannot be 
+>>>>>>> 7d5e905dacce4fe412efc1cfee0b0c1eb365eb8c
 						 redefined by a different shared library or executable loaded in a process.
 						 In this mode, public symbols have to be explicitly marked in the source code
 						 to be exported from shared libraries. This is the recommended mode.
 
 			config boost-compile-visibility-global
 				bool "Global"
+<<<<<<< HEAD
 
 			config boost-compile-visibility-protected
 				bool "Protected"
 
+=======
+			
+			config boost-compile-visibility-protected
+				bool "Protected"
+			
+>>>>>>> 7d5e905dacce4fe412efc1cfee0b0c1eb365eb8c
 			config boost-compile-visibility-hidden
 				bool "Hidden"
 		endchoice
@@ -507,8 +538,13 @@ define Build/InstallDev
 		# copies _all_ header files - independent of <--with-library>-argument above
 
 	$(INSTALL_DIR) $(1)/usr/lib
+<<<<<<< HEAD
 	# copies all cmake files, compiled archive and shared object files
 	$(CP) -v $(PKG_INSTALL_DIR)/lib/{*.{a,so*},cmake} $(1)/usr/lib/ || :
+=======
+	# copies all compiled archive and shared object files
+	$(CP) -v $(PKG_INSTALL_DIR)/lib/*.{a,so*} $(1)/usr/lib/ || :
+>>>>>>> 7d5e905dacce4fe412efc1cfee0b0c1eb365eb8c
 endef
 
 define Host/Install

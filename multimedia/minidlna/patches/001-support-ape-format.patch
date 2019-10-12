@@ -1,0 +1,47 @@
+diff -uNr a/metadata.c b/metadata.c
+--- a/metadata.c
++++ b/metadata.c
+@@ -330,6 +330,11 @@
+ 		strcpy(type, "flc");
+ 		m.mime = strdup("audio/x-flac");
+ 	}
++	else if( ends_with(path, ".ape") )
++	{
++		strcpy(type, "ape");
++		m.mime = strdup("audio/x-ape");
++	}
+ 	else if( ends_with(path, ".wav") )
+ 	{
+ 		strcpy(type, "wav");
+diff -uNr a/upnpglobalvars.h b/upnpglobalvars.h
+--- a/upnpglobalvars.h
++++ b/upnpglobalvars.h
+@@ -165,6 +165,7 @@
+ 	"http-get:*:audio/mp4:*," \
+ 	"http-get:*:audio/x-wav:*," \
+ 	"http-get:*:audio/x-flac:*," \
++	"http-get:*:audio/x-ape:*," \
+ 	"http-get:*:application/ogg:*"
+ 
+ #define DLNA_FLAG_DLNA_V1_5      0x00100000
+diff -uNr a/utils.c b/utils.c
+--- a/utils.c
++++ b/utils.c
+@@ -339,6 +339,8 @@
+ 				return "flac";
+ 			else if( strcmp(mime+6, "flac") == 0 )
+ 				return "flac";
++			else if( strcmp(mime+6, "ape") == 0 )
++				return "ape";
+ 			else if( strcmp(mime+6, "x-wav") == 0 )
+ 				return "wav";
+ 			else if( strncmp(mime+6, "L16", 3) == 0 )
+@@ -410,7 +412,7 @@
+ {
+ 	return (ends_with(file, ".mp3") || ends_with(file, ".flac") ||
+ 		ends_with(file, ".wma") || ends_with(file, ".asf")  ||
+-		ends_with(file, ".fla") || ends_with(file, ".flc")  ||
++		ends_with(file, ".fla") || ends_with(file, ".flc")  || ends_with(file, ".ape")  ||
+ 		ends_with(file, ".m4a") || ends_with(file, ".aac")  ||
+ 		ends_with(file, ".mp4") || ends_with(file, ".m4p")  ||
+ 		ends_with(file, ".wav") || ends_with(file, ".ogg")  ||

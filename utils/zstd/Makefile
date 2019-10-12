@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zstd
-PKG_VERSION:=1.4.2
+PKG_VERSION:=1.4.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/facebook/zstd/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=7a6e1dad34054b35e2e847eb3289be8820a5d378228802239852f913c6dcf6a7
+PKG_HASH:=5eda3502ecc285c3c92ee0cc8cd002234dee39d539b3f692997a0e80de1d33de
 
 PKG_MAINTAINER:=Amol Bhave <ambhave@fb.com>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -67,6 +67,12 @@ endif
 
 TARGET_CFLAGS += -flto
 TARGET_LDFLAGS += -Wl,--as-needed
+
+define Build/InstallDev
+	$(call Build/InstallDev/cmake,$(1))
+	$(SED) 's,/usr/include,$$$${prefix}/include,g' $(1)/usr/lib/pkgconfig/libzstd.pc
+	$(SED) 's,/usr/lib,$$$${prefix}/lib,g' $(1)/usr/lib/pkgconfig/libzstd.pc
+endef
 
 define Package/libzstd/install
 	$(INSTALL_DIR) $(1)/usr/lib
