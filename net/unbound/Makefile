@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=unbound
-PKG_VERSION:=1.9.2
+PKG_VERSION:=1.9.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nlnetlabs.nl/downloads/unbound
-PKG_HASH:=6f7acec5cf451277fcda31729886ae7dd62537c4f506855603e3aa153fcb6b95
+PKG_HASH:=3d3e25fb224025f0e732c7970e5676f53fd1764c16d6a01be073a13e42954bb0
 
 PKG_MAINTAINER:=Eric Luehrsen <ericluehrsen@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
@@ -176,8 +176,6 @@ define Package/unbound-daemon/conffiles
 /etc/unbound/unbound.conf
 /etc/unbound/unbound_ext.conf
 /etc/unbound/unbound_srv.conf
-/etc/unbound/accelerated-domains.china.unbound.conf
-/etc/unbound/named.cache
 endef
 
 Package/unbound-daemon-heavy/conffiles = $(Package/unbound-daemon/conffiles)
@@ -203,8 +201,6 @@ define Package/unbound-daemon/install
 	$(INSTALL_DATA) ./files/root.key $(1)/etc/unbound/root.key
 	$(INSTALL_DATA) ./files/unbound_ext.conf $(1)/etc/unbound/unbound_ext.conf
 	$(INSTALL_DATA) ./files/unbound_srv.conf $(1)/etc/unbound/unbound_srv.conf
-	$(INSTALL_DATA) ./files/accelerated-domains.china.unbound.conf $(1)/etc/unbound/accelerated-domains.china.unbound.conf
-	$(INSTALL_DATA) ./files/named.cache $(1)/etc/unbound/named.cache
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DATA) ./files/unbound.uci $(1)/etc/config/unbound
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/ntp
