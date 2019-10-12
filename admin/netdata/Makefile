@@ -8,18 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netdata
-PKG_VERSION:=1.14.0
+PKG_VERSION:=1.17.1
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Josef Schlehofer <pepe.schlehofer@gmail.com>, Daniel Engberg <daniel.engberg.lists@pyret.net>
-PKG_LICENSE:=GPL-3.0+
+PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=COPYING
 PKG_CPE_ID:=cpe:/a:my-netdata:netdata
 
 PKG_SOURCE:=$(PKG_NAME)-v$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/netdata/netdata/releases/download/v$(PKG_VERSION)
-PKG_HASH:=f3768f6927e3712dce73794c6943a12f4454410c872eb3dfd19af4f52296187a
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-v$(PKG_VERSION)
+PKG_SOURCE_URL:=https://codeload.github.com/netdata/netdata/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=032f9001e2b7f774989a200519feeafa3a4d9b7c9e8fb0cfa43e68a8da6ad1bf
 
 PKG_INSTALL:=1
 PKG_FIXUP:=autoreconf
@@ -30,9 +29,9 @@ include $(INCLUDE_DIR)/package.mk
 define Package/netdata
   SECTION:=admin
   CATEGORY:=Administration
-  DEPENDS:=+zlib +libuuid +libmnl
+  DEPENDS:=+zlib +libuuid +libmnl +libjson-c
   TITLE:=Real-time performance monitoring tool
-  URL:=https://my-netdata.io/
+  URL:=https://www.netdata.cloud/
 endef
 
 define Package/netdata/description
@@ -53,7 +52,14 @@ CONFIGURE_ARGS += \
 	--disable-x86-sse \
 	--enable-lto \
 	--without-libcap \
-	--disable-plugin-nfacct
+	--disable-https \
+	--disable-dbengine \
+	--disable-plugin-nfacct \
+	--disable-plugin-freeipmi \
+	--disable-plugin-cups \
+	--disable-plugin-xenstat \
+	--disable-backend-prometheus-remote-write \
+	--enable-jsonc
 
 define Package/netdata/conffiles
 /etc/netdata/
@@ -63,6 +69,7 @@ define Package/netdata/install
 	$(INSTALL_DIR) $(1)/etc/netdata/custom-plugins.d
 	$(CP) $(PKG_INSTALL_DIR)/etc/netdata $(1)/etc
 	$(CP) ./files/netdata.conf $(1)/etc/netdata
+	touch $(1)/etc/netdata/.opt-out-from-anonymous-statistics
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/netdata $(1)/usr/lib
 	$(CP) $(1)/usr/lib/netdata/conf.d/fping.conf $(1)/etc
