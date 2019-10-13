@@ -88,7 +88,6 @@ define Package/transmission-web
   PKGARCH:=all
 endef
 
-
 define Package/transmission-daemon/Default/description
  Transmission is a simple BitTorrent client.
  It features a very simple, intuitive interface
