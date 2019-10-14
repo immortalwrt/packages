@@ -8,24 +8,30 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libseccomp
-PKG_VERSION:=2.2.1
+PKG_VERSION:=2.4.1
 PKG_RELEASE:=1
 PKG_USE_MIPS16:=0
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/seccomp/libseccomp/releases/download/v$(PKG_VERSION)/
-PKG_HASH:=0ba1789f54786c644af54cdffc9fd0dd0a8bb2b2ee153933f658855d2851a740
+PKG_HASH:=1ca3735249af66a1b2f762fe6e710fcc294ad7185f1cc961e5bd83f9988006e8
 PKG_MAINTAINER:=Nikos Mavrogiannopoulos <nmav@gnutls.org>
+PKG_CPE_ID:=cpe:/a:libseccomp_project:libseccomp
 
+PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 PKG_LIBTOOL_PATHS:=. lib
-PKG_CHECK_FORMAT_SECURITY:=0
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_KERNEL_SECCOMP
 
 include $(INCLUDE_DIR)/package.mk
 
+# This is done instead of DEPENDS:=@!arc to avoid a recursive dependency when
+# the library is conditionally selected by util/lxc.
+define Package/libseccomp/config
+  depends on !arc
+endef
 
 define Package/libseccomp/Default
   SUBMENU:=
@@ -46,7 +52,12 @@ endef
 define Package/libseccomp
 $(call Package/libseccomp/Default)
   TITLE+= (library)
-  DEPENDS+=
+endef
+
+define Package/scmp_sys_resolver
+$(call Package/libseccomp/Default)
+  TITLE+= scmp_sys_resolver
+  DEPENDS+= libseccomp
 endef
 
 define Package/libseccomp/description
@@ -71,4 +82,10 @@ define Package/libseccomp/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libseccomp.so.* $(1)/usr/lib/
 endef
 
+define Package/scmp_sys_resolver/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/scmp_sys_resolver $(1)/usr/bin/
+endef
+
 $(eval $(call BuildPackage,libseccomp))
+$(eval $(call BuildPackage,scmp_sys_resolver))
