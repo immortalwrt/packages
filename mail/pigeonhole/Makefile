@@ -8,23 +8,25 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dovecot-pigeonhole
-PKG_VERSION_PLUGIN:=0.4.21
+PKG_VERSION_PLUGIN:=0.5.8
 PKG_VERSION_DOVECOT:=$(shell make --no-print-directory -C ../dovecot/ val.PKG_VERSION V=s)
 PKG_VERSION:=$(PKG_VERSION_DOVECOT)-$(PKG_VERSION_PLUGIN)
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
-DOVECOT_VERSION:=2.2
+DOVECOT_VERSION:=2.3
 
 PKG_SOURCE:=dovecot-$(DOVECOT_VERSION)-pigeonhole-$(PKG_VERSION_PLUGIN).tar.gz
 PKG_SOURCE_URL:=https://pigeonhole.dovecot.org/releases/$(DOVECOT_VERSION)
-PKG_HASH:=4ae09cb788c5334d167f5a89ee70b0616c3231e5904ad258ce408e4953cfdd6a
-PKG_LICENSE:=LGPL-2.1
+PKG_HASH:=8fb860d50c1b1a09aea9e25f8ee89c22e34ecedfb0e11a1c48a7f67310759022
+PKG_LICENSE:=LGPL-2.1-or-later
 PKG_LICENSE_FILES:=COPYING COPYING.LGPL
+PKG_CPE_ID:=cpe:/a:dovecot:pigeonhole
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/dovecot-$(DOVECOT_VERSION)-pigeonhole-$(PKG_VERSION_PLUGIN)
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/dovecot-pigeonhole
   SECTION:=mail
@@ -49,9 +51,10 @@ CONFIGURE_VARS += \
   CPPFLAGS="$(TARGET_CPPFLAGS) -I$(STAGING_DIR)/usr/include/dovecot/"
 
 define Package/dovecot-pigeonhole/install
-	$(INSTALL_DIR) $(1)/usr/bin $(1)/usr/lib/dovecot/
+	$(INSTALL_DIR) $(1)/usr/bin $(1)/usr/lib/dovecot/ $(1)/usr/libexec/dovecot/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/bin/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/dovecot/* $(1)/usr/lib/dovecot/
+	$(CP) $(PKG_INSTALL_DIR)/usr/libexec/dovecot/* $(1)/usr/libexec/dovecot/
 	find $(1)/usr/lib/dovecot/ -name "*.a" -o -name "*.la" | xargs rm
 endef
 
