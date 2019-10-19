@@ -16,46 +16,40 @@ directly, and to do so it needs the full path of the daemon.
  delete mode 100644 obexd/src/org.bluez.obex.service
  create mode 100644 obexd/src/org.bluez.obex.service.in
 
-diff --git a/Makefile.obexd b/Makefile.obexd
-index 3760867..142e7c3 100644
---- a/Makefile.obexd
-+++ b/Makefile.obexd
-@@ -2,12 +2,12 @@
+Index: bluez-5.51/Makefile.obexd
+===================================================================
+--- bluez-5.51.orig/Makefile.obexd
++++ bluez-5.51/Makefile.obexd
+@@ -1,12 +1,12 @@
  if SYSTEMD
- systemduserunitdir = @SYSTEMD_USERUNITDIR@
+ systemduserunitdir = $(SYSTEMD_USERUNITDIR)
  systemduserunit_DATA = obexd/src/obex.service
 +endif
  
- dbussessionbusdir = @DBUS_SESSIONBUSDIR@
+ dbussessionbusdir = $(DBUS_SESSIONBUSDIR)
  dbussessionbus_DATA = obexd/src/org.bluez.obex.service
 -endif
  
 -EXTRA_DIST += obexd/src/obex.service.in obexd/src/org.bluez.obex.service
 +EXTRA_DIST += obexd/src/obex.service.in obexd/src/org.bluez.obex.service.in
  
- obex_plugindir = $(libdir)/obex/plugins
+ if OBEX
  
-diff --git a/obexd/src/org.bluez.obex.service b/obexd/src/org.bluez.obex.service
-deleted file mode 100644
-index a538088..0000000
---- a/obexd/src/org.bluez.obex.service
+Index: bluez-5.51/obexd/src/org.bluez.obex.service
+===================================================================
+--- bluez-5.51.orig/obexd/src/org.bluez.obex.service
 +++ /dev/null
 @@ -1,4 +0,0 @@
 -[D-BUS Service]
 -Name=org.bluez.obex
 -Exec=/bin/false
 -SystemdService=dbus-org.bluez.obex.service
-diff --git a/obexd/src/org.bluez.obex.service.in b/obexd/src/org.bluez.obex.service.in
-new file mode 100644
-index 0000000..9c815f2
+Index: bluez-5.51/obexd/src/org.bluez.obex.service.in
+===================================================================
 --- /dev/null
-+++ b/obexd/src/org.bluez.obex.service.in
++++ bluez-5.51/obexd/src/org.bluez.obex.service.in
 @@ -0,0 +1,4 @@
 +[D-BUS Service]
 +Name=org.bluez.obex
 +Exec=@libexecdir@/obexd
 +SystemdService=dbus-org.bluez.obex.service
--- 
-1.8.3.1
-
-
