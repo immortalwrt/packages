@@ -44,7 +44,7 @@ define Package/docker-ce
   CATEGORY:=Utilities
   TITLE:=Docker Community Edition
   URL:=https://www.docker.com/
-  DEPENDS:=$(GO_ARCH_DEPENDS) @TARGET_x86_64 +btrfs-progs +ca-certificates +cgroupfs-mount +containerd +libdevmapper +libnetwork +tini \
+  DEPENDS:=$(GO_ARCH_DEPENDS) @HAS_FPU @TARGET_x86_64||arm||aarch64 +btrfs-progs +ca-certificates +cgroupfs-mount +containerd +libdevmapper +libnetwork +tini \
            +DOCKER_SECCOMP:libseccomp +iptables-mod-extra +kmod-br-netfilter +kmod-ikconfig +kmod-nf-conntrack-netlink +kmod-nf-ipvs +kmod-veth
   USERID:=docker:docker
   MENU:=1

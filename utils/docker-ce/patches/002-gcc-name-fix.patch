@@ -1,0 +1,25 @@
+Index: docker-ce-18.09.0/components/engine/hack/make/.binary
+===================================================================
+--- a/components/engine/hack/make/.binary
++++ b/components/engine/hack/make/.binary
+@@ -54,17 +54,17 @@
+ 				export CGO_ENABLED=1
+ 				;;
+ 			7)
+-				export CC=arm-linux-gnueabihf-gcc
++				export CC=arm-openwrt-linux-gcc
+ 				export CGO_ENABLED=1
+ 				;;
+ 			esac
+ 			;;
+ 		linux/arm64)
+-			export CC=aarch64-linux-gnu-gcc
++			export CC=aarch64-openwrt-linux-gcc
+ 			export CGO_ENABLED=1
+ 			;;
+ 		linux/amd64)
+-			export CC=x86_64-linux-gnu-gcc
++			export CC=x86_64-openwrt-linux-gcc
+ 			export CGO_ENABLED=1
+ 			;;
+ 	esac

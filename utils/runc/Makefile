@@ -42,7 +42,7 @@ define Package/runc
   CATEGORY:=Utilities
   TITLE:=runc container runtime
   URL:=https://www.opencontainers.org/
-  DEPENDS:=$(GO_ARCH_DEPENDS) @TARGET_x86_64 +RUNC_SECCOMP:libseccomp
+  DEPENDS:=$(GO_ARCH_DEPENDS) @HAS_FPU @TARGET_x86_64||arm||aarch64 +RUNC_SECCOMP:libseccomp
   MENU:=1
 endef
 
