@@ -248,7 +248,7 @@ $(call Package/ffmpeg/Default)
  SECTION:=multimedia
  CATEGORY:=Multimedia
  TITLE+= program
- DEPENDS+= +libffmpeg-full +libopenssl +libcrypto +libssl
+ DEPENDS+= +libffmpeg-full +libopenssl +openssl-util
  VARIANT:=full
 endef
 
