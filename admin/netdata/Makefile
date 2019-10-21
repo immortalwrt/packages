@@ -49,7 +49,6 @@ TARGET_LDFLAGS += -Wl,--gc-sections
 CONFIGURE_ARGS += \
 	--with-zlib \
 	--with-math \
-	--disable-x86-sse \
 	--enable-lto \
 	--without-libcap \
 	--disable-https \
@@ -60,6 +59,10 @@ CONFIGURE_ARGS += \
 	--disable-plugin-xenstat \
 	--disable-backend-prometheus-remote-write \
 	--enable-jsonc
+
+ifneq ($(ARCH),x86_64)
+	CONFIGURE_ARGS += --disable-x86-sse
+endif
 
 define Package/netdata/conffiles
 /etc/netdata/
