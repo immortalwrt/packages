@@ -326,7 +326,7 @@ $(call Package/ffmpeg/Default)
  SECTION:=libs
  CATEGORY:=Libraries
  TITLE+= libraries
- DEPENDS+= +libpthread +zlib +libbz2
+ DEPENDS+= +libpthread +zlib +libbz2 +libopenssl
  PROVIDES:= libffmpeg
 endef
 
