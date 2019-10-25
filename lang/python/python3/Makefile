@@ -19,7 +19,7 @@ PKG_VERSION:=$(PYTHON_VERSION).$(PYTHON_VERSION_MICRO)
 
 PKG_SOURCE:=Python-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.python.org/ftp/python/$(PKG_VERSION)
-PKG_HASH:=fb799134b868199930b75f26678f18932214042639cd52b16da7fd134cd9b13f
+PKG_HASH:=b356244e13fb5491da890b35b13b2118c3122977c2cd825e3eb6e7d462030d84
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>, Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=Python/2.0
@@ -41,6 +41,7 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/Python-$(PKG_VERSION)
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/Python-$(PKG_VERSION)
 
 PKG_CONFIG_DEPENDS:= \
+	CONFIG_PACKAGE_python3-pkg-resources \
 	CONFIG_PACKAGE_python3-setuptools CONFIG_PACKAGE_python3-pip \
 	CONFIG_PYTHON3_BLUETOOTH_SUPPORT
 
@@ -128,8 +129,7 @@ endef
 
 MAKE_FLAGS+=\
 	CROSS_COMPILE=yes \
-	LD="$(TARGET_CC)" \
-	PGEN=pgen3
+	LD="$(TARGET_CC)"
 
 EXTRA_CFLAGS+= \
 	-DNDEBUG -fno-inline
@@ -172,6 +172,14 @@ define Build/Prepare
 endef
 
 ifdef CONFIG_PACKAGE_python3-setuptools
+PYTHON3_SETUPTOOLS_BUILD:=1
+endif
+
+ifdef CONFIG_PACKAGE_python3-pkg-resources
+PYTHON3_SETUPTOOLS_BUILD:=1
+endif
+
+ifeq ($(PYTHON3_SETUPTOOLS_BUILD),1)
 define Build/Compile/python3-setuptools
 	$(HOST_PYTHON3_PIP) \
 		--disable-pip-version-check \
@@ -285,11 +293,16 @@ define Py3Package/python3/filespec
 endef
 
 HOST_LDFLAGS += \
-	$$$$(pkg-config --static --libs libcrypto libssl) -Wl$(comma)-rpath=$(STAGING_DIR_HOSTPKG)/lib
+	-Wl$(comma)-rpath$(comma)$(STAGING_DIR_HOSTPKG)/lib
 
 ifeq ($(HOST_OS),Linux)
 HOST_LDFLAGS += \
 	-Wl,--no-as-needed -lrt
+endif
+
+ifeq ($(HOST_OS),Darwin)
+HOST_CONFIGURE_VARS += \
+	ac_cv_header_libintl_h=no
 endif
 
 HOST_CONFIGURE_ARGS+= \
@@ -308,7 +321,7 @@ define Host/Configure
 endef
 
 define Host/Compile
-	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) python Parser/pgen
+	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) python
 	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) sharedmods
 endef
 
@@ -330,8 +343,6 @@ define Host/Install
 			$(HOST_PYTHON3_PKG_DIR)/.pip_installed_*
 	)
 	$(MAKE) -C $(HOST_BUILD_DIR) install
-	$(INSTALL_DIR) $(HOST_PYTHON3_DIR)/bin/
-	$(INSTALL_BIN) $(HOST_BUILD_DIR)/Parser/pgen $(HOST_PYTHON3_DIR)/bin/pgen3
 	$(if $(wildcard $(HOST_PYTHON3_PKG_DIR)/.setuptools_installed_$(PYTHON3_SETUPTOOLS_VERSION)-$(PYTHON3_SETUPTOOLS_PKG_RELEASE)),,
 		$(call HostPatchDir,$(HOST_PYTHON3_PKG_DIR),./patches-setuptools,)
 		touch $(HOST_PYTHON3_PKG_DIR)/.setuptools_installed_$(PYTHON3_SETUPTOOLS_VERSION)-$(PYTHON3_SETUPTOOLS_PKG_RELEASE)
