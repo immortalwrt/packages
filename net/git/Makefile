@@ -8,16 +8,18 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=git
-PKG_VERSION:=2.16.3
+PKG_VERSION:=2.23.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/software/scm/git/
-PKG_HASH:=d65d99e9e5b081c1f14ea018973806e942a2eb7d0da2ebc01bd2525adee62d48
+PKG_HASH:=234fa05b6839e92dc300b2dd78c92ec9c0c8d439f65e1d430a7034f60af16067
 
 PKG_INSTALL:=1
-PKG_BUILD_PARALLEL:=1
 PKG_FIXUP:=autoreconf
+PKG_BUILD_PARALLEL:=1
+
+PKG_CPE_ID:=cpe:/a:git:git
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -26,7 +28,7 @@ define Package/git/Default
   CATEGORY:=Network
   SUBMENU:=Version Control Systems
   DEPENDS:=+libopenssl +libpthread +librt +zlib
-  URL:=http://git-scm.com
+  URL:=https://git-scm.com
   MAINTAINER:=Peter Wagner <tripolar@gmx.at>
 endef
 
@@ -43,7 +45,7 @@ endef
 
 define Package/git-http
 $(call Package/git/Default)
-  DEPENDS+= +git +libcurl +ca-certificates
+  DEPENDS+= +git +libcurl
   TITLE:=Git HTTP commands
 endef
 
@@ -56,7 +58,16 @@ endef
 define Package/git-gitweb
 $(call Package/git/Default)
   TITLE:=Git repository web interface
-  DEPENDS+= +git +perlbase-essential +perlbase-file +perlbase-fcntl +perlbase-encode +perlbase-digest +perlbase-time +perl-cgi
+  DEPENDS+=	+git \
+		+perl-cgi \
+		+perlbase-digest \
+		+perlbase-encode \
+		+perlbase-essential \
+		+perlbase-fcntl \
+		+perlbase-file \
+		+perlbase-filetest \
+		+perlbase-storable \
+		+perlbase-time
 endef
 
 define Package/git-gitweb/description
@@ -105,14 +116,11 @@ define Build/Compile
 endef
 
 define Package/git/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(CP) $(PKG_INSTALL_DIR)/usr/bin/git $(1)/usr/bin
 	$(RM) $(PKG_INSTALL_DIR)/usr/bin/git-cvsserver
+	$(RM) $(PKG_INSTALL_DIR)/usr/bin/git-shell
+	$(INSTALL_DIR) $(1)/usr/bin
 	$(CP) $(PKG_INSTALL_DIR)/usr/bin/git-* $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/usr/lib/git-core
-	ln $(1)/usr/bin/git $(1)/usr/lib/git-core/git
-	ln $(1)/usr/bin/git-shell $(1)/usr/lib/git-core/git-shell
-	ln $(1)/usr/bin/git-upload-pack $(1)/usr/lib/git-core/git-upload-pack
 	$(INSTALL_DIR) $(1)/usr/share/git-core/templates
 	( cd $(PKG_INSTALL_DIR); $(TAR) \
 		--exclude=usr/lib/git-core/git-http-backend \
@@ -121,13 +129,12 @@ define Package/git/install
 		--exclude=usr/lib/git-core/git-remote-ftps \
 		--exclude=usr/lib/git-core/git-remote-http \
 		--exclude=usr/lib/git-core/git-remote-https \
-		--exclude=usr/lib/git-core/git \
-		--exclude=usr/lib/git-core/git-shell \
-		--exclude=usr/lib/git-core/git-upload-pack \
 		-cf - \
 		usr/lib/git-core \
 		usr/share/git-core/templates \
 	) | ( cd $(1); $(TAR) -xf - )
+	ln $(1)/usr/lib/git-core/git $(1)/usr/bin/git
+	ln $(1)/usr/lib/git-core/git-shell $(1)/usr/bin/git-shell
 endef
 
 define Package/git-http/install
