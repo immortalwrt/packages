@@ -147,7 +147,7 @@ define GoPackage/GoSubMenu
   CATEGORY:=Languages
 endef
 
-define GoPackage/Environment
+define GoPackage/Environment/Default
 	GOOS=$(GO_OS) \
 	GOARCH=$(GO_ARCH) \
 	GO386=$(GO_386) \
@@ -159,6 +159,8 @@ define GoPackage/Environment
 	CGO_CPPFLAGS="$(TARGET_CPPFLAGS)" \
 	CGO_CXXFLAGS="$(filter-out $(GO_CFLAGS_TO_REMOVE),$(TARGET_CXXFLAGS))"
 endef
+
+GoPackage/Environment=$(call GoPackage/Environment/Default,)
 
 # false if directory does not exist
 GoPackage/is_dir_not_empty=$$$$($(FIND) $(1) -maxdepth 0 -type d \! -empty 2>/dev/null)
@@ -273,7 +275,6 @@ define GoPackage/Build/Compile
 			mips|mipsle)     installsuffix="$(GO_MIPS)" ;; \
 			mips64|mips64le) installsuffix="$(GO_MIPS64)" ;; \
 			esac ; \
-			trimpath="all=-trimpath=$(GO_PKG_BUILD_DIR)" ; \
 			ldflags="all=-linkmode external -extldflags '$(TARGET_LDFLAGS)'" ; \
 			pkg_gcflags="$(GO_PKG_GCFLAGS)" ; \
 			pkg_ldflags="$(GO_PKG_LDFLAGS)" ; \
@@ -282,8 +283,7 @@ define GoPackage/Build/Compile
 			done ; \
 			go install \
 				$$$${installsuffix:+-installsuffix $$$$installsuffix} \
-				-gcflags "$$$$trimpath" \
-				-asmflags "$$$$trimpath" \
+				-trimpath \
 				-ldflags "$$$$ldflags" \
 				-v \
 				$$$${pkg_gcflags:+-gcflags "$$$$pkg_gcflags"} \
