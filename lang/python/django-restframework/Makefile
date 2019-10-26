@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=django-restframework
 PKG_VERSION:=3.9.0
-PKG_RELEASE:=5
+PKG_RELEASE:=4
 
 PKG_SOURCE:=djangorestframework-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/d/djangorestframework
@@ -39,9 +39,9 @@ define Package/python-$(PKG_NAME)
 $(call Package/$(PKG_NAME)/Default)
   DEPENDS:= \
 	+PACKAGE_python-$(PKG_NAME):python \
-	python-django1
+	python-django
   VARIANT:=python
-  MDEPENDS:=python-django1
+  MDEPENDS:=python-django
 endef
 
 define Package/python-$(PKG_NAME)/description

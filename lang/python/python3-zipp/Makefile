@@ -1,10 +1,10 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=python-zipp
+PKG_NAME:=zipp
 PKG_VERSION:=0.5.2
 PKG_RELEASE:=1
 
-PKG_SOURCE:=zipp-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/z/zipp/
 PKG_HASH:=4970c3758f4e89a7857a973b1e2a5d75bcdc47794442f2e2dd4fe8e0466e809a
 

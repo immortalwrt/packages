@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-asn1crypto
-PKG_VERSION:=1.0.1
+PKG_VERSION:=0.24.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=asn1crypto-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://pypi.io/packages/source/a/asn1crypto
-PKG_HASH:=0b199f211ae690df3db4fd6c1c4ff976497fb1da689193e368eedbadc53d9292
+PKG_HASH:=9d5c20441baf0cb60a4ac34cc447c6c189024b6b4c6cd7877034f4965c464e49
 
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
@@ -61,8 +61,5 @@ endef
 
 $(eval $(call PyPackage,python-asn1crypto))
 $(eval $(call BuildPackage,python-asn1crypto))
-$(eval $(call BuildPackage,python-asn1crypto-src))
-
 $(eval $(call Py3Package,python3-asn1crypto))
 $(eval $(call BuildPackage,python3-asn1crypto))
-$(eval $(call BuildPackage,python3-asn1crypto-src))

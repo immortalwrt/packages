@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python3-unidecode
-PKG_VERSION:=1.1.1
+PKG_VERSION:=1.0.23
 PKG_RELEASE:=1
 
 PKG_SOURCE:=Unidecode-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/u/unidecode/
-PKG_HASH:=2b6aab710c2a1647e928e36d69c21e76b453cd455f4e2621000e54b2a9b8cce8
+PKG_HASH:=8b85354be8fd0c0e10adbf0675f6dc2310e56fda43fa8fe049123b6c475e52fb
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/Unidecode-$(PKG_VERSION)
 
@@ -35,7 +35,7 @@ define Package/python3-unidecode
 endef
 
 define Package/python-unidecode/description
-  Unidecode, lossy ASCII transliterations of Unicode text
+Unidecode, lossy ASCII transliterations of Unicode text
 endef
 
 $(eval $(call Py3Package,$(PKG_NAME)))

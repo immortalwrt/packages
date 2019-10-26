@@ -37,9 +37,9 @@ define Package/python-$(PKG_NAME)
 $(call Package/$(PKG_NAME)/Default)
   DEPENDS:= \
 	+PACKAGE_python-$(PKG_NAME):python \
-	python-django1
+	python-django
   VARIANT:=python
-  MDEPENDS:=python-django1
+  MDEPENDS:=python-django
 endef
 
 define Package/python-$(PKG_NAME)/description
