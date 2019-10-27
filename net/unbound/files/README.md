@@ -6,7 +6,7 @@
 ## Package Overview
 OpenWrt default build uses [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html) for DNS forwarding and DHCP. With a forward only resolver, dependence on the upstream recursors may be cause for concern. They are often provided by the ISP, and some users have switched to public DNS providers. Either way may result in problems due to performance, "snoop-vertising", hijacking (MiM), and other causes. Running a recursive resolver or resolver capable of TLS may be a solution.
 
-Unbound may be useful on consumer grade embedded hardware. It is fully DNSSEC and TLS capable. It is _intended_ to be a recursive resolver only. NLnet Labs [NSD](https://www.nlnetlabs.nl/projects/nsd/) is _intended_ for the authoritative task. This is different than [ISC Bind](https://www.isc.org/downloads/bind/) and its inclusive functions. Unbound configuration effort and memory consumption may be easier to control. A consumer could have their own recursive resolver with 8/64 MB router, and remove potential issues from forwarding resolvers outside of their control.
+Unbound may be useful on consumer grade embedded hardware. It is fully DNSSEC and TLS capable. It is _intended_ to be a recursive resolver only. [NLnet Labs NSD](https://www.nlnetlabs.nl/projects/nsd/) is _intended_ for the authoritative task. This is different than [ISC Bind](https://www.isc.org/downloads/bind/) and its inclusive functions. Unbound configuration effort and memory consumption may be easier to control. A consumer could have their own recursive resolver with 8/64 MB router, and remove potential issues from forwarding resolvers outside of their control.
 
 This package builds on Unbounds capabilities with OpenWrt UCI. Not every Unbound option is in UCI, but rather, UCI simplifies the combination of related options. Unbounds native options are bundled and balanced within a smaller set of choices. Options include resources, DNSSEC, access control, and some TTL tweaking. The UCI also provides an escape option and works at the raw "unbound.conf" level.
 
@@ -18,21 +18,21 @@ A few tweaks may be needed to enhance the realiability and effectiveness. Ad Blo
 **/etc/config/firewall**:
 ```
 config rule
-  option name 'Block-Public-DNS'
-  option enabled '1'
-  option src 'lan'
-  option dest 'wan'
-  option dest_port '53 853 5353'
-  option proto 'tcpudp'
-  option family 'any'
-  option target 'REJECT'
+	option name 'Block-Public-DNS'
+	option enabled '1'
+	option src 'lan'
+	option dest 'wan'
+	option dest_port '53 853 5353'
+	option proto 'tcpudp'
+	option family 'any'
+	option target 'REJECT'
 ```
 
 ## HOW TO: Integrate with DHCP
 Some UCI options and scripts help Unbound to work with DHCP servers to load the local DNS. The examples provided here are serial dnsmasq-unbound, parallel dnsmasq-unbound, and unbound scripted with odhcpd.
 
 ### Serial dnsmasq
-In this case, dnsmasq is not changed *much* with respect to the default [OpenWrt](https://openwrt.org/docs/guide-user/base-system/dns_configuration) configuration. Here dnsmasq is forced to use the local Unbound instance as the lone upstream DNS server, instead of your ISP. This may be the easiest implementation, but performance degradation can occur in high volume networks. Unbound and dnsmasq effectively have the same information in memory, and all transfers are double handled.
+In this case, dnsmasq is not changed *much* with respect to the default [OpenWrt configuration](https://openwrt.org/docs/guide-user/base-system/dns_configuration). Here dnsmasq is forced to use the local Unbound instance as the lone upstream DNS server, instead of your ISP. This may be the easiest implementation, but performance degradation can occur in high volume networks. dnsmasq and Unbound effectively have the same information in memory, and all transfers are double handled.
 
 **/etc/config/unbound**:
 ```
@@ -148,44 +148,26 @@ config unbound
 ### Hybrid Manual/UCI
 You like the UCI. Yet, you need to add some difficult to standardize options, or just are not ready to make a UCI request yet. The files `/etc/unbound/unbound_srv.conf` and `/etc/unbound/unbound_ext.conf` will be copied to Unbounds chroot directory and included during auto generation.
 
-The file `unbound_srv.conf` will be added into the `server:` clause. The file `unbound_ext.conf` will be added to the end of all configuration. It is for extended `forward-zone:`, `stub-zone:`, `auth-zone:`, and `view:` clauses. You can also disable unbound-control in the UCI which only allows "localhost" connections unencrypted, and then add an encrypted remote `control:` clause.
+The former will be added to the end of the `server:` clause. The later will be added to the end of the file for extended `forward:` and `view:` clauses. You can also disable unbound-control in the UCI which only allows "localhost" connections unencrypted, and then add an encrypted remote `control:` clause.
 
-## HOW TO: Cache Zone Files
-Unbound has the ability to AXFR a whole zone from an authoritative server to prefetch the zone. This can speed up access to common zones. Some may have special bandwidth concerns for DNSSEC overhead. The following is a generic example. UCI defaults include the [root](https://www.internic.net/domain/) zone, but it is disabled as a ready to go example.
+#### DNS over TLS
+Some public servers are now offering DNS over TLS. Unbound supports acting as DNS over TLS forwarding client. You can use the override files to enable this funciton. Unbound will connect TLS without verifying keys unless you install `ca-bundle` package. Do **not**  however forget to maintain the certification bundle. No connection or connection without verification will occur unless you use complete syntax with "@" and "#". See [Cloudflare](https://www.cloudflare.com/) DNS [1.1.1.1](https://1.1.1.1/) for example. Unbound makes a new TLS connection for each query. You limit this effect using large resource and aggressive recursion setting (big cache and prefetching). You can also set memory and recursion to default and edit `unbound_srv.conf` to suit your needs. UCI improvements are in progress but not ready in OpenWrt 18.06.
 
-**/etc/config/unbound**:
+**/etc/unbound/unbound_srv.conf**:
 ```
-config zone
-  option enabled '1'
-  option fallback '1'
-  option url_dir 'https://asset-management.it.example.com/zones/'
-  option zone_type 'auth_zone'
-  list server 'ns1.it.example.com'
-  list server 'ns2.it.example.com'
-  list zone_name 'example.com'
+  tls-cert-bundle: /etc/ssl/certs/ca-certificates.crt
 ```
 
-## HOW TO: TLS Over DNS
-Unbound can use TLS as a client or server. UCI supports Unbound as a forwarding client with TLS. Servers are more complex and need manual configuration. This may be desired for privacy against stealth tracking. Some public DNS servers seem to advertise help in this quest. If your looking for a better understanding, then some information can be found at [Cloudflare](https://www.cloudflare.com/) DNS [1.1.1.1](https://1.1.1.1/). The following is a generic example. You can mix providers by using complete server specificaiton to override the zones common port and certificate domain index.
-
-Update as of Unbound 1.9.1, all TLS functions work correctly with either OpenSSL 1.0.2 or 1.1.0. Please be sure to install `ca-bundle` package and use `opkg` to get updates regularly.
-
-**/etc/config/unbound**:
+**/etc/unbound/unbound_ext.conf**:
 ```
-config zone
-  option enabled '1'
-  # question: do you want to recurse when TLS fails or not?
-  option fallback '0'
-  option tls_index 'dns.example.net'
-  option tls_port '853'
-  option tls_upstream '1'
-  option zone_type 'forward_zone'
-  # these servers assume a common TLS port/index
-  list server '192.0.2.53'
-  list server '2001:db8::53'
-  # this alternate server is fully specified inline
-  list server '192.0.2.153@443#dns.alternate.example.org'
-  list zone_name '.'
+forward-zone:
+  # example for Cloudflare about July 2018
+  name: .
+  forward-addr: 1.1.1.1@853#cloudflare-dns.com
+  forward-addr: 1.0.0.1@853#cloudflare-dns.com
+  forward-addr: 2606:4700:4700::1111@853#cloudflare-dns.com
+  forward-addr: 2606:4700:4700::1001@853#cloudflare-dns.com
+  forward-tls-upstream: yes
 ```
 
 ## Complete List of UCI Options
@@ -212,17 +194,18 @@ config unbound
     4 - Above and interfaces named <iface>.<hostname>.<domain>
 
   option add_wan_fqdn '0'
-    Level. Same as previous option only this applies to the WAN. WAN are
-    inferred by a UCI `config dhcp` entry that contains the 'option ignore 1'.
+    Level. Same as previous option only this applies to the WAN. WAN
+    are inferred by a UCI `config dhcp` entry that contains the line
+    option ignore '1'.
 
   option dns64 '0'
-    Boolean. Enable DNS64 through Unbound in order to bridge networks that are
-    IPV6 only and IPV4 only (see RFC6052).
+    Boolean. Enable DNS64 through Unbound in order to bridge networks
+    that are IPV6 only and IPV4 only (see RFC6052).
 
   option dns64_prefix '64:ff9b::/96'
-    IPV6 Prefix. The IPV6 prefix wrapped on the IPV4 address for DNS64. You
-    should use RFC6052 "well known" address, unless you also redirect to a proxy
-    or gateway for your NAT64.
+    IPV6 Prefix. The IPV6 prefix wrapped on the IPV4 address for DNS64.
+    You should use RFC6052 "well known" address, unless you also
+    redirect to a proxy or gateway for your NAT64.
 
   option dhcp_link 'none'
     Program Name. Link to one of the supported programs we have scripts
@@ -241,15 +224,15 @@ config unbound
 
   option domain_type 'static'
     Unbound local-zone: <domain> <type>. This allows you to lock
-    down or allow forwarding of the local zone. Notable types:
-    static - typical single router setup much like OpenWrt dnsmasq default
-    refuse - to answer overtly with DNS code REFUSED
-    deny - to drop queries for the local zone
-    transparent - to use your manually added forward-zone: or stub-zone: clause
+    down or allow forwarding of your domain, your router host name
+    without suffix, and leakage of RFC6762 "local."
 
   option edns_size '1280'
     Bytes. Extended DNS is necessary for DNSSEC. However, it can run
     into MTU issues. Use this size in bytes to manage drop outs.
+
+  option extended_luci '0'
+    Boolean. Extends a tab hierarchy in LuCI for advanced configuration.
 
   option extended_stats '0'
     Boolean. extended statistics are printed from unbound-control.
@@ -270,34 +253,28 @@ config unbound
     Boolean. Skip all this UCI nonsense. Manually edit the
     configuration. Make changes to /etc/unbound/unbound.conf.
 
-  option num_threads '1'
-    Count. Enable multithreading with the "heavy traffic" variant. Base variant
-    spins each as whole proces and is not efficient. Two threads may be used,
-    but they use one shared cache slab. More edges into an industrial setup,
-    and UCI simplificaitons may not be appropriate.
-
   option protocol 'mixed'
     Unbound can limit its protocol used for recursive queries.
-    ip4_only - old fashioned IPv4 upstream and downstream
+    ip4_only - limit issues if you do not have native IPv6
     ip6_only - test environment only; could cauase problems
-    ip6_local - upstream IPv4 only and local network IPv4 and IPv6
     ip6_prefer - both IPv4 and IPv6 but try IPv6 first
     mixed - both IPv4 and IPv6
     default - Unbound built-in defaults
 
   option query_minimize '0'
-    Boolean. Enable a minor privacy option. Don't let each server know the next
-    recursion. Query one piece at a time.
+    Boolean. Enable a minor privacy option. Don't let each server know
+    the next recursion. Query one piece at a time.
 
   option query_min_strict '0'
-    Boolean. Query minimize is best effort and will fall back to normal when it
-    must. This option prevents the fall back, but less than standard name
-    servers will fail to resolve their domains.
+    Boolean. Query minimize is best effort and will fall back to normal
+    when it must. This option prevents the fall back, but less than
+    standard name servers will fail to resolve their domains.
 
   option rebind_localhost '0'
-    Boolean. Prevent loopback "127.0.0.0/8" or "::1/128" responses. These may
-    used by black hole servers for good purposes like ad-blocking or parental
-    access control. Obviously these responses may be used to for bad purposes.
+    Boolean. Prevent loopback "127.0.0.0/8" or "::1/128" responses.
+    These may used by black hole servers for good purposes like
+    ad-blocking or parental access control. Obviously these responses
+    also can be used to for bad purposes.
 
   option rebind_protection '1'
     Level. Block your local address responses from global DNS. A poisoned
@@ -323,16 +300,16 @@ config unbound
     large - about double of medium
 
   option root_age '9'
-    Days. >90 Disables. Age limit for Unbound root data like root DNSSEC key.
-    Unbound uses RFC 5011 to manage root key. This could harm flash ROM. This
-    activity is mapped to "tmpfs," but every so often it needs to be copied back
-    to flash for the next reboot.
+    Days. >90 Disables. Age limit for Unbound root data like root
+    DNSSEC key. Unbound uses RFC 5011 to manage root key. This could
+    harm flash ROM. This activity is mapped to "tmpfs," but every so
+    often it needs to be copied back to flash for the next reboot.
 
   option ttl_min '120'
-    Seconds. Minimum TTL in cache. Recursion can be expensive without cache. A
-    low TTL is normal for server migration. A low TTL can be abused for snoop-
-    vertising (DNS hit counts; recording query IP). Typical to configure maybe
-    0~300, but 1800 is the maximum accepted.
+    Seconds. Minimum TTL in cache. Recursion can be expensive without
+    cache. A low TTL is normal for server migration. A low TTL can be
+    abused for snoop-vertising (DNS hit counts; recording query IP).
+    Typical to configure maybe 0~300, but 1800 is the maximum accepted.
 
   option unbound_control '0'
     Level. Enables unbound-control application access ports.
@@ -346,87 +323,28 @@ config unbound
     Boolean. Enable DNSSEC. Unbound names this the "validator" module.
 
   option validator_ntp '1'
-    Boolean. Disable DNSSEC time checks at boot. Once NTP confirms global real
-    time, then DNSSEC is restarted at full strength. Many embedded devices don't
-    have a real time power off clock. NTP needs DNS to resolve servers. This
-    works around the chicken-and-egg.
+    Boolean. Disable DNSSEC time checks at boot. Once NTP confirms
+    global real time, then DNSSEC is restarted at full strength. Many
+    embedded devices don't have a real time power off clock. NTP needs
+    DNS to resolve servers. This works around the chicken-and-egg.
 
-  option verbosity '1'
-    Level. Sets Unbounds logging intensity.
+  list domain_forward 'mail.my-isp.com'
+    Domain. Do not recurse, but rather forward the domains to given DNS
+    servers found in resolve.conf.auto from WAN DHCP client. This may
+    provide better access to mirror servers in 'your neigborhood.' This
+    may be useful in keeping local organization lookups on local subnets.
 
   list domain_insecure 'ntp.somewhere.org'
     Domain. Domains that you wish to skip DNSSEC. It is one way around NTP
     chicken and egg. Your DHCP servered domains are automatically included.
 
+  list rebind_interface 'lan'
+    Interface (logical). Works with 'rebind_protection' options 2 and 3.
+
   list trigger_interface 'lan' 'wan'
     Interface (logical). This option is a work around for netifd/procd
-    interaction with WAN DHCPv6. Minor RA or DHCP changes in IP6 can cause
-    netifd to execute procd interface reload. Limit Unbound procd triggers to
-    LAN and WAN (IP4 only) to prevent restart @2-3 minutes.
-
-
-config zone
-  Create Unbounds forward-zone:, stub-zone:, or auth-zone: clauses
-
-  option enabled 1
-    Boolean. Enable the zone clause.
-
-  option fallback 1
-    Boolean. Permit normal recursion when the narrowly selected servers in this
-    zone are unresponsive or return empty responses. Disable, if there are
-    security concerns (forward only internal to organization).
-
-  option port 53
-    Port. Servers are contact on this port for plain DNS operations.
-
-  option resolv_conf 0
-    Boolean. Use "resolv.conf" as it was filled by the DHCP client. This can be
-    used to forward zones within your ISP (mail.example.net) or that have co-
-    located services (streamed-movies.example.com). Recursion may not yield the
-    most local result, but forwarding may instead.
-
-  option tls_index (n/a)
-    Domain. Name TLS certificates are signed for (dns.example.net). If this
-    option is ommitted, then Unbound will make connections but not validate.
-
-  option tls_port 853
-    Port. Servers are contact on this port for DNS over TLS operations.
-
-  option tls_upstream 0
-    Boolean. Use TLS to contact the zone server.
-
-  option url_dir
-    String. http or https path, directory part only, to the zone file for
-    auth_zone type only. Files "${zone_name}.zone" are expect in this path.
-
-  option zone_type (n/a)
-    State. Required field or the clause is effectively disabled. Check Unbound
-    documentation for clarity (unbound-conf).
-    auth_zone     - prefetch whole zones from authoritative server (ICANN)
-    forward_zone  - forward queries in these domains to the listed servers
-    stub_zone     - force recursion of these domains to the listed servers
-
-  list server (n/a)
-    IP. Every zone must have one server. Stub and forward require IP to prevent
-    chicken and egg (due to UCI simplicity). Authoritative prefetch may use a
-    server name.
-
-  list zone_name
-    Domain. Every zone must represent some part of the DNS tree. It can be all
-    of it "." or you internal organization domain "example.com." Within each
-    zone clause all zone names will be matched to all servers.
+    interaction with WAN DHCPv6. Minor RA or DHCP changes in IP6 can
+    cause netifd to execute procd interface reload. Limit Unbound procd
+    triggers to LAN and WAN (IP4 only) to prevent restart @2-3 minutes.
 ```
-
-## Replaced Options
-  config unbound / option prefetch_root
-    List the domains in a zone with type auth_zone and fill in the server or url
-    fields. Root zones are ready but disabled in default install UCI.
-
-  config unbound / list domain_forward
-    List the domains in a zone with type forward_zone and enable the
-    resolv_conf option.
-
-  config unbound / list rebind_interface
-    Enable rebind_protection at 2 and all DHCP interfaces are also protected for
-    IPV6 GLA (parallel to subnets in add_local_fqdn).
 
