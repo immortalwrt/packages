@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=unrar
-PKG_VERSION:=5.6.1
+PKG_VERSION:=5.8.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=unrarsrc-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.rarlab.com/rar
-PKG_HASH:=67c339dffa95f6c1bedcca40045e99de5852919dbfaa06e4a9c8f18cd5064e70
+PKG_HASH:=035f1f436f0dc2aea09aec146b9cc3e47ca2442f2c62b4ad9374c7c9cc20e632
 PKG_MAINTAINER:=Álvaro Fernández Rojas <noltari@gmail.com>, \
 		Ted Hess <thess@kitschensync.net>
 
@@ -24,6 +24,12 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/uclibc++.mk
 include $(INCLUDE_DIR)/package.mk
+
+ifeq ($(CONFIG_USE_UCLIBCXX),y)
+TARGET_LDFLAGS +=-nodefaultlibs
+endif
+TARGET_CXXFLAGS +=-fno-rtti -flto
+TARGET_LDFLAGS +=$(FPIC) -Wl,--gc-sections
 
 define Package/unrar/Default
   TITLE:=UnRAR
@@ -57,9 +63,6 @@ define Package/libunrar/description
   UnRAR library is a shared library that provides file extraction from RAR
   archives
 endef
-
-MAKE_FLAGS += \
-	LDFLAGS="$(TARGET_LDFLAGS) -lpthread"
 
 ifeq ($(BUILD_VARIANT),lib)
 define Build/Compile

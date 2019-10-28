@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-importlib_metadata
-PKG_VERSION:=0.18
+PKG_VERSION:=0.19
 PKG_RELEASE:=1
 
 PKG_SOURCE:=importlib_metadata-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/i/importlib_metadata
-PKG_HASH:=cb6ee23b46173539939964df59d3d72c3e0c1b5d54b84f1d8a7e912fe43612db
+PKG_HASH:=23d3d873e008a513952355379d93cbcab874c58f4f034ff657c7a87422fa64e8
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/importlib_metadata-$(PKG_VERSION)
 
