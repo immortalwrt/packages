@@ -1,10 +1,9 @@
 menu "Kernel features for Docker"
+        depends on PACKAGE_docker-ce
+
 	config DOCKER_KERNEL_OPTIONS
 		bool "Enable Basic kernel support for Docker"
 		default y
-		select KERNEL_CGROUPS
-		select KERNEL_CGROUP_CPUACCT
-		select KERNEL_CGROUP_SCHED
 		select KERNEL_NAMESPACES
 		select KERNEL_CPUSETS
 		select KERNEL_MEMCG
