@@ -55,16 +55,16 @@ define Package/node
   DEPENDS:=@(HAS_FPU||KERNEL_MIPS_FPU_EMULATOR) @!arc @!armeb @!powerpc \
            +libstdcpp +USE_UCLIBC:libpthread +USE_UCLIBC:librt +zlib \
            $(if $(filter reboot v19.07%, $(OW_VER)),+libopenssl,+NODEJS_8:libopenssl) \
-           +NODEJS_ICU_SYSTEM:icu +NODEJS_ICU_SYSTEM:icu-full-data \
-           +NODEJS_12:libnghttp2 +NODEJS_12:libuv +NODEJS_12:libhttp-parser +NODEJS_12:libcares \
-           +!NODEJS_8:libatomic
+           $(if $(filter reboot v19.07%, $(OW_VER)),+NODEJS_ICU_SYSTEM:icu-full-data) \
+           $(if $(filter reboot v19.07%, $(OW_VER)),+NODEJS_12:libnghttp2 +NODEJS_12:libuv +NODEJS_12:libhttp-parser +NODEJS_12:libcares) \
+           +!NODEJS_8:libatomic +NODEJS_ICU_SYSTEM:icu
 endef
 
 define Package/node/description
   Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses
   an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js'
    package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
-  *** Requires GCC/G++ Multilib on host system to build! ***
+  *** Requires GCC/G++ Multilib on host system to build 32-bit target ***
 endef
 
 define Package/node-npm
@@ -148,7 +148,8 @@ CONFIGURE_ARGS:= \
 	$(if $(CONFIG_NODEJS_12),,$(if $(CONFIG_NODEJS_ICU_NONE),--without-snapshot)) \
 	$(if $(CONFIG_NODEJS_12),,$(if $(CONFIG_BIG_ENDIAN),--without-snapshot)) \
 	--shared-zlib \
-	$(if $(CONFIG_NODEJS_12),--shared-nghttp2 --shared-libuv --shared-http-parser --shared-cares) \
+	$(if $(CONFIG_NODEJS_12),$(if $(filter reboot, $(OW_VER)) \
+		,--shared-nghttp2 --shared-libuv --shared-http-parser --shared-cares)) \
 	$(if $(filter reboot v19.07%, $(OW_VER)),--shared-openssl, \
 		$(if $(CONFIG_NODEJS_8),--shared-openssl)) \
 	$(if $(CONFIG_NODEJS_ICU_SMALL),, \
