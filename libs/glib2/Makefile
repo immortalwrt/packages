@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=glib2
 PKG_VERSION:=2.58.3
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=glib-$(PKG_VERSION).tar.xz
 PKG_BUILD_DIR:=$(BUILD_DIR)/glib-$(PKG_VERSION)
@@ -22,6 +22,8 @@ PKG_BUILD_DEPENDS:=gettext
 HOST_BUILD_DEPENDS:=gettext-full/host libiconv/host libffi/host
 PKG_INSTALL:=1
 PKG_USE_MIPS16:=0
+
+PKG_CPE_ID:=cpe:/a:gnome:glib
 
 PKG_FIXUP:=autoreconf
 
@@ -47,6 +49,7 @@ endef
 TARGET_CFLAGS += -Wno-error=implicit-function-declaration
 
 HOST_CONFIGURE_ARGS += \
+	--disable-libelf \
 	--disable-selinux \
 	--with-libiconv=gnu \
 	--with-pcre=internal \
