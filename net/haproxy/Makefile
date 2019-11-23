@@ -10,12 +10,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=haproxy
-PKG_VERSION:=2.0.8
+PKG_VERSION:=2.0.9
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.haproxy.org/download/2.0/src
-PKG_HASH:=c37e1e8515ad6f9781a0ac336ca88787f3bb52252fb2bdad9919ba16323c280a
+PKG_HASH:=35692801abfd6dde4976cb42fe5cee8aaf61959e743003426073c3141494c589
 
 PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de>, \
 		Christian Lachner <gladiac@gmail.com>
@@ -171,8 +171,6 @@ define Package/haproxy/install
 	$(INSTALL_CONF) ./files/haproxy.cfg $(1)/etc/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/haproxy.init $(1)/etc/init.d/haproxy
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/net
-	$(INSTALL_BIN) ./files/haproxy.hotplug $(1)/etc/hotplug.d/net/90-haproxy
 endef
 
 Package/haproxy-nossl/install = $(Package/haproxy/install)
