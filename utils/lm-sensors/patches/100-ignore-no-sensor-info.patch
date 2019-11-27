@@ -1,0 +1,13 @@
+--- a/prog/sensors/main.c	2014-01-22 00:11:15.000000000 -0800
++++ b/prog/sensors/main.c	2019-11-25 17:54:16.000000000 -0800
+@@ -315,10 +315,6 @@
+ 		print_bus_list();
+ 	} else if (optind == argc) { /* No chip name on command line */
+ 		if (!do_the_real_work(NULL, &err)) {
+-			fprintf(stderr,
+-				"No sensors found!\n"
+-				"Make sure you loaded all the kernel drivers you need.\n"
+-				"Try sensors-detect to find out which these are.\n");
+ 			err = 1;
+ 		}
+ 	} else {
