@@ -8,17 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=postfix
-PKG_RELEASE:=1
-PKG_VERSION:=3.3.0
+PKG_RELEASE:=2
+PKG_VERSION:=3.4.6
 PKG_SOURCE_URL:= \
 	https://cdn.postfix.johnriley.me/mirrors/postfix-release/official/ \
-	ftp://ftp.porcupine.org/mirrors/postfix-release/official/
+	http://ftp.porcupine.org/mirrors/postfix-release/official/
 
-PKG_HASH:=7942e89721e30118d7050675b0d976955e3160e21f7898b85a79cac4f4baef39
+PKG_HASH:=d674a9b40602ee30420ee7ff93c3600e8913eeb2ea9bfb0ac1d140dac5dbe326
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_MAINTAINER:=Denis Shulyaka <Shulyaka@gmail.com>
 PKG_LICENSE:=IPL-1.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_CPE_ID:=cpe:/a:postfix:postfix
+
 PKG_BUILD_DEPENDS:=POSTFIX_CDB:tinycdb
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_POSTFIX_TLS \
@@ -27,6 +29,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_POSTFIX_CDB \
 	CONFIG_POSTFIX_DB \
 	CONFIG_POSTFIX_SQLITE \
+	CONFIG_POSTFIX_MYSQL \
 	CONFIG_POSTFIX_PGSQL \
 	CONFIG_POSTFIX_PCRE \
 	CONFIG_POSTFIX_EAI \
@@ -41,7 +44,7 @@ define Package/postfix
   	postfix=25:postfix=25 \
   	postdrop=26:postdrop=26
   URL:=http://www.postfix.org/
-  DEPENDS:=+POSTFIX_TLS:libopenssl +POSTFIX_SASL:libsasl2 +POSTFIX_LDAP:libopenldap +POSTFIX_DB:libdb47 +POSTFIX_SQLITE:libsqlite3 +POSTFIX_PGSQL:libpq +POSTFIX_EAI:icu +POSTFIX_PCRE:libpcre
+  DEPENDS:=+POSTFIX_TLS:libopenssl +POSTFIX_SASL:libsasl2 +POSTFIX_LDAP:libopenldap +POSTFIX_DB:libdb47 +POSTFIX_SQLITE:libsqlite3 +POSTFIX_MYSQL:libmysqlclient +POSTFIX_PGSQL:libpq +POSTFIX_EAI:icu +POSTFIX_PCRE:libpcre
 endef
 
 define Package/postfix/description
@@ -80,6 +83,11 @@ define Package/postfix/config
 			default y
 			help
 			  Implements support for SQLite3 DB
+		config POSTFIX_MYSQL
+			bool "MYSQL support"
+			default n
+			help
+			  Implements support for MySQL
 		config POSTFIX_PGSQL
 			bool "PostgreSQL support"
 			default n
@@ -142,6 +150,11 @@ endif
 ifdef CONFIG_POSTFIX_SQLITE
   CCARGS+=-DHAS_SQLITE -I$(STAGING_DIR)/usr/include/
   AUXLIBS+=-L$(STAGING_DIR)/usr/lib -lsqlite3 -lpthread
+endif
+
+ifdef CONFIG_POSTFIX_MYSQL
+  CCARGS+=-DHAS_MYSQL -I$(STAGING_DIR)/usr/include/mysql
+  AUXLIBS+=-L$(STAGING_DIR)/usr/lib -lmysqlclient -lz -lm
 endif
 
 ifdef CONFIG_POSTFIX_PGSQL
