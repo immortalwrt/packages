@@ -74,10 +74,10 @@ smb_add_share()
 	config_get read_only $1 read_only
 	config_get writeable $1 writeable
 	config_get guest_ok $1 guest_ok
-	config_get_bool force_root	$1 force_root	0
+	config_get_bool force_root $1 force_root 0
 	config_get write_list $1 write_list
 	config_get read_list $1 read_list
-	config_get_bool hide_dot_files	$1 hide_dot_files	0
+	config_get hide_dot_files $1 hide_dot_files
 	config_get veto_files $1 veto_files
 	config_get inherit_owner $1 inherit_owner
 	config_get force_create_mode $1 force_create_mode
@@ -104,13 +104,14 @@ smb_add_share()
 		[ -n "$browseable" ] && printf "\tbrowseable = %s\n" "$browseable"
 		[ -n "$read_only" ] && printf "\tread only = %s\n" "$read_only"
 		[ -n "$writeable" ] && printf "\twriteable = %s\n" "$writeable"
+
 		[ -n "$guest_ok" ] && printf "\tguest ok = %s\n" "$guest_ok"
 		[ -n "$inherit_owner" ] && printf "\tinherit owner = %s\n" "$inherit_owner"
 
 		[ -n "$write_list" ] && printf "\twrite list = %s\n" "$write_list"
 		[ -n "$read_list" ] && printf "\tread list = %s\n" "$read_list"
 
-		[ "$hide_dot_files" -eq 1 ] && printf "\thide dot files = %s\n" "yes"
+		[ -n "$hide_dot_files" ] && printf "\thide dot files = %s\n" "$hide_dot_files"
 		[ -n "$veto_files" ] && printf "\tveto files = %s\n" "$veto_files"
 	} >> /var/etc/cifs/smb.conf
 }
@@ -148,6 +149,15 @@ start_service()
 		exit 1
 	fi
 
+	if [ -e /sys/module/cifsd ]; then
+		if [ -e /sys/class/cifsd-control/kill_server ]; then
+			# upstream "BUG": ensure changes in smb.conf are reflected on a running kernel-server
+			echo hard > /sys/class/cifsd-control/kill_server
+			# we need a extra timeout for the reset
+			sleep 5
+		fi
+	fi
+	
 	modprobe cifsd 2> /dev/null
 	if [ ! -e /sys/module/cifsd ]; then
 		logger -t 'cifsd' "modprobe of cifsd module failed, can\'t start cifsd!"
@@ -157,6 +167,7 @@ start_service()
 	logger -t 'cifsd' "Starting CIFS/SMB userspace service."
 	procd_open_instance
 	procd_set_param command /usr/sbin/cifsd --n
+	procd_set_param file /var/etc/cifs/smb.conf
 	procd_close_instance
 }
 
@@ -164,20 +175,33 @@ stop_service()
 {
 	logger -t 'cifsd' "Stopping CIFSD userspace service."
 	killall cifsd > /dev/null 2>&1
-	sleep 1
-	[ -e /sys/class/cifsd-control/kill_server ] && echo hard > /sys/class/cifsd-control/kill_server
-	sleep 2
+	
 	[ -e /sys/module/cifsd ] && rmmod cifsd > /dev/null 2>&1
-	# With open smb connections rmmod takes longer
+	# With open smb connections rmmod is not possible, without waiting for the long 'ipc timeout', so we use 'kill_server'!
 	if [ -e /sys/module/cifsd ]; then
-		sleep 5
-		rmmod cifsd > /dev/null 2>&1
+		logger -t 'cifsd' "triggering kill_server"
+		if [ -e /sys/class/cifsd-control/kill_server ]; then
+			echo hard > /sys/class/cifsd-control/kill_server
+			# we need a extra timeout for the reset
+			sleep 5
+		fi
+	fi
+	# next try
+	[ -e /sys/module/cifsd ] && rmmod cifsd > /dev/null 2>&1
+	# check again
+	if [ -e /sys/module/cifsd ]; then
+		# wait more...
+		sleep 3
+	fi
+	# last try
+	[ -e /sys/module/cifsd ] && rmmod cifsd > /dev/null 2>&1
+	
+	if [ -e /sys/module/cifsd ]; then
+		logger -t 'cifsd' "module still loaded after 8s timeout"
 	fi
 	[ -f /tmp/cifsd.lock ] && rm /tmp/cifsd.lock
 }
 
-reload_service() {
-	stop_service "$@"
-	sleep 1
-	start_service "$@"
-}
+# reload_service() {
+	# restart "$@"
+# }
