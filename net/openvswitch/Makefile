@@ -15,11 +15,11 @@ include $(INCLUDE_DIR)/kernel.mk
 #  - Check and update kmod dependencies when necessary (runtime module load check in the least)
 #
 PKG_NAME:=openvswitch
-PKG_VERSION:=2.12.0
-PKG_RELEASE:=2
+PKG_VERSION:=2.11.0
+PKG_RELEASE:=3
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.openvswitch.org/releases/
-PKG_HASH:=13fd42703180b4b1146c7e97926d09225485868cc2fbbd58dc0c421b4b8fe8f8
+PKG_HASH:=f4b01d7376d7298bc6e7fa7a6067229ca7c7e299394e5ea9aff651d52edfdbee
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -41,7 +41,7 @@ include ../../lang/python/python3-package.mk
 
 ovs_kmod_packages:=
 ovs_kmod_intree_kernel_patchver_min:=3.10
-ovs_kmod_intree_kernel_patchver_max:=5.0
+ovs_kmod_intree_kernel_patchver_max:=4.18
 ovs_kmod_intree_not_supported:=$(strip $(call kernel_patchver_lt,$(ovs_kmod_intree_kernel_patchver_min))$(call kernel_patchver_gt,$(ovs_kmod_intree_kernel_patchver_max)))
 ovs_kmod_intree_dir:=$(PKG_BUILD_DIR)/datapath/linux
 ovs_kmod_upstream_dir:=$(LINUX_DIR)/net/openvswitch
@@ -50,13 +50,12 @@ ovs_kmod_is_intree=$(filter %-intree,$(1))
 ovs_kmod_upstream_name=kmod-$(call ovs_kmod_package_name,$(patsubst %-intree,%,$(1)))
 ovs_kmod_package_provides=$(call ovs_kmod_upstream_name,$(1))
 define OvsKmodPackageTemplate
-ifeq ($(if $(call ovs_kmod_is_intree,$(1)),$(ovs_kmod_intree_not_supported)),)
   define KernelPackage/$(call ovs_kmod_package_name,$(1))
      SECTION:=kernel
      CATEGORY:=Kernel modules
      SUBMENU:=Network Support
      TITLE:=$(ovs_kmod_$(1)_title)
-     DEPENDS:=$(ovs_kmod_$(1)_depends) $(if $(call ovs_kmod_is_intree,$(1)),@DEVEL)
+     DEPENDS:=$(ovs_kmod_$(1)_depends) $(if $(call ovs_kmod_is_intree,$(1)),@DEVEL $(if $(ovs_kmod_intree_not_supported),@BROKEN))
      PROVIDES:=$(call ovs_kmod_package_provides,$(1))
      KCONFIG:=$(ovs_kmod_$(1)_kconfig)
      FILES:=$(ovs_kmod_$(1)_files)
@@ -64,20 +63,14 @@ ifeq ($(if $(call ovs_kmod_is_intree,$(1)),$(ovs_kmod_intree_not_supported)),)
   endef
 
   ovs_kmod_packages+=$(call ovs_kmod_package_name,$(1))
-endif
 endef
 
 ovs_kmod_openvswitch_title:=Open vSwitch kernel datapath (upstream)
 ovs_kmod_openvswitch_kconfig:=CONFIG_OPENVSWITCH
 ovs_kmod_openvswitch_depends:=\
-	  +kmod-lib-crc32c \
-	  +kmod-nf-nat \
-	  +IPV6:kmod-nf-nat6 \
-	  +kmod-nf-conntrack \
-	  +IPV6:kmod-nf-conntrack6 \
-	  +(!LINUX_4_9&&!LINUX_4_14):kmod-nsh \
-	  +(!LINUX_4_9&&!LINUX_4_14):kmod-ipt-conntrack-extra \
-
+	  +kmod-lib-crc32c +kmod-mpls \
+	  +kmod-nf-nat +IPV6:kmod-nf-nat6 \
+	  +kmod-nf-conntrack +IPV6:kmod-nf-conntrack6
 ovs_kmod_openvswitch_files:=$(ovs_kmod_upstream_dir)/openvswitch.ko
 $(eval $(call OvsKmodPackageTemplate,openvswitch))
 
@@ -112,20 +105,8 @@ $(eval $(call OvsKmodPackageTemplate,openvswitch-geneve))
 #    will be pulled in by kmod-gre6.  NOTE that tunnel6.ko itself cannot be
 #    enabled and selected on its own
 #
-#  - kmod-ipt-conntrack-extra: required for nf_conncount.ko
-#
 ovs_kmod_openvswitch-intree_title:=Open vSwitch kernel datapath (in tree)
-ovs_kmod_openvswitch-intree_depends:=\
-	  +kmod-lib-crc32c \
-	  +kmod-nf-nat \
-	  +IPV6:kmod-nf-nat6 \
-	  +kmod-nf-conntrack \
-	  +(IPV6&&(LINUX_4_9||LINUX_4_14)):kmod-nf-conntrack6 \
-	  +(LINUX_4_9||LINUX_4_14):kmod-gre \
-	  +(IPV6&&(LINUX_4_9||LINUX_4_14)):kmod-gre6 \
-	  +(!LINUX_4_9&&!LINUX_4_14):kmod-udptunnel4 \
-	  +(!LINUX_4_9&&!LINUX_4_14):kmod-ipt-conntrack-extra \
-
+ovs_kmod_openvswitch-intree_depends:=$(ovs_kmod_openvswitch_depends) +kmod-gre +IPV6:kmod-gre6
 ovs_kmod_openvswitch-intree_files:= $(ovs_kmod_intree_dir)/openvswitch.ko
 $(eval $(call OvsKmodPackageTemplate,openvswitch-intree))
 
@@ -331,11 +312,7 @@ ovs_intree_kmod_configs:=CONFIG_PACKAGE_kmod-openvswitch-intree
 ovs_intree_kmod_enabled:=$(strip $(foreach c,$(ovs_intree_kmod_configs),$($(c))))
 PKG_CONFIG_DEPENDS+=$(ovs_intree_kmod_configs)
 ifneq ($(ovs_intree_kmod_enabled),)
-  ifeq ($(ovs_kmod_intree_not_supported),)
-    CONFIGURE_ARGS += --with-linux=$(LINUX_DIR)
-  else
-    $(warning XXX: openvswitch: intree kmods selected but not supported)
-  endif
+  CONFIGURE_ARGS += --with-linux=$(LINUX_DIR)
 endif
 
 TARGET_CFLAGS += -flto -std=gnu99
