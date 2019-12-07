@@ -57,7 +57,7 @@ endef
 
 define Package/qemu-ga/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/qemu-ga $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/qemu-ga $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/qemu-ga.init $(1)/etc/init.d/qemu-ga
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/virtio-ports
