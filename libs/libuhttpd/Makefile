@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libuhttpd
-PKG_VERSION:=2.2.2
+PKG_VERSION:=2.0.3
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL=https://github.com/zhaojh329/libuhttpd.git
-PKG_MIRROR_HASH:=98f217238160489468fafe8c643b7f96f168c80000ee07d3ca808d54f4c6a608
+PKG_MIRROR_HASH:=f20e4081ba1bbea277a3c86f28fa451d54546817a58814fff91470550a5b8e5d
 CMAKE_INSTALL:=1
 
 PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_SOURCE_SUBDIR)
@@ -39,7 +39,6 @@ define Package/libuhttpd-nossl
   $(Package/libuhttpd/default)
   TITLE += (NO SSL)
   VARIANT:=nossl
-  CONFLICTS:=libuhttpd-openssl libuhttpd-wolfssl libuhttpd-mbedtls
 endef
 
 define Package/libuhttpd-openssl
@@ -47,7 +46,6 @@ define Package/libuhttpd-openssl
   TITLE += (openssl)
   DEPENDS += +libustream-openssl
   VARIANT:=openssl
-  CONFLICTS:=libuhttpd-wolfssl libuhttpd-mbedtls
 endef
 
 define Package/libuhttpd-wolfssl
@@ -55,7 +53,6 @@ define Package/libuhttpd-wolfssl
   TITLE += (wolfssl)
   DEPENDS += +libustream-wolfssl
   VARIANT:=wolfssl
-  CONFLICTS:=libuhttpd-mbedtls
 endef
 
 define Package/libuhttpd-mbedtls
@@ -70,9 +67,8 @@ ifeq ($(BUILD_VARIANT),nossl)
 endif
 
 define Package/libuhttpd/default/install
-	$(INSTALL_DIR) $(1)/usr/lib/ $(1)/usr/lib/lua/
+	$(INSTALL_DIR) $(1)/usr/lib/
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libuhttpd.so* $(1)/usr/lib/
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/lua/uhttpd.so* $(1)/usr/lib/lua/
 endef
 
 Package/libuhttpd-nossl/install = $(Package/libuhttpd/default/install)
