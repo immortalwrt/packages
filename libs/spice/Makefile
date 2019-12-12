@@ -28,7 +28,7 @@ define Package/libspice-server
   CATEGORY:=Libraries
   TITLE:=SPICE server library
   URL:=https://www.spice-space.org/index.html
-  DEPENDS:=+glib2 +libjpeg +libopenssl +pixman +zlib
+  DEPENDS:=+glib2 +libjpeg +libopenssl +libsasl2 +pixman +zlib
 endef
 
 define Package/libspice-server/install
