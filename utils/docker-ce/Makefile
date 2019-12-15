@@ -115,9 +115,6 @@ define Package/docker-ce/install
 	$(INSTALL_DIR) $(1)/usr/share/docker/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/engine/contrib/check-config.sh $(1)/usr/share/docker/
 
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/dockerd.init $(1)/etc/init.d/dockerd
-
 	$(INSTALL_DIR) $(1)/etc/docker
 	$(INSTALL_CONF) ./files/daemon.json $(1)/etc/docker/
 endef
