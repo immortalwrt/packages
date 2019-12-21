@@ -8,18 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libfmt
-PKG_VERSION:=4.1.0
+PKG_VERSION:=6.1.2
 PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/fmtlib/fmt.git
-PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_MIRROR_HASH:=112c964c1537fbc2f3a993f405547fc57b0f3d1524c808006920c53fab42c233
+PKG_SOURCE_NAME:=fmt
+PKG_SOURCE:=$(PKG_SOURCE_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/fmtlib/$(PKG_SOURCE_NAME)/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=1cafc80701b746085dddf41bd9193e6d35089e1c6ec1940e037fcb9c98f62365
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_NAME)-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Othmar Truniger <github@truniger.ch>
-PKG_LICENSE:=BSD-2-Clause
+PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.rst
 
 CMAKE_INSTALL:=1
@@ -44,20 +43,15 @@ define Package/libfmt/description
   It can be used as a safe alternative to printf or as a fast alternative to IOStreams.
 endef
 
+define Build/InstallDev
+	$(call Build/InstallDev/cmake,$(1))
+	$(SED) 's,/usr/include,$$$${prefix}/include,g' $(1)/usr/lib/pkgconfig/fmt.pc
+	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/fmt.pc
+endef
+
 define Package/libfmt/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libfmt.so* $(1)/usr/lib/
-endef
-
-define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include/fmt
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/fmt/*.h $(1)/usr/include/fmt/
-
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libfmt.so* $(1)/usr/lib/
-
-	$(INSTALL_DIR) $(1)/usr/lib/cmake
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/cmake/* $(1)/usr/lib/cmake/
 endef
 
 $(eval $(call BuildPackage,libfmt))
