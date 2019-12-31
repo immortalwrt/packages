@@ -2,11 +2,11 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gnunet
 
-PKG_VERSION:=0.12.0
+PKG_VERSION:=0.12.1
 PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GNU/gnunet
-PKG_HASH:=5457d6f80478b28821de70b4da419d40d6972d270622bdeb83e5552b286fd032
+PKG_HASH:=5553014dfa8b9aefa96fe83c6a8b8a84a28b30655df0ce283fd3e44a5a1b1f7e
 
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=COPYING
@@ -40,6 +40,9 @@ CONFIGURE_ARGS+= \
 	--with-libpulse=$(STAGING_DIR)/usr \
 	--with-libunistring-prefix=$(STAGING_DIR)/usr \
 	--with-microhttpd=$(STAGING_DIR)/usr
+
+# upstream now provides --with-pulseaudio but doesn't detect rpath
+TARGET_LDFLAGS+= -Wl,-rpath-link=$(STAGING_DIR)/usr/lib/pulseaudio
 
 define Package/gnunet/Default
   SECTION:=net
