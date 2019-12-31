@@ -12,15 +12,12 @@ PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=COPYING
 PKG_CPE_ID:=cpe:/a:radicale:radicale
 
-PKG_SOURCE:=Radicale-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/R/Radicale/
+PYPI_NAME:=Radicale
 PKG_HASH:=02273fcc6ae10e0f74aa12652e24d0001eec8dbf467d54ddb4dfcc2af7d7a5db
-PKG_BUILD_DIR:=$(BUILD_DIR)/radicale2-$(BUILD_VARIANT)-$(PKG_VERSION)
 
+include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/radicale2/Default
   SECTION:=net
@@ -52,8 +49,14 @@ endef
 
 define Package/radicale2/description
 $(call Package/radicale2-meta/description)
-.
+
 This package contains the python files.
+
+Note that md5 encryption of passwords requires passlib, and
+bcrypt encryption requires passlib + bcrypt.  These are not
+added as hard dependencies as users may be running radicale2
+with a web server doing the authentication instead of radicale2.
+
 endef
 
 define Package/radicale2-examples/description
