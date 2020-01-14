@@ -11,7 +11,7 @@ include perlver.mk
 
 PKG_NAME:=perl
 PKG_VERSION:=$(PERL_VERSION)
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
 PKG_SOURCE_URL:=\
 		https://cpan.metacpan.org/src/5.0 \
@@ -21,12 +21,13 @@ PKG_SOURCE_URL:=\
 		https://mirrors.sonic.net/cpan/src/5.0 \
 		https://www.cpan.org/src/5.0
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_HASH:=059b3cb69970d8c8c5964caced0335b4af34ac990c8e61f7e3f90cd1c2d11e49
+PKG_HASH:=fea7162d4cca940a387f0587b93f6737d884bf74d8a9d7cfd978bc12cd0b202d
 
-PKG_LICENSE:=GPL-1.0+ Artistic-1.0-Perl
+PKG_LICENSE:=GPL-1.0-or-later Artistic-1.0-Perl
 PKG_LICENSE_FILES:=Copying Artistic README
 PKG_MAINTAINER:=Marcel Denia <naoir@gmx.net>, \
 		Philip Prindeville <philipp@redfish-solutions.com>
+PKG_CPE_ID:=cpe:/a:perl:perl
 
 # Build settings
 PKG_BUILD_DIR:=$(BUILD_DIR)/perl/$(PKG_NAME)-$(PKG_VERSION)
@@ -63,7 +64,7 @@ define Package/perl
   CATEGORY:=Languages
   TITLE:=The Perl intepreter
   URL:=http://www.perl.com/
-  DEPENDS:=+USE_GLIBC:libbsd +PERL_THREADS:libpthread
+  DEPENDS:=+USE_GLIBC:libbsd +PERL_THREADS:libpthread @!arc
 endef
 
 define Package/perl/description
@@ -121,10 +122,12 @@ define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)
 endef
 
+ifeq ($(CONFIG_arc),)
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/lib/perl5/$(PERL_VERSION)
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/perl5/$(PERL_VERSION) $(1)/usr/lib/perl5/
 endef
+endif
 
 define Package/perl/install
 	$(INSTALL_DIR) $(1)/usr/bin
