@@ -655,7 +655,7 @@
 +		}
 +
 +		nf_ct_expect_init(rtp_exp, NF_CT_EXPECT_CLASS_DEFAULT,
-+				  nf_ct_l3num(ct), &srvaddr,
++				  nf_ct_l3num(ct), NULL,
 +				  &ct->tuplehash[!dir].tuple.dst.u3,
 +				  IPPROTO_UDP, NULL, &be_loport);
 +
@@ -672,7 +672,7 @@
 +			}
 +
 +			nf_ct_expect_init(rtcp_exp, NF_CT_EXPECT_CLASS_DEFAULT,
-+					  nf_ct_l3num(ct), &srvaddr,
++					  nf_ct_l3num(ct), NULL,
 +					  &ct->tuplehash[!dir].tuple.dst.u3,
 +					  IPPROTO_UDP, NULL, &be_hiport);
 +
@@ -1715,7 +1715,7 @@
 +module_exit(fini);
 --- a/extensions/Kbuild
 +++ b/extensions/Kbuild
-@@ -26,6 +26,7 @@ obj-${build_lscan}       += xt_lscan.o
+@@ -27,6 +27,7 @@ obj-${build_lscan}       += xt_lscan.o
  obj-${build_pknock}      += pknock/
  obj-${build_psd}         += xt_psd.o
  obj-${build_quota2}      += xt_quota2.o
@@ -1725,7 +1725,7 @@
  -include ${M}/Kbuild.*
 --- a/mconfig
 +++ b/mconfig
-@@ -22,3 +22,4 @@ build_lscan=m
+@@ -23,3 +23,4 @@ build_lscan=m
  build_pknock=m
  build_psd=m
  build_quota2=m
