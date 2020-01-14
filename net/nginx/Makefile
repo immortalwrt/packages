@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nginx
-PKG_VERSION:=1.17.5
+PKG_VERSION:=1.17.7
 PKG_RELEASE:=2
 
 PKG_SOURCE:=nginx-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nginx.org/download/
-PKG_HASH:=63ee35e15a75af028ffa1f995e2b9c120b59ef5f1b61a23b8a4c33c262fc10c3
+PKG_HASH:=b62756842807e5693b794e5d0ae289bd8ae5b098e66538b2a91eb80f25c591ff
 
 PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
 				Ansuel Smith <ansuelsmth@gmail.com>
@@ -324,7 +324,7 @@ define Package/nginx-mod-luci/default
   SUBMENU:=Web Servers/Proxies
   TITLE:=Support file for Nginx
   URL:=http://nginx.org/
-  DEPENDS:=+uwsgi-cgi +uwsgi-cgi-luci-support
+  DEPENDS:=+uwsgi +uwsgi-luci-support
 endef
 
 define Package/nginx-mod-luci
@@ -547,11 +547,11 @@ endif
 
 ifeq ($(CONFIG_NGINX_UBUS),y)
   define Download/nginx-ubus-module
-    VERSION:=4547af00991357c9bc3bf4266b7c1547841bf204
+    VERSION:=f30b0167a2cdb40f23bd90928d601bdb0c1b8fad
     SUBDIR:=nginx-ubus-module
     FILE:=nginx-ubus-module-$$(VERSION).tar.xz
     URL:=https://github.com/Ansuel/nginx-ubus-module.git
-    MIRROR_HASH:=4e354934bd5fbd82b3d4c5ada19459c0f12162186a7a101a6426e2e1f30a8236
+    MIRROR_HASH:=02c7d4b0df7f4b69605e71b0fefdc99b5a9470c68cad7ccfb31ebefe4e7e0704
     PROTO:=git
   endef
   $(eval $(call Download,nginx-ubus-module))
