@@ -8,15 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=pcsc-lite
-PKG_VERSION:=1.8.23
+PKG_VERSION:=1.8.26
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://pcsclite.apdu.fr/files/
-PKG_HASH:=5a27262586eff39cfd5c19aadc8891dd71c0818d3d629539bd631b958be689c9
+PKG_HASH:=3eb7be7d6ef618c0a444316cf5c1f2f9d7227aedba7a192f389fe3e7c0dfbbd9
 PKG_MAINTAINER:=Daniel Golle <daniel@makrotopia.org>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:muscle:pcsc-lite
 
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
