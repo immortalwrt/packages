@@ -9,17 +9,18 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=liburcu
-PKG_VERSION:=0.9.4
+PKG_VERSION:=0.11.1
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Daniel Salzman <daniel.salzman@nic.cz>
-PKG_LICENSE:=LGPL-2.1 GPL-2.0 GPL-3.0 MIT
+PKG_LICENSE:=LGPL-2.1-or-later GPL-2.0-or-later MIT
+PKG_LICENSE_FILES:=lgpl-2.1.txt gpl-2.0.txt lgpl-relicensing.txt
 
 PKG_SOURCE:=userspace-rcu-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://lttng.org/files/urcu/
-PKG_HASH:=ec6c909249040dfa59bb34686482b62072ce5477f5e2e2153dac47de50b36b68
-
+PKG_HASH:=92b9971bf3f1c443edd6c09e7bf5ff3b43531e778841f16377a812c8feeb3350
 PKG_BUILD_DIR:=$(BUILD_DIR)/userspace-rcu-$(PKG_VERSION)
+
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 PKG_USE_MIPS16:=0
@@ -31,19 +32,21 @@ define Package/liburcu
 	CATEGORY:=Libraries
 	TITLE:=User-space Read-Copy-Update library
 	URL:=https://lttng.org/
-	DEPENDS:=+libpthread
+	DEPENDS:=+libpthread @!arc
 endef
 
 define Package/liburcu/description
 	Userspace Read-Copy-Update library.
 endef
 
+ifeq ($(CONFIG_arc),)
 define Build/InstallDev
 	$(INSTALL_DIR)						$(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/urcu*		$(1)/usr/include/
 	$(INSTALL_DIR)						$(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/liburcu*.{a,so*}	$(1)/usr/lib/
 endef
+endif
 
 define Package/liburcu/install
 	$(INSTALL_DIR)					$(1)/usr/lib
