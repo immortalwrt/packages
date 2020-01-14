@@ -16,7 +16,7 @@ include $(INCLUDE_DIR)/kernel.mk
 #
 PKG_NAME:=openvswitch
 PKG_VERSION:=2.12.0
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.openvswitch.org/releases/
 PKG_HASH:=13fd42703180b4b1146c7e97926d09225485868cc2fbbd58dc0c421b4b8fe8f8
@@ -318,6 +318,7 @@ CONFIGURE_ARGS+= \
 	--enable-ndebug \
 	--enable-shared \
 	--disable-libcapng \
+	--disable-silent-rules \
 
 CONFIGURE_VARS += \
 	ovs_cv_flake8=no \
