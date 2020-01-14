@@ -9,12 +9,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/uclibc++.mk
 
 PKG_NAME:=smartmontools
-PKG_VERSION:=7.0
-PKG_RELEASE:=3
+PKG_VERSION:=7.1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/smartmontools
-PKG_HASH:=e5e1ac2786bc87fdbd6f92d0ee751b799fbb3e1a09c0a6a379f9eb64b3e8f61c
+PKG_HASH:=3f734d2c99deb1e4af62b25d944c6252de70ca64d766c4c7294545a2e659b846
 
 PKG_MAINTAINER:=Maxim Storchak <m.storchak@gmail.com>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -68,6 +68,17 @@ define Package/smartmontools-drivedb/description
   Database of known drives and USB bridges for smartctl and smartd.
 endef
 
+define Package/smartd-mail
+  $(call Package/smartmontools/Default)
+  TITLE+= Email notifications
+  PKGARCH=all
+  DEPENDS+= +smartd +nail +msmtp-mta
+endef
+
+define Package/smartd-mail/description
+  A script for mailing about SMART issues
+endef
+
 ifeq ($(CONFIG_USE_UCLIBCXX),y)
 TARGET_LDFLAGS +=-nodefaultlibs
 else
@@ -110,6 +121,11 @@ define Package/smartmontools-drivedb/install
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/share/smartmontools/drivedb.h $(1)/usr/share/smartmontools/
 endef
 
+define Package/smartd-mail/install
+	$(INSTALL_DIR) $(1)/etc
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/etc/smartd_warning.sh $(1)/etc
+endef
+
 define Package/smartd/conffiles
 /etc/smartd.conf
 endef
@@ -117,3 +133,4 @@ endef
 $(eval $(call BuildPackage,smartmontools))
 $(eval $(call BuildPackage,smartd))
 $(eval $(call BuildPackage,smartmontools-drivedb))
+$(eval $(call BuildPackage,smartd-mail))
