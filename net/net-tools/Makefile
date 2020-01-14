@@ -8,21 +8,18 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=mii-tool
-PKG_VERSION=2016-10-06-$(PKG_SOURCE_VERSION)
-PKG_RELEASE:=2
+PKG_NAME:=net-tools
+PKG_SOURCE_DATE:=2018-11-03
+PKG_SOURCE_VERSION:=0eebece8c964e3cfa8a018f42b2e7e751a7009a0
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=git://git.code.sf.net/p/net-tools/code
-PKG_SOURCE_VERSION:=115f1af2494ded1fcd21c8419d5e289bc4df380f
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_MIRROR_HASH:=b67157e2912dd210b3e3184b358db6759177a1d8ed6916763e5a629f154f9d7a
-
-PKG_LICENSE:=GPL-2.0
-PKG_LICENSE_FILES:=COPYING
+PKG_SOURCE_URL:=https://git.code.sf.net/p/net-tools/code
+PKG_MIRROR_HASH:=9d978b9f8ccae4af623a299155c62d9b3d31213182c785f925bf8704d48a04c9
 
 PKG_MAINTAINER:=Stijn Segers <borromini.reg@protonmail.com>
+PKG_LICENSE:=GPL-2.0-or-later
+PKG_LICENSE_FILES:=COPYING
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -40,6 +37,22 @@ define Package/mii-tool/description
 	optimized for embedded systems and fully automated cross/-sysroot-builds
 endef
 
+define Package/net-tools-route
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=net-tools - route utility
+  URL:=http://net-tools.sourceforge.net/
+  PROVIDES:=route
+  ALTERNATIVES:=300:/sbin/route:/usr/libexec/net-tools-route
+endef
+
+define Package/net-tools-route/description
+	Replace busybox version of the route command with the full net-tools
+	version. This is normally not needed as busybox is smaller and provides
+	sufficient functionality, but some users may want or need the full
+	functionality of the net-tools variant (e.g. AF_X25).
+endef
+
 define Build/Configure
 	# Failed configure.sh leaves stub config.h around.
 	rm -f $(PKG_BUILD_DIR)/config.h
@@ -51,4 +64,10 @@ define Package/mii-tool/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/mii-tool $(1)/usr/sbin/
 endef
 
+define Package/net-tools-route/install
+	$(INSTALL_DIR) $(1)/usr/libexec
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/route $(1)/usr/libexec/net-tools-route
+endef
+
 $(eval $(call BuildPackage,mii-tool))
+$(eval $(call BuildPackage,net-tools-route))
