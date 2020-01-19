@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=youtube-dl
-PKG_VERSION:=2020.1.1
+PKG_VERSION:=2020.1.15
 PKG_RELEASE:=1
 
 PKG_SOURCE:=youtube_dl-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/y/youtube_dl/
-PKG_HASH:=0f8e62b5a3a5bb8bdf3d7ae3ec96c233f5110fa0ee1c9df51299b6636ebd4ff4
+PKG_HASH:=74e341f05e23e1650f57a01a58346cfabe3c841ccb9852c859ed2a383655db2a
 PKG_BUILD_DIR:=$(BUILD_DIR)/youtube_dl-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Adrian Panella <ianchi74@outlook.com>, Josef Schlehofer <pepe.schlehofer@gmail.com>
