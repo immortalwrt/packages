@@ -9,13 +9,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=i2pd
-PKG_VERSION:=2.26.0
-PKG_RELEASE:=1
+PKG_VERSION:=2.29.0
+PKG_RELEASE:=2
 PKG_BUILD_PARALLEL:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/PurpleI2P/i2pd/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=2ae18978c8796bb6b45bc8cfe4e1f25377e0cfc9fcf9f46054b09dc3384eef63
+PKG_HASH:=fd0474c33b411593b9dc8197f3799d37d68455c11a9ee3994ec993a96388ec06
 
 PKG_MAINTAINER:=David Yang <mmyangfl@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
@@ -43,6 +43,7 @@ define Package/i2pd/conffiles
 	/etc/config/i2pd
 	/etc/i2pd/i2pd.conf
 	/etc/i2pd/tunnels.conf
+	/etc/i2pd/tunnels.d/*
 endef
 
 TARGET_LDFLAGS+=-latomic
@@ -54,7 +55,7 @@ define Package/i2pd/install
 	$(INSTALL_DIR) $(1)/usr/share/i2pd
 	$(CP) $(PKG_BUILD_DIR)/contrib/certificates  $(1)/usr/share/i2pd
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/i2pd.config $(1)/etc/config/i2pd
+	$(INSTALL_DATA) ./files/i2pd.config $(1)/etc/config/i2pd
 	$(INSTALL_DIR) $(1)/etc/i2pd
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/contrib/i2pd.conf $(1)/etc/i2pd
 	$(SED) ' \
@@ -62,6 +63,9 @@ define Package/i2pd/install
 		s/datadir = \/var\/lib/datadir = \/etc/ \
 	' $(1)/etc/i2pd/i2pd.conf
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/contrib/tunnels.conf $(1)/etc/i2pd
+	$(INSTALL_DIR) $(1)/etc/i2pd/tunnels.d
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/contrib/tunnels.d/*.conf  $(1)/etc/i2pd/tunnels.d
+	# subscriptions.txt deprecated, see #8088
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/i2pd.init $(1)/etc/init.d/i2pd
 endef
