@@ -84,7 +84,7 @@ endef
 define Package/pulseaudio-tools
   SECTION:=sound
   CATEGORY:=Sound
-  DEPENDS:=+libsndfile +pulseaudio
+  DEPENDS:=+libsndfile pulseaudio
   TITLE:=Tools for Pulseaudio
   URL:=http://www.pulseaudio.org
   VARIANT:=noavahi
@@ -93,7 +93,7 @@ endef
 define Package/pulseaudio-profiles
   SECTION:=sound
   CATEGORY:=Sound
-  DEPENDS:=+pulseaudio
+  DEPENDS:=pulseaudio
   TITLE:=Profiles for Pulseaudio
   URL:=http://www.pulseaudio.org
 endef
