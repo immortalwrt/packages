@@ -120,6 +120,26 @@ GO_PKG_BUILD_BIN_DIR:=$(GO_PKG_BUILD_DIR)/bin$(if $(GO_HOST_TARGET_DIFFERENT),/$
 
 GO_PKG_BUILD_DEPENDS_SRC:=$(STAGING_DIR)$(GO_PKG_PATH)/src
 
+ifdef CONFIG_PKG_ASLR_PIE_ALL
+  ifeq ($(strip $(PKG_ASLR_PIE)),1)
+    ifeq ($(GO_TARGET_PIE_SUPPORTED),1)
+      GO_PKG_ENABLE_PIE:=1
+    else
+      $(warning PIE buildmode is not supported for $(GO_OS)/$(GO_ARCH))
+    endif
+  endif
+endif
+
+ifdef CONFIG_PKG_ASLR_PIE_REGULAR
+  ifeq ($(strip $(PKG_ASLR_PIE_REGULAR)),1)
+    ifeq ($(GO_TARGET_PIE_SUPPORTED),1)
+      GO_PKG_ENABLE_PIE:=1
+    else
+      $(warning PIE buildmode is not supported for $(GO_OS)/$(GO_ARCH))
+    endif
+  endif
+endif
+
 # sstrip causes corrupted section header size
 ifneq ($(CONFIG_USE_SSTRIP),)
   ifneq ($(CONFIG_DEBUG),)
@@ -281,6 +301,7 @@ define GoPackage/Build/Compile
 				pkg_ldflags="$$$$pkg_ldflags -X $$$$def" ; \
 			done ; \
 			go install \
+				$(if $(GO_PKG_ENABLE_PIE),-buildmode pie) \
 				$$$${installsuffix:+-installsuffix $$$$installsuffix} \
 				-trimpath \
 				-ldflags "all=$$$$ldflags" \
