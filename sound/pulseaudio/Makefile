@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2011-2016 OpenWrt.org
+# Copyright (C) 2011-2018 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,23 +8,22 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=pulseaudio
-PKG_VERSION:=11.1
-PKG_RELEASE:=2
+PKG_VERSION:=12.2
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://freedesktop.org/software/pulseaudio/releases/
-PKG_HASH:=f2521c525a77166189e3cb9169f75c2ee2b82fa3fcf9476024fbc2c3a6c9cd9e
-PKG_LICENSE:=LGPL-2.1+
-PKG_LICENSE_FILES:=GPL LICENSE
+PKG_HASH:=809668ffc296043779c984f53461c2b3987a45b7a25eb2f0a1d11d9f23ba4055
 
-PKG_BUILD_DEPENDS:=intltool/host
+PKG_LICENSE:=LGPL-2.1-or-later
+PKG_LICENSE_FILES:=GPL LICENSE
+PKG_CPE_ID:=cpe:/a:pulseaudio:pulseaudio
 
 PKG_FIXUP:=autoreconf
+PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
+PKG_BUILD_DEPENDS:=intltool/host glib2/host
 PKG_USE_MIPS16:=0
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
-
-PKG_INSTALL = 1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -49,7 +48,6 @@ endef
 define Package/pulseaudio-daemon-avahi
   $(call Package/pulseaudio/Default)
   DEPENDS+=+dbus +libavahi-client +sbc
-#  DEPENDS+=+avahi-daemon 
   TITLE+= (avahi/bluez)
   VARIANT:=avahi
 endef
@@ -119,11 +117,11 @@ CONFIGURE_ARGS += \
 	--disable-jack \
 	--disable-asyncns \
 	--disable-lirc \
+	--disable-tests \
 	--disable-udev \
 	--without-fftw \
 	--without-soxr \
 	--without-speex
-# --disable-bluez
 
 ifeq ($(BUILD_VARIANT),avahi)
 CONFIGURE_ARGS += \
@@ -139,9 +137,6 @@ endif
 
 CONFIGURE_VARS += \
 	PKG_CONFIG_LIBDIR="$(STAGING_DIR)/usr/lib/pkgconfig"
-
-#SUPP_LIBS:=-L$(INTL_PREFIX)/lib -L$(ICONV_PREFIX)/lib
-TARGET_CFLAGS += -std=gnu99
 
 define Build/InstallDev
 	$(INSTALL_DIR) \
