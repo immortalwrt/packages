@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-text-unidecode
-PKG_VERSION:=1.2
+PKG_VERSION:=1.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=text-unidecode-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/t/text-unidecode/
-PKG_HASH:=5a1375bb2ba7968740508ae38d92e1f889a0832913cb1c447d5e2046061a396d
+PKG_HASH:=bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-text-unidecode-$(PKG_VERSION)
 
