@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lcdproc
 PKG_VERSION:=0.5.9
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/lcdproc/lcdproc/releases/download/v$(PKG_VERSION)/
@@ -19,6 +19,7 @@ PKG_MAINTAINER:=Harald Geyer <harald@ccbib.org>, \
 		Philip Prindeville <philipp@redfish-solutions.com>
 PKG_LICENSE:=GPL-2.0-only
 PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:lcdproc:lcdproc
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -88,7 +89,7 @@ define Package/lcdproc-drivers
   $(call Package/lcdproc/Default)
   TITLE:=LCD Display extra drivers
   DEPENDS:=+lcdproc-server +libncurses +libusb-1.0 +libusb-compat +libftdi1 \
-	+GPIO_SUPPORT:libugpio
+	+GPIO_SUPPORT:libugpio +serdisplib
 endef
 
 define LCDPROC_OTHER_DRIVERS_TEXT
