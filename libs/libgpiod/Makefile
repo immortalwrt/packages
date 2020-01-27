@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018 Michael Heimpold <mhei@heimpold.de>
+# Copyright (C) 2018-2019 Michael Heimpold <mhei@heimpold.de>
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libgpiod
-PKG_VERSION:=1.0.1
-PKG_RELEASE:=1
+PKG_VERSION:=1.4.1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/software/libs/libgpiod/
-PKG_HASH:=972924195367f5fb045c023d65340c4b7dfc8764499516be446553865208dedc
+PKG_HASH:=21ae8fd1f8dafc2eb2ba50e652390cf533d21351419a7426255895cb52e21b1c
 
-PKG_LICENSE:=LGPL-2.1+
+PKG_LICENSE:=LGPL-2.1-or-later
 PKG_LICENSE_FILES:=COPYING
 
 PKG_MAINTAINER:=Michael Heimpold <mhei@heimpold.de>
@@ -24,9 +24,18 @@ PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include ../../lang/python/python3-package.mk
 
 ifneq ($(CONFIG_PACKAGE_gpiod-tools),)
 CONFIGURE_ARGS += --enable-tools
+endif
+
+ifneq ($(CONFIG_PACKAGE_python3-gpiod),)
+CONFIGURE_ARGS += --enable-bindings-python
+CONFIGURE_VARS += \
+	PYTHON="$(STAGING_DIR_HOSTPKG)/bin/$(PYTHON3)" \
+	PYTHON_CPPFLAGS="$(shell $(STAGING_DIR)/host/bin/$(PYTHON3)-config --includes)" \
+	PYTHON_LIBS="$(shell $(STAGING_DIR)/host/bin/$(PYTHON3)-config --libs)"
 endif
 
 define Package/libgpiod
@@ -34,7 +43,7 @@ define Package/libgpiod
   CATEGORY:=Libraries
   URL:=https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git
   TITLE:=Library for interacting with Linux's GPIO character device
-  DEPENDS:=@GPIO_SUPPORT @(LINUX_4_9||LINUX_4_14)
+  DEPENDS:=@GPIO_SUPPORT
 endef
 
 define Package/libgpiod/description
@@ -54,6 +63,19 @@ define Package/gpiod-tools/description
   (gpiod stands for GPIO device).
 endef
 
+define Package/python3-gpiod
+  SECTION:=lang
+  CATEGORY:=Languages
+  SUBMENU:=Python
+  TITLE:=Python bindings for libgpiod
+  URL:=https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git
+  DEPENDS:=+python3-light +libgpiod
+endef
+
+define Package/python3-gpiod/description
+  This package contains the Python bindings for libgpiod.
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/gpiod.h $(1)/usr/include/
@@ -67,7 +89,7 @@ endef
 
 define Package/libgpiod/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libgpiod.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libgpiod.so.* $(1)/usr/lib/
 endef
 
 define Package/gpiod-tools/install
@@ -75,5 +97,11 @@ define Package/gpiod-tools/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/bin/
 endef
 
+define Package/python3-gpiod/install
+	$(INSTALL_DIR) $(1)/$(PYTHON3_PKG_DIR)
+	$(CP) $(PKG_INSTALL_DIR)/$(PYTHON3_PKG_DIR)/gpiod.so $(1)/$(PYTHON3_PKG_DIR)
+endef
+
 $(eval $(call BuildPackage,libgpiod))
 $(eval $(call BuildPackage,gpiod-tools))
+$(eval $(call BuildPackage,python3-gpiod))
