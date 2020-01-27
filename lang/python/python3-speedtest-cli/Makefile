@@ -23,7 +23,7 @@ define Package/python3-speedtest-cli
   SUBMENU:=Python
   TITLE:=Command line interface for testing internet bandwidth using speedtest.net
   URL:=https://github.com/sivel/speedtest-cli
-  DEPENDS:=+python3-light +python3-pkg-resources +python3-xml +python3-email \
+  DEPENDS:=+python3-light +python3-xml +python3-email \
 	  +python3-urllib +python3-codecs +python3-openssl
   VARIANT:=python3
 endef
