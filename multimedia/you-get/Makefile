@@ -30,13 +30,13 @@ define Package/you-get
   URL:=https://you-get.org
   DEPENDS:= \
     +ca-certificates \
+    +ffmpeg \
     +python3 \
     +python3-email \
     +python3-xml \
     +python3-codecs \
     +python3-ctypes \
-    +python3-setuptools \
-    +ffmpeg
+    +python3-setuptools
   VARIANT:=python3
 endef
 

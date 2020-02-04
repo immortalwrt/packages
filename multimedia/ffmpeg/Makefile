@@ -420,6 +420,7 @@ FFMPEG_CONFIGURE:= \
 	--enable-pthreads \
 	--enable-zlib \
 	--enable-openssl \
+	--enable-protocol=rtmp,rtmps \
 	--enable-nonfree \
 	--disable-doc \
 	--disable-debug \
