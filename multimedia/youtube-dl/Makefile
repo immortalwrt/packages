@@ -35,7 +35,8 @@ define Package/youtube-dl
     +python3-xml \
     +python3-codecs \
     +python3-ctypes \
-    +python3-setuptools
+    +python3-setuptools \
+    +ffmpeg
   VARIANT:=python3
 endef
 
