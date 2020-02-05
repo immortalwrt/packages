@@ -17,6 +17,9 @@ PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
 
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_BUILD_PARALLEL:=1
+
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_IPV6 \
 
@@ -25,7 +28,6 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
-include ../../devel/meson/meson.mk
 
 define Package/mpd/Default
   SECTION:=sound
@@ -99,110 +101,89 @@ endef
 
 EXTRA_LDFLAGS += $(if $(ICONV_FULL),-liconv,-Wl,--whole-archive -liconv -Wl,--no-whole-archive) -Wl,-rpath-link=$(STAGING_DIR)/usr/lib/pulseaudio
 
-MESON_ARGS += \
-	-Ddocumentation=false \
-	-Dtest=false \
-	-Dsyslog=enabled \
-	-Dinotify=true \
-	-Ddaemon=false \
-	-Dsystemd=disabled \
-	-Dtcp=true \
-	-Dipv6=$(if $(CONFIG_IPV6),enabled,disabled) \
-	-Dlocal_socket=true \
-	-Ddsd=false \
-	-Ddatabase=true \
-	-Dlibmpdclient=enabled \
-	-Dneighbor=false \
-	-Dudisks=disabled \
-	-Dwebdav=enabled \
-	-Dcue=true \
-	-Dcdio_paranoia=disabled \
-	-Dcurl=enabled \
-	-Dnfs=disabled \
-	-Dsmbclient=disabled \
-	-Dqobuz=disabled \
-	-Dtidal=disabled \
-	-Dbzip2=disabled \
-	-Diso9660=disabled \
-	-Dzzip=disabled \
-	-Dchromaprint=disabled \
-	-Dadplug=disabled \
-	-Daudiofile=disabled \
-	-Dfaad=disabled \
-	-Dflac=enabled \
-	-Dfluidsynth=disabled \
-	-Dgme=disabled \
-	-Dmpg123=disabled \
-	-Dmikmod=disabled \
-	-Dmodplug=disabled \
-	-Dmpcdec=disabled \
-	-Dopus=disabled \
-	-Dsidplay=disabled \
-	-Dsndfile=disabled \
-	-Dwavpack=disabled \
-	-Dwildmidi=disabled \
-	-Dvorbisenc=disabled \
-	-Dlame=disabled \
-	-Dtwolame=disabled \
-	-Dshine=disabled \
-	-Dwave_encoder=true \
-	-Dlibsamplerate=disabled \
-	-Dsoxr=disabled \
-	-Dalsa=$(if $(CONFIG_AUDIO_SUPPORT),enabled,disabled) \
-	-Dao=disabled \
-	-Dhttpd=true \
-	-Djack=disabled \
-	-Dopenal=disabled \
-	-Doss=disabled \
-	-Dsndio=disabled \
-	-Dsolaris_output=disabled \
-	-Ddbus=disabled \
-	-Dexpat=enabled \
-	-Dicu=$(if $(CONFIG_USE_UCLIBC),enabled,disabled) \
-	-Diconv=$(if $(CONFIG_USE_UCLIBC),disabled,enabled) \
-	-Dpcre=disabled \
-	-Dsqlite=disabled \
-	-Dzlib=enabled \
-	-Dzeroconf=disabled
-
+CONFIGURE_ARGS += \
+	$(call autoconf_bool,CONFIG_IPV6,ipv6) \
+	--disable-debug \
+	--disable-documentation \
+	--disable-test \
+	--disable-aac \
+	--disable-adplug \
+	--disable-ao \
+	--disable-audiofile \
+	--disable-bzip2 \
+	--disable-cdio-paranoia \
+	--disable-fluidsynth \
+	--disable-wildmidi \
+	--disable-gme \
+	--enable-inotify \
+	--disable-icu \
+	--enable-iconv \
+	--disable-iso9660 \
+	--disable-jack \
+	--disable-roar \
+	--disable-libwrap \
+	--disable-lsr \
+	--disable-mad \
+	--disable-mikmod \
+	--disable-modplug \
+	--disable-mpc \
+	--disable-nfs \
+	--disable-openal \
+	--disable-opus \
+	--disable-sidplay \
+	--disable-smbclient \
+	--disable-sndfile \
+	--disable-solaris-output \
+	--disable-sqlite \
+	--disable-systemd-daemon \
+	--disable-lame-encoder \
+	--disable-twolame-encoder \
+	--disable-shine-encoder \
+	--disable-vorbis-encoder \
+	--enable-wave-encoder \
+	--disable-wavpack \
+	--enable-webdav \
+	--disable-zzip \
+	--with-zeroconf=no \
+	--disable-soxr \
+	--enable-curl \
+	--enable-httpd-output \
+	$(call autoconf_bool,CONFIG_AUDIO_SUPPORT,alsa) \
+	--enable-tcp \
+	--disable-sndio \
+	--disable-haiku
 
 ifeq ($(BUILD_VARIANT),full)
 
-  MESON_ARGS += \
-	-Dupnp=enabled \
-	-Dmms=enabled \
-	-Dsoundcloud=enabled \
-	-Did3tag=enabled \
-	-Dffmpeg=enabled \
-	-Dmad=disabled \
-	-Dtremor=disabled \
-	-Dvorbis=enabled \
-	-Dfifo=true \
-	-Dpipe=true \
-	-Dpulse=enabled \
-	-Drecorder=true \
-	-Dshout=enabled \
-	-Dyajl=enabled
+  CONFIGURE_ARGS += \
+    	--enable-upnp \
+	--enable-ffmpeg \
+	--enable-id3 \
+	--enable-mms \
+	--disable-mpg123 \
+	--enable-pipe-output \
+	--enable-recorder-output \
+	--enable-shout \
+	--enable-pulse \
+	--disable-vorbis \
+	--enable-soundcloud
 endif
 
 ifeq ($(BUILD_VARIANT),mini)
 
   # oggflac is not compatible with tremor
-  MESON_ARGS += \
-	-Dupnp=disabled \
-	-Dmms=disabled \
-	-Dsoundcloud=disabled \
-	-Did3tag=disabled \
-	-Dffmpeg=disabled \
-	-Dmad=enabled \
-	-Dtremor=enabled \
-	-Dvorbis=disabled \
-	-Dfifo=false \
-	-Dpipe=false \
-	-Dpulse=disabled \
-	-Drecorder=false \
-	-Dshout=disabled \
-	-Dyajl=disabled
+  CONFIGURE_ARGS += \
+    	--disable-upnp \
+	--disable-fifo \
+	--disable-ffmpeg \
+	--disable-id3 \
+	--disable-mms \
+	--disable-shout \
+	--disable-soundcloud \
+	--disable-pulse \
+	--enable-vorbis \
+	--with-tremor=yes \
+	--disable-recorder-output
 endif
 
 define Package/mpd/install
