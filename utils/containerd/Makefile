@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=containerd
 PKG_VERSION:=1.2.10
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
@@ -39,7 +39,7 @@ define Package/containerd
   CATEGORY:=Utilities
   TITLE:=containerd container runtime
   URL:=https://containerd.io/
-  DEPENDS:=$(GO_ARCH_DEPENDS) @HAS_FPU @TARGET_x86_64||arm||aarch64 +btrfs-progs +runc +CONTAINERD_SECCOMP:libseccomp
+  DEPENDS:=$(GO_ARCH_DEPENDS) @HAS_FPU @(aarch64||arm||x86_64) +btrfs-progs +runc +CONTAINERD_SECCOMP:libseccomp
   MENU:=1
 endef
 
@@ -49,14 +49,7 @@ endef
 
 GO_PKG_INSTALL_ALL:=1
 MAKE_PATH:=$(GO_PKG_WORK_DIR_NAME)/build/src/$(GO_PKG)
-MAKE_VARS += \
-	GOPATH=$(GO_PKG_BUILD_DIR) \
-	GOCACHE=$(GO_PKG_CACHE_DIR) \
-	GOTMPDIR=$(GO_PKG_TMP_DIR) \
-	GOROOT_FINAL=$(GO_TARGET_ROOT) \
-	CC=$(TARGET_CC) \
-	CXX=$(TARGET_CXX) \
-	$(call GoPackage/Environment)
+MAKE_VARS += $(call GoPackage/Environment)
 MAKE_FLAGS += \
 	DESTDIR="$(PKG_INSTALL_DIR)" \
 	VERSION=$(PKG_VERSION) \
