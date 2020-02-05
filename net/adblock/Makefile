@@ -54,8 +54,7 @@ define Package/adblock/install
 	$(INSTALL_CONF) ./files/adblock.conf $(1)/etc/config/adblock
 
 	$(INSTALL_DIR) $(1)/etc/adblock
-	$(INSTALL_BIN) ./files/adblock.mail $(1)/etc/adblock
-	$(INSTALL_BIN) ./files/adblock.service $(1)/etc/adblock
+	$(INSTALL_BIN) ./files/adblock.notify $(1)/etc/adblock
 	$(INSTALL_CONF) ./files/adblock.blacklist $(1)/etc/adblock
 	$(INSTALL_CONF) ./files/adblock.whitelist $(1)/etc/adblock
 endef
