@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mpd
-PKG_VERSION:=0.21.19
-PKG_RELEASE:=1
+PKG_VERSION:=0.20.23
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=https://www.musicpd.org/download/mpd/0.21/
-PKG_HASH:=d3275e11d85637adde250cadf3b4f5aec2144228f0d8085767493fc46c55b2f9
+PKG_SOURCE_URL:=http://www.musicpd.org/download/mpd/0.20/
+PKG_HASH:=503e5f9f237290f568ff7956ab2f9aed563594bf749f19b8fe994fb21434afea
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -33,9 +33,9 @@ define Package/mpd/Default
   SECTION:=sound
   CATEGORY:=Sound
   TITLE:=Music Player Daemon
-  URL:=https://www.musicpd.org/
+  URL:=http://www.musicpd.org/
   DEPENDS:= +zlib +libcurl +libpthread +libmpdclient +libstdcpp $(ICONV_DEPENDS) \
-	    +AUDIO_SUPPORT:alsa-lib +boost +libexpat +libflac +USE_UCLIBC:icu
+	    +AUDIO_SUPPORT:alsa-lib +boost +boost-container +libexpat +libflac
 endef
 
 define Package/mpd/Default/description
@@ -48,7 +48,7 @@ endef
 define Package/mpd-full
 $(call Package/mpd/Default)
   TITLE+= (full)
-  DEPENDS+= +libffmpeg +libid3tag +libvorbis +libmms +libupnp +libshout +pulseaudio-daemon +yajl
+  DEPENDS+= +libffmpeg +libid3tag +libmms +libupnp +libshout +pulseaudio-daemon +yajl
   PROVIDES:=mpd
   VARIANT:=full
 endef
@@ -66,7 +66,7 @@ endef
 define Package/mpd-mini
 $(call Package/mpd/Default)
   TITLE+= (mini)
-  DEPENDS+= +libmad +libvorbisidec
+  DEPENDS+= +libmpg123 +libvorbisidec
   PROVIDES:=mpd
   VARIANT:=mini
 endef
@@ -153,10 +153,11 @@ CONFIGURE_ARGS += \
 	--disable-sndio \
 	--disable-haiku
 
+
 ifeq ($(BUILD_VARIANT),full)
 
   CONFIGURE_ARGS += \
-    	--enable-upnp \
+	--enable-upnp \
 	--enable-ffmpeg \
 	--enable-id3 \
 	--enable-mms \
@@ -173,7 +174,7 @@ ifeq ($(BUILD_VARIANT),mini)
 
   # oggflac is not compatible with tremor
   CONFIGURE_ARGS += \
-    	--disable-upnp \
+	--disable-upnp \
 	--disable-fifo \
 	--disable-ffmpeg \
 	--disable-id3 \
