@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=adblock
-PKG_VERSION:=3.8.14
+PKG_VERSION:=3.8.15
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_MAINTAINER:=Dirk Brenken <dev@brenken.org>
@@ -45,7 +45,7 @@ endef
 
 define Package/adblock/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) ./files/adblock.sh $(1)/usr/bin/
+	$(INSTALL_BIN) ./files/adblock.sh $(1)/usr/bin
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/adblock.init $(1)/etc/init.d/adblock
@@ -54,7 +54,8 @@ define Package/adblock/install
 	$(INSTALL_CONF) ./files/adblock.conf $(1)/etc/config/adblock
 
 	$(INSTALL_DIR) $(1)/etc/adblock
-	$(INSTALL_CONF) ./files/adblock.notify $(1)/etc/adblock/
+	$(INSTALL_BIN) ./files/adblock.mail $(1)/etc/adblock
+	$(INSTALL_BIN) ./files/adblock.service $(1)/etc/adblock
 	$(INSTALL_CONF) ./files/adblock.blacklist $(1)/etc/adblock
 	$(INSTALL_CONF) ./files/adblock.whitelist $(1)/etc/adblock
 endef
