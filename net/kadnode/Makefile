@@ -1,19 +1,15 @@
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
 include $(TOPDIR)/rules.mk
 
 
 PKG_NAME:=kadnode
-PKG_VERSION:=2.2.0
-PKG_RELEASE:=2
+PKG_VERSION:=2.3.0
+PKG_RELEASE:=1
 
 PKG_LICENSE:=MIT
 
 PKG_SOURCE_URL:=https://codeload.github.com/mwarning/KadNode/tar.gz/v$(PKG_VERSION)?
-PKG_SOURCE:=KadNode-$(PKG_VERSION).tar.gz
-PKG_HASH:=1b3ccaa01cbb7548ef268d8b562059452826dc774529303c494418d1a450ca97
+PKG_SOURCE:=kadnode-$(PKG_VERSION).tar.gz
+PKG_HASH:=abb2ca66fb525fab53157d5486bbb43e3a522a4bdc9280a3dcb8cb403ee08583
 PKG_BUILD_DIR:=$(BUILD_DIR)/KadNode-$(PKG_VERSION)
 
 
