@@ -2,7 +2,6 @@
 
 PRINT_PASSED=2
 
-printf "Initializing tests ...\n"
 
 OPENSSL_PEM="$(mktemp)"
 OPENSSL_DER="$(mktemp)"
@@ -19,14 +18,14 @@ openssl req -x509 -nodes -days 1 -keyout /dev/null 2>/dev/null \
 
 
 function test() {
+    MSG="$1 >/dev/null \t (-> $2?) \t"
     eval "$1 >/dev/null "
     if [ $? -eq $2 ]
     then
-        [ "${PRINT_PASSED}" -gt 0 ] \
-        && printf "%-72s%-1s\n" "$1" ">/dev/null (-> $2?) passed."
+        [ "$PRINT_PASSED" -gt 0 ] && printf "$MSG passed.\n"
     else
-        printf "%-72s%-1s\n" "$1" ">/dev/null (-> $2?) failed!!!"
-        [ "${PRINT_PASSED}" -gt 1 ] && exit 1
+        printf "$MSG failed!!!\n"
+        [ "$PRINT_PASSED" -gt 1 ] && exit 1
     fi
 }
 
