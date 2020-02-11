@@ -1,12 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rpcsvc-proto
-PKG_VERSION:=1.4
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/thkukuk/rpcsvc-proto/releases/download/v$(PKG_VERSION)/
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=867e46767812784d8dda6d8d931d6fabb30168abb02d87a2a205be6d5a2934a7
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/thkukuk/rpcsvc-proto.git
+PKG_SOURCE_DATE:=2020-01-16
+PKG_SOURCE_VERSION:=daba1f3aa715551bd83770053a15153f0e40d27f
+PKG_MIRROR_HASH:=38ac6ad69327d4498cebc5b97519210f0643a8c47a3a3409cbae01806631694b
 
 PKG_MAINTAINER:=Andy Walsh <andy.walsh44+github@gmail.com>
 PKG_LICENSE:=BSD-3-clause
@@ -28,6 +29,7 @@ define Package/rpcsvc-proto
   TITLE:=rpcgen and rpcsvc proto.x files from glibc
   URL:=https://github.com/thkukuk/rpcsvc-proto
   DEPENDS:=$(INTL_DEPENDS)
+  BUILDONLY:=1
 endef
 
 define Package/rpcsvc-proto/description
@@ -44,14 +46,6 @@ endef
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/rpcsvc $(1)/usr/include/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/rpcgen $(1)/usr/bin/
-endef
-
-# do we need rpcgen on target?
-define Package/rpcsvc-proto/install
-	# $(INSTALL_DIR) $(1)/usr/bin
-	# $(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/rpcgen $(1)/usr/bin/
 endef
 
 $(eval $(call HostBuild))
