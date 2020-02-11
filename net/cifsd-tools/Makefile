@@ -1,25 +1,27 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cifsd-tools
+PKG_VERSION:=3.2.1
 PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/cifsd-team/cifsd-tools.git
-PKG_SOURCE_DATE:=2019-11-27
-PKG_SOURCE_VERSION:=06fd4153a5d5af1f96a20234f397bd149a8e4832
-PKG_MIRROR_HASH:=2849d2af471e327abc8d67afc91ca767c410e2b307d6554531a0b387d9ad909a
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://github.com/cifsd-team/cifsd-tools/archive/$(PKG_VERSION)/
+PKG_HASH:=acb4d97cbb0b22ad42ed1536bdd2c28af2a3c698664c058da59a644d5e6df599
 
 PKG_MAINTAINER:=Andy Walsh <andy.walsh44+github@gmail.com>
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
 
 PKG_FIXUP:=autoreconf
+PKG_REMOVE_FILES:=autogen.sh
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
-PKG_REMOVE_FILES:=autogen.sh
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
+
+TAR_OPTIONS+= --strip-components 1
+TAR_CMD=$(HOST_TAR) -C $(1) $(TAR_OPTIONS)
 
 define Package/cifsd-tools
   SECTION:=net
