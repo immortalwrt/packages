@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2018 OpenWrt.org
+# Copyright (C) 2015-2020 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-cffi
-PKG_VERSION:=1.13.0
+PKG_VERSION:=1.14.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=cffi-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/c/cffi
-PKG_HASH:=8fe230f612c18af1df6f348d02d682fe2c28ca0a6c3856c99599cdacae7cf226
+PKG_HASH:=2d384f4a127a15ba701207f7639d94106693b6cd64173d6c8988e2c25f3ac2b6
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-cffi-$(PKG_VERSION)
 
