@@ -8,30 +8,29 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grep
-PKG_VERSION:=2.26
+PKG_VERSION:=3.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/grep
-PKG_HASH:=246a8fb37e82aa33d495b07c22fdab994c039ab0f818538eac81b01e78636870
+PKG_HASH:=58e6751c41a7c25bfc6e9363a41786cff3ba5709cf11d5ad903cf7cce31cc3fb
 
-PKG_LICENSE:=GPL-3.0
-PKG_LICENSE_FILES:=COPYING
 PKG_MAINTAINER:=Julen Landa Alustiza <julen@zokormazo.info>
+PKG_LICENSE:=GPL-3.0-or-later
+PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:gnu:grep
 
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-TARGET_CFLAGS+=--std=gnu99
-
 define Package/grep
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=grep search utility - full version
   DEPENDS:=+libpcre
-  URL:=http://www.gnu.org/software/grep/
+  URL:=https://www.gnu.org/software/grep/
 endef
 
 define Package/grep/description
@@ -42,7 +41,7 @@ endef
 
 define Package/grep/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/grep $(1)/usr/bin/grep
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/bin
 endef
 
 define Package/grep/postinst
