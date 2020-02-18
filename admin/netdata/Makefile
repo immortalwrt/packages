@@ -62,6 +62,10 @@ CONFIGURE_ARGS += \
 	--disable-backend-prometheus-remote-write \
 	--enable-jsonc
 
+ifneq ($(ARCH),x86_64)
+	CONFIGURE_ARGS += --disable-x86-sse
+endif
+
 define Package/netdata/conffiles
 /etc/netdata/
 endef
