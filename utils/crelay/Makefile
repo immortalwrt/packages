@@ -8,18 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=crelay
-PKG_VERSION:=0.10.1
+PKG_VERSION:=0.14
 PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/ondrej1024/crelay
-PKG_SOURCE_VERSION:=V$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_MIRROR_HASH:=e7cae6dcc299cbec86e6cbc79dd155a1489d97c9a46b3b4e5179a6ca11cc4b8b
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_URL:=https://codeload.github.com/ondrej1024/crelay/tar.gz/V$(PKG_VERSION)?
+PKG_HASH:=8e406ae8560d8a42b7dd7cf20193e6dce714747f71809e124deadddf78572590
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
-PKG_LICENSE:=GPL-2.0
+PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
@@ -29,7 +26,7 @@ define Package/crelay
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=USB relay remote control daemon
-  URL:=http://github.com/ondrej1024/crelay
+  URL:=https://github.com/ondrej1024/crelay
   DEPENDS:=+libftdi1 +hidapi +libusb-1.0
 endef
 
@@ -47,11 +44,7 @@ define Package/crelay/description
       - HID API compatible relay card
 endef
 
-define Build/Configure
-endef
-
 TARGET_CFLAGS+= \
-	-D_GNU_SOURCE \
 	-I$(STAGING_DIR)/usr/include/libftdi1 \
 	-I$(STAGING_DIR)/usr/include/hidapi
 
