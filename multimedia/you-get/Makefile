@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015 OpenWrt.org
+# Copyright (C) 2020 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -16,7 +16,7 @@ PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/y/you-get/
 PKG_HASH:=944daa105d81ac5fb25cec52d05db3223966e12b9aa20d5a1e746cd67b48aca4
 PKG_BUILD_DIR:=$(BUILD_DIR)/you-get-$(PKG_VERSION)
 
-PKG_MAINTAINER:=CN_SZTL <cnsztl@gmail.com>
+PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
