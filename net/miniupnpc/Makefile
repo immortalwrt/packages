@@ -8,27 +8,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=miniupnpc
-PKG_VERSION:=2.1.20191224
+PKG_VERSION:=2.0.20170509
 PKG_RELEASE:=1
 
+PKG_SOURCE_URL:=http://miniupnp.free.fr/files
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
-PKG_HASH:=447b427854b6c027ea28bc838b18582c5a7e71db84f6ff36df93bd91e46d66cf
+PKG_HASH:=d3c368627f5cdfb66d3ebd64ca39ba54d6ff14a61966dbecb8dd296b7039f16a
+PKG_MAINTAINER:=Steven Barth <cyrus@openwrt.org>
 
-PKG_MAINTAINER:=
-PKG_LICENSE:=BSD-3-Clause
-PKG_LICENSE_FILES:=LICENSE
-PKG_CPE_ID:=cpe:/a:miniupnp_project:miniupnp
-
-CMAKE_INSTALL:=1
-PKG_BUILD_PARALLEL:=1
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
 
 define Package/miniupnpc/Default
   TITLE:=Lightweight UPnP
-  URL:=https://miniupnp.tuxfamily.org
+  URL:=http://miniupnp.tuxfamily.org/
 endef
 
 define Package/miniupnpc
@@ -47,20 +41,33 @@ define Package/libminiupnpc
   TITLE+= library
 endef
 
-CMAKE_OPTIONS += -DUPNPC_BUILD_TESTS=OFF
-
 TARGET_CFLAGS += $(FPIC)
-TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
+
+MAKE_FLAGS += \
+	OS="Linux" \
+
+define Build/InstallDev
+	$(INSTALL_DIR) $(1)/usr/include/miniupnpc
+	$(CP) \
+		$(PKG_INSTALL_DIR)/usr/include/miniupnpc/*.h \
+		$(1)/usr/include/miniupnpc/
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) \
+		$(PKG_INSTALL_DIR)/usr/lib/*.{so*,a} \
+		$(1)/usr/lib/
+endef
 
 define Package/miniupnpc/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/upnpc-shared $(1)/usr/bin/upnpc
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/upnpc $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/listdevices $(1)/usr/bin/
 endef
 
 define Package/libminiupnpc/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libminiupnpc.so.* $(1)/usr/lib/
+	$(INSTALL_BIN) \
+		$(PKG_INSTALL_DIR)/usr/lib/libminiupnpc.so.* \
+		$(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,miniupnpc))

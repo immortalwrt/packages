@@ -190,10 +190,10 @@ start() {
 
 		if [ "$logging" = "1" ]; then
 			SERVICE_DAEMONIZE=1 \
-			service_start /usr/sbin/miniupnpd $args -d &
+			service_start /usr/sbin/miniupnpd $args -d
 		else
 			SERVICE_DAEMONIZE= \
-			service_start /usr/sbin/miniupnpd $args &
+			service_start /usr/sbin/miniupnpd $args
 		fi
 	else
 		logger -t "upnp daemon" "external interface not found, not starting"
