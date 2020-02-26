@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-automat
-PKG_VERSION:=0.8.0
+PKG_VERSION:=20.2.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=Automat-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/A/Automat
-PKG_HASH:=269a09dfb063a3b078983f4976d83f0a0d3e6e7aaf8e27d8df1095e09dc4a484
+PKG_HASH:=7979803c74610e11ef0c0d68a2942b152df52da55336e0c9d58daf1831cbdf33
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-automat-$(PKG_VERSION)
 
