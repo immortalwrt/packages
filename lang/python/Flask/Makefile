@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Flask
-PKG_VERSION:=1.0.3
+PKG_VERSION:=1.1.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/F/Flask
-PKG_HASH:=ad7c6d841e64296b962296c2c2dabc6543752985727af86a975072dea984b6f3
+PKG_HASH:=13f9f196f330c7c2c5d7a5cf91af894110ca0215ac051b5844701f2bfd934d52
 
 PKG_MAINTAINER:=Daniel Golle <daniel@makrotopia.org>
 PKG_LICENSE:=BSD-3-Clause
