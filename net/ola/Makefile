@@ -9,20 +9,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ola
-PKG_VERSION:=0.10.6
-PKG_RELEASE:=3
+PKG_VERSION:=0.10.7
+PKG_RELEASE:=5
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/OpenLightingProject/ola.git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=6e57342c414a72cdd721e8df5bc7967e17459647
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_MIRROR_HASH:=c1f36eaedcd9711e42fd362ff84d8e66eb40bc6af97de77129a5074d05fb9936
-PKG_LICENSE:=LGPL-2.1+
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/OpenLightingProject/ola/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=95b5e99775f700a9cdf6e2219eccfc8c037fa8841f87cb00344359c4b8c7bf26
 
-PKG_FIXUP:=libtool
+PKG_MAINTAINER:=Christian Beier <dontmind@freeshell.org>
+PKG_LICENSE:=LGPL-2.1-or-later
+PKG_LICENSE_FILES:=COPYING
+
+PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
-
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
@@ -37,8 +36,7 @@ define Package/ola
   CATEGORY:=Network
   TITLE:=Open Lighting Architecture Daemon
   URL:=https://www.openlighting.org/
-  MAINTAINER:=Christian Beier <dontmind@freeshell.org>
-  DEPENDS:=+protobuf +libusb-1.0 +libuuid +libstdcpp +libpthread +librt +zlib +libncurses +liblo +libmicrohttpd
+  DEPENDS:=+protobuf +libftdi1 +libusb-1.0 +libuuid +libstdcpp +libpthread +librt +zlib +libncurses +liblo +libmicrohttpd
 endef
 
 define Package/ola/description
@@ -53,7 +51,7 @@ CONFIGURE_ARGS += \
 	--disable-fatal-warnings \
 	--disable-unittests \
 	--without-dns-sd \
-	--with-ola-protoc-plugin=$(STAGING_DIR_HOSTPKG)/bin/ola_protoc_plugin
+	--with-ola-protoc-plugin="$(STAGING_DIR_HOSTPKG)/bin/ola_protoc_plugin"
 
 HOST_CONFIGURE_ARGS += \
 	--disable-all-plugins \
@@ -61,12 +59,14 @@ HOST_CONFIGURE_ARGS += \
 	--disable-osc \
 	--disable-uart \
 	--disable-libusb \
-	--disable-libftdi \
 	--disable-http  \
 	--disable-examples \
 	--disable-unittests \
 	--disable-doxygen-html \
 	--disable-doxygen-doc
+
+HOST_LDFLAGS += -Wl,-rpath="$(STAGING_DIR_HOSTPKG)/lib"
+TARGET_LDFLAGS += $(if $(CONFIG_USE_GLIBC),-lm)
 
 # only build the ola_protoc thingy
 define Host/Compile
