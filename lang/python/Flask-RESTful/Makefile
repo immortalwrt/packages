@@ -4,7 +4,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=python-flask-restful
+PKG_NAME:=Flask-RESTful
 PKG_VERSION:=0.3.8
 PKG_RELEASE:=1
 
