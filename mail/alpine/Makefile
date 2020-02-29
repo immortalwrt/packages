@@ -8,20 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alpine
-PKG_VERSION:=2.20
-PKG_RELEASE:=2
+PKG_VERSION:=2.22
+PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=http://patches.freeiz.com/alpine/release/src/
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_HASH:=ed639b6e5bb97e6b0645c85262ca6a784316195d461ce8d8411999bf80449227
+PKG_SOURCE_URL:=http://alpine.x10host.com/alpine/release/src
+PKG_HASH:=849567c1b6f71fde3aaa1c97cf0577b12a525d9e22c0ea47797c4bf1cd2bbfdb
 
 PKG_MAINTAINER:=Antti Seppälä <a.seppala@gmail.com>
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_INSTALL:=1
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -31,7 +30,7 @@ define Package/alpine/Default
   CATEGORY:=Mail
   DEPENDS:=+libopenssl +libncurses +libpthread +libpam $(ICONV_DEPENDS) $(INTL_DEPENDS)
   TITLE:=Alternatively Licensed Program for Internet News and Email
-  URL:=http://www.washington.edu/alpine
+  URL:=http://alpine.x10host.com/alpine/
 endef
 
 define Package/alpine/Default/description
@@ -77,6 +76,7 @@ CONFIGURE_ARGS += \
 	--disable-debug \
 	--disable-mouse \
 	--with-c-client-target=slx \
+	$(if $(CONFIG_IPV6),--with,--without)-ipv6
 
 CONFIGURE_VARS += \
 	top_builddir=$(PKG_BUILD_DIR)
@@ -85,21 +85,9 @@ ifeq ($(BUILD_VARIANT),ssl)
 	CONFIGURE_ARGS += \
 		--with-ssl-include-dir=$(STAGING_DIR)/usr/include/openssl/. \
 		--with-ssl-lib-dir=$(STAGING_DIR)/usr/lib
-endif
-
-ifeq ($(BUILD_VARIANT),nossl)
+else
 	CONFIGURE_ARGS += \
 		--without-ssl
-endif
-
-ifeq ($(CONFIG_BUILD_NLS),y)
-  DISABLE_NLS:=
-endif
-
-ifeq ($(CONFIG_IPV6),y)
-  DISABLE_IPV6:=
-else
-  DISABLE_IPV6:=--without-ipv6
 endif
 
 define Build/Compile
@@ -114,7 +102,7 @@ endef
 
 define Package/alpine/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME) $(1)/usr/bin/$(PKG_NAME)
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/alpine $(1)/usr/bin/
 endef
 
 Package/alpine-nossl/install = $(Package/alpine/install)
