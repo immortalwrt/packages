@@ -14,6 +14,8 @@ start_instance() {
 
 	[ "$enabled" = 1 ] || exit 0
 
+	export HOME=/root
+	export AUTOSSH_PATH=ssh
 	export AUTOSSH_GATETIME="${gatetime:-30}"
 	export AUTOSSH_POLL="${poll:-600}"
 	service_start /usr/sbin/autossh -M ${monitorport:-20000} -f ${ssh}
