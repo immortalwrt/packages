@@ -8,33 +8,30 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=linknx
-PKG_VERSION:=0.0.1.34
-PKG_RELEASE:=1
+PKG_VERSION:=0.0.1.37
+PKG_RELEASE:=4
+
+PKG_SOURCE:=$(PKG_NAME)-${PKG_VERSION}.tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/linknx/linknx/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=3c3aaf8c409538153b15f5fb975a4485e58c4820cfea289a3f20777ba69782ab
 
 PKG_MAINTAINER:=Othmar Truniger <github@truniger.ch>
-PKG_LICENSE:=GPL-2.0+
+PKG_LICENSE:=GPL-2.0-or-later
+PKG_LICENSE_FILES:=LICENSE
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/linknx/linknx.git
-PKG_SOURCE_VERSION:=831ed395e232ead88e92cdf19f12e227e80e22cf
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)
-PKG_SOURCE:=$(PKG_NAME)-${PKG_VERSION}.tar.xz
-PKG_MIRROR_HASH:=1c53d181b5577d759b4d0faa5a267dd0a040d9fee1bfc6ad9545374b9002900f
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
-PKG_BUILD_DEPENDS:=argp-standalone
-PKG_FORTIFY_SOURCE:=1
-
+PKG_BUILD_DEPENDS:=USE_UCLIBC:argp-standalone USE_MUSL:argp-standalone
 PKG_FIXUP:=autoreconf
 
+include $(INCLUDE_DIR)/uclibc++.mk
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/linknx
   SECTION:=net
   CATEGORY:=Network
   TITLE:=KNX home automation platform
-  URL:=http://sourceforge.net/projects/linknx/
-  DEPENDS:=+pthsem +lua +luac +libstdcpp +libcurl +libesmtp
+  URL:=https://github.com/linknx/linknx
+  DEPENDS:=+pthsem +lua +luac +libcurl +libesmtp $(CXX_DEPENDS) $(ICONV_DEPENDS)
 endef
 
 CONFIGURE_ARGS+= \
@@ -44,9 +41,6 @@ CONFIGURE_ARGS+= \
 	--with-lua \
 	--with-libcurl \
 	--without-mysql
-
-EXTRA_LDFLAGS+= \
-	-fno-builtin
 
 define Package/linknx/install
 	$(INSTALL_DIR) $(1)/usr/bin
