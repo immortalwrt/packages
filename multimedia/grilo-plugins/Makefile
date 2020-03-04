@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grilo-plugins
-PKG_VERSION:=0.3.10
+PKG_VERSION:=0.3.11
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
@@ -18,7 +18,7 @@ PKG_LICENSE_FILES:=COPYING
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNOME/grilo-plugins/0.3/
-PKG_HASH:=803b360fdb6d5fde1e647bdc40c16de3031b1a95b347b48b65fe4fc27a548d4a
+PKG_HASH:=dde2e605b1994341c6bf012493e056b406b08571834dea3b3c671d5b8b1dcd73
 
 PKG_BUILD_DEPENDS:=glib2 grilo
 
