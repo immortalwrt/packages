@@ -8,29 +8,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=avahi
-PKG_VERSION:=0.7
-PKG_RELEASE:=3
+PKG_VERSION:=0.8
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/lathiat/avahi/releases/download/v$(PKG_VERSION) \
 		https://avahi.org/download
-PKG_HASH:=57a99b5dfe7fdae794e3d1ee7a62973a368e91e414bd0dfa5d84434de5b14804
+PKG_HASH:=060309d7a333d38d951bc27598c677af1796934dbd98e1024e7ad8de798fedda
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
+PKG_LICENSE:=LGPL-2.1-or-later
+PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:avahi:avahi
-
-PKG_BUILD_DEPENDS:=intltool/host
-PKG_FIXUP:=autoreconf
-PKG_REMOVE_FILES:=autogen.sh
 
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
-
-ifeq ($(BUILD_VARIANT),dbus)
-PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)/dbus/$(PKG_NAME)-$(PKG_VERSION)
-else
-PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)/nodbus/$(PKG_NAME)-$(PKG_VERSION)
-endif
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -259,22 +251,24 @@ $(call Package/avahi/Default/description)
 endef
 
 TARGET_CFLAGS += $(FPIC) -DGETTEXT_PACKAGE
+TARGET_LDFLAGS += $(if $(CONFIG_SSP_SUPPORT),-lssp_nonshared)
 
-CONFIGURE_ARGS+= \
+CONFIGURE_ARGS += \
 	--enable-shared \
 	--enable-static \
 	--disable-glib \
 	--disable-gobject \
+	--disable-introspection \
 	--disable-qt3 \
 	--disable-qt4 \
+	--disable-qt5 \
 	--disable-gtk \
 	--disable-gtk3 \
-	--with-xml=expat \
 	--disable-dbm \
 	--enable-gdbm \
 	--enable-libdaemon \
+	--disable-libevent \
 	--disable-python \
-	--disable-pygtk \
 	--disable-python-dbus \
 	--disable-mono \
 	--disable-monodoc \
@@ -288,17 +282,15 @@ CONFIGURE_ARGS+= \
 	--disable-doxygen-html \
 	--disable-doxygen-ps \
 	--disable-doxygen-pdf \
+	--disable-manpages \
 	--disable-xmltoman \
+	--disable-tests \
+	--with-xml=expat \
 	--with-distro=none \
 	--with-avahi-user=nobody \
 	--with-avahi-group=nogroup \
 	--with-autoipd-user=nobody \
 	--with-autoipd-group=nogroup
-
-ifneq ($(CONFIG_SSP_SUPPORT),y)
-CONFIGURE_ARGS+= \
-	--disable-stack-protector
-endif
 
 ifeq ($(BUILD_VARIANT),dbus)
 ifneq ($(CONFIG_PACKAGE_libavahi-compat-libdnssd),)
@@ -314,7 +306,7 @@ endif
 
 CONFIGURE_VARS+= \
 	CFLAGS="$$$$CFLAGS -DNDEBUG -DDISABLE_SYSTEMD" \
-	ac_cv_header_sys_capability_h=no \
+	ac_cv_header_sys_capability_h=no
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
@@ -327,7 +319,14 @@ ifeq ($(BUILD_VARIANT),dbus)
 endif
 endif
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/* $(1)/usr/lib/pkgconfig/
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/* $(1)/usr/lib/pkgconfig/
+	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-core.pc
+ifneq ($(CONFIG_PACKAGE_libavahi-compat-libdnssd),)
+ifeq ($(BUILD_VARIANT),dbus)
+	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-client.pc
+	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-compat-libdns_sd.pc
+endif
+endif
 endef
 
 define Package/libavahi/install
