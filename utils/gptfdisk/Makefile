@@ -8,27 +8,28 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gptfdisk
-PKG_VERSION:=1.0.3
+PKG_VERSION:=1.0.5
 PKG_RELEASE:=1
-
-PKG_MAINTAINER:=Alif M. Ahmad <alive4ever@live.com>
-PKG_LICENSE:=GPL-2.0
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/$(PKG_NAME)
-PKG_HASH:=89fd5aec35c409d610a36cb49c65b442058565ed84042f767bba614b8fc91b5c
+PKG_HASH:=0e7d3987cd0488ecaf4b48761bc97f40b1dc089e5ff53c4b37abe30bc67dcb2f
+
+PKG_MAINTAINER:=Alif M. Ahmad <alive4ever@live.com>
+PKG_LICENSE:=GPL-2.0-or-later
+PKG_LICENSE_FILES:=COPYING
 
 PKG_BUILD_PARALLEL:=1
 
-include $(INCLUDE_DIR)/host-build.mk
+include $(INCLUDE_DIR)/uclibc++.mk
 include $(INCLUDE_DIR)/package.mk
 
 define Package/gptfdisk/Default
   SECTION:=utils
   CATEGORY:=Utilities
   SUBMENU:=Disc
-  URL:=http://www.rodsbooks.com/gdisk
-  DEPENDS:= +libstdcpp
+  URL:=https://www.rodsbooks.com/gdisk
+  DEPENDS:=$(CXX_DEPENDS)
 endef
 
 define Package/gdisk
@@ -71,6 +72,12 @@ define Package/fixparts/description
   a text-mode menu-driven program for repairing certain types of problems with
   Master Boot Record (MBR) partition tables
 endef
+
+TARGET_CXXFLAGS += -std=c++11 -ffunction-sections -fdata-sections -fno-rtti -flto
+TARGET_LDFLAGS += $(if $(CONFIG_USE_GLIBC),-lm) -Wl,--gc-sections,--as-needed
+ifeq ($(CONFIG_USE_UCLIBCXX),y)
+TARGET_LDFLAGS += -nodefaultlibs
+endif
 
 define Package/gdisk/install
 	$(INSTALL_DIR) $(1)/usr/bin
