@@ -53,10 +53,10 @@ HOST_GO_ROOT:=$(HOST_GO_PREFIX)/lib/go-$(HOST_GO_VERSION_ID)
 HOST_GO_VALID_OS_ARCH:= \
   android_386  android_amd64  android_arm  android_arm64 \
   darwin_386   darwin_amd64   darwin_arm   darwin_arm64 \
+  freebsd_386  freebsd_amd64  freebsd_arm  freebsd_arm64 \
   linux_386    linux_amd64    linux_arm    linux_arm64 \
-  openbsd_386  openbsd_amd64  openbsd_arm  openbsd_arm64 \
   \
-  freebsd_386  freebsd_amd64  freebsd_arm \
+  openbsd_386  openbsd_amd64  openbsd_arm \
   netbsd_386   netbsd_amd64   netbsd_arm \
   plan9_386    plan9_amd64    plan9_arm \
   \
@@ -69,7 +69,9 @@ HOST_GO_VALID_OS_ARCH:= \
   aix_ppc64 \
   js_wasm \
   \
-  linux_ppc64 linux_ppc64le linux_mips linux_mipsle linux_mips64 linux_mips64le linux_s390x
+  linux_ppc64 linux_ppc64le \
+  linux_mips linux_mipsle linux_mips64 linux_mips64le \
+  linux_riscv64 linux_s390x
 
 BOOTSTRAP_SOURCE:=go1.4-bootstrap-20171003.tar.gz
 BOOTSTRAP_SOURCE_URL:=$(GO_SOURCE_URLS)
