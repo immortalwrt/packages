@@ -6,21 +6,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=squeezelite
-PKG_VERSION:=1.8.4-743
-PKG_RELEASE=2
-
-PKG_LICENSE:=GPL-3.0
-PKG_LICENSE_FILES:=LICENSE.txt
-PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
+PKG_VERSION:=1.9.6-1210
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/ralph-irving/squeezelite.git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=e37ed17fed9e11a7346cbe9f1e1deeccc051f42e
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_MIRROR_HASH:=b6ea4a11366330790f5e36bd875b45bb19a9772dfc984c462f436dfca30256c0
+PKG_SOURCE_URL:=https://github.com/ralph-irving/squeezelite
+PKG_SOURCE_VERSION:=1b7a17616cd2bbd9935c710dc33cda11cd0de45e
+PKG_MIRROR_HASH:=5993fa5fcacd1640962bc60f88a93faa4fcac74a767fbf820b40a27c338a9062
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
+PKG_LICENSE:=GPL-3.0-or-later
+PKG_LICENSE_FILES:=LICENSE.txt
+
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -82,51 +80,44 @@ define Package/squeezelite-mini/config
 endef
 
 define Package/squeezelite/description/default
-    Squeezelite is a small headless squeezebox emulator for linux using alsa audio output 
-    It is aimed at supporting high quality audio at multiple sample rates including 
-    44.1/48/88.2/96/176.4/192k/352.8/384kHz 
-    Supported codecs: mp3, flac, ogg, aac, (wma and alac via ffmpeg) 
+    Squeezelite is a small headless squeezebox emulator for linux using alsa audio output
+    It is aimed at supporting high quality audio at multiple sample rates including
+    44.1/48/88.2/96/176.4/192k/352.8/384kHz
+    Supported codecs: mp3, flac, ogg, aac, (wma and alac via ffmpeg)
     Native support for PCM builtin
     Optional support of DSD playback via PCM for DoP capable DAC
     Optional resampling to match sound device
 endef
 
-define Package/squeezelite/description
+define Package/squeezelite-full/description
     $(call Package/squeezelite/description/default)
-    .
+
     This package has all the audio codecs compiled in.
 endef
 
 define Package/squeezelite-mini/description
     $(call Package/squeezelite/description/default)
-    .
+
     This package will dynamically load installed codecs.
 endef
 
-#ifeq ($(CONFIG_SQUEEZELITE_WMA),y)
-#    PKG_BUILD_DEPENDS+= libffmpeg-audio-dec
-#endif
-
-TARGET_CFLAGS+= -Wall -fPIC -O2 -DSELFPIPE
-
 ifeq ($(CONFIG_SQUEEZELITE_WMA),y)
-    TARGET_CFLAGS+= -DFFMPEG
+    opts+= -DFFMPEG
 endif
 
 ifeq ($(CONFIG_SQUEEZELITE_DSD),y)
-    TARGET_CFLAGS+= -DDSD
+    opts+= -DDSD
 endif
 
 ifeq ($(CONFIG_SQUEEZELITE_RESAMPLE),y)
-    TARGET_CFLAGS+= -DRESAMPLE
+    opts+= -DRESAMPLE
 endif
-
-TARGET_LDFLAGS+= -lasound -lpthread -lm -lrt
 
 ifeq ($(BUILD_VARIANT),full)
-    TARGET_CFLAGS+= -DLINKALL
-    TARGET_LDFLAGS+= -lvorbis -logg
+    opts+= -DLINKALL
 endif
+
+MAKE_FLAGS+=OPTS="$(opts)"
 
 define Package/squeezelite/install
 	$(INSTALL_DIR) $(1)/usr/bin
