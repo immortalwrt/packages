@@ -8,15 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=you-get
-PKG_VERSION:=0.4.1403
+PKG_VERSION:=0.4.1410
 PKG_RELEASE:=1
 
 PKG_SOURCE:=you-get-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/y/you-get/
-PKG_HASH:=944daa105d81ac5fb25cec52d05db3223966e12b9aa20d5a1e746cd67b48aca4
+PKG_HASH:=a95a6f5c5f8317baa90fc9249be84290344f4fbcee2c5dc41675f0f243af5247
 PKG_BUILD_DIR:=$(BUILD_DIR)/you-get-$(PKG_VERSION)
 
-PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
+PKG_MAINTAINER:=[CTCGFW]Project OpenWrt <contact@project-openwrt.eu.org>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
