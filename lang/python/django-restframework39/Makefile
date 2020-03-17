@@ -11,7 +11,7 @@ PKG_NAME:=django-restframework39
 PKG_VERSION:=3.9.4
 PKG_RELEASE:=1
 
-PKG_SOURCE:==djangorestframework-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=djangorestframework-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/d/djangorestframework
 PKG_HASH:=50b781f6cbeb98f673aa76ed8e572a019a45e52bdd4ad09001072dfd91ab07c8
 PKG_BUILD_DIR:=$(BUILD_DIR)/djangorestframework-$(PKG_VERSION)
