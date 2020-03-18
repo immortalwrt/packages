@@ -8,26 +8,23 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=django-postoffice
-PKG_VERSION:=3.1.0
-PKG_RELEASE:=4
+PKG_VERSION:=3.2.1
+PKG_RELEASE:=1
 
-PKG_SOURCE:=django-post_office-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/d/django-post_office
-PKG_HASH:=827937a944fe47cea393853069cd9315d080298c8ddb0faf787955d6aa51a030
+PYPI_NAME:=django-post-office
+PYPI_SOURCE_NAME:=django-post_office
+PKG_HASH:=e32427822f647719575094f790ca949ef9f9827ec0e8378cb021f01f3834b2a4
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.txt
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-$(PKG_NAME)-$(PKG_VERSION)
-
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
 
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-
-define Package/$(PKG_NAME)/Default
+define Package/django-postoffice/Default
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
@@ -35,41 +32,40 @@ define Package/$(PKG_NAME)/Default
   URL:=https://github.com/ui/django-post_office
 endef
 
-define Package/python-$(PKG_NAME)
-$(call Package/$(PKG_NAME)/Default)
+define Package/python-django-postoffice
+$(call Package/django-postoffice/Default)
   DEPENDS:= \
-	+PACKAGE_python-$(PKG_NAME):python \
-	python-django \
-	+PACKAGE_python-$(PKG_NAME):python-django-jsonfield
+	+PACKAGE_python-django-postoffice:python \
+	python-django1 \
+	+PACKAGE_python-django-postoffice:python-django-jsonfield
   VARIANT:=python
-  MDEPENDS:=python-django
+  MDEPENDS:=python-django1
 endef
 
-define Package/python-$(PKG_NAME)/description
+define Package/python-django-postoffice/description
   A Django app to monitor and send mail asynchronously, complete with template
   support
 endef
 
-define Package/python3-$(PKG_NAME)
-$(call Package/$(PKG_NAME)/Default)
+define Package/python3-django-postoffice
+$(call Package/django-postoffice/Default)
   DEPENDS:= \
-	+PACKAGE_python3-$(PKG_NAME):python3 \
-	python3-django \
-	+PACKAGE_python3-$(PKG_NAME):python3-django-jsonfield
+	+PACKAGE_python3-django-postoffice:python3 \
+	+PACKAGE_python3-django-postoffice:python3-django1 \
+	+PACKAGE_python3-django-postoffice:python3-django-jsonfield
   VARIANT:=python3
-  MDEPENDS:=python3-django
 endef
 
-define Package/python3-$(PKG_NAME)/description
-$(call define Package/python-$(PKG_NAME)/description)
+define Package/python3-django-postoffice/description
+$(call Package/python-django-postoffice/description)
 .
 (Variant for Python3)
 endef
 
-$(eval $(call PyPackage,python-$(PKG_NAME)))
-$(eval $(call BuildPackage,python-$(PKG_NAME)))
-$(eval $(call BuildPackage,python-$(PKG_NAME)-src))
+$(eval $(call PyPackage,python-django-postoffice))
+$(eval $(call BuildPackage,python-django-postoffice))
+$(eval $(call BuildPackage,python-django-postoffice-src))
 
-$(eval $(call Py3Package,python3-$(PKG_NAME)))
-$(eval $(call BuildPackage,python3-$(PKG_NAME)))
-$(eval $(call BuildPackage,python3-$(PKG_NAME)-src))
+$(eval $(call Py3Package,python3-django-postoffice))
+$(eval $(call BuildPackage,python3-django-postoffice))
+$(eval $(call BuildPackage,python3-django-postoffice-src))
