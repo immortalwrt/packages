@@ -95,8 +95,8 @@
 
 "dyndns.it"		"http://[USERNAME]:[PASSWORD]@update.dyndns.it/nic/update?system=dyndns&hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
 
-"dyn.com"		"http://[USERNAME]:[PASSWORD]@members.dyndns.org/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
-"dyndns.org"		"http://[USERNAME]:[PASSWORD]@members.dyndns.org/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
+"dyn.com"		"http://[USERNAME]:[PASSWORD]@members.dyndns.org/v3/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
+"dyndns.org"		"http://[USERNAME]:[PASSWORD]@members.dyndns.org/v3/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
 
 "dyndnss.net"		"http://www.dyndnss.net/?user=[USERNAME]&pass=[PASSWORD]&domain=[DOMAIN]&updater=other"
 
@@ -115,6 +115,8 @@
 "goip.de"		"http://www.goip.de/setip?username=[USERNAME]&password=[PASSWORD]&subdomain=[DOMAIN]&ip=[IP]"
 
 "google.com"		"https://[USERNAME]:[PASSWORD]@domains.google.com/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
+
+"he.net"		"http://[DOMAIN]:[PASSWORD]@dyn.dns.he.net/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
 
 "inwx.de"		"http://[USERNAME]:[PASSWORD]@dyndns.inwx.com/nic/update?myip=[IP]"	"good|nochg"
 
@@ -163,7 +165,6 @@
 "system-ns.com"		"http://system-ns.com/api?type=dynamic&command=set&domain=[DOMAIN]&token=[PASSWORD]&ip=[IP]"	"0"
 
 "thatip.com"		"http://update.dnsmax.com/update/?username=[USERNAME]&password=[PASSWORD]&resellerid=2&clientname=openwrt&clientversion=8.09&protocolversion=2.0&updatehostname=[DOMAIN]&ip=[IP]"
-"tunnelbroker.net"      "http://[USERNAME]:[PASSWORD]@ipv4.tunnelbroker.net/nic/update?hostname=[DOMAIN]&myip=[IP]"     "good|nochg"
 
 "twodns.de"		"http://[USERNAME]:[PASSWORD]@update.twodns.de/update?hostname=[DOMAIN]&ip=[IP]"
 
