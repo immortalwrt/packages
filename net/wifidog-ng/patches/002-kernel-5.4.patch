@@ -1,0 +1,16 @@
+diff --git a/main.c b/main.c
+index db7df4a..db475c4 100644
+--- a/main.c
++++ b/main.c
+@@ -87,7 +87,11 @@ static u32 wifidog_hook(void *priv, struct sk_buff *skb, const struct nf_hook_st
+     if (ct->status & IPS_HIJACKED) {
+         if (is_allowed_mac(skb, state)) {
+             /* Avoid duplication of authentication */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
++            nf_reset_ct(skb);
++#else
+             nf_reset(skb);
++#endif
+             nf_ct_kill(ct);
+         }
+         return NF_ACCEPT;
