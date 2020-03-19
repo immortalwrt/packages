@@ -87,7 +87,12 @@ CURL=$(which curl)
 # CURL_SSL not empty then SSL support available
 CURL_SSL=$($CURL -V 2>/dev/null | grep -F "https")
 # CURL_PROXY not empty then Proxy support available
-CURL_PROXY=$(find /lib /usr/lib -name libcurl.so* -exec strings {} 2>/dev/null \; | grep -im1 "all_proxy")
+if [ -f /tmp/vCURL_PROXY ]; then
+	CURL_PROXY=$(cat /tmp/vCURL_PROXY);
+else
+	CURL_PROXY=$(find /lib /usr/lib -name libcurl.so* -exec strings {} 2>/dev/null \; | grep -im1 "all_proxy")
+	echo $CURL_PROXY>/tmp/vCURL_PROXY
+fi
 
 UCLIENT_FETCH=$(which uclient-fetch)
 
