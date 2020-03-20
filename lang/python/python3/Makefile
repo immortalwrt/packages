@@ -19,7 +19,7 @@ PKG_VERSION:=$(PYTHON_VERSION).$(PYTHON_VERSION_MICRO)
 
 PKG_SOURCE:=Python-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.python.org/ftp/python/$(PKG_VERSION)
-PKG_HASH:=e85a76ea9f3d6c485ec1780fca4e500725a4a7bbc63c78ebc44170de9b619d94
+PKG_HASH:=2646e7dc233362f59714c6193017bb2d6f7b38d6ab4a0cb5fbac5c36c4d845df
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>, Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=Python/2.0
@@ -41,6 +41,7 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/Python-$(PKG_VERSION)
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/Python-$(PKG_VERSION)
 
 PKG_CONFIG_DEPENDS:= \
+	CONFIG_PACKAGE_python3-pkg-resources \
 	CONFIG_PACKAGE_python3-setuptools CONFIG_PACKAGE_python3-pip \
 	CONFIG_PYTHON3_BLUETOOTH_SUPPORT
 
@@ -128,8 +129,7 @@ endef
 
 MAKE_FLAGS+=\
 	CROSS_COMPILE=yes \
-	LD="$(TARGET_CC)" \
-	PGEN=pgen3
+	LD="$(TARGET_CC)"
 
 EXTRA_CFLAGS+= \
 	-DNDEBUG -fno-inline
@@ -172,6 +172,14 @@ define Build/Prepare
 endef
 
 ifdef CONFIG_PACKAGE_python3-setuptools
+PYTHON3_SETUPTOOLS_BUILD:=1
+endif
+
+ifdef CONFIG_PACKAGE_python3-pkg-resources
+PYTHON3_SETUPTOOLS_BUILD:=1
+endif
+
+ifeq ($(PYTHON3_SETUPTOOLS_BUILD),1)
 define Build/Compile/python3-setuptools
 	$(HOST_PYTHON3_PIP) \
 		--disable-pip-version-check \
@@ -313,7 +321,7 @@ define Host/Configure
 endef
 
 define Host/Compile
-	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) python Parser/pgen
+	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) python
 	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) sharedmods
 endef
 
@@ -335,8 +343,6 @@ define Host/Install
 			$(HOST_PYTHON3_PKG_DIR)/.pip_installed_*
 	)
 	$(MAKE) -C $(HOST_BUILD_DIR) install
-	$(INSTALL_DIR) $(HOST_PYTHON3_DIR)/bin/
-	$(INSTALL_BIN) $(HOST_BUILD_DIR)/Parser/pgen $(HOST_PYTHON3_DIR)/bin/pgen3
 	$(if $(wildcard $(HOST_PYTHON3_PKG_DIR)/.setuptools_installed_$(PYTHON3_SETUPTOOLS_VERSION)-$(PYTHON3_SETUPTOOLS_PKG_RELEASE)),,
 		$(call HostPatchDir,$(HOST_PYTHON3_PKG_DIR),./patches-setuptools,)
 		touch $(HOST_PYTHON3_PKG_DIR)/.setuptools_installed_$(PYTHON3_SETUPTOOLS_VERSION)-$(PYTHON3_SETUPTOOLS_PKG_RELEASE)
