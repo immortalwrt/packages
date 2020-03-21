@@ -19,7 +19,7 @@ define Package/transmission-web-control
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=BitTorrent
-  DEPENDS:=
+  DEPENDS:=+transmission-daemon-openssl
   TITLE:=Transmission Web Control
   URL:=https://github.com/ronggang/transmission-web-control
   PKGARCH:=all
