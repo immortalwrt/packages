@@ -1,6 +1,5 @@
 {
 	"whitelist": [
-		"accept",
 		"accept4",
 		"access",
 		"arm_fadvise64_64",
@@ -28,7 +27,6 @@
 		"getpid",
 		"getsockname",
 		"getsockopt",
-		"getuid32",
 		"ioctl",
 		"listen",
 		"_llseek",
@@ -39,7 +37,6 @@
 		"mmap",
 		"mmap2",
 		"mprotect",
-		"mremap",
 		"munmap",
 		"nanosleep",
 		"_newselect",
@@ -50,7 +47,6 @@
 		"pread64",
 		"prlimit64",
 		"pwrite64",
-		"quotactl",
 		"read",
 		"readlink",
 		"readv",
@@ -68,12 +64,9 @@
 		"socket",
 		"stat",
 		"stat64",
-		"socketpair",
 		"umask",
 		"uname",
 		"unlink",
-		"statfs64",
-		"umask",
 		"write",
 		"writev"
 	],
