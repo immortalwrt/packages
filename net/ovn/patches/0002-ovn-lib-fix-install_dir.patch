@@ -1,21 +1,21 @@
-From e8203d10706e6289f773bfe84a3fd87f19fcee07 Mon Sep 17 00:00:00 2001
+From ecf232bf32dd433642bb9da2ac0c2de483b8736a Mon Sep 17 00:00:00 2001
 From: Yousong Zhou <yszhou4tech@gmail.com>
-Date: Wed, 14 Mar 2018 16:44:13 +0800
-Subject: [PATCH] ovs-lib: fix install_dir()
+Date: Mon, 23 Mar 2020 15:54:26 +0800
+Subject: [PATCH] ovn-lib: fix install_dir()
 
 The command "install" is not available in OpenWrt by default
 
 Signed-off-by: Yousong Zhou <yszhou4tech@gmail.com>
 ---
- utilities/ovs-lib.in | 5 ++++-
+ utilities/ovn-lib.in | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/utilities/ovs-lib.in b/utilities/ovs-lib.in
-index d646b444a..dee63dece 100644
---- a/utilities/ovs-lib.in
-+++ b/utilities/ovs-lib.in
-@@ -159,7 +159,10 @@ install_dir () {
-     [ "${OVS_USER##*:}" != "" ] && INSTALL_GROUP="${OVS_USER##*:}"
+diff --git a/utilities/ovn-lib.in b/utilities/ovn-lib.in
+index af1b72edb..f6ab5581c 100644
+--- a/utilities/ovn-lib.in
++++ b/utilities/ovn-lib.in
+@@ -54,7 +54,10 @@ ovn_install_dir () {
+     [ "${OVN_USER##*:}" != "" ] && INSTALL_GROUP="${OVN_USER##*:}"
  
      if test ! -d "$DIR"; then
 -        install -d -m "$INSTALL_MODE" -o "$INSTALL_USER" -g "$INSTALL_GROUP" "$DIR"
