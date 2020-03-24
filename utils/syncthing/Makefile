@@ -35,10 +35,11 @@ define Package/syncthing
 endef
 
 GO_PKG_LDFLAGS_X:=\
-	main.Version=v$(PKG_VERSION) \
-	main.BuildUser=openwrt \
-	main.BuildHost=openwrt \
-	main.BuildStamp=$(SOURCE_DATE_EPOCH)
+	github.com/syncthing/syncthing/lib/build.Version=v$(PKG_VERSION) \
+	github.com/syncthing/syncthing/lib/build.Stamp=$(SOURCE_DATE_EPOCH) \
+	github.com/syncthing/syncthing/lib/build.User=openwrt \
+	github.com/syncthing/syncthing/lib/build.Host=openwrt \
+	github.com/syncthing/syncthing/lib/build.Program=syncthing
 
 define Build/Compile
   $(call GoPackage/Build/Compile,-tags noupgrade)
