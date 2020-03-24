@@ -8,18 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=youtube-dl
-PKG_VERSION:=2020.3.8
+PKG_VERSION:=2020.3.24
 PKG_RELEASE:=1
 
-PKG_SOURCE:=youtube_dl-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/y/youtube_dl/
-PKG_HASH:=1b098b7ae41551f46dbae70e56dbabdf39c8faf50e072d0c0b42c44d64afebf8
-PKG_BUILD_DIR:=$(BUILD_DIR)/youtube_dl-$(PKG_VERSION)
+PYPI_NAME:=youtube_dl
+PKG_HASH:=4b03efe439f7cae26eba909821d1df00a9a4eb82741cb2e8b78fe29702bd4633
 
 PKG_MAINTAINER:=Adrian Panella <ianchi74@outlook.com>, Josef Schlehofer <pepe.schlehofer@gmail.com>
 PKG_LICENSE:=Unlicense
 PKG_LICENSE_FILES:=LICENSE
 
+include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python3-package.mk
 
@@ -30,7 +29,6 @@ define Package/youtube-dl
   URL:=https://yt-dl.org
   DEPENDS:= \
     +ca-certificates \
-    +ffmpeg \
     +python3 \
     +python3-email \
     +python3-xml \
