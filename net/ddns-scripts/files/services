@@ -43,10 +43,10 @@
 
 "able.or.kr"		"http://able.or.kr/ddns/src/update.php?hostname=[DOMAIN]&myip=[IP]&ddnsuser=[USERNAME]&pwd=[PASSWORD]"
 
-"afraid.org-basicauth"	"https://[USERNAME]:[PASSWORD]@freedns.afraid.org/nic/update?hostname=[DOMAIN]&myip=[IP]"
-"afraid.org-keyauth"	"https://freedns.afraid.org/dynamic/update.php?[PASSWORD]&address=[IP]"
-"afraid.org-v2-basic"	"https://[USERNAME]:[PASSWORD]@sync.afraid.org/u/?h=[DOMAIN]&ip=[IP]"
-"afraid.org-v2-token"	"https://sync.afraid.org/u/[PASSWORD]/?address=[IP]"
+"afraid.org-basicauth"	"http://[USERNAME]:[PASSWORD]@freedns.afraid.org/nic/update?hostname=[DOMAIN]&myip=[IP]"
+"afraid.org-keyauth"	"http://freedns.afraid.org/dynamic/update.php?[PASSWORD]&address=[IP]"
+"afraid.org-v2-basic"	"http://[USERNAME]:[PASSWORD]@sync.afraid.org/u/?h=[DOMAIN]&ip=[IP]"
+"afraid.org-v2-token"	"http://sync.afraid.org/u/[PASSWORD]/?address=[IP]"
 
 "all-inkl.com"		"http://[USERNAME]:[PASSWORD]@dyndns.kasserver.com/?myip=[IP]"
 
@@ -57,11 +57,11 @@
 "ddns.com.br"		"http://[DOMAIN]:[PASSWORD]@members.ddns.com.br/nic/update?hostname=[DOMAIN]&myip=[IP]"
 
 # "ddnss.de"		"http://[USERNAME]:[PASSWORD]@ip4.ddnss.de/upd.php?host=[DOMAIN]&ip=[IP]"	"good|nochg"
-"ddnss.de"		"http://ip4.ddnss.de/upd.php?user=[USERNAME]&pwd=[PASSWORD]&host=[DOMAIN]&ip=[IP]"	"Updated|No change"
+"ddnss.de"		"http://ip4.ddnss.de/upd.php?user=[USERNAME]&pwd=[PASSWORD]&host=[DOMAIN]&ip=[IP]"	"good|nochg"
 
 "ddo.jp"		"http://free.ddo.jp/dnsupdate.php?dn=[DOMAIN]&pw=[PASSWORD]&ip=[IP]"
 
-"desec.io"		"http://update.dedyn.io/update?username=[USERNAME]&password=[PASSWORD]&hostname=[DOMAIN]&myipv4=[IP]"	"good|nochg"
+"desec.io"		"http://update.dedyn.io/?username=[USERNAME]&password=[PASSWORD]&hostname=[DOMAIN]&myipv4=[IP]"	"good|nochg"
 
 "dhis.org"		"http://[USERNAME]:[PASSWORD]@is.dhis.org/"
 
@@ -95,8 +95,8 @@
 
 "dyndns.it"		"http://[USERNAME]:[PASSWORD]@update.dyndns.it/nic/update?system=dyndns&hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
 
-"dyn.com"		"http://[USERNAME]:[PASSWORD]@members.dyndns.org/v3/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
-"dyndns.org"		"http://[USERNAME]:[PASSWORD]@members.dyndns.org/v3/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
+"dyn.com"		"http://[USERNAME]:[PASSWORD]@members.dyndns.org/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
+"dyndns.org"		"http://[USERNAME]:[PASSWORD]@members.dyndns.org/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
 
 "dyndnss.net"		"http://www.dyndnss.net/?user=[USERNAME]&pass=[PASSWORD]&domain=[DOMAIN]&updater=other"
 
@@ -114,11 +114,9 @@
 
 "goip.de"		"http://www.goip.de/setip?username=[USERNAME]&password=[PASSWORD]&subdomain=[DOMAIN]&ip=[IP]"
 
-"google.com"		"https://[USERNAME]:[PASSWORD]@domains.google.com/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
+"google.com"		"http://[USERNAME]:[PASSWORD]@domains.google.com/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
 
 "he.net"		"http://[DOMAIN]:[PASSWORD]@dyn.dns.he.net/nic/update?hostname=[DOMAIN]&myip=[IP]"	"good|nochg"
-
-"inwx.de"		"http://[USERNAME]:[PASSWORD]@dyndns.inwx.com/nic/update?myip=[IP]"	"good|nochg"
 
 "joker.com"		"http://svc.joker.com/nic/update?username=[USERNAME]&password=[PASSWORD]&myip=[IP]&hostname=[DOMAIN]"	"good|nochg"
 
