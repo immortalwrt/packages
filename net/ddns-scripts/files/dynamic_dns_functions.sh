@@ -64,7 +64,7 @@ IPV4_REGEX="[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}"
 IPV6_REGEX="\(\([0-9A-Fa-f]\{1,4\}:\)\{1,\}\)\(\([0-9A-Fa-f]\{1,4\}\)\{0,1\}\)\(\(:[0-9A-Fa-f]\{1,4\}\)\{1,\}\)"
 
 # characters that are dangerous to pass to a shell command line
-SHELL_ESCAPE="[\"\'\`\$\!();><{}?|\[\]\*\\\\]"
+SHELL_ESCAPE="[\"\'\`\$\!();><{}?|\[\]\\\\]"
 
 # dns character set
 DNS_CHARSET="[@a-zA-Z0-9._-]"
