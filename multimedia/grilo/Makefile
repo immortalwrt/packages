@@ -1,6 +1,4 @@
 #
-# Copyright (C) 2009-2015 OpenWrt.org
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
@@ -8,27 +6,23 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grilo
-PKG_VERSION:=0.3.4
-PKG_RELEASE:=1
-
-PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
-
-PKG_LICENSE:=LGPLv2.1
-PKG_LICENSE_FILES:=COPYING
+PKG_VERSION:=0.3.12
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNOME/grilo/0.3/
-PKG_HASH:=7c6964053b42574c2f14715d2392a02ea5cbace955eb73e067c77aa3e43b066e
+PKG_HASH:=dbfbd6082103288592af97568180b9cc81a336a274ed5160412f87675ec11a71
 
-PKG_BUILD_DEPENDS:=glib2 libsoup libxml2
+PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
+PKG_LICENSE:=LGPL-2.1-or-later
+PKG_LICENSE_FILES:=COPYING
 
 PKG_INSTALL:=1
+PKG_BUILD_DEPENDS:=vala/host
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
-
-TARGET_LDFLAGS+= \
-	-Wl,-rpath-link=$(STAGING_DIR)/usr/lib
+include ../../devel/meson/meson.mk
 
 define Package/grilo
   SECTION:=multimedia
@@ -40,8 +34,16 @@ endef
 
 define Package/grilo/decription
   Grilo is a framework that provides access to different sources of
-  multimedia content, using a pluggable system. 
+  multimedia content, using a pluggable system.
 endef
+
+MESON_ARGS += \
+	-Denable-grl-net=true \
+	-Denable-grl-pls=false \
+	-Denable-gtk-doc=false \
+	-Denable-introspection=false \
+	-Denable-test-ui=false \
+	-Denable-vala=false
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/
@@ -56,13 +58,13 @@ define Build/InstallDev
 	$(INSTALL_DATA) \
 		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/*.pc \
 		$(1)/usr/lib/pkgconfig/
-	$(INSTALL_DIR) $(STAGING_DIR_HOSTPKG)/share/vala-0.30/vapi/
+	$(INSTALL_DIR) $(STAGING_DIR_HOSTPKG)/share/vala-`$(STAGING_DIR_HOSTPKG)/bin/valac --api-version`/vapi/
 	# Note: this are compiled elsewhere because grilo refuses to
 	# generate VAPI files unless gobject-introspection exists;
 	# OpenWrt does not yet have a gobject-introspection package.
 	$(INSTALL_DATA) \
 		./files/*.vapi \
-		$(STAGING_DIR_HOSTPKG)/share/vala-0.30/vapi
+		$(STAGING_DIR_HOSTPKG)/share/vala-`$(STAGING_DIR_HOSTPKG)/bin/valac --api-version`/vapi
 endef
 
 define Package/grilo/install
