@@ -8,19 +8,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tiff
-PKG_VERSION:=4.0.9
-PKG_RELEASE:=4
+PKG_VERSION:=4.1.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://download.osgeo.org/libtiff
-PKG_HASH:=6e7bdeec2c310734e734d19aae3a71ebe37a4d842e0e23dbb1b8921c0026cfcd
+PKG_HASH:=5d29f32517dadb6dbcd1255ea5bbc93a2b54b94fbf83653b4d65c7d6775b8634
 
 PKG_FIXUP:=autoreconf
 PKG_REMOVE_FILES:=autogen.sh aclocal.m4
 
 PKG_LICENSE:=BSD
 PKG_LICENSE_FILES:=COPYRIGHT
+PKG_CPE_ID:=cpe:/a:libtiff:libtiff
 
+PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
 PKG_CONFIG_DEPENDS:=CONFIG_PACKAGE_libtiffxx
@@ -30,7 +32,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/tiff/Default
   TITLE:=TIFF
-  URL:=http://www.remotesensing.org/libtiff/
+  URL:=http://simplesystems.org/libtiff/
   MAINTAINER:=Jiri Slachta <jiri@slachta.eu>
 endef
 
@@ -73,6 +75,8 @@ CONFIGURE_ARGS += \
 	--enable-jpeg \
 	--disable-old-jpeg \
 	--disable-jbig \
+	--disable-webp \
+	--disable-zstd \
 	--without-x
 
 define Build/InstallDev/hxx
@@ -80,8 +84,9 @@ define Build/InstallDev/hxx
 endef
 
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/{lib,include}
+	$(INSTALL_DIR) $(1)/usr/{lib,include} $(1)/usr/lib/pkgconfig
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/*.pc $(1)/usr/lib/pkgconfig/
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/include/*.h $(1)/usr/include/
 	$(if $(CONFIG_PACKAGE_libtiffxx), $(call Build/InstallDev/hxx,$(1)))
 endef
