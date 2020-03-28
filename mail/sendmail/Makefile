@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sendmail
 PKG_VERSION:=8.15.2
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME).$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://artfiles.org/sendmail.org/pub/sendmail/ \
@@ -19,6 +19,7 @@ PKG_MAINTAINER:=Val Kulkov <val.kulkov@gmail.com>
 
 PKG_LICENSE:=Sendmail
 PKG_LICENSE_FILES:=LICENSE
+PKG_CPE_ID:=cpe:/a:sendmail:sendmail
 
 PKG_INSTALL:=1
 PKG_BUILD_DEPENDS:=openssl
