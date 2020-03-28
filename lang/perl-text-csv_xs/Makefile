@@ -8,17 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=perl-text-csv_xs
-PKG_VERSION:=1.35
+PKG_VERSION:=1.41
 PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=http://www.cpan.org/authors/id/H/HM/HMBRAND/
 PKG_SOURCE:=Text-CSV_XS-$(PKG_VERSION).tgz
-PKG_HASH:=2b4f111e9486b230b02bfabbbf50c453f959d18ec17351a930e41f0959b358b7
-
-PKG_LICENSE:=GPL-1.0+ Artistic-1.0-Perl
-PKG_MAINTAINER:=Philip Prindeville <philipp@redfish-solutions.com>
-
+PKG_SOURCE_URL:=https://cpan.metacpan.org/authors/id/H/HM/HMBRAND
+PKG_HASH:=0e4b7be423c02f09135a75082cb00136ff6a69cff25b012089048ea030f173ab
 PKG_BUILD_DIR:=$(BUILD_DIR)/perl/Text-CSV_XS-$(PKG_VERSION)
+
+PKG_MAINTAINER:=Philip Prindeville <philipp@redfish-solutions.com>
+PKG_LICENSE:=GPL-1.0-or-later Artistic-1.0-Perl
 
 include $(INCLUDE_DIR)/package.mk
 include ../perl/perlmod.mk
@@ -28,7 +27,7 @@ define Package/perl-text-csv_xs
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Text comma-separated values manipulation routines
-  URL:=http://search.cpan.org/dist/Text-CSV_XS/
+  URL:=https://search.cpan.org/dist/Text-CSV_XS/
   DEPENDS:=perl +perlbase-essential +perlbase-config +perlbase-io +perlbase-dynaloader
 endef
 
