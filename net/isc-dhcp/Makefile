@@ -10,11 +10,12 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=isc-dhcp
 UPSTREAM_NAME:=dhcp
 PKG_VERSION:=4.4.1
-PKG_RELEASE:=2
+PKG_RELEASE:=5
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Philip Prindeville <philipp@redfish-solutions.com>
+PKG_CPE_ID:=cpe:/a:isc:dhcp
 
 PKG_SOURCE:=$(UPSTREAM_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=ftp://ftp.isc.org/isc/dhcp/$(PKG_VERSION) \
@@ -59,7 +60,7 @@ define Package/isc-dhcp-relay/description
 endef
 
 define Package/isc-dhcp-relay-ipv4/description
-$(call Package/isc-dhcp-relay-ipv6/description)
+$(call Package/isc-dhcp-relay/description)
  This package is compiled with IPv4 support only.
 endef
 
@@ -161,7 +162,6 @@ $(call Package/isc-dhcp-omshell/description)
 endef
 
 CONFIGURE_ARGS += \
-	--disable-tracing 		\
 	--enable-paranoia		\
 	--disable-dependency-tracking	\
 	--with-randomdev=/dev/urandom \
@@ -196,7 +196,7 @@ define Package/isc-dhcp-relay-$(BUILD_VARIANT)/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/dhcrelay $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./files/dhcrelay.conf $(1)/etc/config
+	$(INSTALL_DATA) ./files/dhcrelay.conf $(1)/etc/config/dhcrelay
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/dhcrelay4.init $(1)/etc/init.d/dhcrelay4
 endef
