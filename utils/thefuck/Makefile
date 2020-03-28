@@ -11,15 +11,14 @@ PKG_NAME:=thefuck
 PKG_VERSION:=3.29
 PKG_RELEASE:=1
 
-PKG_SOURCE:=thefuck-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/t/thefuck/
+PYPI_NAME:=thefuck
 PKG_HASH:=7b907b6ef6863cc0d3e9bb3e573054547a60f89572250b767ccadb317d3c8297
-PKG_BUILD_DIR:=$(BUILD_DIR)/thefuck-$(PKG_VERSION)
 
 PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
+include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python3-package.mk
 

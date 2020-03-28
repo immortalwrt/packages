@@ -7,18 +7,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ap51-flash
-PKG_VERSION:=2017-12-07
+PKG_VERSION:=2019.0.1
 PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/ap51-flash/ap51-flash.git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=f94f9c99711d14a3c0186318d822d67d9d0ce391
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
-PKG_MIRROR_HASH:=15786a0ecae9be5ed4e8f32940624d1a1c83da924294df08003616a863947074
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://github.com/ap51-flash/ap51-flash/releases/download/v$(PKG_VERSION)
+PKG_HASH:=7146a22576a23bfe36673980bc3795a97417692eaddb2f90b527074a7d7e42d5
+
 PKG_MAINTAINER:=Russell Senior <russell@personaltelco.net>
-PKG_LICENSE:=GPL-3.0+
-PKG_LICENSE_FILES:=LICENSES/preferred/GPL-3.0
+PKG_LICENSE:=GPL-3.0-or-later CC0-1.0
+PKG_LICENSE_FILES:=LICENSES/GPL-3.0-or-later.txt LICENSES/CC0-1.0.txt
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -26,13 +24,16 @@ define Package/ap51-flash
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=A tool for flashing (nearly) all ap51/ap61 based routers
-  URL:=http://dev.cloudtrax.com/wiki/ap51-flash-station
+  URL:=https://ap51-flash.readthedocs.io/en/latest/
 endef
 
 # pass optimization flags
 MAKE_FLAGS += \
 	REVISION="$(PKG_VERSION)" \
 	ap51-flash
+
+TARGET_CFLAGS += -flto
+TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
 
 define Package/ap51-flash/install
 	$(INSTALL_DIR) $(1)/etc/config $(1)/etc/init.d $(1)/usr/sbin \

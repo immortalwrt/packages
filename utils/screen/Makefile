@@ -8,15 +8,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=screen
-PKG_VERSION:=4.6.2
+PKG_VERSION:=4.8.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=1b6922520e6a0ce5e28768d620b0f640a6631397f95ccb043b70b91bb503fa3a
 PKG_SOURCE_URL:=@GNU/screen
+PKG_HASH:=6e11b13d8489925fde25dfb0935bf6ed71f9eb47eff233a181e078fde5655aa1
 
-PKG_LICENSE:=GPL-3.0+
-PKG_LICENSE_FILES:=
+PKG_MAINTAINER:=Etienne CHAMPETIER <champetier.etienne@gmail.com>
+PKG_LICENSE:=GPL-3.0-or-later
+PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:gnu:screen
+
+PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -26,8 +31,7 @@ define Package/screen
   SUBMENU:=Terminal
   DEPENDS:=+libncurses
   TITLE:=Full-screen terminal window manager
-  URL:=http://www.gnu.org/software/screen/
-  MAINTAINER:=Etienne CHAMPETIER <champetier.etienne@gmail.com>
+  URL:=https://www.gnu.org/software/screen/
 endef
 
 define Package/screen/description
@@ -35,14 +39,9 @@ define Package/screen/description
 	terminal between several processes, typically interactive shells.
 endef
 
-define Build/Configure
-	$(call Build/Configure/Default,\
-		--with-sys-screenrc=/etc/screenrc \
-		--enable-colors256 \
-	)
-	# XXX: memmove() works well with overlapped memory areas
-	echo "#define USEMEMMOVE 1" >>$(PKG_BUILD_DIR)/config.h
-endef
+CONFIGURE_ARGS += \
+	--enable-colors256 \
+	--with-sys-screenrc=/etc/screenrc
 
 define Package/screen/install
 	$(INSTALL_DIR) $(1)/usr/sbin

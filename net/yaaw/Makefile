@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=yaaw
-PKG_VERSION:=2017-04-11
+PKG_VERSION:=2019-12-25
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/binux/yaaw.git
-PKG_SOURCE_VERSION:=d3a8346c5b9c2c1875dc79e1db2533b584fc8def
+PKG_SOURCE_VERSION:=03e4a19b959c4b09fb1a8d81576e40cd7baebe94
 
 PKG_LICENSE:=LGPL-3.0
 PKG_MAINTAINER:=Hsing-Wang Liao <kuoruan@gmail.com>

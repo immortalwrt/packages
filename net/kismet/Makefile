@@ -12,6 +12,7 @@ PKG_VERSION:=2016-07-R1
 PKG_RELEASE:=1
 
 PKG_LICENSE:=LGPLv2.1
+PKG_CPE_ID:=cpe:/a:kismet:kismet
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://www.kismetwireless.net/code
@@ -27,7 +28,7 @@ define Package/kismet/Default
   MAINTAINER:=Jean-Michel lacroix <lacroix@lepine-lacroix.info>
   DEPENDS:= $(CXX_DEPENDS) +libnl
   URL:=http://www.kismetwireless.net/
-  SUBMENU:=wireless
+  SUBMENU:=Wireless
 endef
 
 define Package/kismet/Default/description

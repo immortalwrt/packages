@@ -45,8 +45,8 @@ define Package/docker-ce
   TITLE:=Docker Community Edition
   URL:=https://www.docker.com/
   DEPENDS:=$(GO_ARCH_DEPENDS) @HAS_FPU @(aarch64||arm||x86_64) +btrfs-progs +ca-certificates +cgroupfs-mount +containerd +libdevmapper +libnetwork +tini \
-           +DOCKER_SECCOMP:libseccomp +iptables-mod-extra +kmod-br-netfilter +kmod-ikconfig +kmod-nf-conntrack-netlink +kmod-nf-ipvs +kmod-veth \
-	   +@KERNEL_CGROUPS +@KERNEL_CGROUP_CPUACCT +@KERNEL_CGROUP_SCHED 
+	  +DOCKER_SECCOMP:libseccomp +iptables-mod-extra +kmod-br-netfilter +kmod-ikconfig +kmod-nf-conntrack-netlink +kmod-nf-ipvs +kmod-veth \
+	  +@KERNEL_CGROUPS +@KERNEL_CGROUP_CPUACCT +@KERNEL_CGROUP_SCHED
   USERID:=docker:docker
   MENU:=1
 endef

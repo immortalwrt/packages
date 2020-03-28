@@ -1,12 +1,12 @@
-# Copyright (c) 2017 Stan Grishin (stangri@melmac.net)
+# Copyright 2017-2018 Stan Grishin (stangri@melmac.net)
 # This is free software, licensed under the GNU General Public License v3.
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=vpnbypass
 PKG_VERSION:=1.3.1
-PKG_RELEASE:=1
-PKG_LICENSE:=GPL-3.0+
+PKG_RELEASE:=5
+PKG_LICENSE:=GPL-3.0-or-later
 PKG_MAINTAINER:=Stan Grishin <stangri@melmac.net>
 
 include $(INCLUDE_DIR)/package.mk
@@ -54,43 +54,22 @@ define Package/vpnbypass/install
 endef
 
 
-define Package/$(PKG_NAME)/postinst
+define Package/vpnbypass/postinst
 	#!/bin/sh
 	# check if we are on real system
 	if [ -z "$${IPKG_INSTROOT}" ]; then
-		while [ ! -z "$(uci -q get ucitrack.@vpnbypass[-1] 2>/dev/null)" ] ; do
-			uci -q delete ucitrack.@vpnbypass[-1]
-		done
-
-		while [ ! -z "$(uci -q get ucitrack.@firewall[-1].affects 2>/dev/null | awk '/vpnbypass/')" ] ; do
-			uci -q del_list ucitrack.@firewall[-1].affects='vpnbypass'
-		done
-
-		uci -q batch <<-EOF >/dev/null
-			add ucitrack vpnbypass
-			set ucitrack.@vpnbypass[-1].init='vpnbypass'
-			add_list ucitrack.@firewall[-1].affects='vpnbypass'
-			commit ucitrack
-	EOF
+		/etc/init.d/vpnbypass enable
 	fi
 	exit 0
 endef
 
-define Package/$(PKG_NAME)/prerm
+define Package/vpnbypass/prerm
 	#!/bin/sh
 	# check if we are on real system
 	if [ -z "$${IPKG_INSTROOT}" ]; then
 		echo "Stopping service and removing rc.d symlink for vpnbypass"
 		/etc/init.d/vpnbypass stop || true
-		/etc/init.d/vpnbypass disable
-
-		while [ ! -z "$(uci -q get ucitrack.@vpnbypass[-1] 2>/dev/null)" ] ; do
-			uci -q delete ucitrack.@vpnbypass[-1]
-		done
-
-		while [ ! -z "$(uci -q get ucitrack.@firewall[-1].affects 2>/dev/null | awk '/vpnbypass/')" ] ; do
-			uci -q del_list ucitrack.@firewall[-1].affects='vpnbypass'
-		done
+		/etc/init.d/vpnbypass disable || true
 	fi
 	exit 0
 endef

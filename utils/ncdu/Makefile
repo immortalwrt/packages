@@ -8,18 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ncdu
-PKG_VERSION:=1.13
-PKG_RELEASE=1
+PKG_VERSION:=1.14.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://dev.yorhel.nl/download
-PKG_HASH:=f4d9285c38292c2de05e444d0ba271cbfe1a705eee37c2b23ea7c448ab37255a
+PKG_HASH:=947a7f5c1d0cd4e338e72b4f5bc5e2873651442cec3cb012e04ad2c37152c6b1
+
+PKG_MAINTAINER:=Charles Lehner <celehner1@gmail.com>
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=COPYING
 
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
-
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=COPYING
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -29,7 +30,6 @@ define Package/ncdu
   CATEGORY:=Utilities
   DEPENDS:=+libncurses
   TITLE:=ncurses disk usage viewer
-  MAINTAINER:=Charles Lehner <celehner1@gmail.com>
   URL:=https://dev.yorhel.nl/ncdu
 endef
 
@@ -38,8 +38,6 @@ define Package/ncdu/description
   interface through famous du utility. It allows one to browse through the
   directories and show percentages of disk usage with ncurses library.
 endef
-
-CONFIGURE_ARGS += --with-ncurses
 
 define Package/ncdu/install
 	$(INSTALL_DIR) $(1)/usr/bin

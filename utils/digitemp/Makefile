@@ -10,17 +10,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=digitemp
-PKG_VERSION:=3.7.1
-PKG_RELEASE:=1
+PKG_VERSION:=3.7.2
+PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_URL:=https://github.com/bcl/digitemp.git
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=be824bbbc81189931bf4b130a8acc39288d75662
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/bcl/digitemp/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=683df4ab5cc53a45fe4f860c698f148d34bcca91b3e0568a342f32d64d12ba24
+
 PKG_MAINTAINER:=Jasper Scholte <NightNL@outlook.com>
-PKG_LICENSE:=GPL-2.0+
-PKG_MIRROR_HASH:=490f9c94c671aa74ce0ef4fbc95231644f3aa7023d2b947714ed55fd712672f2
+PKG_LICENSE:=GPL-2.0-or-later
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -28,7 +26,7 @@ define Package/digitemp/Default
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=DigiTemp is a simple to use program for reading values from 1-wire devices.
-  URL:=http://www.digitemp.com
+  URL:=https://www.digitemp.com
 endef
 
 define Package/digitemp/Default/description
