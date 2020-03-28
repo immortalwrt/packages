@@ -4,14 +4,14 @@ PKG_NAME:=nyx
 PKG_VERSION:=2.1.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=nyx-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/n/nxy/
+PYPI_NAME:=nyx
 PKG_HASH:=88521488d1c9052e457b9e66498a4acfaaa3adf3adc5a199892632f129a5390b
 
 PKG_MAINTAINER:=Javier Marcet <javier@marcet.info>
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
 
+include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python3-package.mk
 
