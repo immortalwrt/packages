@@ -12,13 +12,11 @@
 5. [Build considerations](#build-considerations)
 6. [General folder structure](#general-folder-structure)
 7. [Building a Python[3] package](#building-a-python3-package)
-    1. [PKG_BUILD_DIR](#pkg_build_dir)
-    2. [PKG_UNPACK](#pkg_unpack)
-    3. [Include python[3]-package.mk](#include-python3-packagemk)
-    4. [Add Package/<PKG_NAME> OpenWrt definitions](#add-packagepkg_name-openwrt-definitions)
-    5. [Wrapping things up so that they build](#wrapping-things-up-so-that-they-build)
-    6. [Customizing things](#customizing-things)
-    7. [Host-side Python packages for build](#host-side-python-packages-for-build)
+    1. [Include python[3]-package.mk](#include-python3-packagemk)
+    2. [Add Package/<PKG_NAME> OpenWrt definitions](#add-packagepkg_name-openwrt-definitions)
+    3. [Wrapping things up so that they build](#wrapping-things-up-so-that-they-build)
+    4. [Customizing things](#customizing-things)
+    5. [Host-side Python packages for build](#host-side-python-packages-for-build)
 
 ## Description
 
@@ -52,7 +50,7 @@ Leading up to "The Snap":
   * If a replacement cannot be found, the program will be removed during "The Snap"
 
 * Python 2 libraries will remain in the feed until "The Snap"
-  * A Python 2-only library will be transitioned to Python 3 (or a suitable replacement found), if its Python 3 version is a dependency of another package in the feed
+  * For any Python 2-only libraries, a Python 3 version will be added (or a suitable replacement found), if its Python 3 version is a dependency of another package in the feed
   * Python 2 libraries will receive normal updates until 31 October 2019
   * From 31 October 2019 onward:
     * Python 2-only libraries will receive security updates only
@@ -171,33 +169,6 @@ This section will describe both, and then it can be inferred which is for which.
 
 Packaging for both Python & Python3 uses the `VARIANT` mechanism for packaging inside OpenWrt. (#### FIXME: find a link for this later if it exists)
 
-### PKG_BUILD_DIR
-
-It's important when packaging for both Python & Python3 to override this variable, so that the build directory differs for each variant.
-
-Typically it's just something like:
-```
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-pyasn1-$(PKG_VERSION)
-```
-Where `pyasn1` should be some other name, or maybe `PKG_NAME`
-
-This should be added before this include:
-```
-include $(INCLUDE_DIR)/package.mk
-```
-
-### PKG_UNPACK
-
-In many cases, this needs to be overriden. This is usually because the way Python packages are archived, don't follow the convention of other `tar.gz` packages.
-
-So, something like:
-```
-PKG_UNPACK=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-```
-should be added.
-
-It's not important whether this is after or before `include $(INCLUDE_DIR)/package.mk`
-
 ### Include python[3]-package.mk
 
 If packaging for Python, add this after  `include $(INCLUDE_DIR)/package.mk`
@@ -213,6 +184,43 @@ include ../python3-package.mk
 Order doesn't matter between `python-package.mk` & `python3-package.mk`.
 
 These will make sure that build rules for Python or Python3 can be specified and picked up for build.
+
+### Include pypi.mk (optional)
+
+If the package source code will be downloaded from [pypi.org](https://pypi.org/), including `pypi.mk` can help simplify the package Makefile.
+
+To use `pypi.mk`, add this **before** `include $(INCLUDE_DIR)/package.mk`:
+```
+include ../pypi.mk
+```
+
+`pypi.mk` has several `PYPI_*` variables that must/can be set (see below); these should be set before `pypi.mk` is included, i.e. before the `include ../pypi.mk` line.
+
+`pypi.mk` also provides default values for `PKG_SOURCE` and `PKG_SOURCE_URL`, so these variables may be omitted.
+
+One variable is required:
+
+* `PYPI_NAME`: Package name on pypi.org. This should match the PyPI name exactly.
+
+  For example (from the `python-yaml` package):
+  ```
+  PYPI_NAME:=PyYAML
+  ```
+
+These variables are optional:
+
+* `PYPI_SOURCE_NAME`: Package name component of the source tarball filename  
+  Default: Same value as `PYPI_NAME`
+
+* `PYPI_SOURCE_EXT`: File extension of the source tarball filename  
+  Default: `tar.gz`
+
+`pypi.mk` constructs the default `PKG_SOURCE` value from these variables (and `PKG_VERSION`):
+```
+PKG_SOURCE?=$(PYPI_SOURCE_NAME)-$(PKG_VERSION).$(PYPI_SOURCE_EXT)
+```
+
+The `PYPI_SOURCE_*` variables allow this default `PKG_SOURCE` value to be customized as necessary.
 
 ### Add Package/<PKG_NAME> OpenWrt definitions
 
@@ -366,13 +374,13 @@ define PyPackage/python-example/filespec
 endef
 ```
 
-If there is an `examples` directory and `test_*.py` files that can be omitted to save space, this can be specified as:
+If the package installs a `example_package` directory inside `PYTHON_PKG_DIR`, and there is an `examples` directory and `test_*.py` files that can be omitted to save space, this can be specified as:
 
 ```
 define PyPackage/python-example/filespec
 +|$(PYTHON_PKG_DIR)
--|$(PYTHON_PKG_DIR)/examples
--|$(PYTHON_PKG_DIR)/test_*.py
+-|$(PYTHON_PKG_DIR)/example_package/examples
+-|$(PYTHON_PKG_DIR)/example_package/test_*.py
 endef
 ```
 

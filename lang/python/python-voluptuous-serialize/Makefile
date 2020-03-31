@@ -11,14 +11,14 @@ PKG_NAME:=voluptuous-serialize
 PKG_VERSION:=2.3.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/v/voluptuous-serialize/
+PYPI_NAME:=$(PKG_NAME)
 PKG_HASH:=740cd00ce2ecf0f3345d550163fdd2f20de2e0a60c3c678450e68314c2f592f5
 
 PKG_MAINTAINER:=Josef Schlehofer <josef.schlehofer@nic.cz>
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=COPYING
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 

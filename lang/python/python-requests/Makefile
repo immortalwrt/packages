@@ -16,17 +16,13 @@ PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:python-requests:requests
 
-PKG_SOURCE:=requests-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/r/requests
+PYPI_NAME:=requests
 PKG_HASH:=b3f43d496c6daba4493e7c431722aeb7dbc6288f52a6e04e7b6023b0247817e6
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-requests-$(PKG_VERSION)
-
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python-requests/Default
   SUBMENU:=Python

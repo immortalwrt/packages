@@ -9,13 +9,10 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-six
 PKG_VERSION:=1.14.0
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
-PKG_SOURCE:=six-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/s/six
+PYPI_NAME:=six
 PKG_HASH:=236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-six-$(PKG_VERSION)
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -23,13 +20,11 @@ PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>, Alexandru Ardelean <ardeleana
 
 HOST_BUILD_DEPENDS:=python3/host
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-HOST_UNPACK:=$(HOST_TAR) -C $(HOST_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python-six/Default
   SECTION:=lang

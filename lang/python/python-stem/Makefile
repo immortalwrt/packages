@@ -4,8 +4,7 @@ PKG_NAME:=python-stem
 PKG_VERSION:=1.8.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=stem-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/s/stem/
+PYPI_NAME:=stem
 PKG_HASH:=a0b48ea6224e95f22aa34c0bc3415f0eb4667ddeae3dfb5e32a6920c185568c2
 
 PKG_MAINTAINER:=Javier Marcet <javier@marcet.info>
@@ -14,6 +13,7 @@ PKG_LICENSE_FILES:=LICENSE
 
 PYTHON3_PKG_SETUP_ARGS:=
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 

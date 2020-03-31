@@ -9,11 +9,12 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=forked-daapd
 PKG_VERSION:=27.1
-PKG_RELEASE:=2
+PKG_RELEASE:=6
 
+PKG_SOURCE_PROTO:=git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=https://github.com/ejurgensen/$(PKG_NAME)/releases/download/$(PKG_VERSION)/
-PKG_HASH:=e11f86d7de5b7743e388d88f17adb8967d30c4c6c9b4bee2d85d3e7ee2d1849f
+PKG_SOURCE_URL:=https://github.com/ejurgensen/forked-daapd.git
+PKG_SOURCE_VERSION:=9bb95768494a698df5d5b315c47d48c944d7cab0
 
 PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
@@ -32,7 +33,7 @@ CATEGORY:=Sound
 TITLE:=iTunes (DAAP) server for Apple Remote and AirPlay
 URL:=https://github.com/ejurgensen/forked-daapd
 DEPENDS:=+libgpg-error +libgcrypt +libgdbm +zlib +libexpat +libunistring \
-	+libevent2 +libdaemon +libantlr3c +confuse +alsa-lib +libffmpeg-full \
+	+libevent2 +libdaemon +libantlr3c +confuse +libopus +alsa-lib +libffmpeg-full \
 	+mxml +libavahi-client +sqlite3-cli +libplist +libcurl +libjson-c \
 	+libprotobuf-c +libgnutls +libsodium +libwebsockets $(ICONV_DEPENDS)
 endef
@@ -72,8 +73,10 @@ define Package/forked-daapd/install
 	$(INSTALL_CONF) ./files/forked-daapd.conf $(1)/etc/forked-daapd.conf
 	$(INSTALL_DIR) $(1)/usr/lib/forked-daapd
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/forked-daapd/* $(1)/usr/lib/forked-daapd/
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/forked-daapd.init $(1)/etc/init.d/forked-daapd
+	#$(INSTALL_DIR) $(1)/etc/init.d
+	#$(INSTALL_BIN) ./files/forked-daapd.init $(1)/etc/init.d/forked-daapd
+	$(INSTALL_DIR) $(1)/usr/share/forked-daapd/htdocs
+	$(CP) $(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)/htdocs/* $(1)/usr/share/forked-daapd/htdocs/
 endef
 
 $(eval $(call BuildPackage,forked-daapd))

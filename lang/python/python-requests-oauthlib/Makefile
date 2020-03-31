@@ -7,23 +7,19 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-requests-oauthlib
 PKG_VERSION:=1.3.0
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
-PKG_MAINTAINER:=Eneas U de Queiroz <cote2004-github@yahoo.com>
+PKG_MAINTAINER:=Eneas U de Queiroz <cotequeiroz@gmail.com>
 PKG_LICENSE:=ISC
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_SOURCE:=requests-oauthlib-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/r/requests-oauthlib
+PYPI_NAME:=requests-oauthlib
 PKG_HASH:=b4261601a71fd721a8bd6d7aa1cc1d6a8a93b4a9f5e96626f8e4d91e8beeaa6a
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-requests-oauthlib-$(PKG_VERSION)
-
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python-requests-oauthlib/Default
   SUBMENU:=Python

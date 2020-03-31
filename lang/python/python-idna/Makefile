@@ -11,21 +11,17 @@ PKG_NAME:=python-idna
 PKG_VERSION:=2.9
 PKG_RELEASE:=1
 
-PKG_SOURCE:=idna-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/i/idna
+PYPI_NAME:=idna
 PKG_HASH:=7588d1c14ae4c77d74036e8c22ff447b26d0fde8f007354fd48a7814db15b7cb
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-idna-$(PKG_VERSION)
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE.rst
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>, Alexandru Ardelean <ardeleanalex@gmail.com>
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python-idna/Default
   SECTION:=lang

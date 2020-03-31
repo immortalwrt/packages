@@ -9,23 +9,19 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=python-evdev
-PKG_VERSION:=1.2.0
+PKG_VERSION:=1.3.0
 PKG_RELEASE:=1
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_MAINTAINER:=Paulo Costa <me@paulo.costa.nom.br>, Alexandru Ardelean <ardeleanalex@gmail.com>
 
-PKG_SOURCE:=evdev-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/e/evdev
-PKG_HASH:=b03f5e1be5b4a5327494a981b831d251a142b09e8778eda1a8b53eba91100166
+PYPI_NAME:=evdev
+PKG_HASH:=b1c649b4fed7252711011da235782b2c260b32e004058d62473471e5cd30634d
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-evdev-$(PKG_VERSION)
-
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python-evdev/Default
   SUBMENU:=Python
@@ -74,5 +70,8 @@ PYTHON_PKG_SETUP_GLOBAL_ARGS:=$(PYTHON3_PKG_SETUP_GLOBAL_ARGS)
 
 $(eval $(call PyPackage,python-evdev))
 $(eval $(call BuildPackage,python-evdev))
+$(eval $(call BuildPackage,python-evdev-src))
+
 $(eval $(call Py3Package,python3-evdev))
 $(eval $(call BuildPackage,python3-evdev))
+$(eval $(call BuildPackage,python3-evdev-src))

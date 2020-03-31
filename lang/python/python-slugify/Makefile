@@ -11,14 +11,14 @@ PKG_NAME:=python-slugify
 PKG_VERSION:=4.0.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/p/python-slugify/
+PYPI_NAME:=$(PKG_NAME)
 PKG_HASH:=a8fc3433821140e8f409a9831d13ae5deccd0b033d4744d94b31fea141bdd84c
 
 PKG_MAINTAINER:=Josef Schlehofer <josef.schlehofer@nic.cz>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 

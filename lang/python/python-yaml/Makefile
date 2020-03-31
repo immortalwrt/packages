@@ -11,8 +11,7 @@ PKG_NAME:=python-yaml
 PKG_VERSION:=5.3
 PKG_RELEASE:=1
 
-PKG_SOURCE:=PyYAML-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/P/PyYAML
+PYPI_NAME:=PyYAML
 PKG_HASH:=e9f45bd5b92c7974e59bcd2dcc8631a6b6cc380a904725fce7bc08872e691615
 
 PKG_MAINTAINER:=Josef Schlehofer <josef.schlehofer@nic.cz>
@@ -20,13 +19,10 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:pyyaml_project:pyyaml
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-PyYAML-$(PKG_VERSION)
-
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
-
-PKG_UNPACK=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python-yaml/Default
   SECTION:=lang

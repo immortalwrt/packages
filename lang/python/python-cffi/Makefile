@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2020 OpenWrt.org
+# Copyright (C) 2015-2018 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -11,21 +11,17 @@ PKG_NAME:=python-cffi
 PKG_VERSION:=1.14.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=cffi-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/c/cffi
+PYPI_NAME:=cffi
 PKG_HASH:=2d384f4a127a15ba701207f7639d94106693b6cd64173d6c8988e2c25f3ac2b6
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-cffi-$(PKG_VERSION)
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>, Alexandru Ardelean <ardeleanalex@gmail.com>
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python-cffi/Default
   SECTION:=lang

@@ -11,15 +11,14 @@ PKG_NAME:=django-restframework39
 PKG_VERSION:=3.9.4
 PKG_RELEASE:=1
 
-PKG_SOURCE:=djangorestframework-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/d/djangorestframework
-PKG_HASH:=50b781f6cbeb98f673aa76ed8e572a019a45e52bdd4ad09001072dfd91ab07c8
-PKG_BUILD_DIR:=$(BUILD_DIR)/djangorestframework-$(PKG_VERSION)
+PYPI_NAME:=djangorestframework
+PKG_HASH:=c12869cfd83c33d579b17b3cb28a2ae7322a53c3ce85580c2a2ebe4e3f56c4fb
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE.md
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk

@@ -11,8 +11,7 @@ PKG_NAME:=aiohttp
 PKG_VERSION:=3.6.1
 PKG_RELEASE:=1
 
-PKG_SOURCE:=aiohttp-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/a/aiohttp/
+PYPI_NAME:=$(PKG_NAME)
 PKG_HASH:=fc55b1fec0e4cc1134ffb09ea3970783ee2906dc5dfd7cd16917913f2cfed65b
 
 PKG_MAINTAINER:=Josef Schlehofer <pepe.schlehofer@gmail.com>
@@ -20,6 +19,7 @@ PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:aio-libs_project:aiohttp
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 
@@ -44,7 +44,7 @@ define Package/python3-aiohttp
 endef
 
 define Package/python3-aiohttp/description
-  Asynchronous HTTP client/server framework for asyncio and Python3
+  Asynchronous HTTP client/server framework for asyncio and Python3.
 endef
 
 $(eval $(call Py3Package,python3-aiohttp))

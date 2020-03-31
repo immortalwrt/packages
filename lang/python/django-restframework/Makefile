@@ -8,65 +8,36 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=django-restframework
-PKG_VERSION:=3.9.0
-PKG_RELEASE:=4
+PKG_VERSION:=3.11.0
+PKG_RELEASE:=2
 
-PKG_SOURCE:=djangorestframework-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/d/djangorestframework
-PKG_HASH:=607865b0bb1598b153793892101d881466bd5a991de12bd6229abb18b1c86136
+PYPI_NAME:=djangorestframework
+PKG_HASH:=e782087823c47a26826ee5b6fa0c542968219263fb3976ec3c31edab23a4001f
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE.md
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-$(PKG_NAME)-$(PKG_VERSION)
-
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-
-define Package/$(PKG_NAME)/Default
+define Package/python3-django-restframework
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Web APIs for Django, made easy.
   URL:=https://www.django-rest-framework.org
-endef
-
-define Package/python-$(PKG_NAME)
-$(call Package/$(PKG_NAME)/Default)
-  DEPENDS:= \
-	+PACKAGE_python-$(PKG_NAME):python \
-	python-django
-  VARIANT:=python
-  MDEPENDS:=python-django
-endef
-
-define Package/python-$(PKG_NAME)/description
-  Web APIs for Django, made easy.
-endef
-
-define Package/python3-$(PKG_NAME)
-$(call Package/$(PKG_NAME)/Default)
-  DEPENDS:= \
-	+PACKAGE_python3-$(PKG_NAME):python3 \
-	python3-django
+  DEPENDS:=+python3 +django
   VARIANT:=python3
-  MDEPENDS:=python3-django
 endef
 
-define Package/python3-$(PKG_NAME)/description
-$(call define Package/python-$(PKG_NAME)/description)
+define Package/python3-django-restframework/description
+  Web APIs for Django, made easy.
 .
 (Variant for Python3)
 endef
 
-$(eval $(call PyPackage,python-$(PKG_NAME)))
-$(eval $(call BuildPackage,python-$(PKG_NAME)))
-$(eval $(call BuildPackage,python-$(PKG_NAME)-src))
-
-$(eval $(call Py3Package,python3-$(PKG_NAME)))
-$(eval $(call BuildPackage,python3-$(PKG_NAME)))
-$(eval $(call BuildPackage,python3-$(PKG_NAME)-src))
+$(eval $(call Py3Package,python3-django-restframework))
+$(eval $(call BuildPackage,python3-django-restframework))
+$(eval $(call BuildPackage,python3-django-restframework-src))

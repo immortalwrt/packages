@@ -9,17 +9,16 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gunicorn
 PKG_VERSION:=19.9.0
-PKG_RELEASE:=2
+PKG_RELEASE=2
 
-PKG_SOURCE:=gunicorn-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/g/gunicorn
+PYPI_NAME:=$(PKG_NAME)
 PKG_HASH:=fa2662097c66f920f53f70621c6c58ca4a3c4d3434205e608e121b5b3b71f4f3
-PKG_BUILD_DIR:=$(BUILD_DIR)/gunicorn-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
