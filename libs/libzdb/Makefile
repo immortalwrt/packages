@@ -35,7 +35,7 @@ define Package/libzdb
     CATEGORY:=Libraries
     TITLE:=A thread-safe multi database connection pool library
     URL:=https://www.tildeslash.com/libzdb/
-    DEPENDS:=+libsqlite3 +libpq +libmysqlclient +zlib +libpthread +libopenssl
+    DEPENDS:=+libsqlite3 +libpq +libmariadbclient +zlib +libpthread +libopenssl
 endef
 
 define Package/libzdb/description
