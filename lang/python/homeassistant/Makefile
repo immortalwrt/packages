@@ -19,8 +19,8 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.md
 PKG_CPE_ID:=cpe:/a:home-assistant:home-assistant
 
-include $(INCLUDE_DIR)/package.mk
 include ../pypi.mk
+include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 
 define Package/$(PKG_NAME)

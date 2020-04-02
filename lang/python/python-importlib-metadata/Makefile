@@ -13,8 +13,8 @@ PKG_MAINTAINER:=Paul Spooren <mail@aparcar.org>
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
-include $(INCLUDE_DIR)/package.mk
 include ../pypi.mk
+include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 
 define Package/python3-importlib-metadata
