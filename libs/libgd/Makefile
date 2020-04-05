@@ -8,19 +8,18 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libgd
-PKG_VERSION:=2.2.5
-PKG_RELEASE:=6
+PKG_VERSION:=2.3.0
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/$(PKG_NAME)/$(PKG_NAME)/releases/download/gd-$(PKG_VERSION)/
-PKG_HASH:=8c302ccbf467faec732f0741a859eef4ecae22fea2d2ab87467be940842bde51
+PKG_HASH:=ecd9155b9a417fb3f837f29e5966323796de247789163761dd72dbf83bfcac58
 
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
-PKG_CPE_ID:=cpe:/a:libgd:gd_graphics_library
+PKG_CPE_ID:=cpe:/a:libgd:libgd
 
-CMAKE_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -86,6 +85,7 @@ CMAKE_OPTIONS += \
 	-DENABLE_JPEG=ON \
 	-DENABLE_LIQ=OFF \
 	-DENABLE_PNG=ON \
+	-DENABLE_TIFF=$(if $(CONFIG_LIBGD_TIFF),ON,OFF) \
 	-DENABLE_WEBP=ON \
 	-DENABLE_XPM=OFF \
 	-DZLIB_INCLUDE_DIR="$(STAGING_DIR)/usr"
@@ -98,14 +98,6 @@ ifeq ($(BUILD_VARIANT),full)
 
 else
 
-ifdef CONFIG_LIBGD_TIFF
-	CMAKE_OPTIONS += \
-		-DENABLE_TIFF=ON
-else
-	CMAKE_OPTIONS += \
-		-DENABLE_TIFF=OFF
-endif
-
 ifdef CONFIG_LIBGD_FREETYPE
 	CMAKE_OPTIONS += \
 		-DFREETYPE_INCLUDE_DIRS=$(STAGING_DIR)/usr/include/freetype2/ \
@@ -116,6 +108,12 @@ else
 endif
 
 endif
+
+define Build/InstallDev
+	$(call Build/InstallDev/cmake,$(1))
+	$(SED) 's,/usr/lib,$(STAGING_DIR)/usr/lib,g' $(1)/usr/lib/pkgconfig/gdlib.pc
+	$(SED) 's,/usr/include,$(STAGING_DIR)/include,g' $(1)/usr/lib/pkgconfig/gdlib.pc
+endef
 
 define Package/libgd/install
 	$(INSTALL_DIR) $(1)/usr/lib
