@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fail2ban
 PKG_VERSION:=0.11.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/fail2ban/fail2ban/archive/
@@ -46,7 +46,7 @@ endef
 
 define Package/fail2ban/install
 	$(INSTALL_DIR) $(1)
-	$(CP) $(PKG_INSTALL_DIR)/* $(1)/
+	rsync $(PKG_INSTALL_DIR)/* $(1)/
 endef
 
 $(eval $(call Py3Package,fail2ban))
