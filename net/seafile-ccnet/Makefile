@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seafile-ccnet
-PKG_VERSION:=7.1.2
+PKG_VERSION:=7.1.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/haiwen/ccnet-server/tar.gz/v$(PKG_VERSION)-server?
-PKG_HASH:=32d3d7290415497c52ab407a64468538662dde81ccd139b6e4499e3f2c5b8d4b
+PKG_HASH:=148d9b1af9218943de310f3f2e29e542e7279dbfba307a1cdd894bf8b7faf2e8
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>, Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=AGPL-3.0-only
@@ -28,7 +28,6 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
-include ../../lang/python/python-package.mk
 include ../../lang/python/python3-package.mk
 
 define Package/seafile-ccnet
@@ -74,12 +73,9 @@ CONFIGURE_ARGS += \
 	--enable-python \
 	--with-mysql="$(STAGING_DIR)/usr/bin/mysql_config"
 
-# Include Python 2 bindings in this package to maintain compatibility with previous versions
 define Package/seafile-ccnet/install
 	$(INSTALL_DIR) $(1)/usr/{lib,libexec}
-	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)/ccnet
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/libexec/
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/python/ccnet/*.py $(1)$(PYTHON_PKG_DIR)/ccnet/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libccnet.so* $(1)/usr/lib/
 endef
 
