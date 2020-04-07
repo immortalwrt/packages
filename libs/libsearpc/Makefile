@@ -9,23 +9,25 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libsearpc
 PKG_VERSION:=3.2.0
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/haiwen/libsearpc/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=c479d85e405674c3450eac040abe143af5a9fafe7f1b74926e2a05280ab5420e
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/haiwen/libsearpc.git
+PKG_SOURCE_VERSION:=d1fd7518a20b25766ff98d6fde6e40c63626ca0d
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
+PKG_MIRROR_HASH:=ee8b8b50b480afbcb71bd73cd9c2a96cfa72e9dafaf5773574adbf348e49a0d4
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>, Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE.txt
 
 PKG_FIXUP:=autoreconf
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
-include ../../lang/python/python-package.mk
 include ../../lang/python/python3-package.mk
 
 define Package/libsearpc
@@ -70,13 +72,9 @@ define Build/InstallDev
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/searpc-codegen.py $(1)/usr/bin/
 endef
 
-# Include Python 2 bindings in this package to maintain compatibility with previous versions
 define Package/libsearpc/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)/pysearpc
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libsearpc.so* $(1)/usr/lib/
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/pysearpc/*.py $(1)$(PYTHON_PKG_DIR)/pysearpc/
-	rm -f $(1)$(PYTHON_PKG_DIR)/pysearpc/{pygencode,test_pysearpc}.py
 endef
 
 define Py3Build/Compile
