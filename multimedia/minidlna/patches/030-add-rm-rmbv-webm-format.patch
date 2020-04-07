@@ -1,0 +1,68 @@
+From 4189368bba79d944edb54d4c7d476565e98c3e8b Mon Sep 17 00:00:00 2001
+From: lqs <lqs@lqs.me>
+Date: Sun, 21 Apr 2019 09:48:00 +0000
+Subject: [PATCH] add webm/rm/rmvb support
+
+---
+ metadata.c       | 8 ++++++++
+ upnpglobalvars.h | 5 ++++-
+ utils.c          | 4 +++-
+ 3 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/metadata.c b/metadata.c
+index 9cd86dc..f1207da 100644
+--- a/metadata.c
++++ b/metadata.c
+@@ -862,6 +862,10 @@ GetVideoMetadata(const char *path, const char *name)
+ 			xasprintf(&m.mime, "video/x-matroska");
+ 		else if( strcmp(ctx->iformat->name, "flv") == 0 )
+ 			xasprintf(&m.mime, "video/x-flv");
++		else if( strcmp(ctx->iformat->name, "rm") == 0 )
++			xasprintf(&m.mime, "application/vnd.rn-realmedia");
++		else if( strcmp(ctx->iformat->name, "rmvb") == 0 )
++			xasprintf(&m.mime, "application/vnd.rn-realmedia-vbr");
+ 		if( m.mime )
+ 			goto video_no_dlna;
+ 
+@@ -1538,6 +1542,10 @@ GetVideoMetadata(const char *path, const char *name)
+ 			xasprintf(&m.mime, "video/x-matroska");
+ 		else if( strcmp(ctx->iformat->name, "flv") == 0 )
+ 			xasprintf(&m.mime, "video/x-flv");
++		else if( strcmp(ctx->iformat->name, "rm") == 0 )
++			xasprintf(&m.mime, "application/vnd.rn-realmedia");
++		else if( strcmp(ctx->iformat->name, "rmvb") == 0 )
++			xasprintf(&m.mime, "application/vnd.rn-realmedia-vbr");
+ 		else
+ 			DPRINTF(E_WARN, L_METADATA, "%s: Unhandled format: %s\n", path, ctx->iformat->name);
+ 	}
+diff --git a/upnpglobalvars.h b/upnpglobalvars.h
+index 1a2fb5e..cc0cc99 100644
+--- a/upnpglobalvars.h
++++ b/upnpglobalvars.h
+@@ -172,7 +172,10 @@
+ 	"http-get:*:audio/x-wav:*," \
+ 	"http-get:*:audio/x-flac:*," \
+ 	"http-get:*:audio/x-dsd:*," \
+-	"http-get:*:application/ogg:*"
++	"http-get:*:application/ogg:*" \
++	"http-get:*:application/vnd.rn-realmedia:*" \
++	"http-get:*:application/vnd.rn-realmedia-vbr:*" \
++	"http-get:*:video/webm:*"
+ 
+ #define DLNA_FLAG_DLNA_V1_5      0x00100000
+ #define DLNA_FLAG_HTTP_STALLING  0x00200000
+diff --git a/utils.c b/utils.c
+index dc936f9..03ba850 100644
+--- a/utils.c
++++ b/utils.c
+@@ -404,7 +404,9 @@ is_video(const char * file)
+ #ifdef TIVO_SUPPORT
+ 		ends_with(file, ".TiVo") ||
+ #endif
+-		ends_with(file, ".mov") || ends_with(file, ".3gp"));
++		ends_with(file, ".mov") || ends_with(file, ".3gp") ||
++		ends_with(file, ".rm") || ends_with(file, ".rmvb") ||
++		ends_with(file, ".webm"));
+ }
+ 
+ int
