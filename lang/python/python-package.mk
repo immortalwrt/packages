@@ -57,6 +57,10 @@ define PyPackage
     (Contains the Python sources for this package).
   endef
 
+  define Package/$(1)-src/config
+    depends on PACKAGE_$(1)
+  endef
+
   # Add default PyPackage filespec none defined
   ifndef PyPackage/$(1)/filespec
     define PyPackage/$(1)/filespec
