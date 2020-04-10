@@ -56,8 +56,8 @@ define Package/ipfs-http-client-tests/description
 endef
 
 CMAKE_OPTIONS += \
-	-DBUILD_SHARED_LIBS=ON \
-	-DENABLE_TESTING=ON
+	-DBUILD_SHARED_LIBS:BOOL=ON \
+	-DBUILD_TESTING:BOOL=ON
 
 define Package/libipfs-http-client/install
 	$(INSTALL_DIR) $(1)/usr/lib
