@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=kcptun
-PKG_VERSION:=20200321
+PKG_VERSION:=20200409
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/xtaci/kcptun/tar.gz/v${PKG_VERSION}?
-PKG_SOURCE_DATE:=2020-03-21
-PKG_HASH:=450e586528bd7b2e586605e3a664f77ebd9baa869918fcc6d6a41f84d4cfb4fd
+PKG_SOURCE_DATE:=2020-04-09
+PKG_HASH:=312b8f438549225dfd1eac95444dd6a4c50610578ddcf7ff21e19c73a855d4bc
 
 PKG_MAINTAINER:=Dengfeng Liu <liudf0716@gmail.com>, Chao Liu <expiron18@gmail.com>
 PKG_LICENSE:=MIT
@@ -58,6 +58,9 @@ This package only contains kcptun $(1).
 
   define Package/kcptun-$(1)/install
 		$$(call GoPackage/Package/Install/Bin,$$(PKG_INSTALL_DIR))
+
+		$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(PKG_INSTALL_DIR)/usr/bin/$(1)
+
 
 		$$(INSTALL_DIR) $$(1)/usr/bin
 		$$(INSTALL_BIN) $$(PKG_INSTALL_DIR)/usr/bin/$(1) $$(1)/usr/bin/kcptun-$(1)
