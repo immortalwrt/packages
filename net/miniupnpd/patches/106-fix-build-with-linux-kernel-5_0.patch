@@ -1,12 +1,12 @@
 From 6106111972b44d5ebe29c4a3e8479c783b6ec1b7 Mon Sep 17 00:00:00 2001
 From: Thomas Bernard <miniupnp@free.fr>
 Date: Sun, 3 Feb 2019 13:26:27 +0100
-Subject: [PATCH] miniupnpd/netfilter: build with linux kernel 5.0
+Subject: [PATCH] netfilter: build with linux kernel 5.0
 
 should fix #346
 ---
- miniupnpd/Changelog.txt       |  3 +++
- miniupnpd/netfilter/iptcrdr.c | 38 +++++++++++++++++++++++++----------
+ Changelog.txt       |  3 +++
+ netfilter/iptcrdr.c | 38 +++++++++++++++++++++++++----------
  2 files changed, 30 insertions(+), 11 deletions(-)
 
 --- a/Changelog.txt

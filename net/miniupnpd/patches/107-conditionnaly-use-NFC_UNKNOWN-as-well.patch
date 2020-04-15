@@ -1,7 +1,7 @@
 From f7d65cdaad40c45b3ea308c5083ede0fa2e6b829 Mon Sep 17 00:00:00 2001
 From: Thomas Bernard <miniupnp@free.fr>
 Date: Sun, 3 Feb 2019 19:04:44 +0100
-Subject: [PATCH] miniupnpd/netfilter/ipctcrdr.c: conditionnaly use NFC_UNKNOWN
+Subject: [PATCH] netfilter/ipctcrdr.c: conditionnaly use NFC_UNKNOWN
  as well
 
 fix #346
