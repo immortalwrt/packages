@@ -164,8 +164,8 @@ endef
 
 define Package/ntfs-3g/postinst
 #!/bin/sh
-ln -s -f "/usr/bin/ntfs-3g" "/sbin/mount.ntfs-3g"
-ln -s -f "/usr/bin/ntfs-3g" "/sbin/mount.ntfs"
+ln -s -f "/usr/bin/ntfs-3g" "$${IPKG_INSTROOT}/sbin/mount.ntfs-3g"
+ln -s -f "/usr/bin/ntfs-3g" "$${IPKG_INSTROOT}/sbin/mount.ntfs"
 FILE="$${IPKG_INSTROOT}/etc/filesystems"
 ID="ntfs-3g"
 
@@ -189,7 +189,7 @@ endef
 
 define Package/ntfs-3g-low/postinst
 #!/bin/sh
-ln -s -f "/usr/bin/lowntfs-3g" "/sbin/mount.lowntfs-3g"
+ln -s -f "/usr/bin/lowntfs-3g" "$${IPKG_INSTROOT}/sbin/mount.lowntfs-3g"
 FILE="$${IPKG_INSTROOT}/etc/filesystems"
 ID="lowntfs-3g"
 
@@ -215,7 +215,7 @@ endef
 
 define Package/ntfs-3g-low/postinst
 #!/bin/sh
-ln -s -f "/usr/sbin/mkntfs" "/sbin/mkfs.ntfs"
+ln -s -f "/usr/sbin/mkntfs" "$${IPKG_INSTROOT}/sbin/mkfs.ntfs"
 
 endef
 
