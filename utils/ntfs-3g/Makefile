@@ -160,12 +160,12 @@ define Package/ntfs-3g/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libntfs-3g.so.* $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/sbin
-	$(CP) $(PKG_INSTALL_DIR)/sbin/mount.ntfs-3g $(1)/sbin/
-	$(CP) $(PKG_INSTALL_DIR)/sbin/mount.ntfs-3g $(1)/sbin/mount.ntfs
 endef
 
 define Package/ntfs-3g/postinst
 #!/bin/sh
+ln -s -f "/usr/bin/ntfs-3g" "$${IPKG_INSTROOT}/sbin/mount.ntfs-3g"
+ln -s -f "/usr/bin/ntfs-3g" "$${IPKG_INSTROOT}/sbin/mount.ntfs"
 FILE="$${IPKG_INSTROOT}/etc/filesystems"
 ID="ntfs-3g"
 
@@ -185,11 +185,11 @@ define Package/ntfs-3g-low/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/lowntfs-3g $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/sbin
-	$(CP) $(PKG_INSTALL_DIR)/sbin/mount.lowntfs-3g $(1)/sbin/
 endef
 
 define Package/ntfs-3g-low/postinst
 #!/bin/sh
+ln -s -f "/usr/bin/lowntfs-3g" "$${IPKG_INSTROOT}/sbin/mount.lowntfs-3g"
 FILE="$${IPKG_INSTROOT}/etc/filesystems"
 ID="lowntfs-3g"
 
@@ -207,12 +207,18 @@ endef
 
 define Package/ntfs-3g-utils/install
 	$(INSTALL_DIR) $(1)/sbin
-	$(CP) $(PKG_INSTALL_DIR)/sbin/mkfs.ntfs $(1)/sbin/
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(FIND) $(PKG_INSTALL_DIR)/usr/bin/ -type f ! -regex '.*[^/]*ntfs-3g[^/]*' -exec $(INSTALL_BIN) {} $(1)/usr/bin/ \;
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/* $(1)/usr/sbin/
 endef
+
+define Package/ntfs-3g-low/postinst
+#!/bin/sh
+ln -s -f "/usr/sbin/mkntfs" "$${IPKG_INSTROOT}/sbin/mkfs.ntfs"
+
+endef
+
 
 $(eval $(call BuildPackage,ntfs-3g))
 $(eval $(call BuildPackage,ntfs-3g-low))
