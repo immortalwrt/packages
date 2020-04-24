@@ -26,7 +26,7 @@ define Package/luajit
  CATEGORY:=Languages
  TITLE:=LuaJIT
  URL:=http://www.luajit.org
- DEPENDS:=@(i386||x86_64||arm||armeb||powerpc||mips||mipsel)
+ DEPENDS:=@(i386||x86_64||arm||armeb||aarch64||(powerpc&&!TARGET_mpc85xx)||mips||mipsel)
 endef
 
 define Package/luajit/description
