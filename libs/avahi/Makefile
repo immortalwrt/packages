@@ -321,7 +321,7 @@ endif
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/* $(1)/usr/lib/pkgconfig/
 	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-core.pc
-	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-client.pc
+	[ -e $(1)/usr/lib/pkgconfig/avahi-client.pc ] && $(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-client.pc || true
 ifneq ($(CONFIG_PACKAGE_libavahi-compat-libdnssd),)
 ifeq ($(BUILD_VARIANT),dbus)
 	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-compat-libdns_sd.pc
