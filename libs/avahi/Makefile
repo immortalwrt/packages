@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=avahi
 PKG_VERSION:=0.8
-PKG_RELEASE:=2
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/lathiat/avahi/releases/download/v$(PKG_VERSION) \
@@ -289,6 +289,7 @@ CONFIGURE_ARGS += \
 	--with-distro=none \
 	--with-avahi-user=nobody \
 	--with-avahi-group=nogroup \
+	--with-avahi-priv-access-group=nogroup \
 	--with-autoipd-user=nobody \
 	--with-autoipd-group=nogroup
 
@@ -320,13 +321,6 @@ endif
 endif
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/* $(1)/usr/lib/pkgconfig/
-	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-core.pc
-	[ -e $(1)/usr/lib/pkgconfig/avahi-client.pc ] && $(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-client.pc || true
-ifneq ($(CONFIG_PACKAGE_libavahi-compat-libdnssd),)
-ifeq ($(BUILD_VARIANT),dbus)
-	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/avahi-compat-libdns_sd.pc
-endif
-endif
 endef
 
 define Package/libavahi/install
