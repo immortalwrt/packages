@@ -34,6 +34,7 @@ define Package/python3-django-compressor
 	+python3-django1 \
 	+python3-django-appconf \
 	+python3-rcssmin
+  VARIANT:=python3
 endef
 
 define Package/python3-django-compressor/description
