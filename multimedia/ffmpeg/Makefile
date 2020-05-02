@@ -343,7 +343,7 @@ endef
 define Package/libffmpeg-full
 $(call Package/libffmpeg/Default)
  TITLE+= (full)
- DEPENDS+= +alsa-lib +libopenssl +PACKAGE_libopus:libopus \
+ DEPENDS+= +alsa-lib +libopenssl +libopus \
     +SOFT_FLOAT:shine \
     +!SOFT_FLOAT:lame-lib \
     +PACKAGE_libx264:libx264 \
