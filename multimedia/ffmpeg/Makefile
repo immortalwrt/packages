@@ -246,7 +246,7 @@ $(call Package/ffmpeg/Default)
  SECTION:=multimedia
  CATEGORY:=Multimedia
  TITLE+= program
- DEPENDS+= +libffmpeg-full +openssl-util
+ DEPENDS+= +libffmpeg-full
  VARIANT:=full
 endef
 
@@ -298,7 +298,7 @@ $(call Package/ffmpeg/Default)
  SECTION:=libs
  CATEGORY:=Libraries
  TITLE+= libraries
- DEPENDS+= +libpthread +zlib +libbz2 +libopenssl
+ DEPENDS+= +libpthread +zlib +libbz2
  PROVIDES:= libffmpeg
 endef
 
@@ -392,9 +392,6 @@ FFMPEG_CONFIGURE:= \
 	--enable-static \
 	--enable-pthreads \
 	--enable-zlib \
-	--enable-openssl \
-	--enable-protocol=rtmp,rtmps \
-	--enable-nonfree \
 	--disable-doc \
 	--disable-debug \
 	\
