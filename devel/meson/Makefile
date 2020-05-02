@@ -40,6 +40,7 @@ define Package/meson
   TITLE:=meson
   URL:=https://mesonbuild.com/
   DEPENDS:=+ninja +python3-pkg-resources
+  VARIANT:=python3
 endef
 
 define Package/meson/description
