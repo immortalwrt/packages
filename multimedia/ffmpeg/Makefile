@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017-2019 Ian Leonard <antonlacon@gmail.com>
+# Copyright (C) 2017-2020 Ian Leonard <antonlacon@gmail.com>
 # Copyright (C) 2018 Ted Hess <thess@kitschensync.net>
 #
 # This is free software, licensed under the GNU General Public License v2.
@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg
-PKG_VERSION:=3.4.7
-PKG_RELEASE:=4
+PKG_VERSION:=4.2.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://ffmpeg.org/releases/
-PKG_HASH:=efd01782fd29b62505c973f5b61a65632d7b435dc9f4a6c97e92e6afd36cf5c8
+PKG_HASH:=cb754255ab0ee2ea5f66f8850e1bd6ad5cac1cd855d0a2f4990fb8c668b0d29c
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 		Ian Leonard <antonlacon@gmail.com>
 
@@ -293,38 +293,12 @@ endef
 
 Package/ffprobe-custom/description = $(Package/ffprobe/description)
 
-define Package/ffserver
-$(call Package/ffmpeg/Default)
- SECTION:=multimedia
- CATEGORY:=Multimedia
- TITLE+= streaming server
- DEPENDS+= +libffmpeg-full
- VARIANT:=full
-endef
-
-define Package/ffserver-custom
-$(call Package/ffmpeg/Default)
- SECTION:=multimedia
- CATEGORY:=Multimedia
- TITLE+= streaming server (custom)
- DEPENDS+= @!ALL libffmpeg-custom
- VARIANT:=custom
-endef
-
-define Package/ffserver/description
-$(call Package/ffmpeg/Default/description)
- .
- This package contains the FFmpeg streaming server.
-endef
-
-Package/ffserver-custom/description = $(Package/ffserver/description)
-
 define Package/libffmpeg/Default
 $(call Package/ffmpeg/Default)
  SECTION:=libs
  CATEGORY:=Libraries
  TITLE+= libraries
- DEPENDS+= +libpthread +zlib +libbz2 +libopenssl
+ DEPENDS+= +libpthread +zlib +libbz2
  PROVIDES:= libffmpeg
 endef
 
@@ -369,7 +343,7 @@ endef
 define Package/libffmpeg-full
 $(call Package/libffmpeg/Default)
  TITLE+= (full)
- DEPENDS+= +alsa-lib +PACKAGE_libopus:libopus \
+ DEPENDS+= +alsa-lib +libopenssl +libopus \
     +SOFT_FLOAT:shine \
     +!SOFT_FLOAT:lame-lib \
     +PACKAGE_libx264:libx264 \
@@ -418,9 +392,7 @@ FFMPEG_CONFIGURE:= \
 	--enable-static \
 	--enable-pthreads \
 	--enable-zlib \
-	--enable-openssl \
 	--enable-protocol=rtmp,rtmps \
-	--enable-nonfree \
 	--disable-doc \
 	--disable-debug \
 	\
@@ -437,12 +409,6 @@ FFMPEG_CONFIGURE+= \
 	--disable-armv5te \
 	--disable-armv6 \
 	--disable-armv6t2 \
-	--disable-inline-asm \
-	--disable-mipsdsp \
-	--disable-mipsdspr2 \
-	--disable-mipsfpu \
-	--disable-msa \
-	--disable-mmi \
 	--disable-fast-unaligned \
 	--disable-runtime-cpudetect
 
@@ -453,13 +419,6 @@ FFMPEG_CONFIGURE+= \
 else ifneq ($(findstring powerpc,$(CONFIG_ARCH)),)
 FFMPEG_CONFIGURE+= \
 	--disable-altivec
-endif
-
-# libavcodec/mips/aacdec_mips.c build problem
-# XXX: disable use of assembly on MIPS. Patches welcome.
-ifneq ($(findstring mips,$(CONFIG_ARCH)),)
-FFMPEG_CONFIGURE+= \
-        --disable-asm --disable-inline-asm
 endif
 
 # selectively disable optimizations according to arch/cpu type
@@ -498,7 +457,8 @@ ifeq ($(BUILD_VARIANT),full)
 	)
 
 	FFMPEG_CONFIGURE+= \
-		--enable-avresample \
+		--enable-nonfree \
+		--enable-openssl \
 		$(if $(CONFIG_BUILD_PATENTED),, \
 			$(call FFMPEG_DISABLE,decoder,$(FFMPEG_PATENTED_DECODERS)) \
 			$(call FFMPEG_DISABLE,muxer,$(FFMPEG_PATENTED_MUXERS)) \
@@ -692,9 +652,9 @@ define Build/InstallDev/full
 	$(INSTALL_DIR) $(1)/usr/include
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale} $(1)/usr/include/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.{a,so*} $(1)/usr/lib/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.pc $(1)/usr/lib/pkgconfig/
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale} $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.{a,so*} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.pc $(1)/usr/lib/pkgconfig/
 ifneq ($(CONFIG_PACKAGE_libx264),)
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/libpostproc $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.{a,so*} $(1)/usr/lib/
@@ -751,13 +711,6 @@ endef
 
 Package/ffprobe-custom/install = $(Package/ffprobe/install)
 
-define Package/ffserver/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(CP) $(PKG_INSTALL_DIR)/usr/bin/ffserver $(1)/usr/bin/
-endef
-
-Package/ffserver-custom/install = $(Package/ffserver/install)
-
 define Package/libffmpeg-custom/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avformat,avutil}.so.* $(1)/usr/lib/
@@ -772,7 +725,7 @@ endef
 # Only ffmpeg with libx264 is GPL (yes libpostproc); all other builds are lgpl (no libpostproc)
 define Package/libffmpeg-full/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.so.* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.so.* $(1)/usr/lib/
 ifneq ($(CONFIG_PACKAGE_libx264),)
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.so.* $(1)/usr/lib/
 endif
@@ -787,10 +740,8 @@ Package/libffmpeg-audio-dec/install = $(Package/libffmpeg-custom/install)
 
 $(eval $(call BuildPackage,ffmpeg))
 $(eval $(call BuildPackage,ffprobe))
-$(eval $(call BuildPackage,ffserver))
 $(eval $(call BuildPackage,ffmpeg-custom))
 $(eval $(call BuildPackage,ffprobe-custom))
-$(eval $(call BuildPackage,ffserver-custom))
 $(eval $(call BuildPackage,libffmpeg-audio-dec))
 $(eval $(call BuildPackage,libffmpeg-full))
 $(eval $(call BuildPackage,libffmpeg-mini))
