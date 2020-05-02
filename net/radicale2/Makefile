@@ -31,6 +31,7 @@ $(call Package/radicale2/Default)
   USERID:=radicale2=225:radicale2=225
   DEPENDS:=+python3 +python3-dateutil +python3-vobject +python3-setuptools
   CONFLICTS:=radicale
+  VARIANT:=python3
 endef
 
 define Package/radicale2-examples
