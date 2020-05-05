@@ -144,6 +144,15 @@ endif
 
 TARGET_LDFLAGS += -liconv
 
+define Build/Prepare
+	$(call Build/Prepare/Default)
+ifneq ($(findstring arm,$(CONFIG_ARCH)),)
+ifeq ($(findstring neon,$(CONFIG_TARGET_OPTIMIZATION)),)
+	$(SED) '/remap_neon\.c/d' $(PKG_BUILD_DIR)/src/pulsecore/meson.build
+endif
+endif
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) \
 		$(1)/usr/lib/pkgconfig \
