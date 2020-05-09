@@ -20,8 +20,9 @@ PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING LICENSES shairport.c
 
-PKG_BUILD_PARALLEL:=1
 PKG_FIXUP:=autoreconf
+PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -75,7 +76,7 @@ define Package/shairport-sync-mini/description
   Minimal version uses mbed TLS and does not include libsoxr and avahi support.
 endef
 
-CONFIGURE_ARGS+= \
+CONFIGURE_ARGS += \
 	--with-alsa \
 	--with-metadata \
 	--with-apple-alac
@@ -104,9 +105,9 @@ Package/shairport-sync-mini/conffiles = $(Package/shairport-sync/default/conffil
 
 define Package/shairport-sync/default/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/shairport-sync $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/shairport-sync $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/scripts/shairport-sync.conf $(1)/etc/shairport-sync.conf
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/etc/shairport-sync.conf $(1)/etc/shairport-sync.conf
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/shairport-sync.init $(1)/etc/init.d/shairport-sync
 	$(INSTALL_DIR) $(1)/etc/config

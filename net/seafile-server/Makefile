@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seafile-server
 PKG_VERSION:=7.1.3
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/haiwen/seafile-server/tar.gz/v$(PKG_VERSION)-server?
@@ -52,7 +52,6 @@ define Package/seafile-server
     +libarchive \
     +libevent2 \
     +libevent2-openssl \
-    +libevent2-pthreads \
     +libmariadb \
     +libopenssl \
     +libpthread \
@@ -76,6 +75,10 @@ define Package/seafile-server/description
   protection and teamwork.
 endef
 
+define Package/seafile-server/config
+  select LIBEVHTP_BUILD_DEPENDS
+endef
+
 define Package/seafile-server-fuse
   SECTION:=net
   CATEGORY:=Network
@@ -87,7 +90,6 @@ define Package/seafile-server-fuse
     +jansson \
     +libevent2 \
     +libevent2-openssl \
-    +libevent2-pthreads \
     +libfuse \
     +libmariadb \
     +libopenssl \
