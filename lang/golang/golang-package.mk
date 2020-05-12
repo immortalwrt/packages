@@ -165,7 +165,7 @@ define GoPackage/GoSubMenu
   CATEGORY:=Languages
 endef
 
-define GoPackage/Environment/Target
+GO_PKG_TARGET_VARS= \
 	GOOS=$(GO_OS) \
 	GOARCH=$(GO_ARCH) \
 	GO386=$(GO_386) \
@@ -179,20 +179,20 @@ define GoPackage/Environment/Target
 	CGO_CPPFLAGS="$(TARGET_CPPFLAGS)" \
 	CGO_CXXFLAGS="$(filter-out $(GO_CFLAGS_TO_REMOVE),$(TARGET_CXXFLAGS))" \
 	CGO_LDFLAGS="$(TARGET_LDFLAGS)"
-endef
 
-define GoPackage/Environment/Build
+GO_PKG_BUILD_VARS= \
 	GOPATH=$(GO_PKG_BUILD_DIR) \
 	GOCACHE=$(GO_PKG_CACHE_DIR) \
 	GOENV=off
-endef
 
-define GoPackage/Environment/Default
-	$(call GoPackage/Environment/Target) \
-	$(call GoPackage/Environment/Build)
-endef
+GO_PKG_DEFAULT_VARS= \
+	$(GO_PKG_TARGET_VARS) \
+	$(GO_PKG_BUILD_VARS)
 
-GoPackage/Environment=$(call GoPackage/Environment/Default)
+GO_PKG_VARS=$(GO_PKG_DEFAULT_VARS)
+
+# do not use for new code; this will be removed after the next OpenWrt release
+GoPackage/Environment=$(GO_PKG_VARS)
 
 GO_PKG_DEFAULT_LDFLAGS= \
 	-buildid '$(SOURCE_DATE_EPOCH)' \
@@ -315,7 +315,7 @@ endef
 define GoPackage/Build/Compile
 	( \
 		cd $(GO_PKG_BUILD_DIR) ; \
-		export $(call GoPackage/Environment) ; \
+		export $(GO_PKG_VARS) ; \
 		\
 		echo "Finding targets" ; \
 		targets=$$$$(go list $(GO_PKG_BUILD_PKG)) ; \
