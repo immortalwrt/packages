@@ -34,6 +34,10 @@ define Package/kcptun-config
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
+define Package/kcptun-config/conffiles
+/etc/config/kcptun
+endef
+
 define Package/kcptun-config/install
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./files/kcptun.config $(1)/etc/config/kcptun

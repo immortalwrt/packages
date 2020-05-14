@@ -96,6 +96,7 @@ else
 endif
 
 define Package/shairport-sync/default/conffiles
+/etc/config/shairport-sync
 /etc/shairport-sync.conf
 endef
 
