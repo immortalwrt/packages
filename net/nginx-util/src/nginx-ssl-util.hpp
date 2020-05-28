@@ -1,6 +1,8 @@
 #ifndef __NGINX_SSL_UTIL_HPP
 #define __NGINX_SSL_UTIL_HPP
 
+#include <thread>
+
 #ifdef NO_PCRE
 #include <regex>
 namespace rgx = std;
@@ -145,7 +147,7 @@ constexpr auto _end = _Line{
 
 
 template<char clim='\0'>
-static constexpr auto _capture = _Line{
+constexpr auto _capture = _Line{
     [](const std::string & param, const std::string & /*begin*/) -> std::string
     { return '\'' + param + '\''; },
 
@@ -209,8 +211,8 @@ constexpr std::string_view _ssl_session_timeout = "ssl_session_timeout";
 // * Use constexpr---not available for strings or char * for now---look at lib.
 
 static const auto CRON_CMD = Line::build
-    <_space, _escape<NGINX_UTIL>, _space, _escape<ADD_SSL_FCT,'\''>, _space,
-        _capture<>, _newline>();
+    < _space, _escape<NGINX_UTIL>, _space, _escape<ADD_SSL_FCT,'\''>, _space,
+        _capture<>, _newline >();
 
 static const auto NGX_SERVER_NAME =
     Line::build<_begin, _escape<_server_name>, _space, _capture<';'>, _end>();
@@ -219,15 +221,15 @@ static const auto NGX_INCLUDE_LAN_LISTEN = Line::build
     <_begin, _escape<_include>, _space, _escape<LAN_LISTEN,'\''>, _end>();
 
 static const auto NGX_INCLUDE_LAN_LISTEN_DEFAULT = Line::build
-    <_begin, _escape<_include>, _space,
-        _escape<LAN_LISTEN_DEFAULT, '\''>, _end>();
+    < _begin, _escape<_include>, _space,
+        _escape<LAN_LISTEN_DEFAULT, '\''>, _end >();
 
 static const auto NGX_INCLUDE_LAN_SSL_LISTEN = Line::build
     <_begin, _escape<_include>, _space, _escape<LAN_SSL_LISTEN, '\''>, _end>();
 
 static const auto NGX_INCLUDE_LAN_SSL_LISTEN_DEFAULT = Line::build
-    <_begin, _escape<_include>, _space,
-        _escape<LAN_SSL_LISTEN_DEFAULT, '\''>, _end>();
+    < _begin, _escape<_include>, _space,
+        _escape<LAN_SSL_LISTEN_DEFAULT, '\''>, _end >();
 
 static const auto NGX_SSL_CRT = Line::build
     <_begin, _escape<_ssl_certificate>, _space, _capture<';'>, _end>();
@@ -344,7 +346,7 @@ void add_ssl_directives_to(const std::string & name, const bool isdefault)
     auto errmsg = std::string{"add_ssl_directives_to error: "};
     errmsg += "cannot add SSL directives to " + name + ".conf, missing: ";
     errmsg += NGX_SERVER_NAME.STR(name, "\n    ") + "\n";
-    throw std::runtime_error(errmsg);
+    throw std::runtime_error(errmsg.c_str());
 }
 
 
@@ -474,7 +476,7 @@ void use_cron_to_recreate_certificate(const std::string & name)
             std::string errmsg{"use_cron_to_recreate_certificate error: "};
             errmsg += "Cron unavailable to re-create the ssl certificate for ";
             errmsg += name + "\n";
-            throw std::runtime_error(errmsg);
+            throw std::runtime_error(errmsg.c_str());
         } // else active with or without instances:
 #endif
 
@@ -584,7 +586,7 @@ void del_ssl_directives_from(const std::string & name, const bool isdefault)
     auto errmsg = std::string{"del_ssl_directives_from error: "};
     errmsg += "cannot delete SSL directives from " + name + ".conf, missing: ";
     errmsg += NGX_SERVER_NAME.STR(name, "\n    ") + "\n";
-    throw std::runtime_error(errmsg);
+    throw std::runtime_error(errmsg.c_str());
 }
 
 
