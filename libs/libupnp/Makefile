@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libupnp
-PKG_VERSION:=1.8.6
+PKG_VERSION:=1.12.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=@SF/pupnp
-PKG_HASH:=65faf240f8ccee50cc0e7fe7fb21dcd79f743fc227a9b652b091f50f6956c2c7
+PKG_HASH:=fc36642b1848fe5a81296d496291d350ecfc12b85fd0b268478ab230976d4009
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 PKG_LICENSE:=BSD-3-Clause
@@ -47,6 +47,25 @@ endef
 define Package/libupnp-sample/description
 TVcontrolpoint & tvdevice sample applications run inside /etc/upnp-tvdevice/
 endef
+
+CONFIGURE_ARGS += \
+	--enable-client \
+	--enable-device \
+	--enable-gena \
+	--enable-reuseaddr \
+	--enable-gena \
+	--enable-webserver \
+	--enable-ssdp \
+	--enable-soap \
+	--enable-tools \
+	--enable-blocking_tcp_connections \
+	--enable-samples \
+	--disable-debug \
+	--disable-optssdp \
+	--disable-unspecified_server \
+	--disable-open_ssl \
+	--disable-scriptsupport \
+	--disable-postwrite
 
 TARGET_CFLAGS += -flto
 TARGET_LDFLAGS += -flto
