@@ -34,7 +34,13 @@ define Package/$(PKG_NAME)
 	SECTION:=multimedia
 	URL:=https://github.com/hzeller/gmrender-resurrect
 	TITLE:=Resource efficient UPnP/DLNA renderer, optimal for Raspberry Pi, CuBox or a general MediaServer.
-	DEPENDS:=+libgstreamer1 +gstreamer1-plugins-bad +gstreamer1-plugins-base +gstreamer1-plugins-good +gstreamer1-plugins-ugly +gst1-libav +gst1-mod-alsa +libupnp
+	DEPENDS:= \
+		+libgstreamer1 \
+		+gstreamer1-plugins-base +gst1-mod-alsa +gst1-mod-audioconvert +gst1-mod-audiorate +gst1-mod-ogg +gst1-mod-playback +gst1-mod-volume \
+		+gstreamer1-plugins-good +gst1-mod-audiofx +gst1-mod-audioparsers +gst1-mod-autodetect +gst1-mod-flac +gst1-mod-id3demux +gst1-mod-soup +gst1-mod-wavenc +gst1-mod-wavparse \
+		+gst1-libav \
+		+alsa-utils \
+		+libupnp
 endef
 
 define Package/$(PKG_NAME)/description
