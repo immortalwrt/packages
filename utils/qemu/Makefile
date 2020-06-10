@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qemu
 PKG_VERSION:=5.0.0
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_HASH:=2f13a92a0fa5c8b69ff0796b59b86b080bbb92ebad5d301a7724dd06b5e78cb6
 PKG_SOURCE_URL:=http://download.qemu.org/
@@ -64,6 +64,8 @@ define Package/qemu-ga/install
 	$(INSTALL_BIN) ./files/qemu-ga.init $(1)/etc/init.d/qemu-ga
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/virtio-ports
 	$(INSTALL_BIN) ./files/10-qemu-ga.hotplug $(1)/etc/hotplug.d/virtio-ports/10-qemu-ga
+	$(INSTALL_DIR) $(1)/sbin
+	$(INSTALL_BIN) ./files/shutdown $(1)/sbin/shutdown
 endef
 
 PKG_CONFIG_DEPENDS += CONFIG_PACKAGE_qemu-ga
