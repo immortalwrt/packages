@@ -19,7 +19,7 @@ config DOCKER_KERNEL_OPTIONS
 config DOCKER_SECCOMP
 	bool "Enable support for seccomp in Docker"
 	depends on PACKAGE_docker-ce
-	default n
+	default y
 	select KERNEL_SECCOMP
 	select PACKAGE_libseccomp
 	help
@@ -63,7 +63,7 @@ menu "Network"
 
 	config DOCKER_NET_MACVLAN
 		bool "Enables macvlan kernel support"
-		default n
+		default y
 		select PACKAGE_kmod-macvlan
 		select PACKAGE_kmod-dummy
 
@@ -79,7 +79,7 @@ menu "Storage"
 
 	config DOCKER_STO_EXT4
 		bool "Enables support for ext3 or ext4 as the backing filesystem"
-		default n
+		default y
 		select KERNEL_EXT4_FS_POSIX_ACL
 
 	config DOCKER_STO_BTRFS
