@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-idna
-PKG_VERSION:=2.9
+PKG_VERSION:=2.10
 PKG_RELEASE:=1
 
 PYPI_NAME:=idna
-PKG_HASH:=7588d1c14ae4c77d74036e8c22ff447b26d0fde8f007354fd48a7814db15b7cb
+PKG_HASH:=b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE.rst
@@ -20,49 +20,26 @@ PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>, Alexandru Ardelean <ardeleana
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-define Package/python-idna/Default
+define Package/python3-idna
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
   TITLE:=IDNA library
   URL:=https://github.com/kjd/idna
-endef
-
-define Package/python-idna
-$(call Package/python-idna/Default)
   DEPENDS:= \
-      +PACKAGE_python-idna:python-light \
-      +PACKAGE_python-idna:python-codecs
-  VARIANT:=python
-endef
-
-define Package/python3-idna
-$(call Package/python-idna/Default)
-  DEPENDS:= \
-      +PACKAGE_python3-idna:python3-light \
-      +PACKAGE_python3-idna:python3-codecs
+      +python3-light \
+      +python3-codecs
   VARIANT:=python3
 endef
 
-define Package/python-idna/description
+define Package/python3-idna/description
 A library to support the Internationalised Domain Names in Applications
 (IDNA) protocol as specified in RFC 5891. This version of the protocol
 is often referred to as "IDNA2008" and can produce different results
 from the earlier standard from 2003.
 endef
-
-define Package/python3-idna/description
-$(call Package/python-idna/description)
-.
-(Variant for Python3)
-endef
-
-$(eval $(call PyPackage,python-idna))
-$(eval $(call BuildPackage,python-idna))
-$(eval $(call BuildPackage,python-idna-src))
 
 $(eval $(call Py3Package,python3-idna))
 $(eval $(call BuildPackage,python3-idna))

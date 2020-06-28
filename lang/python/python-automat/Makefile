@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-automat
 PKG_VERSION:=20.2.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=Automat
 PKG_HASH:=7979803c74610e11ef0c0d68a2942b152df52da55336e0c9d58daf1831cbdf33
@@ -20,65 +20,34 @@ PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-PYTHON_PKG_SETUP_VARS:= \
-  PKG_VERSION="$(PKG_VERSION)"
 PYTHON3_PKG_SETUP_VARS:= \
   PKG_VERSION="$(PKG_VERSION)"
 
-define Package/python-automat/Default
+define Package/python3-automat
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
   TITLE:=Concise, idiomatic finite-state automata
   URL:=https://github.com/glyph/Automat
-endef
-
-define Package/python-automat
-$(call Package/python-automat/Default)
   DEPENDS:= \
-      +PACKAGE_python-automat:python-light \
-      +PACKAGE_python-automat:python-attrs \
-      +PACKAGE_python-automat:python-six
-  VARIANT:=python
-endef
-
-define Package/python3-automat
-$(call Package/python-automat/Default)
-  DEPENDS:= \
-      +PACKAGE_python3-automat:python3-light \
-      +PACKAGE_python3-automat:python3-attrs \
-      +PACKAGE_python3-automat:python3-six
+      +python3-light \
+      +python3-attrs \
+      +python3-six
   VARIANT:=python3
 endef
 
-define Package/python-automat/description
+define Package/python3-automat/description
 Automat is a library for concise, idiomatic Python expression of
 finite-state automata (particularly deterministic finite-state
 transducers).
-endef
-
-define Package/python3-automat/description
-$(call Package/python-automat/description)
-.
-(Variant for Python3)
-endef
-
-define PyPackage/python-automat/filespec
-+|$(PYTHON_PKG_DIR)
--|$(PYTHON_PKG_DIR)/automat/_visualize.py
 endef
 
 define Py3Package/python3-automat/filespec
 +|$(PYTHON3_PKG_DIR)
 -|$(PYTHON3_PKG_DIR)/automat/_visualize.py
 endef
-
-$(eval $(call PyPackage,python-automat))
-$(eval $(call BuildPackage,python-automat))
-$(eval $(call BuildPackage,python-automat-src))
 
 $(eval $(call Py3Package,python3-automat))
 $(eval $(call BuildPackage,python3-automat))
