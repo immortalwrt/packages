@@ -8,12 +8,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=jool
-PKG_VERSION:=4.0.8
+PKG_VERSION:=4.0.9
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/NICMx/Jool/releases/download/v$(PKG_VERSION)
-PKG_HASH:=73dd65a14feedc8bd0f650d3316bca346474c8420d60b48ca95bd1ca8846f1d4
+PKG_HASH:=d42215f87abf2e113bc039d23e6b4e1c39cafc90f0e5584adf0e40e996c68ffb
 
 PKG_MAINTAINER:=
 PKG_LICENSE:=GPL-2.0-only
