@@ -1,16 +1,11 @@
-From 28f7d828c802c0ced1c9f83f65123d22bb0958b7 Mon Sep 17 00:00:00 2001
-From: Christian Hesse <mail@eworm.de>
-Date: Wed, 27 May 2020 23:50:20 +0200
-Subject: [PATCH] fix build with GCC 10.x
+From ee711740d2809e7aa3ebd57d58bfc02b1e9b034b Mon Sep 17 00:00:00 2001
+From: David Seifert <soap@gentoo.org>
+Date: Thu, 23 Jan 2020 17:27:10 +0100
+Subject: [PATCH] Fix GCC 10 switch to `-fno-common` default
 
-Building with GCC 10.x fails with lots of:
-
-multiple definition of ...
-
-Defining these extern fixes the build.
 ---
  CRT.h                | 6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/CRT.h b/CRT.h
 index 933fe068..65998ac6 100644
