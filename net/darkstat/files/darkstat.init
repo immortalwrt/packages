@@ -3,7 +3,7 @@
 
 START=60
 APP=darkstat
-RUN_D=/var/empty
+RUN_D=/var/darkstat
 PID_F=$RUN_D/darkstat.pid
 
 SYSLOG=""
