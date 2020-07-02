@@ -24,15 +24,15 @@ PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/fs-exfat
+define KernelPackage/fs-exfat0
 	SUBMENU:=Filesystems
-	TITLE:=ExFAT Kernel driver
+	TITLE:=ExFAT Kernel driver (deprecated)
 	FILES:=$(PKG_BUILD_DIR)/exfat.ko
 	AUTOLOAD:=$(call AutoLoad,30,exfat,1)
-	DEPENDS:=+kmod-nls-base @BUILD_PATENTED @(LINUX_4_9||LINUX_4_14||LINUX_4_19)
+	DEPENDS:=+kmod-nls-base @BUILD_PATENTED @!LINUX_5_4
 endef
 
-define KernelPackage/fs-exfat/description
+define KernelPackage/fs-exfat0/description
 	Kernel module for ExFAT Filesytems
 endef
 
@@ -43,4 +43,4 @@ define Build/Compile
 		modules
 endef
 
-$(eval $(call KernelPackage,fs-exfat))
+$(eval $(call KernelPackage,fs-exfat0))

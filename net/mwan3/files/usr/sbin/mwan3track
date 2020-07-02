@@ -6,6 +6,7 @@
 LOG="logger -t $(basename "$0")[$$] -p"
 INTERFACE=""
 DEVICE=""
+PING="/bin/ping"
 
 IFDOWN_EVENT=0
 
@@ -43,6 +44,12 @@ validate_track_method() {
 				return 1
 			}
 			;;
+		nping-*)
+			which nping 1>/dev/null 2>&1 || {
+				$LOG warn "Missing nping. Please install nping package."
+				return 1
+			}
+			;;
 		*)
 			$LOG warn "Unsupported tracking method: $track_method"
 			return 2
@@ -55,6 +62,7 @@ main() {
 	local recovery_interval down up size
 	local keep_failure_interval check_quality failure_latency
 	local recovery_latency failure_loss recovery_loss
+	local max_ttl httping_ssl
 
 	[ -z "$5" ] && echo "Error: should not be started manually" && exit 0
 
@@ -68,6 +76,7 @@ main() {
 
 	config_load mwan3
 	config_get track_method $1 track_method ping
+	config_get_bool httping_ssl $1 httping_ssl 0
 	validate_track_method $track_method $SRC_IP || {
 		track_method=ping
 		if validate_track_method $track_method; then
@@ -84,6 +93,7 @@ main() {
 	config_get down $1 down 5
 	config_get up $1 up 5
 	config_get size $1 size 56
+	config_get max_ttl $1 max_ttl 60
 	config_get failure_interval $1 failure_interval $interval
 	config_get_bool keep_failure_interval $1 keep_failure_interval 0
 	config_get recovery_interval $1 recovery_interval $interval
@@ -100,15 +110,22 @@ main() {
 	local sleep_time=0
 	local turn=0
 	local result
+	local ping_protocol=4
 	local ping_result
+	local ping_result_raw
+	local ping_status
 	local loss=0
 	local latency=0
 
-	if [ "$STATUS" = "unknown" ]; then
-		echo "unknown" > /var/run/mwan3track/$1/STATUS
+	if [ "$STATUS" = "offline" ]; then
+		echo "offline" > /var/run/mwan3track/$1/STATUS
+		echo "0" > /var/run/mwan3track/$1/ONLINE
+		echo "$(get_uptime)" > /var/run/mwan3track/$1/OFFLINE
 		score=0
 	else
 		echo "online" > /var/run/mwan3track/$1/STATUS
+		echo "0" > /var/run/mwan3track/$1/OFFLINE
+		echo "$(get_uptime)" > /var/run/mwan3track/$1/ONLINE
 		env -i ACTION="connected" INTERFACE="$1" DEVICE="$2" /sbin/hotplug-call iface
 	fi
 	while true; do
@@ -119,14 +136,25 @@ main() {
 			if [ $host_up_count -lt $reliability ]; then
 				case "$track_method" in
 					ping)
+						# pinging IPv6 hosts with an interface is troublesome
+						# https://bugs.openwrt.org/index.php?do=details&task_id=2897
+						# so get the IP address of the interface and use that instead
+						if echo $track_ip | grep -q ':'; then
+						        ADDR=$(ip -6 addr ls dev "$DEVICE" | sed -ne '/\/128/d' -e 's/ *inet6 \([^ \/]*\).* scope global.*/\1/p' | head -n1)
+							[ -z "$ADDR" ] && ADDR=$(ip -6 addr ls dev "$DEVICE" | sed -ne 's/ *inet6 \([^ \/]*\).* scope global.*/\1/p')
+							ping_protocol=6
+						fi
 						if [ $check_quality -eq 0 ]; then
-							ping -I $DEVICE -c $count -W $timeout -s $size -q $track_ip &> /dev/null
+							$PING -$ping_protocol -I ${ADDR:-$DEVICE} -c $count -W $timeout -s $size -t $max_ttl -q $track_ip &> /dev/null
 							result=$?
 						else
-							ping_result="$(ping -I $DEVICE -c $count -W $timeout -s $size -q $track_ip | tail -2)"
+							ping_result_raw="$($PING -$ping_protocol -I ${ADDR:-$DEVICE} -c $count -W $timeout -s $size -t $max_ttl -q $track_ip 2>/dev/null)"
+							ping_status=$?
+							ping_result=$(echo "$ping_result_raw" | tail -n2)
 							loss="$(echo "$ping_result" | grep "packet loss" |  cut -d "," -f3 | awk '{print $1}' | sed -e 's/%//')"
-							if [ "$loss" -eq 100 ]; then
+							if [ "$ping_status" -ne 0 ] || [ "$loss" -eq 100 ]; then
 								latency=999999
+								loss=100
 							else
 								latency="$(echo "$ping_result" | grep -E 'rtt|round-trip' | cut -d "=" -f2 | cut -d "/" -f2 | cut -d "." -f1)"
 							fi
@@ -137,8 +165,24 @@ main() {
 						result=$?
 					;;
 					httping)
-						httping -y $SRC_IP -c $count -t $timeout -q $track_ip &> /dev/null
+						if [ "$httping_ssl" -eq 1 ]; then
+							httping -y $SRC_IP -c $count -t $timeout -q "https://$track_ip" &> /dev/null
+						else
+							httping -y $SRC_IP -c $count -t $timeout -q "http://$track_ip" &> /dev/null
+						fi
 						result=$?
+					;;
+					nping-tcp)
+						result=$(nping -e $DEVICE -c $count $track_ip --tcp | grep Lost | awk '{print $12}')
+					;;
+					nping-udp)
+						result=$(nping -e $DEVICE -c $count $track_ip --udp | grep Lost | awk '{print $12}')
+					;;
+					nping-icmp)
+						result=$(nping -e $DEVICE -c $count $track_ip --icmp | grep Lost | awk '{print $12}')
+					;;
+					nping-arp)
+						result=$(nping -e $DEVICE -c $count $track_ip --arp | grep Lost | awk '{print $12}')
 					;;
 				esac
 				if [ $check_quality -eq 0 ]; then
@@ -197,9 +241,7 @@ main() {
 
 			if [ $score -eq $up ]; then
 				echo "offline" > /var/run/mwan3track/$1/STATUS
-				$LOG notice "Interface $1 ($2) is offline"
 				env -i ACTION=ifdown INTERFACE=$1 DEVICE=$2 /sbin/hotplug-call iface
-				env -i ACTION="disconnected" INTERFACE="$1" DEVICE="$2" /sbin/hotplug-call iface
 				score=0
 			fi
 		else
@@ -237,8 +279,12 @@ main() {
 		wait
 
 		if [ "${IFDOWN_EVENT}" -eq 1 ]; then
-			score=0
 			echo "offline" > /var/run/mwan3track/$1/STATUS
+			echo "$(get_uptime)" > /var/run/mwan3track/$1/OFFLINE
+			echo "0" > /var/run/mwan3track/$1/ONLINE
+			$LOG notice "Interface $1 ($2) is offline"
+			env -i ACTION="disconnected" INTERFACE="$1" DEVICE="$2" /sbin/hotplug-call iface
+			score=0
 			IFDOWN_EVENT=0
 		fi
 	done
