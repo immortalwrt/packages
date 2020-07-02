@@ -33,9 +33,7 @@ endef
 
 CONFIGURE_ARGS:=--prefix=$(CONFIGURE_PREFIX) --cc=${TARGET_CC}
 
-ifeq ($(CONFIG_USE_MUSL),y)
-	TARGET_CFLAGS+=-Dloff_t=off_t
-endif
+TARGET_CFLAGS += $(if $(CONFIG_USE_MUSL),-Dloff_t=off_t)
 
 ifeq ($(CONFIG_USE_UCLIBC),y)
 	TARGET_CFLAGS+=-fno-stack-protector
