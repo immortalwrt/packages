@@ -1,0 +1,43 @@
+From 28f7d828c802c0ced1c9f83f65123d22bb0958b7 Mon Sep 17 00:00:00 2001
+From: Christian Hesse <mail@eworm.de>
+Date: Wed, 27 May 2020 23:50:20 +0200
+Subject: [PATCH] fix build with GCC 10.x
+
+Building with GCC 10.x fails with lots of:
+
+multiple definition of ...
+
+Defining these extern fixes the build.
+---
+ CRT.h                | 6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/CRT.h b/CRT.h
+index 933fe068..65998ac6 100644
+--- a/CRT.h
++++ b/CRT.h
+@@ -140,7 +140,7 @@ extern const char **CRT_treeStr;
+ 
+ extern int CRT_delay;
+ 
+-int* CRT_colors;
++extern int* CRT_colors;
+ 
+ extern int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT];
+ 
+@@ -150,13 +150,13 @@ extern int CRT_scrollHAmount;
+ 
+ extern int CRT_scrollWheelVAmount;
+ 
+-char* CRT_termType;
++extern char* CRT_termType;
+ 
+ // TODO move color scheme to Settings, perhaps?
+ 
+ extern int CRT_colorScheme;
+ 
+-void *backtraceArray[128];
++extern void *backtraceArray[128];
+ 
+ #if HAVE_SETUID_ENABLED
+ 
