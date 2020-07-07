@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=syncthing
-PKG_VERSION:=1.6.1
+PKG_VERSION:=1.7.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=syncthing-source-v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/syncthing/syncthing/releases/download/v$(PKG_VERSION)
-PKG_HASH:=f42518d453f7475022b5632420f21a6e0ab8d77f19c29b65ad582bc98e00a0a5
+PKG_HASH:=aee7ee49b65cb614711b9d8a7d468766adbb687fa5ba8f273eef495e4a8e9435
 
 PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/$(PKG_NAME)
 
@@ -46,10 +46,10 @@ define Build/Compile
   $(call GoPackage/Build/Compile,-tags noupgrade)
 endef
 
-define Package/syncthing/conffiles
-/etc/config/syncthing
-/etc/syncthing
-endef
+#define Package/syncthing/conffiles
+#/etc/config/syncthing
+#/etc/syncthing
+#endef
 
 define Package/syncthing/description
 		Syncthing replaces proprietary sync and cloud services with something
@@ -61,7 +61,7 @@ endef
 define Package/syncthing/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 
-	$(CP) ./files/* $(1)/
+	#$(CP) ./files/* $(1)/
 endef
 
 $(eval $(call GoBinPackage,syncthing))
