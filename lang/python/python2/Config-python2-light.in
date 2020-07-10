@@ -1,0 +1,7 @@
+menu "Configuration"
+
+config PYTHON2_BLUETOOTH_SUPPORT
+	bool "Enable Bluetooth support"
+	default n
+
+endmenu
