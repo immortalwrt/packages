@@ -40,7 +40,6 @@ define Package/docker-compose
       +python3-texttable \
       +python3-websocket-client \
       +python3-yaml
-  VARIANT:=python3
 endef
 
 define Package/docker-compose/description

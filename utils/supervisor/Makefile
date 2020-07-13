@@ -30,7 +30,6 @@ define Package/supervisor
   DEPENDS:= \
     +python3 \
     +python3-setuptools
-  VARIANT:=python3
 endef
 
 define Package/supervisor/description

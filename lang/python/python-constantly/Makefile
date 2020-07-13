@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-constantly
 PKG_VERSION:=15.1.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=constantly
 PKG_HASH:=586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35
@@ -20,44 +20,22 @@ PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-define Package/python-constantly/Default
+define Package/python3-constantly
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
   TITLE:=Symbolic constants in Python
   URL:=https://github.com/twisted/constantly
+  DEPENDS:=+python3-light
 endef
 
-define Package/python-constantly
-$(call Package/python-constantly/Default)
-  DEPENDS:=+PACKAGE_python-constantly:python-light
-  VARIANT:=python
-endef
-
-define Package/python3-constantly
-$(call Package/python-constantly/Default)
-  DEPENDS:=+PACKAGE_python3-constantly:python3-light
-  VARIANT:=python3
-endef
-
-define Package/python-constantly/description
+define Package/python3-constantly/description
 A library that provides symbolic constant support. It includes
 collections and constants with text, numeric, and bit flag values.
 Originally twisted.python.constants from the Twisted project.
 endef
-
-define Package/python3-constantly/description
-$(call Package/python-constantly/description)
-.
-(Variant for Python3)
-endef
-
-$(eval $(call PyPackage,python-constantly))
-$(eval $(call BuildPackage,python-constantly))
-$(eval $(call BuildPackage,python-constantly-src))
 
 $(eval $(call Py3Package,python3-constantly))
 $(eval $(call BuildPackage,python3-constantly))

@@ -32,7 +32,6 @@ define Package/fail2ban
   DEPENDS:= \
     +python3 \
     +python3-setuptools
-  VARIANT:=python3
 endef
 
 define Package/fail2ban/description

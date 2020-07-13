@@ -35,7 +35,6 @@ define Package/python3-numpy
   TITLE:=The fundamental package for scientific computing with Python
   URL:=https://www.numpy.org/
   DEPENDS:=@!SOFT_FLOAT +INSTALL_GFORTRAN:libgfortran +python3
-  VARIANT:=python3
 endef
 
 define Package/python3-numpy/description

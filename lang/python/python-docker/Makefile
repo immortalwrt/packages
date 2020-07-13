@@ -27,7 +27,6 @@ define Package/python3-docker
 	  +python3-light +python3-distutils +python3-logging \
 	  +python3-openssl +python3-paramiko +python3-six +python3-requests \
 	  +python3-websocket-client
-  VARIANT:=python3
 endef
 
 define Package/python3-docker/description

@@ -27,7 +27,6 @@ define Package/python3-jinja2
   TITLE:=Jinja2
   URL:=https://palletsprojects.com/p/jinja/
   DEPENDS:=+python3-light +python3-markupsafe
-  VARIANT:=python3  
 endef
 
 define Package/python3-jinja2/description

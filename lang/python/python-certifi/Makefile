@@ -27,7 +27,6 @@ define Package/python3-certifi
   TITLE:=Python package for Mozilla's CA Bundle
   URL:=http://certifi.io/
   DEPENDS:=+python3-light
-  VARIANT:=python3
 endef
 
 define Package/python3-certifi/description

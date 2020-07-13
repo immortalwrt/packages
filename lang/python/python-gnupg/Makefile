@@ -5,77 +5,39 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-gnupg
-PKG_VERSION:=0.4.4
-PKG_RELEASE:=2
+PKG_VERSION:=0.4.6
+PKG_RELEASE:=1
 
 PYPI_NAME:=$(PKG_NAME)
-PKG_HASH:=45daf020b370bda13a1429c859fcdff0b766c0576844211446f9266cae97fb0e
+PKG_HASH:=3aa0884b3bd414652c2385b9df39e7b87272c2eca1b8fcc3089bc9e58652019a
 
-PKG_LICENSE:=GPL-3.0-or-later
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE:=BSD-3-Clause
+PKG_LICENSE_FILES:=LICENSE.txt
 PKG_MAINTAINER:=Daniel Golle <daniel@makrotopia.org>
-PKG_CPE_ID:=cpe:/a:python-gnupg_project:python-gnupg
+PKG_CPE_ID:=cpe:/a:python:python-gnupg
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-define Package/python-gnupg/Default
+define Package/python3-gnupg
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
-  URL:=https://gnupg.readthedocs.io/en/latest/
-  DEPENDS:=+gnupg
-endef
-
-define Package/python-gnupg
-$(call Package/python-gnupg/Default)
-  TITLE:=python-pyodbc
-  DEPENDS+=+PACKAGE_python-gnupg:python-light
-  VARIANT:=python
-endef
-
-define Package/python3-gnupg
-$(call Package/python-gnupg/Default)
-  TITLE:=python3-gnupg
-  DEPENDS+=+PACKAGE_python3-gnupg:python3-light
-  VARIANT:=python3
-endef
-
-define Package/python-gnupg/description
-A Python wrapper for GnuPG
-
-This module allows easy access to GnuPG.s key management, encryption
-and signature functionality from Python programs, by interacting with
-GnuPG through file descriptors. Input arguments are strictly checked
-and sanitised, and therefore this module should be safe to use in
-networked applications requiring direct user input. It is intended for
-use on Windows, MacOS X, BSD, or Linux, with Python 2.6, Python 2.7,
-Python 3.3, Python 3.4, or PyPy.
+  TITLE:=A wrapper for GnuPG
+  URL:=https://docs.red-dove.com/python-gnupg/
+  DEPENDS:=+gnupg +python3-light +python3-logging
 endef
 
 define Package/python3-gnupg/description
-$(call Package/python-gnupg/description)
-
-(Variant for Python3)
+  The gnupg module allows Python programs to make use of the
+  functionality provided by the GNU Privacy Guard (abbreviated GPG or
+  GnuPG). Using this module, Python programs can encrypt and decrypt
+  data, digitally sign documents and verify digital signatures, manage
+  (generate, list and delete) encryption keys, using Public Key
+  Infrastructure (PKI) encryption technology based on OpenPGP.
 endef
-
-define PyBuild/Compile
-	$(call Build/Compile/PyMod,,\
-		install --prefix="/usr" --root="$(PKG_INSTALL_DIR)" \
-	)
-endef
-
-define Py3Build/Compile
-	$(call Build/Compile/Py3Mod,,\
-		install --prefix="/usr" --root="$(PKG_INSTALL_DIR)" \
-	)
-endef
-
-
-$(eval $(call PyPackage,python-gnupg))
-$(eval $(call BuildPackage,python-gnupg))
 
 $(eval $(call Py3Package,python3-gnupg))
 $(eval $(call BuildPackage,python3-gnupg))
+$(eval $(call BuildPackage,python3-gnupg-src))

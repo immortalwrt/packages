@@ -30,7 +30,6 @@ define Package/python3-maxminddb
   TITLE:=Reader for the MaxMind DB format
   URL:=https://dev.maxmind.com/
   DEPENDS:=+python3-light +libmaxminddb
-  VARIANT:=python3
 endef
 
 define Package/python3-maxminddb/description

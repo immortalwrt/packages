@@ -25,7 +25,6 @@ define Package/python3-boto3
 	+python3-jmespath \
 	+python3-botocore \
 	+python3-s3transfer
-  VARIANT:=python3
 endef
 
 define Package/python3-boto3/description

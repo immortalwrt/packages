@@ -29,7 +29,6 @@ define Package/python3-pyodbc
   TITLE:=python3-pyodbc
   URL:=https://github.com/mkleehammer/pyodbc
   DEPENDS:=+unixodbc +python3-light $(CXX_DEPENDS)
-  VARIANT:=python3
 endef
 
 define Package/python3-pyodbc/description

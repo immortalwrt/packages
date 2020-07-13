@@ -28,7 +28,6 @@ define Package/python3-RPi.GPIO
   URL:=https://sourceforge.net/projects/raspberry-gpio-python/
   TITLE:=python3-RPi.GPIO
   DEPENDS:=+python3-light
-  VARIANT:=python3
 endef
 
 define Package/python3-RPi.GPIO/description

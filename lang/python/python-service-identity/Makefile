@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-service-identity
 PKG_VERSION:=18.1.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=service_identity
 PKG_HASH:=0858a54aabc5b459d1aafa8a518ed2081a285087f349fe3e55197989232e2e2d
@@ -20,54 +20,26 @@ PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-define Package/python-service-identity/Default
+define Package/python3-service-identity
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
   TITLE:=Service identity verification
   URL:=https://service-identity.readthedocs.io/
-endef
-
-define Package/python-service-identity
-$(call Package/python-service-identity/Default)
   DEPENDS:= \
-      +PACKAGE_python-service-identity:python-light \
-      +PACKAGE_python-service-identity:python-attrs \
-      +PACKAGE_python-service-identity:python-cryptography \
-      +PACKAGE_python-service-identity:python-ipaddress \
-      +PACKAGE_python-service-identity:python-pyasn1 \
-      +PACKAGE_python-service-identity:python-pyasn1-modules
-  VARIANT:=python
-endef
-
-define Package/python3-service-identity
-$(call Package/python-service-identity/Default)
-  DEPENDS:= \
-      +PACKAGE_python3-service-identity:python3-light \
-      +PACKAGE_python3-service-identity:python3-attrs \
-      +PACKAGE_python3-service-identity:python3-cryptography \
-      +PACKAGE_python3-service-identity:python3-pyasn1 \
-      +PACKAGE_python3-service-identity:python3-pyasn1-modules
-  VARIANT:=python3
-endef
-
-define Package/python-service-identity/description
-service_identity aspires to give you all the tools you need for
-verifying whether a certificate is valid for the intended purposes.
+      +python3-light \
+      +python3-attrs \
+      +python3-cryptography \
+      +python3-pyasn1 \
+      +python3-pyasn1-modules
 endef
 
 define Package/python3-service-identity/description
-$(call Package/python-service-identity/description)
-.
-(Variant for Python3)
+service_identity aspires to give you all the tools you need for
+verifying whether a certificate is valid for the intended purposes.
 endef
-
-$(eval $(call PyPackage,python-service-identity))
-$(eval $(call BuildPackage,python-service-identity))
-$(eval $(call BuildPackage,python-service-identity-src))
 
 $(eval $(call Py3Package,python3-service-identity))
 $(eval $(call BuildPackage,python3-service-identity))

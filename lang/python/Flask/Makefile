@@ -30,7 +30,6 @@ define Package/python3-flask
            +python3-itsdangerous +python3-jinja2 +python3 +python3-logging \
            +python3-markupsafe +python3-multiprocessing +python3-setuptools \
            +python3-werkzeug
-  VARIANT:=python3
 endef
 
 define Package/python3-flask/description

@@ -29,7 +29,6 @@ define Package/python3-atomicwrites
   TITLE:=Atomic file writes
   URL:=https://github.com/untitaker/python-atomicwrites
   DEPENDS:=+python3-light
-  VARIANT:=python3
 endef
 
 define Package/python3-atomicwrites/description

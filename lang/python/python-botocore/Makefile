@@ -26,7 +26,6 @@ define Package/python3-botocore
 	+python3-dateutil \
 	+python3-jmespath \
 	+python3-requests
-  VARIANT:=python3
 endef
 
 define Package/python3-botocore/description

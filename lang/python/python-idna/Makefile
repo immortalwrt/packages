@@ -31,7 +31,6 @@ define Package/python3-idna
   DEPENDS:= \
       +python3-light \
       +python3-codecs
-  VARIANT:=python3
 endef
 
 define Package/python3-idna/description

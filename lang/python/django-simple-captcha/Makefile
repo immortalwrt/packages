@@ -35,7 +35,6 @@ define Package/python3-django-simple-captcha
 	+python3-django1 \
 	+python3-pillow \
 	+python3-django-ranged-response
-  VARIANT:=python3
 endef
 
 define Package/python3-django-simple-captcha/description

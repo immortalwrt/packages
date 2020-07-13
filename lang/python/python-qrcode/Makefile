@@ -31,7 +31,6 @@ define Package/python3-qrcode
 	+python3-setuptools \
 	+python3-six \
 	+python3-pillow
-  VARIANT:=python3
 endef
 
 define Package/python3-qrcode/description

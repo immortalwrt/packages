@@ -34,7 +34,6 @@ define Package/python3-django-postoffice
 	+python3 \
 	+python3-django1 \
 	+python3-django-jsonfield2
-  VARIANT:=python3
 endef
 
 define Package/python3-django-postoffice/description

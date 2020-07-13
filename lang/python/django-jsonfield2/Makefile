@@ -33,7 +33,6 @@ define Package/python3-django-jsonfield2
   URL:=https://github.com/rpkilby/jsonfield2
   DEPENDS:=+python3-light +python3-decimal +django
   CONFLICTS:=python3-django-jsonfield
-  VARIANT:=python3
 endef
 
 define Package/python3-django-jsonfield2/description

@@ -32,7 +32,6 @@ define Package/thefuck
     +python3-codecs \
     +python3-ctypes \
     +python3-setuptools
-  VARIANT:=python3
 endef
 
 define Package/thefuck/description

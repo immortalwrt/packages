@@ -30,7 +30,6 @@ define Package/python3-requests-oauthlib
 	+python3 \
 	+python3-oauthlib \
 	+python3-requests
-  VARIANT:=python3
 endef
 
 define Package/python3-requests-oauthlib/description

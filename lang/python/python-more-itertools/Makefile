@@ -29,7 +29,6 @@ define Package/python3-more-itertools
   TITLE:=More routines for operating on iterables, beyond itertools
   URL:=https://github.com/erikrose/more-itertools
   DEPENDS:=+python3-light
-  VARIANT:=python3
 endef
 
 define Package/python3-more-itertools/description

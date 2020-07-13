@@ -41,7 +41,6 @@ define Package/python3-twisted
       +python3-hyperlink \
       +python3-setuptools \
       +python3-zope-interface
-  VARIANT:=python3
 endef
 
 define Package/python3-twisted/description

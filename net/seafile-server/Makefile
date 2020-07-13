@@ -118,7 +118,6 @@ define Package/python3-seafile-server
   SUBMENU:=Python
   TITLE:=Python bindings for Seafile server
   DEPENDS:=+python3-light +python3-logging +python3-searpc +python3-seafile-ccnet
-  VARIANT:=python3
 endef
 
 define Package/python3-seafile-server/description

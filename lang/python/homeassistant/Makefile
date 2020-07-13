@@ -53,7 +53,6 @@ define Package/$(PKG_NAME)
     +python3-voluptuous-serialize \
     +python3-yaml \
     +python3-zeroconf
-  VARIANT:=python3
 endef
 
 define Package/$(PKG_NAME)/description

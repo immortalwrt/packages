@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-pyopenssl
 PKG_VERSION:=19.1.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=pyOpenSSL
 PKG_HASH:=9a24494b2602aaf402be5c9e30a0b82d4a5c67528fe8fb475e3f3bc00dd69507
@@ -21,48 +21,23 @@ PKG_CPE_ID:=cpe:/a:pyopenssl_project:pyopenssl
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-define Package/python-pyopenssl/Default
+define Package/python3-pyopenssl
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
   TITLE:=OpenSSL wrapper
   URL:=https://pyopenssl.org/
-endef
-
-define Package/python-pyopenssl
-$(call Package/python-pyopenssl/Default)
   DEPENDS:= \
-      +PACKAGE_python-pyopenssl:python-light \
-      +PACKAGE_python-pyopenssl:python-cryptography \
-      +PACKAGE_python-pyopenssl:python-six
-  VARIANT:=python
-endef
-
-define Package/python3-pyopenssl
-$(call Package/python-pyopenssl/Default)
-  DEPENDS:= \
-      +PACKAGE_python3-pyopenssl:python3-light \
-      +PACKAGE_python3-pyopenssl:python3-cryptography \
-      +PACKAGE_python3-pyopenssl:python3-six
-  VARIANT:=python3
-endef
-
-define Package/python-pyopenssl/description
-Python wrapper module around the OpenSSL library
+      +python3-light \
+      +python3-cryptography \
+      +python3-six
 endef
 
 define Package/python3-pyopenssl/description
-$(call Package/python-pyopenssl/description)
-.
-(Variant for Python3).
+Python wrapper module around the OpenSSL library
 endef
-
-$(eval $(call PyPackage,python-pyopenssl))
-$(eval $(call BuildPackage,python-pyopenssl))
-$(eval $(call BuildPackage,python-pyopenssl-src))
 
 $(eval $(call Py3Package,python3-pyopenssl))
 $(eval $(call BuildPackage,python3-pyopenssl))

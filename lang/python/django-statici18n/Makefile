@@ -33,7 +33,6 @@ define Package/python3-django-statici18n
 	+python3-django1 \
 	+python3-django-appconf \
 	+python3-six
-  VARIANT:=python3
 endef
 
 define Package/python3-django-statici18n/description

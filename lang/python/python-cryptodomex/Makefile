@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-cryptodomex
 PKG_VERSION:=3.9.7
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=pycryptodomex
 PKG_HASH:=50163324834edd0c9ce3e4512ded3e221c969086e10fdd5d3fdcaadac5e24a78
@@ -17,52 +17,25 @@ PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
-
-PYTHON_PKG_SETUP_ARGS:=
-PYTHON_PKG_SETUP_VARS:= \
-  CONFIG_BIG_ENDIAN="$(CONFIG_BIG_ENDIAN)"
 
 PYTHON3_PKG_SETUP_ARGS:=
 PYTHON3_PKG_SETUP_VARS:= \
   CONFIG_BIG_ENDIAN="$(CONFIG_BIG_ENDIAN)"
 
-define Package/python-cryptodomex/Default
+define Package/python3-cryptodomex
   SECTION:=lang-python
   CATEGORY:=Languages
   SUBMENU:=Python
   TITLE:=A self-contained cryptographic library for Python
   URL:=https://www.pycryptodome.org/
-  DEPENDS:=+libgmp
-endef
-
-define Package/python-cryptodomex
-$(call Package/python-cryptodomex/Default)
-  DEPENDS+=+PACKAGE_python-cryptodomex:python
-  VARIANT:=python
-endef
-
-define Package/python3-cryptodomex
-$(call Package/python-cryptodomex/Default)
-  DEPENDS+=+PACKAGE_python3-cryptodomex:python3
-  VARIANT:=python3
-endef
-
-define Package/python-cryptodomex/description
-PyCryptodome is a self-contained Python package of low-level
-cryptographic primitives.
+  DEPENDS:=+libgmp +python3
 endef
 
 define Package/python3-cryptodomex/description
-$(call Package/python-cryptodomex/description)
-.
-(Variant for Python3)
+PyCryptodome is a self-contained Python package of low-level
+cryptographic primitives.
 endef
-
-$(eval $(call PyPackage,python-cryptodomex))
-$(eval $(call BuildPackage,python-cryptodomex))
-$(eval $(call BuildPackage,python-cryptodomex-src))
 
 $(eval $(call Py3Package,python3-cryptodomex))
 $(eval $(call BuildPackage,python3-cryptodomex))

@@ -28,7 +28,6 @@ define Package/python3-awscli
 	+python3-colorama \
 	+python3-docutils \
 	+python3-s3transfer
-  VARIANT:=python3
 endef
 
 define Package/python3-awscli/description

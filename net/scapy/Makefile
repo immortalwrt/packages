@@ -27,7 +27,6 @@ define Package/scapy
   MAINTAINER:=W. Michael Petullo <mike@flyn.org>
   URL:=https://scapy.net/
   DEPENDS:=+python3
-  VARIANT:=python3
 endef
 
 define Package/scapy/description

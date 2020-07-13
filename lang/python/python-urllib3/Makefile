@@ -21,42 +21,20 @@ PKG_HASH:=3018294ebefce6572a474f0604c2021e33b3fd8006ecd11d62107a5d2a963527
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-define Package/python-urllib3/Default
+define Package/python3-urllib3
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Sanity-friendly HTTP client
   URL:=https://urllib3.readthedocs.io/
-endef
-
-define Package/python-urllib3
-$(call Package/python-urllib3/Default)
-  DEPENDS:=+PACKAGE_python-urllib3:python
-  VARIANT:=python
-endef
-
-define Package/python-urllib3/description
-  HTTP library with thread-safe connection pooling, file post, and more.
-endef
-
-define Package/python3-urllib3
-$(call Package/python-urllib3/Default)
-  DEPENDS:=+PACKAGE_python3-urllib3:python3
-  VARIANT:=python3
+  DEPENDS:=+python3
 endef
 
 define Package/python3-urllib3/description
-$(call Package/python-urllib3/description)
-.
-(Variant for Python3)
+  HTTP library with thread-safe connection pooling, file post, and more.
 endef
-
-$(eval $(call PyPackage,python-urllib3))
-$(eval $(call BuildPackage,python-urllib3))
-$(eval $(call BuildPackage,python-urllib3-src))
 
 $(eval $(call Py3Package,python3-urllib3))
 $(eval $(call BuildPackage,python3-urllib3))

@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-ply
 PKG_VERSION:=3.11
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=ply
 PKG_HASH:=00c7c1aaa88358b9c765b6d3000c6eec0ba42abca5351b095321aef446081da3
@@ -20,43 +20,21 @@ PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-define Package/python-ply/Default
+define Package/python3-ply
   SECTION:=lang
   CATEGORY:=Languages
   SUBMENU:=Python
   TITLE:=lex and yacc for Python
   URL:=http://www.dabeaz.com/ply/
-endef
-
-define Package/python-ply
-$(call Package/python-ply/Default)
-  DEPENDS:=+PACKAGE_python-ply:python-light
-  VARIANT:=python
-endef
-
-define Package/python3-ply
-$(call Package/python-ply/Default)
-  DEPENDS:=+PACKAGE_python3-ply:python3-light
-  VARIANT:=python3
-endef
-
-define Package/python-ply/description
-PLY is a 100% Python implementation of the common parsing tools lex
-and yacc.
+  DEPENDS:=+python3-light
 endef
 
 define Package/python3-ply/description
-$(call Package/python-ply/description)
-.
-(Variant for Python3)
+PLY is a 100% Python implementation of the common parsing tools lex
+and yacc.
 endef
-
-$(eval $(call PyPackage,python-ply))
-$(eval $(call BuildPackage,python-ply))
-$(eval $(call BuildPackage,python-ply-src))
 
 $(eval $(call Py3Package,python3-ply))
 $(eval $(call BuildPackage,python3-ply))

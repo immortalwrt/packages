@@ -35,7 +35,6 @@ define Package/$(PKG_NAME)
     +iptables \
     +python3 \
     +python3-setuptools
-  VARIANT:=python3
 endef
 
 define Package/$(PKG_NAME)/description

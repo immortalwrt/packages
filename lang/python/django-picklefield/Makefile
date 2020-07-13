@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=django-picklefield
 PKG_VERSION:=2.1.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=$(PKG_NAME)
 PKG_HASH:=67a5e156343e3b032cac2f65565f0faa81635a99c7da74b0f07a0f5db467b646
@@ -20,52 +20,25 @@ PKG_LICENSE_FILES:=LICENSE
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
 include ../python3-package.mk
 
-PYTHON_PKG_SETUP_VARS:= \
-  PKG_VERSION="$(PKG_VERSION)"
 PYTHON3_PKG_SETUP_VARS:= \
   PKG_VERSION="$(PKG_VERSION)"
 
-define Package/django-picklefield/Default
+define Package/python3-django-picklefield
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Pickled object field for Django
   URL:=https://github.com/gintas/django-picklefield/
-endef
-
-define Package/python-django-picklefield
-$(call Package/django-picklefield/Default)
   DEPENDS:= \
-	+PACKAGE_python-django-picklefield:python \
-	python-django1
-  VARIANT:=python
-  MDEPENDS:=python-django1
-endef
-
-define Package/python-django-picklefield/description
-  Pickled object field for Django
-endef
-
-define Package/python3-django-picklefield
-$(call Package/django-picklefield/Default)
-  DEPENDS:= \
-	+PACKAGE_python3-django-picklefield:python3 \
-	+PACKAGE_python3-django-picklefield:python3-django1
-  VARIANT:=python3
+	+python3 \
+	+python3-django1
 endef
 
 define Package/python3-django-picklefield/description
-$(call Package/python-django-picklefield/description)
-.
-(Variant for Python3)
+  Pickled object field for Django
 endef
-
-$(eval $(call PyPackage,python-django-picklefield))
-$(eval $(call BuildPackage,python-django-picklefield))
-$(eval $(call BuildPackage,python-django-picklefield-src))
 
 $(eval $(call Py3Package,python3-django-picklefield))
 $(eval $(call BuildPackage,python3-django-picklefield))

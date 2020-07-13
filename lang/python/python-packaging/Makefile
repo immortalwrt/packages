@@ -28,7 +28,6 @@ define Package/python3-packaging
   TITLE:=Core utilities for Python packages
   URL:=https://github.com/pypa/packaging
   DEPENDS:=+python3-light +python3-pyparsing +python3-six +python3-logging +python3-distutils
-  VARIANT:=python3
 endef
 
 define Package/python3-packaging/description

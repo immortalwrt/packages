@@ -42,8 +42,6 @@ define Package/python3-pytest
 	+python3-decimal \
 	+python3-logging \
 	+python3-urllib
-
-  VARIANT:=python3
 endef
 
 define Package/python3-pytest/description

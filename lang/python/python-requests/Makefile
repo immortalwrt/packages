@@ -35,7 +35,6 @@ define Package/python3-requests
 	  +python3-idna  \
 	  +python3-urllib3  \
 	  +python3-certifi
-  VARIANT:=python3
 endef
 
 define Package/python3-requests/description

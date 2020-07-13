@@ -26,7 +26,6 @@ define Package/python3-flask-restful
   TITLE:=Simple framework for creating REST APIs
   URL:=https://github.com/flask-restful/flask-restful
   DEPENDS:=+python3-light +python3-flask
-  VARIANT:=python3
 endef
 
 define Package/python3-flask-restful/description

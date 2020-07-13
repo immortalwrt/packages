@@ -35,7 +35,6 @@ define Package/python3-automat
       +python3-light \
       +python3-attrs \
       +python3-six
-  VARIANT:=python3
 endef
 
 define Package/python3-automat/description

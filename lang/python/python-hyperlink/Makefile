@@ -31,7 +31,6 @@ define Package/python3-hyperlink
   DEPENDS:= \
       +python3-light \
       +python3-idna
-  VARIANT:=python3
 endef
 
 define Package/python3-hyperlink/description

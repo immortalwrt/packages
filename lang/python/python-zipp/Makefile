@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-zipp
 PKG_VERSION:=3.1.0
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PYPI_NAME:=zipp
 PKG_HASH:=c599e4d75c98f6798c509911d08a22e6c021d074469042177c8c86fb92eefd96
@@ -25,7 +25,6 @@ define Package/python3-zipp
   TITLE:=Zipfile object wrapper
   URL:=https://github.com/jaraco/zipp
   DEPENDS:=+python3-light
-  VARIANT:=python3
 endef
 
 define Package/python3-zipp/description

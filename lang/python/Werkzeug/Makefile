@@ -26,7 +26,6 @@ define Package/python3-werkzeug
   TITLE:=Werkzeug
   URL:=https://palletsprojects.com/p/werkzeug/
   DEPENDS:=+python3-light +python3-email
-  VARIANT:=python3
 endef
 
 define Package/python3-werkzeug/description

@@ -23,7 +23,6 @@ define Package/python3-s3transfer
   DEPENDS:= \
 	+python3 \
 	+python3-botocore
-  VARIANT:=python3
 endef
 
 define Package/python3-s3transfer/description

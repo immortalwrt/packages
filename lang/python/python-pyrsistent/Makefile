@@ -29,7 +29,6 @@ define Package/python3-pyrsistent
   TITLE:=Persistent/Functional/Immutable data structures
   URL:=https://github.com/tobgu/pyrsistent
   DEPENDS:=+python3-light +python3-six
-  VARIANT:=python3
 endef
 
 define Package/python3-pyrsistent/description
