@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libmraa
 PKG_VERSION:=2.1.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/eclipse/mraa/tar.gz/v$(PKG_VERSION)?
@@ -23,14 +23,15 @@ PKG_LICENSE_FILES:=COPYING
 PKG_BUILD_DEPENDS:=node swig/host node/host
 CMAKE_INSTALL:=1
 PKG_USE_MIPS16:=0
+PYTHON3_PKG_BUILD:=0
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
-include $(TOPDIR)/feeds/packages/lang/python/python-package.mk
-include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
+include ../../lang/python/python3-package.mk
 
 CMAKE_OPTIONS=-DENABLEEXAMPLES=0 \
-	-DFIRMATA=ON
+	-DFIRMATA=ON \
+	-DBUILDSWIG=OFF
 
 TARGET_CFLAGS+=-I$(STAGING_DIR)/usr/include/node
 
@@ -74,22 +75,10 @@ $(call Package/libmraa/Default/description)
 This package contains the Node.js libraries.
 endef
 
-define Package/libmraa-python
-  $(call Package/libmraa/Default)
-  TITLE:=Eclipse MRAA lowlevel IO Python library
-  DEPENDS:=+libmraa +python-light
-endef
-
-define Package/libmraa-python/description
-$(call Package/libmraa/Default/description)
-
-This package contains the Python libraries.
-endef
-
 define Package/libmraa-python3
   $(call Package/libmraa/Default)
   TITLE:=Eclipse MRAA lowlevel IO Python3 library
-  DEPENDS:=+libmraa +python3-light
+  DEPENDS:=+libmraa +python3-light @BROKEN
 endef
 
 define Package/libmraa-python3/description
@@ -110,12 +99,6 @@ define Package/libmraa-node/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/mraa/* $(1)/usr/lib/node/mraa/
 endef
 
-define Package/libmraa-python/install
-	$(INSTALL_DIR) $(1)/usr/lib/python$(PYTHON_VERSION)/site-packages
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages/* \
-		$(1)/usr/lib/python$(PYTHON_VERSION)/site-packages/
-endef
-
 define Package/libmraa-python3/install
 	$(INSTALL_DIR) $(1)/usr/lib/python$(PYTHON3_VERSION)/site-packages
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/python$(PYTHON3_VERSION)/site-packages/* \
@@ -124,5 +107,4 @@ endef
 
 $(eval $(call BuildPackage,libmraa))
 $(eval $(call BuildPackage,libmraa-node))
-$(eval $(call BuildPackage,libmraa-python))
 $(eval $(call BuildPackage,libmraa-python3))
