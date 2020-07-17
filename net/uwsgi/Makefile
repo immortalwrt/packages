@@ -1,12 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=uwsgi
-PKG_VERSION:=2.0.18
-PKG_RELEASE:=2
+PKG_VERSION:=2.0.19.1
+PKG_RELEASE:=1
 
-PYPI_NAME:=$(PKG_NAME)
-PKG_HASH:=4972ac538800fb2d421027f49b4a1869b66048839507ccf0aa2fda792d99f583
+PYPI_NAME:=uWSGI
+PKG_HASH:=faa85e053c0b1be4d5585b0858d3a511d2cd10201802e8676060fd0a109e5869
 PKG_BUILD_DEPENDS:=python3/host
+PYTHON3_PKG_BUILD:=0
 
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=LICENSE
@@ -17,6 +18,9 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python3-package.mk
 #for LINUX_UNAME_VERSION:
 include $(INCLUDE_DIR)/kernel.mk
+
+#the .tar.gz does not wrap it into a uWSGI dir; do not use "$(1)/..":
+TAR_CMD=$(HOST_TAR) -C $(1) $(TAR_OPTIONS)
 
 define Package/uwsgi
   SECTION:=net
@@ -107,8 +111,8 @@ define Build/Compile
 	$(call Build/Compile/Default,plugin.logfile PROFILE=openwrt)
 	$(call Build/Compile/Default,plugin.syslog PROFILE=openwrt)
 	$(call Build/Compile/Default,plugin.cgi PROFILE=openwrt)
-	$(call Build/Compile/HostPy3RunTarget, \
-		cd $(PKG_BUILD_DIR), \
+	$(call Python3/Run, \
+		$(PKG_BUILD_DIR), \
 		uwsgiconfig.py --plugin plugins/python openwrt, \
 		CPP="$(TARGET_CROSS)cpp" \
 		LINUX_UNAME_VERSION=$(LINUX_UNAME_VERSION) \
