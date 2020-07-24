@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=you-get
-PKG_VERSION:=0.4.1432
+PKG_VERSION:=0.4.1456
 PKG_RELEASE:=1
 
 PYPI_NAME:=you-get
-PKG_HASH:=421b71ee644afc63581c2d57bf6785c0e65c51d9debe74b8449685c90fd56f44
+PKG_HASH:=7b19ac0a459f2e6497ba7c399df50dabb28890ebf2b79a092ae114595fe1b192
 
 PKG_MAINTAINER:=[CTCGFW]Project OpenWrt <contact@project-openwrt.eu.org>
 PKG_LICENSE:=MIT
@@ -36,7 +36,6 @@ define Package/you-get
     +python3-codecs \
     +python3-ctypes \
     +python3-setuptools
-  VARIANT:=python3
 endef
 
 define Package/you-get/description
@@ -48,4 +47,3 @@ endef
 $(eval $(call Py3Package,you-get))
 $(eval $(call BuildPackage,you-get))
 $(eval $(call BuildPackage,you-get-src))
-
