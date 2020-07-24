@@ -11,9 +11,9 @@ PKG_MAINTAINER:=Jaymin Patel <jem.patel@gmail.com>
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
-include ../pypi.mk
+include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python3-package.mk
+include ../../lang/python/python3-package.mk
 
 define Package/speedtest-cli
   SECTION:=net
