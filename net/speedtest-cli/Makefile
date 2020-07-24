@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=python3-speedtest-cli
+PKG_NAME:=speedtest-cli
 PKG_VERSION:=2.1.2
 PKG_RELEASE:=2
 
@@ -15,9 +15,9 @@ include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 
-define Package/python3-speedtest-cli
-  SECTION:=lang
-  CATEGORY:=Languages
+define Package/speedtest-cli
+  SECTION:=net
+  CATEGORY:=Network
   SUBMENU:=Python
   TITLE:=Command line interface for testing internet bandwidth using speedtest.net
   URL:=https://github.com/sivel/speedtest-cli
@@ -25,10 +25,10 @@ define Package/python3-speedtest-cli
 	  +python3-urllib +python3-codecs +python3-openssl
 endef
 
-define Package/python3-speedtest-cli/description
+define Package/speedtest-cli/description
   Command line interface for testing internet bandwidth using speedtest.net
 endef
 
-$(eval $(call Py3Package,python3-speedtest-cli))
-$(eval $(call BuildPackage,python3-speedtest-cli))
-$(eval $(call BuildPackage,python3-speedtest-cli-src))
+$(eval $(call Py3Package,speedtest-cli))
+$(eval $(call BuildPackage,speedtest-cli))
+#$(eval $(call BuildPackage,speedtest-cli-src))
