@@ -11,15 +11,14 @@ PKG_NAME:=you-get
 PKG_VERSION:=0.4.1456
 PKG_RELEASE:=1
 
-PKG_SOURCE:=you-get-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/y/you-get/
+PYPI_NAME:=you-get
 PKG_HASH:=7b19ac0a459f2e6497ba7c399df50dabb28890ebf2b79a092ae114595fe1b192
-PKG_BUILD_DIR:=$(BUILD_DIR)/you-get-$(PKG_VERSION)
 
 PKG_MAINTAINER:=[CTCGFW]Project OpenWrt <contact@project-openwrt.eu.org>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
+include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python3-package.mk
 
