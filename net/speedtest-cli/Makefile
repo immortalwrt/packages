@@ -18,7 +18,6 @@ include ../../lang/python/python3-package.mk
 define Package/speedtest-cli
   SECTION:=net
   CATEGORY:=Network
-  SUBMENU:=Python
   TITLE:=Command line interface for testing internet bandwidth using speedtest.net
   URL:=https://github.com/sivel/speedtest-cli
   DEPENDS:=+python3-light +python3-pkg-resources +python3-xml +python3-email \
