@@ -1,6 +1,6 @@
 --- a/AvailableMetersPanel.c
 +++ b/AvailableMetersPanel.c
-@@ -9,6 +9,7 @@ in the source distribution for its full
+@@ -9,6 +9,7 @@ in the source distribution for its full text.
  #include "MetersPanel.h"
  
  #include "CPUMeter.h"
@@ -8,23 +8,7 @@
  #include "Header.h"
  #include "ListItem.h"
  #include "Platform.h"
-@@ -100,6 +101,8 @@ PanelClass AvailableMetersPanel_class =
- };
- 
- AvailableMetersPanel* AvailableMetersPanel_new(Settings* settings, Header* header, Panel* leftMeters, Panel* rightMeters, ScreenManager* scr, ProcessList* pl) {
-+   int i;
-+
-    AvailableMetersPanel* this = AllocThis(AvailableMetersPanel);
-    Panel* super = (Panel*) this;
-    FunctionBar* fuBar = FunctionBar_newEnterEsc("Add   ", "Done   ");
-@@ -114,18 +117,26 @@ AvailableMetersPanel* AvailableMetersPan
-    Panel_setHeader(super, "Available meters");
-    // Platform_meterTypes[0] should be always (&CPUMeter_class), which we will
-    // handle separately in the code below.
--   for (int i = 1; Platform_meterTypes[i]; i++) {
-+   for (i = 1; Platform_meterTypes[i]; i++) {
-       MeterClass* type = Platform_meterTypes[i];
-       assert(type != &CPUMeter_class);
+@@ -120,9 +121,17 @@ AvailableMetersPanel* AvailableMetersPanel_new(Settings* settings, Header* heade
        const char* label = type->description ? type->description : type->uiName;
        Panel_add(super, (Object*) ListItem_new(label, i << 16));
     }
@@ -32,7 +16,7 @@
 -   MeterClass* type = &CPUMeter_class;
 +   MeterClass* type = &CpuFreqMeter_class;
     int cpus = pl->cpuCount;
-    if (cpus > 1) {
++   if (cpus > 1) {
 +      for ( int z = 1; z <= cpus; z++) {
 +         char buffer[50];
 +         xSnprintf(buffer, 50, "%s %d", type->uiName, z);
@@ -41,13 +25,9 @@
 +   }
 +   // Handle (&CPUMeter_class)
 +   type = &CPUMeter_class;
-+   if (cpus > 1) {
+    if (cpus > 1) {
        Panel_add(super, (Object*) ListItem_new("CPU average", 0));
--      for (int i = 1; i <= cpus; i++) {
-+      for (i = 1; i <= cpus; i++) {
-          char buffer[50];
-          xSnprintf(buffer, 50, "%s %d", type->uiName, i);
-          Panel_add(super, (Object*) ListItem_new(buffer, i));
+       for (int i = 1; i <= cpus; i++) {
 --- a/CPUMeter.c
 +++ b/CPUMeter.c
 @@ -6,6 +6,7 @@ in the source distribution for its full
@@ -58,7 +38,7 @@
  
  #include "CRT.h"
  #include "Settings.h"
-@@ -149,6 +150,11 @@ static void AllCPUsMeter_init(Meter* thi
+@@ -182,6 +183,11 @@ static void AllCPUsMeter_init(Meter* thi
           meters[i] = Meter_new(this->pl, start+i+1, (MeterClass*) Class(CPUMeter));
        Meter_init(meters[i]);
     }
@@ -72,77 +52,77 @@
     int h = Meter_modes[this->mode]->h;
 --- a/CRT.c
 +++ b/CRT.c
-@@ -128,6 +128,9 @@ typedef enum ColorElements_ {
+@@ -140,6 +140,9 @@ typedef enum ColorElements_ {
     CPU_SOFTIRQ,
     CPU_STEAL,
     CPU_GUEST,
 +   CPU_TEMP,
 +   CPU_FREQ,
 +   CPU_VCORE,
-    LAST_COLORELEMENT
- } ColorElements;
- 
-@@ -232,6 +235,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
+    PRESSURE_STALL_TEN,
+    PRESSURE_STALL_SIXTY,
+    PRESSURE_STALL_THREEHUNDRED,
+@@ -279,6 +282,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
        [CPU_SOFTIRQ] = ColorPair(Magenta,Black),
        [CPU_STEAL] = ColorPair(Cyan,Black),
        [CPU_GUEST] = ColorPair(Cyan,Black),
 +      [CPU_FREQ] = A_BOLD | ColorPair(Yellow,Black),
 +      [CPU_TEMP] = A_BOLD | ColorPair(Red,Black),
 +      [CPU_VCORE] = A_BOLD | ColorPair(Yellow,Black),
-    },
-    [COLORSCHEME_MONOCHROME] = {
-       [RESET_COLOR] = A_NORMAL,
-@@ -291,6 +297,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
+       [PRESSURE_STALL_THREEHUNDRED] = ColorPair(Cyan,Black),
+       [PRESSURE_STALL_SIXTY] = A_BOLD | ColorPair(Cyan,Black),
+       [PRESSURE_STALL_TEN] = A_BOLD | ColorPair(White,Black),
+@@ -347,6 +353,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
        [CPU_SOFTIRQ] = A_BOLD,
        [CPU_STEAL] = A_REVERSE,
        [CPU_GUEST] = A_REVERSE,
 +      [CPU_FREQ] = A_BOLD,
 +      [CPU_TEMP] = A_BOLD,
 +      [CPU_VCORE] = A_BOLD,
-    },
-    [COLORSCHEME_BLACKONWHITE] = {
-       [RESET_COLOR] = ColorPair(Black,White),
-@@ -350,6 +359,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
+       [PRESSURE_STALL_THREEHUNDRED] = A_DIM,
+       [PRESSURE_STALL_SIXTY] = A_NORMAL,
+       [PRESSURE_STALL_TEN] = A_BOLD,
+@@ -415,6 +424,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
        [CPU_SOFTIRQ] = ColorPair(Blue,White),
        [CPU_STEAL] = ColorPair(Cyan,White),
        [CPU_GUEST] = ColorPair(Cyan,White),
 +      [CPU_FREQ] = A_BOLD | ColorPair(Yellow,White),
 +      [CPU_TEMP] = A_BOLD | ColorPair(Yellow,White),
 +      [CPU_VCORE] = A_BOLD | ColorPair(Yellow,White),
-    },
-    [COLORSCHEME_LIGHTTERMINAL] = {
-       [RESET_COLOR] = ColorPair(Black,Black),
-@@ -409,6 +421,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
+       [PRESSURE_STALL_THREEHUNDRED] = ColorPair(Black,White),
+       [PRESSURE_STALL_SIXTY] = ColorPair(Black,White),
+       [PRESSURE_STALL_TEN] = ColorPair(Black,White),
+@@ -483,6 +495,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
        [CPU_SOFTIRQ] = ColorPair(Blue,Black),
        [CPU_STEAL] = ColorPair(Black,Black),
        [CPU_GUEST] = ColorPair(Black,Black),
 +      [CPU_FREQ] = A_BOLD | ColorPair(Yellow,Black),
 +      [CPU_TEMP] = A_BOLD | ColorPair(Yellow,Black),
 +      [CPU_VCORE] = A_BOLD | ColorPair(Yellow,Black),
-    },
-    [COLORSCHEME_MIDNIGHT] = {
-       [RESET_COLOR] = ColorPair(White,Blue),
-@@ -468,6 +483,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
+       [PRESSURE_STALL_THREEHUNDRED] = ColorPair(Black,Black),
+       [PRESSURE_STALL_SIXTY] = ColorPair(Black,Black),
+       [PRESSURE_STALL_TEN] = ColorPair(Black,Black),
+@@ -551,6 +566,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
        [CPU_SOFTIRQ] = ColorPair(Black,Blue),
        [CPU_STEAL] = ColorPair(White,Blue),
        [CPU_GUEST] = ColorPair(White,Blue),
 +      [CPU_FREQ] = A_BOLD | ColorPair(Red,Black),
 +      [CPU_TEMP] = A_BOLD | ColorPair(Red,Black),
 +      [CPU_VCORE] = A_BOLD | ColorPair(Yellow,Black),
-    },
-    [COLORSCHEME_BLACKNIGHT] = {
-       [RESET_COLOR] = ColorPair(Cyan,Black),
-@@ -527,6 +545,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
+       [PRESSURE_STALL_THREEHUNDRED] = A_BOLD | ColorPair(Black,Blue),
+       [PRESSURE_STALL_SIXTY] = A_NORMAL | ColorPair(White,Blue),
+       [PRESSURE_STALL_TEN] = A_BOLD | ColorPair(White,Blue),
+@@ -619,6 +637,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
        [CPU_SOFTIRQ] = ColorPair(Blue,Black),
        [CPU_STEAL] = ColorPair(Cyan,Black),
        [CPU_GUEST] = ColorPair(Cyan,Black),
 +      [CPU_FREQ] = A_BOLD | ColorPair(Red,Black),
 +      [CPU_TEMP] = A_BOLD | ColorPair(Red,Black),
 +      [CPU_VCORE] = A_BOLD | ColorPair(Yellow,Black),
-    },
-    [COLORSCHEME_BROKENGRAY] = { 0 } // dynamically generated.
- };
-@@ -596,6 +617,15 @@ void CRT_restorePrivileges() {
+       [PRESSURE_STALL_THREEHUNDRED] = ColorPair(Green,Black),
+       [PRESSURE_STALL_SIXTY] = ColorPair(Green,Black),
+       [PRESSURE_STALL_TEN] = A_BOLD | ColorPair(Green,Black),
+@@ -698,6 +719,16 @@ void CRT_restorePrivileges() {
  // TODO: pass an instance of Settings instead.
  
  void CRT_init(int delay, int colorScheme) {
@@ -155,21 +135,22 @@
 +      CRT_scrollHAmount = 5;
 +   setenv("TERM", "xterm", 1);
 +#endif
++
     initscr();
     noecho();
     CRT_delay = delay;
 --- a/CRT.h
 +++ b/CRT.h
-@@ -116,6 +116,9 @@ typedef enum ColorElements_ {
+@@ -128,6 +128,9 @@ typedef enum ColorElements_ {
     CPU_SOFTIRQ,
     CPU_STEAL,
     CPU_GUEST,
 +   CPU_TEMP,
 +   CPU_FREQ,
 +   CPU_VCORE,
-    LAST_COLORELEMENT
- } ColorElements;
- 
+    PRESSURE_STALL_TEN,
+    PRESSURE_STALL_SIXTY,
+    PRESSURE_STALL_THREEHUNDRED,
 --- /dev/null
 +++ b/CpuFreqMeter.c
 @@ -0,0 +1,128 @@
@@ -481,7 +462,7 @@
  }
 --- a/Settings.c
 +++ b/Settings.c
-@@ -141,6 +141,13 @@ static void Settings_defaultMeters(Setti
+@@ -148,6 +148,13 @@ static void Settings_defaultMeters(Setti
     this->columns[1].modes[r++] = TEXT_METERMODE;
     this->columns[1].names[r] = xStrdup("Uptime");
     this->columns[1].modes[r++] = TEXT_METERMODE;
@@ -497,10 +478,10 @@
  static void readFields(ProcessField* fields, int* flags, const char* line) {
 --- a/htop.c
 +++ b/htop.c
-@@ -193,6 +193,8 @@ int main(int argc, char** argv) {
+@@ -212,6 +212,8 @@ int main(int argc, char** argv) {
     UsersTable* ut = UsersTable_new();
     ProcessList* pl = ProcessList_new(ut, flags.pidWhiteList, flags.userId);
-    
+ 
 +   Platform_findCpuBigLITTLE(pl->cpuCount, &pl->cpuBigLITTLE);
 +
     Settings* settings = Settings_new(pl->cpuCount);
@@ -508,7 +489,7 @@
  
 --- a/linux/LinuxProcess.c
 +++ b/linux/LinuxProcess.c
-@@ -120,7 +120,7 @@ typedef struct LinuxProcess_ {
+@@ -130,7 +130,7 @@ typedef struct LinuxProcess_ {
     double io_rate_write_bps;
     #endif
     #ifdef HAVE_OPENVZ
@@ -517,16 +498,7 @@
     unsigned int vpid;
     #endif
     #ifdef HAVE_VSERVER
-@@ -143,7 +143,7 @@ typedef struct LinuxProcess_ {
- } LinuxProcess;
- 
- #ifndef Process_isKernelThread
--#define Process_isKernelThread(_process) ((LinuxProcess*)(_process)->isKernelThread)
-+#define Process_isKernelThread(_process) (((LinuxProcess*)(_process))->isKernelThread)
- #endif
- 
- #ifndef Process_isUserlandThread
-@@ -272,6 +272,9 @@ LinuxProcess* LinuxProcess_new(Settings*
+@@ -288,6 +288,9 @@ LinuxProcess* LinuxProcess_new(Settings* settings) {
  void Process_delete(Object* cast) {
     LinuxProcess* this = (LinuxProcess*) cast;
     Process_done((Process*)cast);
@@ -536,7 +508,7 @@
  #ifdef HAVE_CGROUP
     free(this->cgroup);
  #endif
-@@ -362,7 +365,7 @@ void LinuxProcess_writeField(Process* th
+@@ -388,7 +391,7 @@ void LinuxProcess_writeField(Process* this, RichString* str, ProcessField field)
     }
     #endif
     #ifdef HAVE_OPENVZ
@@ -545,7 +517,7 @@
     case VPID: xSnprintf(buffer, n, Process_pidFormat, lp->vpid); break;
     #endif
     #ifdef HAVE_VSERVER
-@@ -442,7 +445,7 @@ long LinuxProcess_compare(const void* v1
+@@ -480,7 +483,7 @@ long LinuxProcess_compare(const void* v1, const void* v2) {
     #endif
     #ifdef HAVE_OPENVZ
     case CTID:
@@ -556,7 +528,7 @@
     #endif
 --- a/linux/LinuxProcessList.c
 +++ b/linux/LinuxProcessList.c
-@@ -486,27 +486,35 @@ static bool LinuxProcessList_readStatmFi
+@@ -567,27 +567,35 @@ static bool LinuxProcessList_readSmapsFile(LinuxProcess* process, const char* di
  #ifdef HAVE_OPENVZ
  
  static void LinuxProcessList_readOpenVZData(LinuxProcess* process, const char* dirname, const char* name) {
@@ -609,7 +581,7 @@
  #endif
 --- a/linux/Platform.c
 +++ b/linux/Platform.c
-@@ -14,6 +14,9 @@ in the source distribution for its full
+@@ -14,6 +14,9 @@ in the source distribution for its full text.
  
  #include "Meter.h"
  #include "CPUMeter.h"
@@ -619,8 +591,8 @@
  #include "MemoryMeter.h"
  #include "SwapMeter.h"
  #include "TasksMeter.h"
-@@ -23,6 +26,14 @@ in the source distribution for its full
- #include "HostnameMeter.h"
+@@ -26,6 +29,14 @@ in the source distribution for its full text.
+ #include "zfs/ZfsCompressedArcMeter.h"
  #include "LinuxProcess.h"
  
 +#ifdef WIN32
@@ -634,7 +606,7 @@
  #include <math.h>
  #include <assert.h>
  #include <limits.h>
-@@ -35,6 +46,14 @@ in the source distribution for its full
+@@ -38,6 +49,14 @@ in the source distribution for its full text.
  #include "BatteryMeter.h"
  #include "LinuxProcess.h"
  #include "SignalsPanel.h"
@@ -649,7 +621,7 @@
  }*/
  
  #ifndef CLAMP
-@@ -45,6 +64,7 @@ ProcessField Platform_defaultFields[] =
+@@ -48,6 +67,7 @@ ProcessField Platform_defaultFields[] = { PID, USER, PRIORITY, NICE, M_SIZE, M_R
  
  //static ProcessField defaultIoFields[] = { PID, IO_PRIORITY, USER, IO_READ_RATE, IO_WRITE_RATE, IO_RATE, COMM, 0 };
  
@@ -657,14 +629,17 @@
  int Platform_numberOfFields = LAST_PROCESSFIELD;
  
  const SignalItem Platform_signals[] = {
-@@ -126,9 +146,151 @@ MeterClass* Platform_meterTypes[] = {
-    &LeftCPUs2Meter_class,
-    &RightCPUs2Meter_class,
+@@ -132,6 +152,9 @@ MeterClass* Platform_meterTypes[] = {
+    &LeftCPUs4Meter_class,
+    &RightCPUs4Meter_class,
     &BlankMeter_class,
 +   &CpuTempMeter_class,
 +   &CpuFreqMeter_class,
-+   /* --- fix me --- &AllCpuFreqMeter_class, */
 +   &CpuVcoreMeter_class,
+    &PressureStallCPUSomeMeter_class,
+    &PressureStallIOSomeMeter_class,
+    &PressureStallIOFullMeter_class,
+@@ -142,6 +165,143 @@ MeterClass* Platform_meterTypes[] = {
     NULL
  };
  
@@ -804,7 +779,6 @@
 +    }
 +    return cpu;
 +}
-+
 +
  int Platform_getUptime() {
     double uptime = 0;
