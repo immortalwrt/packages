@@ -9,19 +9,20 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=node-hid
 PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=1.2.0
+PKG_VERSION:=1.3.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=b4a3e4c5a42dcdb4b6ef3ceeec18ed073322e8bca4160b95ef1671b062796bde
-
-PKG_BUILD_DEPENDS:=node/host
-PKG_USE_MIPS16:=0
+PKG_HASH:=cdd96be93af6f51b58a18efec968be9188933438cfc8b974f92e70ee5991d3bd
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT or X11
 PKG_LICENSE_FILES:=
+
+PKG_BUILD_DEPENDS:=node/host
+PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -30,13 +31,13 @@ define Package/node-hid
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Node.js package to access HID devices
-  URL:=https://github.com/node-hid/node-hid
-  DEPENDS:=+node +node-npm +libusb-1.0 +hidapi +libudev-fbsd $(ICONV_DEPENDS)
+  TITLE:=Access USB HID devices from node.js
+  URL:=https://www.npmjs.com/package/node-hid
+  DEPENDS:=+node +hidapi +libusb-1.0 +libudev-fbsd $(ICONV_DEPENDS)
 endef
 
 define Package/node-hid/description
- Node.js package to access HID devices
+ Access USB HID devices from node.js
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -46,6 +47,7 @@ NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 
 TARGET_CFLAGS+=$(FPIC) -I$(STAGING_DIR)/usr/include/libusb-1.0
+TARGET_CPPFLAGS+=$(FPIC)
 TARGET_LDFLAGS+=$(if $(ICONV_FULL),-liconv)
 
 define Build/Compile

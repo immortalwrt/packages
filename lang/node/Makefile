@@ -1,6 +1,3 @@
-#
-# Copyright (C) 2006-2017 OpenWrt.org
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
@@ -8,14 +5,23 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=node
-PKG_VERSION:=v12.16.1
-PKG_RELEASE:=2
+
+ifeq ($(CONFIG_NODEJS_10),y)
+PKG_VERSION:=v10.22.0
+PKG_RELEASE:=1
+PKG_HASH:=e07575455cbb6670e3f30d2f846d3078ef2c181255ff0932089182529443e1db
+PATCH_DIR:=./patches/v10.x
+else
+PKG_VERSION:=v12.18.3
+PKG_RELEASE:=1
+PKG_HASH:=71158026579487422fd13cc2553b34cddb76519098aa6030faab52f88c6e0d0e
+PATCH_DIR:=./patches/v12.x
+endif
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://nodejs.org/dist/$(PKG_VERSION)
-PKG_HASH:=0a95845ba02c46102b5671d0c5732460073f2d397488337e18d1fc30146d412d
 
-PKG_MAINTAINER:=John Crispin <blogic@openwrt.org>, Adrian Panella <ianchi74@outlook.com>
+PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:nodejs:node.js
@@ -47,6 +53,7 @@ define Package/node/description
   Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses
   an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js'
    package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
+
   *** The following preparations must be made on the host side. ***
       1. gcc 6.3 or higher is required.
       2. To build a 32-bit target, gcc-multilib, g++-multilib are required.
@@ -68,7 +75,22 @@ define Package/node-npm/description
 endef
 
 define Package/node/config
-	if PACKAGE_node
+	menu "Configuration"
+		depends on PACKAGE_node
+
+	choice
+		prompt "Version Selection"
+		default NODEJS_12
+		help
+		 Select node.js version.
+
+		config NODEJS_10
+			bool "10.x Active LTS"
+
+		config NODEJS_12
+			bool "12.x Active LTS"
+	endchoice
+
 	choice
 		prompt "i18n features"
 		default NODEJS_ICU_NONE
@@ -86,10 +108,15 @@ define Package/node/config
 			depends on ARCH_64BIT&&!BIG_ENDIAN
 			bool "system-icu"
 	endchoice
-	endif
+
+	endmenu
 endef
 
 NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH)))))
+
+ifeq ($(CONFIG_NODEJS_10),y)
+TARGET_LDFLAGS+=-latomic
+endif
 
 ifneq ($(CONFIG_ARCH_64BIT),y)
 FORCE_32BIT:=-m32
@@ -126,7 +153,6 @@ CONFIGURE_ARGS:= \
 	--prefix=/usr
 
 HOST_CONFIGURE_VARS:=
-
 HOST_CONFIGURE_ARGS:= \
 	--dest-os=$(if $(findstring Darwin,$(HOST_OS)),mac,linux) \
 	--with-intl=none \
