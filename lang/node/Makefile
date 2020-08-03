@@ -19,7 +19,8 @@ PATCH_DIR:=./patches/v12.x
 endif
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=https://nodejs.org/dist/$(PKG_VERSION)
+PKG_SOURCE_URL:=https://npm.taobao.org/mirrors/node/$(PKG_VERSION) \
+                https://nodejs.org/dist/$(PKG_VERSION)
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
