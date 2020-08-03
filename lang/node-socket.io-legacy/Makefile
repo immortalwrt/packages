@@ -13,7 +13,8 @@ PKG_VERSION:=0.9.19
 PKG_RELEASE:=5
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
-PKG_SOURCE_URL:=https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
+PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
+                https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=bd4683123ecb2cebeffc322cff0c2fa47ab2ee8b05899bd0eefcab9d08931411
 
