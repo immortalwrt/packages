@@ -9,7 +9,8 @@ PKG_NAME:=$(PKG_NPM_NAME)
 PKG_VERSION:=0.1.5
 PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
+PKG_SOURCE_URL:=https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
+                https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=c65a2584bf2f68ddf9cb92538332e676c3366b2d2b1e7e9ec1f98b3a79d22a08
 
 PKG_MAINTAINER:=Jan Pavlinec <jan.pavlinec@nic.cz>

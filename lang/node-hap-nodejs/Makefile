@@ -10,7 +10,8 @@ PKG_VERSION:=0.7.7
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
-PKG_SOURCE_URL:=https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
+PKG_SOURCE_URL:=https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
+                https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=22eb1b03b2dd0120669415500ef7ad3d60724de5a9b3cec084876c0fae4caec9
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
