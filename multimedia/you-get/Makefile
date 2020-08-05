@@ -36,7 +36,6 @@ define Package/you-get
     +python3-codecs \
     +python3-ctypes \
     +python3-setuptools
-  VARIANT:=python3
 endef
 
 define Package/you-get/description
