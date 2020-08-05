@@ -6,16 +6,16 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Flask-RESTful
 PKG_VERSION:=0.3.8
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
-PKG_SOURCE:=Flask-RESTful-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/F/Flask-RESTful
+PYPI_NAME:=$(PKG_NAME)
 PKG_HASH:=5ea9a5991abf2cb69b4aac19793faac6c032300505b325687d7c305ffaa76915
 
 PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
 
+include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
 
