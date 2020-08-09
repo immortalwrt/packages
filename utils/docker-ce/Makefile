@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=docker-ce
 PKG_VERSION:=19.03.12
-PKG_RELEASE:=1
+PKG_RELEASE:=7
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=components/cli/LICENSE components/engine/LICENSE
 
@@ -44,11 +44,15 @@ define Package/docker-ce
   TITLE:=Docker Community Edition
   URL:=https://www.docker.com/
   DEPENDS:=$(GO_ARCH_DEPENDS) @HAS_FPU @(aarch64||arm||x86_64) +btrfs-progs +ca-certificates +cgroupfs-mount +containerd +libdevmapper +libnetwork +tini \
-	  +DOCKER_SECCOMP:libseccomp +iptables-mod-extra +kmod-br-netfilter +kmod-ikconfig +kmod-nf-conntrack-netlink +kmod-nf-ipvs +kmod-veth \
-	  +@KERNEL_CGROUPS +@KERNEL_CGROUP_CPUACCT +@KERNEL_CGROUP_SCHED
+           +DOCKER_SECCOMP:libseccomp +iptables-mod-extra +kmod-br-netfilter +kmod-ikconfig +kmod-nf-conntrack-netlink +kmod-nf-ipvs +kmod-veth \
+           +@KERNEL_CGROUPS +@KERNEL_CGROUP_CPUACCT +@KERNEL_CGROUP_SCHED
   USERID:=docker:docker
   MENU:=1
 endef
+
+#define Package/docker-ce/conffiles
+#/etc/config/dockerd
+#endef
 
 define Package/docker-ce/description
   Docker Engine is used by millions enables containerized applications
@@ -118,16 +122,37 @@ define Package/docker-ce/install
 	$(INSTALL_DIR) $(1)/usr/share/docker/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/engine/contrib/check-config.sh $(1)/usr/share/docker/
 
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/dockerd.init $(1)/etc/init.d/dockerd
-
 	$(INSTALL_DIR) $(1)/etc/docker
 	$(INSTALL_CONF) ./files/daemon.json $(1)/etc/docker/
+
+	#$(INSTALL_DIR) $(1)/etc/init.d
+	#$(INSTALL_BIN) ./files/dockerd.init $(1)/etc/init.d/dockerd
+
+	#$(INSTALL_DIR) $(1)/etc/config
+	#$(INSTALL_CONF) ./files/etc/config/dockerd $(1)/etc/config/dockerd
 
 	# Must be after systcl 11-br-netfilter.conf from kmod-br-netfilter
 	$(INSTALL_DIR) $(1)/etc/sysctl.d
 	$(INSTALL_DATA) ./files/etc/sysctl.d/sysctl-br-netfilter-ip.conf \
 		$(1)/etc/sysctl.d/12-br-netfilter-ip.conf
+endef
+
+#define Package/docker-ce/postinst
+##!/bin/sh
+#[ -n "$$IPKG_INSTROOT" ] || {
+#	/etc/init.d/dockerd enable
+#	/etc/init.d/dockerd uciadd
+#	/etc/init.d/dockerd start
+#}
+#endef
+
+#define Package/docker-ce/prerm
+##!/bin/sh
+#[ -n "$$IPKG_INSTROOT" ] || {
+#	/etc/init.d/dockerd disable
+#	/etc/init.d/dockerd stop
+#	/etc/init.d/dockerd ucidel
+#}
 endef
 
 $(eval $(call BuildPackage,docker-ce))
