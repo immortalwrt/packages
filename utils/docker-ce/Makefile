@@ -153,6 +153,6 @@ endef
 #	/etc/init.d/dockerd stop
 #	/etc/init.d/dockerd ucidel
 #}
-endef
+#endef
 
 $(eval $(call BuildPackage,docker-ce))
