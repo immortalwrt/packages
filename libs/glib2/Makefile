@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=glib2
-PKG_VERSION:=2.65.0
-PKG_RELEASE:=4
+PKG_VERSION:=2.65.1
+PKG_RELEASE:=1
 
 PKG_SOURCE:=glib-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNOME/glib/2.65
-PKG_HASH:=b041e63cd0ac1fccb486374022ade040d907aad29b278e27d9e43e9294a6e7a3
+PKG_HASH:=bc63bf6c32713e0ee1dddc28e03f23b4a20c78bcb9a2c5b0f4eea41e46fb9cee
 
 PKG_MAINTAINER:=Peter Wagner <tripolar@gmx.at>
 PKG_LICENSE:=LGPL-2.1-or-later
@@ -24,6 +24,7 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/glib-$(PKG_VERSION)
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/glib-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:=meson/host gettext-full libiconv/host
 HOST_BUILD_DEPENDS:=meson/host gettext-full/host libiconv/host libffi/host
+PKG_CONFIG_DEPENDS:=CONFIG_BUILD_NLS
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/host-build.mk
@@ -111,6 +112,10 @@ define Build/InstallDev
 		$(1)/usr/lib/
 
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
+ifneq ($(INTL_FULL),)
+	$(SED) '/^Libs:/s/$$$$/ -lintl/' \
+		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/glib-2.0.pc
+endif
 	$(INSTALL_DATA) \
 		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/*.pc \
 		$(1)/usr/lib/pkgconfig
