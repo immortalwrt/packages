@@ -4,19 +4,19 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=homebridge
+PKG_NPM_NAME:=homebridge-cmd4
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.1.2
-PKG_RELEASE:=2
+PKG_VERSION:=2.3.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=2cf7bf7334067fc1278644ff4981913517582817e6378583f2d54bcbd97a44f1
+PKG_HASH:=86a4075948c16a81da00820981d43faffcede2d52b65d895de9b024ae8fa6fd9
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=ISC Apache-2.0
+PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=node/host
@@ -25,19 +25,17 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-homebridge
+define Package/node-homebridge-cmd4
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Node.js HomeKit Server
-  URL:=https://www.npmjs.org/package/homebridge
-  DEPENDS:=+node +node-npm
-  USERID:=homebridge:homebridge
+  TITLE:=Exec Plugin for Homebridge supporting all
+  URL:=https://www.npmjs.com/package/homebridge-cmd4
+  DEPENDS:=+node +node-homebridge +node-system-sleep
 endef
 
-define Package/node-homebridge/description
- Homebridge is a lightweight Node.js server you can run on your home network that emulates the iOS HomeKit API
- *** You need to install avahi-nodbus-daemon or avahi-dbus-daemon or umdns or mdnsd package. ***
+define Package/node-homebridge-cmd4/description
+ Cmd4 is a plugin for Homebridge that lets you see what Homebridge and Homekit are all about, without actually owning a single accessory! For the more advanced user, Cmd4 brings CLI support for all device types (Accessories) and characteristics.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -64,18 +62,14 @@ define Build/Compile
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 endef
 
-define Package/node-homebridge/install
+define Package/node-homebridge-cmd4/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{*.json,*.md} \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{node_modules,lib} \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{README.md,*.js} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{LICENSE,bin} \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{node_modules,Extras} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/homebridge/bin/homebridge $(1)/usr/bin/homebridge
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/homebridge.init $(1)/etc/init.d/homebridge
 endef
 
-$(eval $(call BuildPackage,node-homebridge))
+$(eval $(call BuildPackage,node-homebridge-cmd4))
