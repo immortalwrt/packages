@@ -37,17 +37,17 @@ define Package/ttyd/description
 ttyd is a command-line tool for sharing terminal over the web.
 endef
 
-#define Package/ttyd/conffiles
-#/etc/config/ttyd
-#endef
+define Package/ttyd/conffiles
+/etc/config/ttyd
+endef
 
 define Package/ttyd/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ttyd $(1)/usr/bin/
-#	$(INSTALL_DIR) $(1)/etc/config/
-#	$(INSTALL_CONF) ./files/ttyd.config $(1)/etc/config/ttyd
-#	$(INSTALL_DIR) $(1)/etc/init.d/
-#	$(INSTALL_BIN) ./files/ttyd.init $(1)/etc/init.d/ttyd
+	$(INSTALL_DIR) $(1)/etc/config/
+	$(INSTALL_CONF) ./files/ttyd.config $(1)/etc/config/ttyd
+	$(INSTALL_DIR) $(1)/etc/init.d/
+	$(INSTALL_BIN) ./files/ttyd.init $(1)/etc/init.d/ttyd
 endef
 
 $(eval $(call BuildPackage,ttyd))
