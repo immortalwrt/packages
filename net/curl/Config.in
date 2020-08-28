@@ -4,7 +4,7 @@ comment "SSL support"
 
 choice
 	prompt "Selected SSL library"
-	default LIBCURL_WOLFSSL
+	default LIBCURL_OPENSSL
 
 	config LIBCURL_MBEDTLS
 		bool "mbed TLS"
@@ -56,7 +56,7 @@ config LIBCURL_IMAP
 
 config LIBCURL_LDAP
 	bool "LDAP protocol"
-	default n
+	default y
 
 config LIBCURL_LDAPS
 	bool "Enable LDAPS support"
@@ -99,11 +99,11 @@ config LIBCURL_TELNET
 
 config LIBCURL_TFTP
 	bool "TFTP protocol"
-	default n
+	default y
 
 config LIBCURL_NGHTTP2
 	bool "HTTP2 protocol"
-	default n
+	default y
 
 comment "Miscellaneous"
 
@@ -113,11 +113,11 @@ config LIBCURL_PROXY
 
 config LIBCURL_CRYPTO_AUTH
 	bool "Enable cryptographic authentication"
-	default n
+	default y
 
 config LIBCURL_TLS_SRP
 	bool "Enable TLS-SRP authentication"
-	default n
+	default y
 
 config LIBCURL_LIBIDN2
 	bool "Enable IDN2 support"
@@ -125,7 +125,7 @@ config LIBCURL_LIBIDN2
 
 config LIBCURL_THREADED_RESOLVER
 	bool "Enable threaded DNS resolver"
-	default n
+	default y
 	help
 		Enable POSIX threaded asynchronous DNS resolution
 
@@ -133,9 +133,13 @@ config LIBCURL_ZLIB
 	bool "Enable zlib support"
 	default n
 
+config LIBCURL_ZSTD
+       bool "Enable zstd support"
+       default n
+
 config LIBCURL_UNIX_SOCKETS
 	bool "Enable unix domain socket support"
-	default n
+	default y
 	help
 		Enable HTTP over unix domain sockets.
 		To use this with the curl command line, you specify the socket path to the new --unix-domain option.
