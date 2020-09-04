@@ -1,6 +1,6 @@
 --- a/AvailableMetersPanel.c
 +++ b/AvailableMetersPanel.c
-@@ -9,6 +9,7 @@ in the source distribution for its full text.
+@@ -9,6 +9,7 @@ in the source distribution for its full
  #include "MetersPanel.h"
  
  #include "CPUMeter.h"
@@ -8,7 +8,7 @@
  #include "Header.h"
  #include "ListItem.h"
  #include "Platform.h"
-@@ -120,9 +121,17 @@ AvailableMetersPanel* AvailableMetersPanel_new(Settings* settings, Header* heade
+@@ -120,10 +121,18 @@ AvailableMetersPanel* AvailableMetersPan
        const char* label = type->description ? type->description : type->uiName;
        Panel_add(super, (Object*) ListItem_new(label, i << 16));
     }
@@ -16,7 +16,7 @@
 -   MeterClass* type = &CPUMeter_class;
 +   MeterClass* type = &CpuFreqMeter_class;
     int cpus = pl->cpuCount;
-+   if (cpus > 1) {
+    if (cpus > 1) {
 +      for ( int z = 1; z <= cpus; z++) {
 +         char buffer[50];
 +         xSnprintf(buffer, 50, "%s %d", type->uiName, z);
@@ -25,9 +25,10 @@
 +   }
 +   // Handle (&CPUMeter_class)
 +   type = &CPUMeter_class;
-    if (cpus > 1) {
++   if (cpus > 1) {
        Panel_add(super, (Object*) ListItem_new("CPU average", 0));
        for (int i = 1; i <= cpus; i++) {
+          char buffer[50];
 --- a/CPUMeter.c
 +++ b/CPUMeter.c
 @@ -6,6 +6,7 @@ in the source distribution for its full
@@ -52,7 +53,7 @@
     int h = Meter_modes[this->mode]->h;
 --- a/CRT.c
 +++ b/CRT.c
-@@ -140,6 +140,9 @@ typedef enum ColorElements_ {
+@@ -128,6 +128,9 @@ typedef enum ColorElements_ {
     CPU_SOFTIRQ,
     CPU_STEAL,
     CPU_GUEST,
@@ -62,7 +63,7 @@
     PRESSURE_STALL_TEN,
     PRESSURE_STALL_SIXTY,
     PRESSURE_STALL_THREEHUNDRED,
-@@ -279,6 +282,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
+@@ -244,6 +247,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
        [CPU_SOFTIRQ] = ColorPair(Magenta,Black),
        [CPU_STEAL] = ColorPair(Cyan,Black),
        [CPU_GUEST] = ColorPair(Cyan,Black),
@@ -72,7 +73,7 @@
        [PRESSURE_STALL_THREEHUNDRED] = ColorPair(Cyan,Black),
        [PRESSURE_STALL_SIXTY] = A_BOLD | ColorPair(Cyan,Black),
        [PRESSURE_STALL_TEN] = A_BOLD | ColorPair(White,Black),
-@@ -347,6 +353,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
+@@ -313,6 +319,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
        [CPU_SOFTIRQ] = A_BOLD,
        [CPU_STEAL] = A_REVERSE,
        [CPU_GUEST] = A_REVERSE,
@@ -82,7 +83,7 @@
        [PRESSURE_STALL_THREEHUNDRED] = A_DIM,
        [PRESSURE_STALL_SIXTY] = A_NORMAL,
        [PRESSURE_STALL_TEN] = A_BOLD,
-@@ -415,6 +424,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
+@@ -382,6 +391,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
        [CPU_SOFTIRQ] = ColorPair(Blue,White),
        [CPU_STEAL] = ColorPair(Cyan,White),
        [CPU_GUEST] = ColorPair(Cyan,White),
@@ -92,7 +93,7 @@
        [PRESSURE_STALL_THREEHUNDRED] = ColorPair(Black,White),
        [PRESSURE_STALL_SIXTY] = ColorPair(Black,White),
        [PRESSURE_STALL_TEN] = ColorPair(Black,White),
-@@ -483,6 +495,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
+@@ -451,6 +463,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
        [CPU_SOFTIRQ] = ColorPair(Blue,Black),
        [CPU_STEAL] = ColorPair(Black,Black),
        [CPU_GUEST] = ColorPair(Black,Black),
@@ -102,7 +103,7 @@
        [PRESSURE_STALL_THREEHUNDRED] = ColorPair(Black,Black),
        [PRESSURE_STALL_SIXTY] = ColorPair(Black,Black),
        [PRESSURE_STALL_TEN] = ColorPair(Black,Black),
-@@ -551,6 +566,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
+@@ -520,6 +535,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
        [CPU_SOFTIRQ] = ColorPair(Black,Blue),
        [CPU_STEAL] = ColorPair(White,Blue),
        [CPU_GUEST] = ColorPair(White,Blue),
@@ -112,7 +113,7 @@
        [PRESSURE_STALL_THREEHUNDRED] = A_BOLD | ColorPair(Black,Blue),
        [PRESSURE_STALL_SIXTY] = A_NORMAL | ColorPair(White,Blue),
        [PRESSURE_STALL_TEN] = A_BOLD | ColorPair(White,Blue),
-@@ -619,6 +637,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][LAST_COLORELEMENT] = {
+@@ -589,6 +607,9 @@ int CRT_colorSchemes[LAST_COLORSCHEME][L
        [CPU_SOFTIRQ] = ColorPair(Blue,Black),
        [CPU_STEAL] = ColorPair(Cyan,Black),
        [CPU_GUEST] = ColorPair(Cyan,Black),
@@ -122,10 +123,10 @@
        [PRESSURE_STALL_THREEHUNDRED] = ColorPair(Green,Black),
        [PRESSURE_STALL_SIXTY] = ColorPair(Green,Black),
        [PRESSURE_STALL_TEN] = A_BOLD | ColorPair(Green,Black),
-@@ -698,6 +719,16 @@ void CRT_restorePrivileges() {
+@@ -668,6 +689,16 @@ void CRT_restorePrivileges() {
  // TODO: pass an instance of Settings instead.
  
- void CRT_init(int delay, int colorScheme) {
+ void CRT_init(int delay, int colorScheme, bool allowUnicode) {
 +#ifdef DEBUG
 +   setenv("TERM", "xterm", 1);
 +   CRT_termType = getenv("TERM");
@@ -141,7 +142,7 @@
     CRT_delay = delay;
 --- a/CRT.h
 +++ b/CRT.h
-@@ -128,6 +128,9 @@ typedef enum ColorElements_ {
+@@ -116,6 +116,9 @@ typedef enum ColorElements_ {
     CPU_SOFTIRQ,
     CPU_STEAL,
     CPU_GUEST,
@@ -478,7 +479,7 @@
  static void readFields(ProcessField* fields, int* flags, const char* line) {
 --- a/htop.c
 +++ b/htop.c
-@@ -212,6 +212,8 @@ int main(int argc, char** argv) {
+@@ -217,6 +217,8 @@ int main(int argc, char** argv) {
     UsersTable* ut = UsersTable_new();
     ProcessList* pl = ProcessList_new(ut, flags.pidWhiteList, flags.userId);
  
@@ -498,7 +499,7 @@
     unsigned int vpid;
     #endif
     #ifdef HAVE_VSERVER
-@@ -288,6 +288,9 @@ LinuxProcess* LinuxProcess_new(Settings* settings) {
+@@ -287,6 +287,9 @@ LinuxProcess* LinuxProcess_new(Settings*
  void Process_delete(Object* cast) {
     LinuxProcess* this = (LinuxProcess*) cast;
     Process_done((Process*)cast);
@@ -508,7 +509,7 @@
  #ifdef HAVE_CGROUP
     free(this->cgroup);
  #endif
-@@ -388,7 +391,7 @@ void LinuxProcess_writeField(Process* this, RichString* str, ProcessField field)
+@@ -387,7 +390,7 @@ void LinuxProcess_writeField(Process* th
     }
     #endif
     #ifdef HAVE_OPENVZ
@@ -517,7 +518,7 @@
     case VPID: xSnprintf(buffer, n, Process_pidFormat, lp->vpid); break;
     #endif
     #ifdef HAVE_VSERVER
-@@ -480,7 +483,7 @@ long LinuxProcess_compare(const void* v1, const void* v2) {
+@@ -479,7 +482,7 @@ long LinuxProcess_compare(const void* v1
     #endif
     #ifdef HAVE_OPENVZ
     case CTID:
@@ -528,7 +529,7 @@
     #endif
 --- a/linux/LinuxProcessList.c
 +++ b/linux/LinuxProcessList.c
-@@ -567,27 +567,35 @@ static bool LinuxProcessList_readSmapsFile(LinuxProcess* process, const char* di
+@@ -568,27 +568,35 @@ static bool LinuxProcessList_readSmapsFi
  #ifdef HAVE_OPENVZ
  
  static void LinuxProcessList_readOpenVZData(LinuxProcess* process, const char* dirname, const char* name) {
@@ -547,7 +548,7 @@
     FILE* file = fopen(filename, "r");
     if (!file)
        return;
--   (void) fscanf(file,
+-   (void)! fscanf(file,
 -      "%*32u %*32s %*1c %*32u %*32u %*32u %*32u %*32u %*32u %*32u "
 -      "%*32u %*32u %*32u %*32u %*32u %*32u %*32u %*32u "
 -      "%*32u %*32u %*32u %*32u %*32u %*32u %*32u %*32u "
@@ -581,7 +582,7 @@
  #endif
 --- a/linux/Platform.c
 +++ b/linux/Platform.c
-@@ -14,6 +14,9 @@ in the source distribution for its full text.
+@@ -14,6 +14,9 @@ in the source distribution for its full
  
  #include "Meter.h"
  #include "CPUMeter.h"
@@ -591,7 +592,7 @@
  #include "MemoryMeter.h"
  #include "SwapMeter.h"
  #include "TasksMeter.h"
-@@ -26,6 +29,14 @@ in the source distribution for its full text.
+@@ -26,6 +29,14 @@ in the source distribution for its full
  #include "zfs/ZfsCompressedArcMeter.h"
  #include "LinuxProcess.h"
  
@@ -606,7 +607,7 @@
  #include <math.h>
  #include <assert.h>
  #include <limits.h>
-@@ -38,6 +49,14 @@ in the source distribution for its full text.
+@@ -38,6 +49,14 @@ in the source distribution for its full
  #include "BatteryMeter.h"
  #include "LinuxProcess.h"
  #include "SignalsPanel.h"
@@ -621,7 +622,7 @@
  }*/
  
  #ifndef CLAMP
-@@ -48,6 +67,7 @@ ProcessField Platform_defaultFields[] = { PID, USER, PRIORITY, NICE, M_SIZE, M_R
+@@ -48,6 +67,7 @@ ProcessField Platform_defaultFields[] =
  
  //static ProcessField defaultIoFields[] = { PID, IO_PRIORITY, USER, IO_READ_RATE, IO_WRITE_RATE, IO_RATE, COMM, 0 };
  
