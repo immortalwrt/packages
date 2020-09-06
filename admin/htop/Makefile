@@ -7,13 +7,13 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=htop
-PKG_VERSION:=3.0.1
+PKG_NAME:=htop_2.2.2
+PKG_VERSION:=1.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/htop-dev/htop/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=8465164bc085f5f1813e1d3f6c4b9b56bf4c95cc12226a5367e65794949b01ca
+PKG_SOURCE_URL:=https://codeload.github.com/avafinger/htop_2.2.2/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=6ef7700abc97cd15312f08429923e21e8ae45ffedf0f3ee9096c2e304ead208b
 
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
@@ -30,8 +30,8 @@ define Package/htop
   CATEGORY:=Administration
   TITLE:=Interactive processes viewer
   DEPENDS:=+libncurses
-  URL:=https://hisham.hm/htop/
-  MAINTAINER:=Etienne CHAMPETIER <champetier.etienne@gmail.com>
+  URL:=https://github.com/avafinger/htop_2.2.2
+  MAINTAINER:=Alexander Finger <alex.mobigo@gmail.com>
 endef
 
 define Package/htop/description
@@ -50,7 +50,7 @@ CONFIGURE_VARS += \
 
 define Package/htop/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME) $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/htop $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,htop))
