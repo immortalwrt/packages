@@ -1,0 +1,371 @@
+--- a/linux/Platform.c
++++ b/linux/Platform.c
+@@ -294,6 +294,9 @@ int Platform_getCpuTemp(Meter* this) {
+    if (!fd) {
+        fd = fopen("/sys/devices/virtual/thermal/thermal_zone0/temp", "r");
+    }
++   if (!fd) {
++       fd = fopen("/sys/class/hwmon/hwmon0/temp1_input", "r");
++   }
+    if (fd) {
+       int n = fscanf(fd, "%d", &Temp);
+       fclose(fd);
+@@ -320,8 +323,7 @@ int Platform_getCpuFreq(Meter* this, int
+        }
+    } else {
+       // sleep_ms(30);
+-      // xSnprintf(szbuf, sizeof(szbuf), "/sys/devices/system/cpu/cpufreq/policy%d/cpuinfo_cur_freq", cpu);
+-      xSnprintf(szbuf, sizeof(szbuf), "%s", "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq");
++      xSnprintf(szbuf, sizeof(szbuf), "/sys/devices/system/cpu/cpufreq/policy%d/cpuinfo_cur_freq", cpu);
+    }
+    fd = fopen(szbuf, "r");
+    if (fd) {
+--- a/CpuFreqMeter.c
++++ b/CpuFreqMeter.c
+@@ -23,7 +23,6 @@ static void CpuFreqMeter_setValues(Meter
+    char buf_b[32];
+    char buf_l[32];
+    int ln = sizeof(buf_l);
+-   static int pulse = 0;
+ 
+    memset(buf_l, 0, sizeof(buf_l));
+    memset(buf_b, 0, sizeof(buf_b));
+@@ -48,9 +47,7 @@ static void CpuFreqMeter_setValues(Meter
+            xSnprintf(buf_b, ln, "%4d MHz", Freq);
+        }
+        
+-       cpu--;
+-       if (cpu < 0)
+-           cpu = 0;
++       cpu = 0;
+        Freq = Platform_getCpuFreq(this, cpu);
+        if (Freq > 1000) {
+            Freq /= 1000;
+@@ -66,11 +63,7 @@ static void CpuFreqMeter_setValues(Meter
+            xSnprintf(buf_l, ln, "%4d MHz", Freq);
+        }
+ 
+-       if (pulse)
+-          xSnprintf(buffer, len, "%s %s (big.LITTLE)", buf_b, buf_l, pulse);
+-       else
+-          xSnprintf(buffer, len, "%s %s             ", buf_b, buf_l, pulse);
+-       pulse = !pulse;
++       xSnprintf(buffer, len, "%s %s (big.LITTLE)", buf_b, buf_l);
+        return;
+    }
+    
+@@ -89,7 +82,6 @@ static void CpuFreqMeter_setValues(Meter
+    } else {
+        xSnprintf(buffer, len, "%4d MHz", Freq);
+    }
+-   pulse = !pulse;
+ }
+ 
+ MeterClass CpuFreqMeter_class = {
+--- a/BlockDevice_ioStatsMeter.c
++++ b/BlockDevice_ioStatsMeter.c
+@@ -26,7 +26,6 @@ static void BlockDevice_sda_ioStatsMeter
+     char block_device[80];
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+     static unsigned long sec_size = 0;
+     FILE *fp;
+ 
+@@ -81,11 +80,7 @@ static void BlockDevice_sda_ioStatsMeter
+         Platform_BlockDevice_sda_stats.write_sectors_comp = Platform_BlockDevice_sda_stats.write_sectors;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavailable");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavailable");
+     }
+ }
+ 
+@@ -112,7 +107,6 @@ static void BlockDevice_sdb_ioStatsMeter
+     char block_device[80];
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+     static unsigned long sec_size = 0;
+     FILE *fp;
+ 
+@@ -167,11 +161,7 @@ static void BlockDevice_sdb_ioStatsMeter
+         Platform_BlockDevice_sdb_stats.write_sectors_comp = Platform_BlockDevice_sdb_stats.write_sectors;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavailable");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavailable");
+     }
+ }
+ 
+@@ -198,7 +188,6 @@ static void BlockDevice_sdc_ioStatsMeter
+     char block_device[80];
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+     static unsigned long sec_size = 0;
+     FILE *fp;
+ 
+@@ -253,11 +242,7 @@ static void BlockDevice_sdc_ioStatsMeter
+         Platform_BlockDevice_sdc_stats.write_sectors_comp = Platform_BlockDevice_sdc_stats.write_sectors;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavailable");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavailable");
+     }
+ }
+ 
+@@ -284,7 +269,6 @@ static void BlockDevice_sdd_ioStatsMeter
+     char block_device[80];
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+     static unsigned long sec_size = 0;
+     FILE *fp;
+ 
+@@ -339,11 +323,7 @@ static void BlockDevice_sdd_ioStatsMeter
+         Platform_BlockDevice_sdd_stats.write_sectors_comp = Platform_BlockDevice_sdd_stats.write_sectors;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavailable");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavailable");
+     }
+ }
+ 
+@@ -370,7 +350,6 @@ static void BlockDevice_mmcblk0_ioStatsM
+     char block_device[80];
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+     static unsigned long sec_size = 0;
+     FILE *fp;
+ 
+@@ -425,11 +404,7 @@ static void BlockDevice_mmcblk0_ioStatsM
+         Platform_BlockDevice_mmcblk0_stats.write_sectors_comp = Platform_BlockDevice_mmcblk0_stats.write_sectors;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavailable");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavailable");
+     }
+ }
+ 
+@@ -456,7 +431,6 @@ static void BlockDevice_mmcblk1_ioStatsM
+     char block_device[80];
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+     static unsigned long sec_size = 0;
+     FILE *fp;
+ 
+@@ -511,11 +485,7 @@ static void BlockDevice_mmcblk1_ioStatsM
+         Platform_BlockDevice_mmcblk1_stats.write_sectors_comp = Platform_BlockDevice_mmcblk1_stats.write_sectors;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavailable");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavailable");
+     }
+ }
+ 
+@@ -542,7 +512,6 @@ static void BlockDevice_mmcblk2_ioStatsM
+     char block_device[80];
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+     static unsigned long sec_size = 0;
+     FILE *fp;
+ 
+@@ -597,11 +566,7 @@ static void BlockDevice_mmcblk2_ioStatsM
+         Platform_BlockDevice_mmcblk2_stats.write_sectors_comp = Platform_BlockDevice_mmcblk2_stats.write_sectors;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavailable");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavailable");
+     }
+ }
+ 
+@@ -628,7 +593,6 @@ static void BlockDevice_mmcblk3_ioStatsM
+     char block_device[80];
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+     static unsigned long sec_size = 0;
+     FILE *fp;
+ 
+@@ -683,11 +647,7 @@ static void BlockDevice_mmcblk3_ioStatsM
+         Platform_BlockDevice_mmcblk3_stats.write_sectors_comp = Platform_BlockDevice_mmcblk3_stats.write_sectors;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavailable");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavailable");
+     }
+ }
+ 
+--- a/Eth0_Meter.c
++++ b/Eth0_Meter.c
+@@ -35,11 +35,10 @@ static void Eth0_Meter_setValues(Meter*
+         ret = findIP_interface("eth0", szIP, sizeof(szIP));
+     }
+     
+-    if (ret) {
+-        xSnprintf(buffer, len, "%s", szIP);
+-    } else {
+-        xSnprintf(buffer, len, "%s", "down");
++    if (!ret) {
++        snprintf(szIP, sizeof(szIP), "%s", "down");
+     }
++    xSnprintf(buffer, len, "%s", szIP);
+ }
+ 
+ MeterClass Eth0_Meter_class = {
+--- a/Eth0_StatsMeter.c
++++ b/Eth0_StatsMeter.c
+@@ -27,7 +27,6 @@ static void Eth0_StatsMeter_setValues(Me
+     double refreshdelay;
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+ 
+     now = get_wall_time();
+     refreshdelay = now - old;
+@@ -68,11 +67,7 @@ static void Eth0_StatsMeter_setValues(Me
+         Platform_Eth0_stats.tx_bytes_comp = Platform_Eth0_stats.tx_bytes;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavail");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavail");
+     }
+ }
+ 
+--- a/Eth1_Meter.c
++++ b/Eth1_Meter.c
+@@ -35,11 +35,10 @@ static void Eth1_Meter_setValues(Meter*
+         ret = findIP_interface("eth1", szIP, sizeof(szIP));
+     }
+     
+-    if (ret) {
+-        xSnprintf(buffer, len, "%s", szIP);
+-    } else {
+-        xSnprintf(buffer, len, "%s", "down");
++    if (!ret) {
++        snprintf(szIP, sizeof(szIP), "%s", "down");
+     }
++    xSnprintf(buffer, len, "%s", szIP);
+ }
+ 
+ MeterClass Eth1_Meter_class = {
+--- a/Eth1_StatsMeter.c
++++ b/Eth1_StatsMeter.c
+@@ -27,7 +27,6 @@ static void Eth1_StatsMeter_setValues(Me
+     double refreshdelay;
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+ 
+     now = get_wall_time();
+     refreshdelay = now - old;
+@@ -68,11 +67,7 @@ static void Eth1_StatsMeter_setValues(Me
+         Platform_Eth1_stats.tx_bytes_comp = Platform_Eth1_stats.tx_bytes;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavail");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavail");
+     }
+ }
+ 
+--- a/Wlan0_Meter.c
++++ b/Wlan0_Meter.c
+@@ -33,11 +33,10 @@ static void Wlan0_Meter_setValues(Meter*
+         ret = findIP_interface("wlan0", szIP, sizeof(szIP));
+     }
+     
+-    if (ret) {
+-        xSnprintf(buffer, len, "%s", szIP);
+-    } else {
+-        xSnprintf(buffer, len, "%s", "down");
++    if (!ret) {
++        snprintf(szIP, sizeof(szIP), "%s", "down");
+     }
++    xSnprintf(buffer, len, "%s", szIP);
+ }
+ 
+ MeterClass Wlan0_Meter_class = {
+--- a/Wlan0_StatsMeter.c
++++ b/Wlan0_StatsMeter.c
+@@ -27,7 +27,6 @@ static void Wlan0_StatsMeter_setValues(M
+     double refreshdelay;
+     static double old = 0.;
+     static double now = 0.;
+-    static int flash = 0;
+ 
+     now = get_wall_time();
+     refreshdelay = now - old;
+@@ -68,11 +67,7 @@ static void Wlan0_StatsMeter_setValues(M
+         Platform_Wlan0_stats.tx_bytes_comp = Platform_Wlan0_stats.tx_bytes;
+ 
+     } else {
+-        if (!(flash % 2))
+-            xSnprintf(buffer, len, "%s", "unavail");
+-        else
+-            xSnprintf(buffer, len, "%s", "");
+-        flash++;
++        xSnprintf(buffer, len, "%s", "unavail");
+     }
+ }
+ 
+--- a/Wlan1_Meter.c
++++ b/Wlan1_Meter.c
+@@ -35,11 +35,10 @@ static void Wlan1_Meter_setValues(Meter*
+         ret = findIP_interface("wlan1", szIP, sizeof(szIP));
+     }
+     
+-    if (ret) {
+-        xSnprintf(buffer, len, "%s", szIP);
+-    } else {
+-        xSnprintf(buffer, len, "%s", "down");
++    if (!ret) {
++        snprintf(szIP, sizeof(szIP), "%s", "down");
+     }
++    xSnprintf(buffer, len, "%s", szIP);
+ }
+ 
+ MeterClass Wlan1_Meter_class = {
