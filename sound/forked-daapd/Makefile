@@ -73,7 +73,7 @@ define Package/forked-daapd/install
 	$(INSTALL_DIR) $(1)/usr/lib/forked-daapd
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/forked-daapd/* $(1)/usr/lib/forked-daapd/
 	$(INSTALL_DIR) $(1)/usr/share/forked-daapd/htdocs
-	$(CP) $(BUILD_DIR)/$(PKG_BUILD_DIR)/htdocs/* $(1)/usr/share/forked-daapd/htdocs/
+	$(CP) $(PKG_BUILD_DIR)/htdocs/* $(1)/usr/share/forked-daapd/htdocs/
 	#$(INSTALL_DIR) $(1)/etc/init.d
 	#$(INSTALL_BIN) ./files/forked-daapd.init $(1)/etc/init.d/forked-daapd
 endef
