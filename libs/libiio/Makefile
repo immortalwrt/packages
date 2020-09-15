@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libiio
 PKG_VERSION:=0.21
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/analogdevicesinc/libiio/tar.gz/v$(PKG_VERSION)?
@@ -69,7 +69,7 @@ config LIBIIO_NETWORK_BACKEND
 	bool "Enable network backend"
 	depends on PACKAGE_libiio
 	select LIBIIO_XML_BACKEND
-	default n
+	default y
 
 config LIBIIO_USB_BACKEND
 	bool "Enable USB backend"
@@ -78,9 +78,9 @@ config LIBIIO_USB_BACKEND
 	default n
 
 config LIBIIO_XML_BACKEND
-	bool "Enable XML backend"
+	bool
 	depends on PACKAGE_libiio
-	default n
+	default y
 endef
 
 define Package/libiio/description
