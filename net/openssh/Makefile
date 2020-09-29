@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssh
-PKG_VERSION:=8.3p1
+PKG_VERSION:=8.4p1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/ \
 		https://ftp.spline.de/pub/OpenBSD/OpenSSH/portable/
-PKG_HASH:=f2befbe0472fe7eb75d23340eb17531cb6b3aac24075e2066b41f814e12387b2
+PKG_HASH:=5a01d22e407eb1c05ba8a8f7c654d388a13e9f226e4ed33bd38748dafa1d2b24
 
 PKG_LICENSE:=BSD ISC
 PKG_LICENSE_FILES:=LICENCE
@@ -93,9 +93,10 @@ OpenSSH server.
 endef
 
 define Package/openssh-server/conffiles
-/etc/ssh/sshd_config
-/etc/ssh/ssh_host_*_key
-/etc/ssh/ssh_host_*_key.pub
+/etc/ssh/ssh_host_ed25519_key
+/etc/ssh/ssh_host_ed25519_key.pub
+/etc/ssh/ssh_host_rsa_key
+/etc/ssh/ssh_host_rsa_key.pub
 endef
 
 define Package/openssh-server-pam
