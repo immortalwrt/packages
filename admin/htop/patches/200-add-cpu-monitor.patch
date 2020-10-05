@@ -809,3 +809,14 @@
  int Platform_getUptime() {
     double uptime = 0;
     FILE* fd = fopen(PROCDIR "/uptime", "r");
+--- a/linux/Platform.h
++++ b/linux/Platform.h
+@@ -34,7 +34,7 @@
+ 
+ extern ProcessField Platform_defaultFields[];
+ 
+-int Platform_cpuBigLITTLE;
++extern int Platform_cpuBigLITTLE;
+ extern int Platform_numberOfFields;
+ 
+ extern const SignalItem Platform_signals[];
