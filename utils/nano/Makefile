@@ -41,9 +41,7 @@ endef
 
 CONFIGURE_ARGS += \
 	--enable-tiny \
-	--disable-utf8 \
-	--without-slang \
-	--disable-color \
+	--without-slang
 
 CONFIGURE_VARS += \
 	ac_cv_header_regex_h=no \
