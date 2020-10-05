@@ -811,11 +811,10 @@
     FILE* fd = fopen(PROCDIR "/uptime", "r");
 --- a/linux/Platform.h
 +++ b/linux/Platform.h
-@@ -34,7 +34,7 @@
+@@ -21,6 +21,7 @@ in the source distribution for its full
  
  extern ProcessField Platform_defaultFields[];
  
--int Platform_cpuBigLITTLE;
 +extern int Platform_cpuBigLITTLE;
  extern int Platform_numberOfFields;
  
