@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ctop
 PKG_VERSION:=0.7.3
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/bcicen/ctop/archive
@@ -25,7 +25,7 @@ define Package/ctop
   CATEGORY:=Utilities
   TITLE:=Top-like interface for container metrics
   URL:=https://ctop.sh/
-  DEPENDS:=$(GO_ARCH_DEPENDS) @!mips @!mipsel
+  DEPENDS:=$(GO_ARCH_DEPENDS) @(aarch64||arm||x86_64)
 endef
 
 define Package/ctop/description
@@ -35,12 +35,11 @@ endef
 MAKE_PATH:=$(GO_PKG_WORK_DIR_NAME)/build/src/$(GO_PKG)
 MAKE_VARS += \
 	GOPATH=$(GO_PKG_BUILD_DIR) \
-	GOCACHE=$(GO_PKG_CACHE_DIR) \
-	GOTMPDIR=$(GO_PKG_TMP_DIR) \
+	GOCACHE=$(GO_BUILD_CACHE_DIR) \
 	GOROOT_FINAL=$(GO_TARGET_ROOT) \
 	CC=$(TARGET_CC) \
 	CXX=$(TARGET_CXX) \
-	$(call GoPackage/Environment)
+	$(GO_PKG_VARS)
 MAKE_FLAGS += \
 	COMMIT=$(PKG_SOURCE_VERSION)
 
