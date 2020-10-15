@@ -5,8 +5,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=simple-adblock
-PKG_VERSION:=1.8.3
-PKG_RELEASE:=1
+PKG_VERSION:=1.8.4
+PKG_RELEASE:=2
 PKG_MAINTAINER:=Stan Grishin <stangri@melmac.net>
 PKG_LICENSE:=GPL-3.0-or-later
 
@@ -16,12 +16,14 @@ define Package/simple-adblock
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=Simple AdBlock Service
+	DEPENDS:=+jshn +jsonfilter
 	PKGARCH:=all
 endef
 
 define Package/simple-adblock/description
-This service provides DNSMASQ or Unbound based ad blocking.
-Please see the project's README at github for further information.
+Simple adblock script to block ad or abuse/malware domains with DNSMASQ or Unbound.
+Script supports local/remote list of domains and hosts-files for both block-listing and allow-listing.
+Please see https://docs.openwrt.melmac.net/simple-adblock/ for more information.
 
 endef
 
@@ -46,6 +48,8 @@ define Package/simple-adblock/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/simple-adblock.init $(1)/etc/init.d/simple-adblock
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./files/simple-adblock.conf $(1)/etc/config/simple-adblock
+	$(INSTALL_DIR) $(1)/tmp
+	$(INSTALL_CONF) ./files/simple-adblock.conf.update $(1)/tmp/simple-adblock.conf.update
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
 	$(INSTALL_BIN) ./files/simple-adblock.hotplug $(1)/etc/hotplug.d/iface/80-simple-adblock
 endef
@@ -54,6 +58,7 @@ define Package/simple-adblock/postinst
 	#!/bin/sh
 	# check if we are on real system
 	if [ -z "$${IPKG_INSTROOT}" ]; then
+		sed -f /tmp/simple-adblock.conf.update -i /etc/config/simple-adblock || true
 		/etc/init.d/simple-adblock enable
 	fi
 	exit 0
