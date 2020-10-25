@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=azure-iot-device-mqtt
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.11.2
+PKG_VERSION:=1.15.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=1f704adccdafb583df5d349247cedb9b786fc60dd8b7295792616bc97bce8979
+PKG_HASH:=d13af6e9785b5eea786f0cc60f37c37ab722c1955d62404444aee1b0ca2d30e9
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -66,6 +66,14 @@ endef
 define Package/node-azure-iot-device-mqtt/install
 	$(INSTALL_DIR) $(1)/usr/lib/node
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node/
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules
+	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+endef
+
+define Package/node-azure-iot-device-mqtt/postrm
+#!/bin/sh
+rm /usr/lib/node_modules/azure-iot-device-mqtt || true
+rm -rf /usr/lib/node/azure-iot-device-mqtt || true
 endef
 
 $(eval $(call BuildPackage,node-azure-iot-device-mqtt))

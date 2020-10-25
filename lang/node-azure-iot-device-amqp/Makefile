@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=azure-iot-device-amqp
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.11.2
+PKG_VERSION:=1.13.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=f55d4c7b856233fd1e99297d3c49547fe195eec2319a5471d7f2dff1a9b92f30
+PKG_HASH:=ccd05730401c0597b34947c188ba6bdca6eaacd3443bbe7f583217aaff2a340e
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -66,6 +66,14 @@ endef
 define Package/node-azure-iot-device-amqp/install
 	$(INSTALL_DIR) $(1)/usr/lib/node
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node/
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules
+	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+endef
+
+define Package/node-azure-iot-device-amqp/postrm
+#!/bin/sh
+rm /usr/lib/node_modules/azure-iot-device-amqp || true
+rm -rf /usr/lib/node/azure-iot-device-amqp || true
 endef
 
 $(eval $(call BuildPackage,node-azure-iot-device-amqp))

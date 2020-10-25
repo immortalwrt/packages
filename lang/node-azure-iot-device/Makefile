@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=azure-iot-device
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.12.2
+PKG_VERSION:=1.17.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=760a92e5c047ec9a24ec8890cb2eefe5e75a288fdbd7853cc6563b1c4cc6c291
+PKG_HASH:=b15828d0900741576ebac5c32a8534694ffbb2122bb1db3442a3cc5f80121b1a
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -66,6 +66,14 @@ endef
 define Package/node-azure-iot-device/install
 	$(INSTALL_DIR) $(1)/usr/lib/node
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node/
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules
+	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+endef
+
+define Package/node-azure-iot-device/postrm
+#!/bin/sh
+rm /usr/lib/node_modules/azure-iot-device || true
+rm -rf /usr/lib/node/azure-iot-device || true
 endef
 
 $(eval $(call BuildPackage,node-azure-iot-device))
