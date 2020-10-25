@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 PKG_NPM_NAME:=mqtt
 PKG_NAME:=node-$(PKG_NPM_NAME)
 PKG_VERSION:=4.2.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
@@ -68,9 +68,17 @@ define Package/node-mqtt/install
 	$(INSTALL_DIR) $(1)/usr/lib/node
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node/
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/mqtt/mqtt.js $(1)/usr/bin/mqtt
-	$(LN) ../lib/node/mqtt/bin/pub.js $(1)/usr/bin/mqtt_pub
-	$(LN) ../lib/node/mqtt/bin/sub.js $(1)/usr/bin/mqtt_sub
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/mqtt.js $(1)/usr/bin/mqtt
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/pub.js $(1)/usr/bin/mqtt_pub
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/sub.js $(1)/usr/bin/mqtt_sub
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules
+	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+endef
+
+define Package/node-mqtt/postrm
+#!/bin/sh
+rm /usr/lib/node_modules/mqtt || true
+rm -rf /usr/lib/node/mqtt || true
 endef
 
 $(eval $(call BuildPackage,node-mqtt))

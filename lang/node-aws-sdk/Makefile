@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=aws-sdk
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=2.634.0
+PKG_VERSION:=2.776.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=1c2ec09967d9919fdeedb0868c7fde7921c881098d8855db10e6be5e6a86e6a9
+PKG_HASH:=773242e1de98c2d21e3835d733a03099bdd976b06fee0b795980e3fddd0452a5
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
@@ -66,6 +66,14 @@ endef
 define Package/node-aws-sdk/install
 	$(INSTALL_DIR) $(1)/usr/lib/node
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node/
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules
+	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+endef
+
+define Package/node-aws-sdk/postrm
+#!/bin/sh
+rm /usr/lib/node_modules/aws-sdk || true
+rm -rf /usr/lib/node/aws-sdk || true
 endef
 
 $(eval $(call BuildPackage,node-aws-sdk))

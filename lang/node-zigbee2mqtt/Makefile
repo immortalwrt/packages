@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zigbee2mqtt
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.14.4
+PKG_VERSION:=1.15.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=525fbbd634e72605c1dff6b1b9eb3b171ab16a782441dbd3359862fba81c8283
+PKG_HASH:=0dbaae23b7d9295c1e6f245b0bb04b4a8756e6fe05bd8288a9df26e771351d8e
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=GPL-3.0
@@ -74,6 +74,11 @@ define Package/node-zigbee2mqtt/install
 		$(1)/opt/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/zigbee2mqtt.init $(1)/etc/init.d/zigbee2mqtt
+endef
+
+define Package/node-zigbee2mqtt/postrm
+#!/bin/sh
+rm -rf /opt/zigbee2mqtt || true
 endef
 
 $(eval $(call BuildPackage,node-zigbee2mqtt))

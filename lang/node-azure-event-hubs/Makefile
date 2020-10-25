@@ -7,12 +7,12 @@ include $(TOPDIR)/rules.mk
 PKG_NPM_SCOPE:=azure
 PKG_NPM_NAME:=event-hubs
 PKG_NAME:=node-$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)
-PKG_VERSION:=5.0.1
+PKG_VERSION:=5.3.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
-PKG_HASH:=f53d1d08c50e0879e36784925fc0a1c0739838afe539557d46f3d6a64b2f287e
+PKG_HASH:=1ad83b189d9c01a299b3b6e87fd6a3548048c052ba254e4e12accd16a75a2452
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -65,6 +65,17 @@ endef
 define Package/node-azure-event-hubs/install
 	$(INSTALL_DIR) $(1)/usr/lib/node
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node/
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules/@$(PKG_NPM_SCOPE)
+	$(LN) ../../node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME) \
+		$(1)/usr/lib/node_modules/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
+endef
+
+define Package/node-azure-event-hubs/postrm
+#!/bin/sh
+rm /usr/lib/node_modules/@azure/event-hubs || true
+rm -rf /usr/lib/node/@azure/event-hubs || true
+rmdir /usr/lib/node_modules/@azure || true
+rmdir /usr/lib/node/@azure || true
 endef
 
 $(eval $(call BuildPackage,node-azure-event-hubs))
