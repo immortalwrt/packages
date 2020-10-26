@@ -25,9 +25,8 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
 define Package/docker-compose
-  SECTION:=lang
-  CATEGORY:=Languages
-  SUBMENU:=Python
+  SECTION:=utils
+  CATEGORY:=Utilities
   TITLE:=Docker Compose
   URL:=https://github.com/docker/compose
   DEPENDS:=$(GO_ARCH_DEPENDS) +docker
