@@ -107,10 +107,10 @@ define Package/shairport-sync/default/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/shairport-sync $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/scripts/shairport-sync.conf $(1)/etc/shairport-sync.conf
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/shairport-sync.init $(1)/etc/init.d/shairport-sync
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/shairport-sync.config $(1)/etc/config/shairport-sync
+	#$(INSTALL_DIR) $(1)/etc/init.d
+	#$(INSTALL_BIN) ./files/shairport-sync.init $(1)/etc/init.d/shairport-sync
+	#$(INSTALL_DIR) $(1)/etc/config
+	#$(INSTALL_CONF) ./files/shairport-sync.config $(1)/etc/config/shairport-sync
 endef
 
 Package/shairport-sync-openssl/install = $(Package/shairport-sync/default/install)
