@@ -57,11 +57,16 @@ start_instance() {
 	procd_close_instance
 }
 
-service_triggers() { 
-	procd_add_reload_trigger "udpxy" 
+service_triggers() {
+	procd_add_reload_trigger "udpxy"
 }
 
 start_service() {
 	config_load udpxy
 	config_foreach start_instance udpxy
+}
+
+reload_service() {
+	stop
+	start
 }
