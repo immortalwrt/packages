@@ -6,25 +6,25 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=javascript-obfuscator
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.2.2
+PKG_VERSION:=2.8.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=adac10d3afe244833b74e6c965b7631a2a4417879e022fc4b7beea8be60ca86b
-
-PKG_BUILD_DEPENDS:=node/host
-HOST_BUILD_PARALLEL:=1
-
-HOST_BUILD_DEPENDS:=node/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
+PKG_HASH:=c232e3cc784fca960b15cd1d6675159736993c9355006d8e18ef8816e0d47964
 
 PKG_MAINTAINER:=Zbynek Kocur <zbynek.kocur@fel.cvut.cz>
 PKG_LICENSE:=BSD-2-Clause
 PKG_LICENSE_FILES:=LICENSE.BSD
+
+HOST_BUILD_DEPENDS:=node/host
+HOST_BUILD_PARALLEL:=1
+
+PKG_BUILD_DEPENDS:=node/host
+PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
@@ -76,7 +76,15 @@ define Package/node-javascript-obfuscator/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{node_modules,bin,dist} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/javascript-obfuscator/bin/javascript-obfuscator $(1)/usr/bin/javascript-obfuscator
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/javascript-obfuscator $(1)/usr/bin/javascript-obfuscator
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules
+	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+endef
+
+define Package/node-javascript-obfuscator/postrm
+#!/bin/sh
+rm /usr/lib/node_modules/javascript-obfuscator || true
+rm -rf /usr/lib/node/javascript-obfuscator || true
 endef
 
 define Host/Compile
@@ -99,7 +107,7 @@ define Host/Install
 	$(CP) $(HOST_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{node_modules,bin,dist} \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/bin
-	$(LN) ../lib/node_modules/javascript-obfuscator/bin/javascript-obfuscator $(1)/bin/javascript-obfuscator
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/javascript-obfuscator $(1)/bin/javascript-obfuscator
 endef
 
 $(eval $(call HostBuild))
