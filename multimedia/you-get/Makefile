@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=you-get
-PKG_VERSION:=0.4.1475
+PKG_VERSION:=0.4.1488
 PKG_RELEASE:=1
 
 PYPI_NAME:=you-get
-PKG_HASH:=432c04170bb5f4881ca6af9c802b6c90e81759811487b8d7918762dcd674697f
+PKG_HASH:=28aec2f15e86ea1cbf9900827ade41388aa3f1ac43b4ab49999bce48f37cf9c3
 
-PKG_MAINTAINER:=[CTCGFW]Project OpenWrt <contact@project-openwrt.eu.org>
+PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
@@ -46,5 +46,4 @@ endef
 
 $(eval $(call Py3Package,you-get))
 $(eval $(call BuildPackage,you-get))
-$(eval $(call BuildPackage,you-get-src))
-
+#$(eval $(call BuildPackage,you-get-src))
