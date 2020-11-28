@@ -4,16 +4,16 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=node-red
+PKG_NPM_NAME:=node-red-node-sqlite
 PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=1.2.6
+PKG_VERSION:=0.4.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=53461c67807019d0c811d9731f6fe173ec7286ab7ba897013d5a9ce8043b42cd
+PKG_HASH:=0c5ca87942ac451c0d0a8a755350ccd7d4c1f6823828e07b8abd6cef2322ab71
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
@@ -25,32 +25,27 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-red
+define Package/node-red-node-sqlite
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=A visual tool for wiring the Internet of Things
-  URL:=https://nodered.org/
-  DEPENDS:=+node +node-npm
+  TITLE:=A sqlite node for Node-RED
+  URL:=https://github.com/thingweb/node-red-node-sqlite
+  DEPENDS:=+node +node-red +node-sqlite3
 endef
 
-define Package/node-red/description
- A visual tool for wiring the Internet of Things
+define Package/node-red-node-sqlite/description
+ A Node-Red node to read and write a local sqlite database.
 endef
+
+TAR_OPTIONS+= --strip-components 1
+TAR_CMD=$(HOST_TAR) -C $(1) $(TAR_OPTIONS)
 
 NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH)))))
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 
 TARGET_CFLAGS+=$(FPIC)
 TARGET_CPPFLAGS+=$(FPIC)
-
-define Build/Prepare
-	$(INSTALL_DIR) $(PKG_BUILD_DIR)
-endef
-
-define Package/node-red/conffiles
-/etc/config/node-red
-endef
 
 define Build/Compile
 	$(MAKE_VARS) \
@@ -62,29 +57,27 @@ define Build/Compile
 	npm_config_prefix=$(PKG_INSTALL_DIR)/usr/ \
 	npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM) \
 	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
-	npm install -g $(DL_DIR)/$(PKG_SOURCE)
+	npm install -g $(PKG_BUILD_DIR)
 	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 endef
 
-define Package/node-red/install
-	$(INSTALL_DIR) $(1)/usr/lib/node
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/red.js $(1)/usr/bin/node-red
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/node-red-pi $(1)/usr/bin/node-red-pi
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_BIN) ./files/node-red.conf $(1)/etc/config/node-red
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/node-red.init $(1)/etc/init.d/node-red
+define Package/node-red-node-sqlite/install
+	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{package.json,LICENSE} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{*.md,*.js,*.html} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{ext,icons} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-red/postrm
+define Package/node-red-node-sqlite/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/node-red || true
-rm -rf /usr/lib/node/node-red || true
+rm /usr/lib/node_modules/node-red-node-sqlite || true
+rm -rf /usr/lib/node/node-red-node-sqlite || true
 endef
 
-$(eval $(call BuildPackage,node-red))
+$(eval $(call BuildPackage,node-red-node-sqlite))

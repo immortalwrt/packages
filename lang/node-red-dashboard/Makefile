@@ -1,26 +1,23 @@
-#
-# Copyright (C) 2014 Arduino LLC
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=socket.io-client
-PKG_NAME:=node-$(PKG_NPM_NAME)-legacy
-PKG_VERSION:=0.9.17
-PKG_RELEASE:=27
+PKG_NPM_NAME:=node-red-dashboard
+PKG_NAME:=$(PKG_NPM_NAME)
+PKG_VERSION:=2.24.1
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=440eb918db1ba5fe13e883b3a776d59e0a64562b82a8fe139283e39dd5ec7681
+PKG_HASH:=c0481dab21f85a6e8b38cbd304102201765264145d800d1e4838ffcffe1e4904
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=README.md
+PKG_LICENSE:=Apache-2.0
+PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
@@ -28,28 +25,27 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-socket.io-client-legacy
+define Package/node-red-dashboard
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Socket.IO client
-  URL:=https://www.npmjs.org/package/socket.io-client
-  DEPENDS:=+node
+  TITLE:=A set of dashboard nodes for Node-RED
+  URL:=https://github.com/thingweb/node-red-dashboard
+  DEPENDS:=+node +node-red
 endef
 
-define Package/node-socket.io-client-legacy/description
- Socket.IO client for the browser and node.js
+define Package/node-red-dashboard/description
+ This module provides a set of nodes in Node-RED to quickly create a live data dashboard.a
 endef
+
+TAR_OPTIONS+= --strip-components 1
+TAR_CMD=$(HOST_TAR) -C $(1) $(TAR_OPTIONS)
 
 NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH)))))
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 
 TARGET_CFLAGS+=$(FPIC)
 TARGET_CPPFLAGS+=$(FPIC)
-
-define Build/Prepare
-	$(INSTALL_DIR) $(PKG_BUILD_DIR)
-endef
 
 define Build/Compile
 	$(MAKE_VARS) \
@@ -61,22 +57,27 @@ define Build/Compile
 	npm_config_prefix=$(PKG_INSTALL_DIR)/usr/ \
 	npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM) \
 	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
-	npm install -g $(DL_DIR)/$(PKG_SOURCE)
+	npm install -g $(PKG_BUILD_DIR)
 	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 endef
 
-define Package/node-socket.io-client-legacy/install
-	$(INSTALL_DIR) $(1)/usr/lib/node
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node/
+define Package/node-red-dashboard/install
+	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{package.json,*.md} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{LICENSE,*.js} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{dist,nodes,node_modules} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-socket.io-client-legacy/postrm
+define Package/node-red-dashboard/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/socket.io-client-legacy || true
-rm -rf /usr/lib/node/socket.io-client-legacy || true
+rm /usr/lib/node_modules/node-red-dashboard || true
+rm -rf /usr/lib/node/node-red-dashboard || true
 endef
 
-$(eval $(call BuildPackage,node-socket.io-client-legacy))
+$(eval $(call BuildPackage,node-red-dashboard))
