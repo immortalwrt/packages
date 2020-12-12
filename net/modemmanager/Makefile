@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=modemmanager
 PKG_VERSION:=1.14.8
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=ModemManager-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.freedesktop.org/software/ModemManager
@@ -56,6 +56,10 @@ CONFIGURE_ARGS += \
 	--without-systemdsystemunitdir \
 	--disable-rpath \
 	--disable-gtk-doc
+
+ifeq ($(CONFIG_MODEMMANAGER_WITH_AT_COMMAND_VIA_DBUS),y)
+  CONFIGURE_ARGS += --with-at-command-via-dbus
+endif
 
 ifdef CONFIG_MODEMMANAGER_WITH_MBIM
   CONFIGURE_ARGS += --with-mbim
