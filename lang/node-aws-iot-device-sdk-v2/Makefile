@@ -4,38 +4,38 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=ibmiotf
+PKG_NPM_NAME:=aws-iot-device-sdk-v2
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=0.2.41
-PKG_RELEASE:=2
+PKG_VERSION:=1.3.3
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=fb3fdd384321a9d39685c42a730967eef79f21c2156a17fe8f7d2628efbf61ec
+PKG_HASH:=d8314db172a70f67b482da3cd2ebbdab3320ba28f164d6091171565cdb6d6d08
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=EPL-1.0
-PKG_LICENSE_FILES:=LICENSE.md
+PKG_LICENSE:=Apache-2.0
+PKG_LICENSE_FILES:=LICENSE
 
-PKG_BUILD_DEPENDS:=node/host node-cpx/host
+PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-ibmiotf
+define Package/node-aws-iot-device-sdk-v2
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Client libraries for connecting to IBM Watson IoT
-  URL:=https://www.npmjs.com/package/ibmiotf
-  DEPENDS:=+node
+  TITLE:=AWS IoT Device SDK for JavaScript v2
+  URL:=https://www.npmjs.com/package/aws-iot-device-sdk-v2
+  DEPENDS:=+node +node-aws-crt
 endef
 
-define Package/node-ibmiotf/description
- The node.js client is used for simplifying the interaction with the IBM Watson Internet of Things Platform. The following libraries contain instructions and guidance on using the nodejs ibmiotf node to interact with devices and applications within your organizations.
+define Package/node-aws-iot-device-sdk-v2/description
+ This SDK is built on the AWS Common Runtime, a collection of libraries (aws-c-common, aws-c-io, aws-c-mqtt, aws-c-http, aws-c-cal ...) written in C to be cross-platform, high-performance, secure, and reliable. The libraries are bound to JS by the awscrt package.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -62,24 +62,22 @@ define Build/Compile
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 endef
 
-define Package/node-ibmiotf/install
+define Package/node-aws-iot-device-sdk-v2/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{package.json,LICENSE,README.md} \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{package.json,*.md} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{CLA.md,IoTFoundation.pem} \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{LICENSE,NOTICE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{node_modules,dist} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{samples,src} \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{lib,docs} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-ibmiotf/postrm
+define Package/node-aws-iot-device-sdk-v2/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/ibmiotf || true
-rm -rf /usr/lib/node/ibmiotf || true
+rm /usr/lib/node_modules/aws-iot-device-sdk-v2 || true
+rm -rf /usr/lib/node/aws-iot-device-sdk-v2 || true
 endef
 
-$(eval $(call BuildPackage,node-ibmiotf))
+$(eval $(call BuildPackage,node-aws-iot-device-sdk-v2))
