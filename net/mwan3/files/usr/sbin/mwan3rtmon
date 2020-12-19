@@ -22,7 +22,7 @@ func_trap()
 
 mwan3_add_all_routes()
 {
-	local tid IP IPT route_line family active_tbls tid initial_state
+	local tid IP IPT route_line family active_tbls tid initial_state error
 	local ipv=$1
 
 	add_active_tbls()
@@ -40,8 +40,8 @@ mwan3_add_all_routes()
 	{
 		let tid++
 		[ -n "${active_tbls##* $tid *}" ] && return
-		$IP route add table $tid $route_line ||
-			LOG warn "failed to add $route_line to table $tid"
+		error=$($IP route add table $tid $route_line 2>&1) ||
+			LOG warn "failed to add $route_line to table $tid - error: $error"
 	}
 
 	mwan3_update_dev_to_table
@@ -69,7 +69,7 @@ mwan3_add_all_routes()
 
 mwan3_rtmon_route_handle()
 {
-	local action route_line family tbl device line route_line_exp tid source_routing
+	local action route_line family tbl device line tid source_routing
 
 	route_line=${1##"Deleted "}
 	route_family=$2
@@ -79,31 +79,28 @@ mwan3_rtmon_route_handle()
 
 	if [ "$route_line" = "$1" ]; then
 		action="replace"
-		route_line_exp="s/expires \([0-9]\+\)sec//;s/error [0-9]\+//; ${source_routing:+s/default\(.*\) from [^ ]*/default\1/}"
 		$IPS -! add mwan3_connected_${route_family##ip} ${route_line%% *}
 	else
 		action="del"
-		route_line_exp="s/expires [0-9]\+sec//;s/error [0-9]\+//; ${source_routing:+s/default\(.*\) from [^ ]*/default\1/}"
 		mwan3_set_connected_${route_family}
+	fi
+
+	if [ -z "${route_line##*linkdown*}" ]; then
+		LOG debug "attempting to add link on down interface - $route_line"
 	fi
 
 	if [ "$route_family" = "ipv4" ]; then
 		IP="$IP4"
 	elif [ "$route_family" = "ipv6" ] && [ $NO_IPV6 -eq 0 ]; then
 		IP="$IP6"
-		route_line=$(echo "$route_line" | sed "$route_line_exp")
 	else
 		LOG warn "route update called with invalid family - $route_family"
 		return
 	fi
-
-	# don't try to add routes when link has gone down
-	if [ -z "${route_line##linkdown*}" ]; then
-		LOG debug "not adding route due to linkdown - skipping $route_line"
-		return
-	fi
+	route_line=$(echo "$route_line" | sed -ne "$MWAN3_ROUTE_LINE_EXP")
 
 	handle_route() {
+		local error
 		local iface=$1
 		tbl=$($IP route list table $tid 2>/dev/null)$'\n'
 
@@ -121,8 +118,8 @@ mwan3_rtmon_route_handle()
 
 		network_get_device device "$iface"
 		LOG debug "adjusting route $device: '$IP route $action table $tid $route_line'"
-		$IP route "$action" table $tid $route_line ||
-			LOG warn "failed: '$IP route $action table $tid $route_line'"
+		error=$($IP route "$action" table $tid $route_line 2>&1)||
+			LOG warn "failed: '$IP route $action table $tid $route_line' - error: $error"
 	}
 	handle_route_cb(){
 		local iface=$1
@@ -162,6 +159,7 @@ main()
 	sh -c "echo \$\$; exec $IP monitor route" | {
 		read -r monitor_pid
 		trap_with_arg func_trap "$monitor_pid" SIGINT SIGTERM SIGKILL
+		KILL -SIGSTOP $$
 		while IFS='' read -r line; do
 			[ -z "${line##*table*}" ] && continue
 			LOG debug "handling route update $family '$line'"
@@ -169,11 +167,10 @@ main()
 		done
 	} &
 	child=$!
-	kill -SIGSTOP $child
 	trap_with_arg func_trap "$child" SIGINT SIGTERM SIGKILL
 	mwan3_set_connected_${family}
 	mwan3_add_all_routes ${family}
 	kill -SIGCONT $child
-	wait $!
+	wait $child
 }
 main "$@"
