@@ -22,6 +22,10 @@ PKG_BUILD_DEPENDS:=golang/host node/host packr/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_ADGUARDHOME_COMPRESS_GOPROXY \
+	CONFIG_ADGUARDHOME_COMPRESS_UPX
+
 GO_PKG:=github.com/AdguardTeam/AdGuardHome
 GO_PKG_EXCLUDES:=internal/dhcpd/standalone
 GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION) main.channel=release main.goarm=$(GO_ARM)
