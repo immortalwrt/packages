@@ -45,6 +45,21 @@ define Package/adguardhome/description
 Free and open source, powerful network-wide ads and trackers blocking DNS server.
 endef
 
+define Package/$(PKG_NAME)/config
+config ADGUARDHOME_COMPRESS_GOPROXY
+	bool "Compiling with GOPROXY proxy"
+	default n
+
+config ADGUARDHOME_COMPRESS_UPX
+	bool "Compress executable files with UPX"
+	default n
+endef
+
+ifeq ($(CONFIG_ADGUARDHOME_COMPRESS_GOPROXY),y)
+export GO111MODULE=on
+export GOPROXY=https://goproxy.io
+endif
+
 define Build/Compile
 	( \
 		pushd $(PKG_BUILD_DIR) ; \
@@ -54,6 +69,9 @@ define Build/Compile
 		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
+ifeq ($(CONFIG_ADGUARDHOME_COMPRESS_UPX),y)
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/AdGuardHome
+endif
 endef
 
 define Package/adguardhome/install
