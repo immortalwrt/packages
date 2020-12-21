@@ -7,21 +7,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=shairport-sync
-PKG_VERSION:=3.3.6
-PKG_RELEASE:=2
+PKG_VERSION:=3.3.7
+PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/mikebrady/shairport-sync.git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_VERSION:=4c6628abe47cc3f1cb4ced4ba0112ca124df6be9
+PKG_SOURCE_URL:=https://codeload.github.com/mikebrady/shairport-sync/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=7f8d4ecec53f2f681a962467bf09205568fc936c8c31a9ee07b1bd72d3d95b12
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 		Mike Brady <mikebrady@eircom.net>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING LICENSES shairport.c
 
-PKG_BUILD_PARALLEL:=1
 PKG_FIXUP:=autoreconf
+PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -29,7 +29,7 @@ define Package/shairport-sync/default
   SECTION:=sound
   CATEGORY:=Sound
   TITLE:=AirPlay compatible audio player
-  DEPENDS:=@AUDIO_SUPPORT +libpthread +alsa-lib +libconfig +libdaemon +libpopt +libalac
+  DEPENDS:=@AUDIO_SUPPORT +libpthread +alsa-lib +libalac +libconfig +libdaemon +libpopt
   PROVIDES:=shairport-sync
   URL:=https://github.com/mikebrady/shairport-sync
 endef
@@ -75,10 +75,10 @@ define Package/shairport-sync-mini/description
   Minimal version uses mbed TLS and does not include libsoxr and avahi support.
 endef
 
-CONFIGURE_ARGS+= \
+CONFIGURE_ARGS += \
 	--with-alsa \
-	--with-metadata \
-	--with-apple-alac
+	--with-apple-alac \
+	--with-metadata
 
 ifeq ($(BUILD_VARIANT),openssl)
   CONFIGURE_ARGS+= --with-ssl=openssl
@@ -95,6 +95,7 @@ else
 endif
 
 define Package/shairport-sync/default/conffiles
+/etc/config/shairport-sync
 /etc/shairport-sync.conf
 endef
 
@@ -104,9 +105,9 @@ Package/shairport-sync-mini/conffiles = $(Package/shairport-sync/default/conffil
 
 define Package/shairport-sync/default/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/shairport-sync $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/shairport-sync $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/scripts/shairport-sync.conf $(1)/etc/shairport-sync.conf
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/etc/shairport-sync.conf $(1)/etc/shairport-sync.conf
 	#$(INSTALL_DIR) $(1)/etc/init.d
 	#$(INSTALL_BIN) ./files/shairport-sync.init $(1)/etc/init.d/shairport-sync
 	#$(INSTALL_DIR) $(1)/etc/config
