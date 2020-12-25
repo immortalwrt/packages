@@ -7,13 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=shairport-sync
-PKG_VERSION:=3.3.6
-PKG_RELEASE:=2
+PKG_VERSION:=3.3.7
+PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/mikebrady/shairport-sync.git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_VERSION:=4c6628abe47cc3f1cb4ced4ba0112ca124df6be9
+PKG_SOURCE_URL:=https://codeload.github.com/mikebrady/shairport-sync/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=7f8d4ecec53f2f681a962467bf09205568fc936c8c31a9ee07b1bd72d3d95b12
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 		Mike Brady <mikebrady@eircom.net>
@@ -30,7 +29,7 @@ define Package/shairport-sync/default
   SECTION:=sound
   CATEGORY:=Sound
   TITLE:=AirPlay compatible audio player
-  DEPENDS:=@AUDIO_SUPPORT +libpthread +alsa-lib +libconfig +libdaemon +libpopt +libalac
+  DEPENDS:=@AUDIO_SUPPORT +libpthread +alsa-lib +libalac +libconfig +libdaemon +libpopt
   PROVIDES:=shairport-sync
   URL:=https://github.com/mikebrady/shairport-sync
 endef
@@ -78,8 +77,8 @@ endef
 
 CONFIGURE_ARGS += \
 	--with-alsa \
-	--with-metadata \
-	--with-apple-alac
+	--with-apple-alac \
+	--with-metadata
 
 ifeq ($(BUILD_VARIANT),openssl)
   CONFIGURE_ARGS+= --with-ssl=openssl
