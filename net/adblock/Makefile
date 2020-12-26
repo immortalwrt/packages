@@ -17,7 +17,7 @@ define Package/adblock
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=Powerful adblock script to block ad/abuse domains by using DNS
-	DEPENDS:=+jshn +jsonfilter +coreutils-sort +wget +libustream-openssl
+	DEPENDS:=+jshn +jsonfilter +coreutils-sort +wget-ssl +libustream-openssl
 	PKGARCH:=all
 endef
 
