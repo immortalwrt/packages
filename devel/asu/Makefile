@@ -23,7 +23,7 @@ IMAGEBUILDER_DEPENDS:= \
     @x86_64 +bash +bzip2 +coreutils +coreutils-stat +diffutils +file \
     +gawk +gcc +getopt +git +git-http +libncurses +make +patch +perl \
     +perlbase-attributes +perlbase-findbin +perlbase-getopt \
-    +perlbase-thread +python3-light +tar +unzip +wget +xz +xzdiff \
+    +perlbase-thread +python3-light +tar +unzip +wget-ssl +xz +xzdiff \
     +xzgrep +xzless +xz-utils +zlib-dev
 
 define Package/asu
