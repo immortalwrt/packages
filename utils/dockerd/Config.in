@@ -2,7 +2,7 @@
 
 config DOCKER_CGROUP_OPTIONS
 	bool "Enable available kernel support for CGroupsV1"
-	default n
+	default y
 	depends on PACKAGE_dockerd
 	select KERNEL_CGROUP_DEVICE
 	select KERNEL_CGROUP_FREEZER
