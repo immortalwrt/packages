@@ -58,9 +58,9 @@ endef
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
 
-#define Package/zerotier/conffiles
-#/etc/config/zerotier
-#endef
+define Package/zerotier/conffiles
+/etc/config/zerotier
+endef
 
 define Package/zerotier/install
 	$(INSTALL_DIR) $(1)/usr/bin
@@ -71,8 +71,9 @@ define Package/zerotier/install
 ifeq ($(CONFIG_ZEROTIER_ENABLE_SELFTEST),y)
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/zerotier-selftest $(1)/usr/bin/
 endif
-
 	#$(CP) ./files/* $(1)/
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) ./files/etc/config/zerotier $(1)/etc/config/zerotier
 endef
 
 $(eval $(call BuildPackage,zerotier))
