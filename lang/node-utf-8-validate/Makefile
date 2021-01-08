@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=utf-8-validate
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=5.0.3
+PKG_VERSION:=5.0.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=8c2a90daaeb7324e8669e376a906ee26d12e5075e64d2c3b4ef4bdc3e4aa794d
+PKG_HASH:=6d4fb969cd6670e5b75226d696d6bf712e13b02951c8d6fc3dbb86212047b197
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
