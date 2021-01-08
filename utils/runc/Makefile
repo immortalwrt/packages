@@ -28,7 +28,7 @@ define Package/runc
   CATEGORY:=Utilities
   TITLE:=runc container runtime
   URL:=https://www.opencontainers.org/
-  DEPENDS:=$(GO_ARCH_DEPENDS) @HAS_FPU @(aarch64||arm||x86_64) +KERNEL_SECCOMP_FILTER:libseccomp
+  DEPENDS:=$(GO_ARCH_DEPENDS) +KERNEL_SECCOMP_FILTER:libseccomp
 endef
 
 define Package/runc/description
