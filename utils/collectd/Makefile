@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=collectd
 PKG_VERSION:=5.12.0
-PKG_RELEASE:=2
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://collectd.org/files/ \
@@ -104,7 +104,6 @@ COLLECTD_PLUGINS_DISABLED:= \
 	smart \
 	snmp_agent \
 	statsd \
-	swap \
 	synproxy \
 	sysevent \
 	tape \
@@ -185,6 +184,8 @@ COLLECTD_PLUGINS_SELECTED:= \
 	rrdtool \
 	sensors \
 	snmp \
+	snmp6 \
+	swap \
 	syslog \
 	table \
 	tail \
@@ -450,6 +451,8 @@ $(eval $(call BuildPlugin,routeros,MikroTik RouterOS input,routeros,+PACKAGE_col
 $(eval $(call BuildPlugin,rrdtool,RRDtool output,rrdtool,+PACKAGE_collectd-mod-rrdtool:librrd1))
 $(eval $(call BuildPlugin,sensors,lm_sensors input,sensors,+PACKAGE_collectd-mod-sensors:libsensors))
 $(eval $(call BuildPlugin,snmp,SNMP input,snmp,+PACKAGE_collectd-mod-snmp:libnetsnmp))
+$(eval $(call BuildPlugin,snmp6,snmp6 input,snmp6,))
+$(eval $(call BuildPlugin,swap,swap input,swap,))
 $(eval $(call BuildPlugin,syslog,syslog output,syslog,))
 $(eval $(call BuildPlugin,tail,tail input,tail,))
 $(eval $(call BuildPlugin,tail-csv,tail CSV input,tail_csv,))
