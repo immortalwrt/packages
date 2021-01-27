@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=serialport
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=9.0.4
+PKG_VERSION:=9.0.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=e19fe993ad16ae0e03fc42e24cfe4babf8fd90f8358e1885d5e216277dda1086
+PKG_HASH:=bcf7a868518700e0519eb55702ba2a133dc91605d53326461e43b587da58655d
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_USE_MIPS16:=0
