@@ -53,7 +53,7 @@ TARGET_CXXFLAGS += -flto
 
 define Build/InstallDev
 	$(Build/InstallDev/cmake)
-	$(CP) $(PKG_BUILD_DIR)/include/spdlog/fmt/bundled $(PKG_INSTALL_DIR)/usr/include/spdlog/fmt
+	$(CP) $(PKG_BUILD_DIR)/include/spdlog/fmt/bundled $(1)/usr/include/spdlog/fmt
 endef
 
 define Package/spdlog/install
