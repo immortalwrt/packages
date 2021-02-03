@@ -18,9 +18,6 @@ PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=6c1f05935215feed4e8d2f4aecf31abbad8fa783d252b0bd6041ed2f2e96e9ba
 
-PKG_BUILD_DEPENDS:=node/host
-PKG_USE_MIPS16:=0
-
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT OR X11
 PKG_LICENSE_FILES:=
@@ -36,9 +33,9 @@ define Package/node-hid
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Node.js package to access HID devices
+  TITLE:=Access USB HID devices from node.js
   URL:=https://www.npmjs.com/package/node-hid
-  DEPENDS:=+node +libusb-1.0 +libudev $(ICONV_DEPENDS)
+  DEPENDS:=+node $(ICONV_DEPENDS) +libusb-1.0 +libudev
 endef
 
 define Package/node-hid/description

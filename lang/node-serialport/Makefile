@@ -18,9 +18,6 @@ PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=bcf7a868518700e0519eb55702ba2a133dc91605d53326461e43b587da58655d
 
-PKG_BUILD_DEPENDS:=node/host
-PKG_USE_MIPS16:=0
-
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
