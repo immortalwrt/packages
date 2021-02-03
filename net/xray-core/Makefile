@@ -66,9 +66,9 @@ define Package/xray-geodata/description
   This includes GEO datas used for xray-core.
 endef
 
-define Package/$(PKG_NAME)/config
+define Package/xray-core/config
 menu "Xray Configuration"
-	depends on PACKAGE_xray
+	depends on PACKAGE_xray-core
 
 config XRAY_PROVIDE_V2RAY
 	bool "Provide V2RAY binary using XRAY"
