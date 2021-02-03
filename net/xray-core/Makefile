@@ -12,6 +12,11 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@project-openwrt.eu.org>
 PKG_LICENSE:=MPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_XRAY_PROVIDE_V2RAY \
+	CONFIG_XRAY_COMPRESS_GOPROXY \
+	CONFIG_XRAY_COMPRESS_UPX \
+
 PKG_BUILD_DIR:=$(BUILD_DIR)/Xray-core-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
@@ -61,6 +66,24 @@ define Package/xray-geodata/description
   This includes GEO datas used for xray-core.
 endef
 
+define Package/$(PKG_NAME)/config
+menu "Xray Configuration"
+	depends on PACKAGE_xray
+
+config XRAY_PROVIDE_V2RAY
+	bool "Provide V2RAY binary using XRAY"
+	default y
+
+config XRAY_COMPRESS_GOPROXY
+	bool "Compiling with GOPROXY proxy"
+	default n
+
+config XRAY_COMPRESS_UPX
+	bool "Compress executable files with UPX"
+	default y
+endmenu
+endef
+
 GEOIP_VER:=202101280019
 GEOIP_FILE:=geoip.dat.$(GEOIP_VER)
 
@@ -81,6 +104,11 @@ define Download/geosite
   HASH:=bc9748c95b0545376356174b005fccfbc21d647df46293d5197853ee06a9c0a2
 endef
 
+ifneq ($(CONFIG_XRAY_COMPRESS_GOPROXY),)
+	export GO111MODULE=on
+	export GOPROXY=https://goproxy.io
+endif
+
 define Build/Prepare
 	$(call Build/Prepare/Default)
 ifneq ($(CONFIG_PACKAGE_xray-geodata),)
@@ -89,12 +117,21 @@ ifneq ($(CONFIG_PACKAGE_xray-geodata),)
 endif
 endef
 
+define Build/Build
+	$(call GoPackage/Build/Compile)
+ifneq ($(CONFIG_XRAY_COMPRESS_UPX),)
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/main
+endif
+endef
+
 define Package/xray-core/install
 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
 
 	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/main $(1)/usr/bin/xray
+ifneq ($(CONFIG_XRAY_PROVIDE_V2RAY),)
 	$(LN) xray $(1)/usr/bin/v2ray
+endif
 endef
 
 define Package/xray-geodata/install
