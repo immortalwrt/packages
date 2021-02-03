@@ -45,10 +45,18 @@ define Package/xray-core
   PROVIDES:=v2ray-core
 endef
 
+define Package/xray-example
+  $(call Package/xray/template)
+  TITLE+= (example configs)
+  DEPENDS:=xray-core
+  PKGARCH:=all
+endef
+
 define Package/xray-geodata
   $(call Package/xray/template)
   TITLE+= (geodata files)
   DEPENDS:=xray-core
+  PKGARCH:=all
 endef
 
 define Package/xray/description
@@ -58,6 +66,12 @@ endef
 
 define Package/xray-core/description
   $(call Package/xray/description)
+endef
+
+define Package/xray-example/description
+  $(call Package/xray/description)
+
+  This includes example configuration files for xray-core.
 endef
 
 define Package/xray-geodata/description
@@ -134,6 +148,12 @@ ifneq ($(CONFIG_XRAY_CORE_PROVIDE_V2RAY_CORE),)
 endif
 endef
 
+define Package/xray-example/install
+	$(INSTALL_DIR) $(1)/etc/xray/
+	$(INSTALL_CONF) $(CURDIR)/files/vpoint_socks_vmess.json $(1)/etc/xray/
+	$(INSTALL_CONF) $(CURDIR)/files/vpoint_vmess_freedom.json $(1)/etc/xray/
+endef
+
 define Package/xray-geodata/install
 	$(INSTALL_DIR) $(1)/usr/share/xray/
 	$(INSTALL_DATA) $(DL_DIR)/$(GEOIP_FILE) $(1)/usr/share/xray/geoip.dat
@@ -141,4 +161,5 @@ define Package/xray-geodata/install
 endef
 
 $(eval $(call BuildPackage,xray-core))
+$(eval $(call BuildPackage,xray-example))
 $(eval $(call BuildPackage,xray-geodata))
