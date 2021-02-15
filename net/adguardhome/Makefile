@@ -28,7 +28,11 @@ PKG_CONFIG_DEPENDS:= \
 
 GO_PKG:=github.com/AdguardTeam/AdGuardHome
 GO_PKG_EXCLUDES:=internal/dhcpd/standalone
-GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION) main.channel=release main.goarm=$(GO_ARM)
+GO_PKG_LDFLAGS:=-s -w
+GO_PKG_LDFLAGS_X:= \
+	main.version=$(PKG_SOURCE_VERSION) \
+	main.channel=release \
+	main.goarm=$(GO_ARM)
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
