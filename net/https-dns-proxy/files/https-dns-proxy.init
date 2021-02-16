@@ -94,7 +94,7 @@ start_instance() {
 start_service() {
 	local p=5053
 	config_load 'https-dns-proxy'
-	config_get dnsmasqConfig	'config' 'update_dnsmasq_config' ''
+	config_get dnsmasqConfig	'config' 'update_dnsmasq_config' '*'
 	dhcp_backup 'create'
 	config_load 'https-dns-proxy'
 	config_foreach start_instance 'https-dns-proxy'
@@ -106,7 +106,7 @@ start_service() {
 
 stop_service() {
 	config_load 'https-dns-proxy'
-	config_get dnsmasqConfig 'config' 'update_dnsmasq_config' ''
+	config_get dnsmasqConfig 'config' 'update_dnsmasq_config' '*'
 	dhcp_backup 'restore'
 	if [ -n "$(uci -q changes dhcp)" ]; then
 		uci -q commit dhcp
