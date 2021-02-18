@@ -17,14 +17,14 @@ define Package/gcc
   CATEGORY:=Development
   TITLE:=gcc
   MAINTAINER:=Noble Pepper <gccmaintain@noblepepper.com>
-  DEPENDS:= +binutils +libstdcpp @!arc
+  DEPENDS:= +binutils +libdouble-conversion +libpcre2-16 +libstdcpp +libzstd +icu @!arc
   MENU:=1
 endef
 
 PKG_NAME:=gcc
 # PKG_VERSION=7.3.0
 PKG_VERSION=7.4.0
-PKG_RELEASE:=5
+PKG_RELEASE:=6
 PKG_SOURCE_URL:=@GNU/gcc/gcc-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_INSTALL:=1
