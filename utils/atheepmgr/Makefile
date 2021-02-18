@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=atheepmgr
 PKG_VERSION:=2.1.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_VERSION:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_PROTO:=git
@@ -26,6 +26,7 @@ define Package/atheepmgr
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=EEPROM/boarddata management utility for Atheros WLAN chips
+  DEPENDS:=+libpciaccess
   MENU:=1
 endef
 
