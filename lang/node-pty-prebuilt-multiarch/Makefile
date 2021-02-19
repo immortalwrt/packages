@@ -4,16 +4,16 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=usb
-PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.6.5
+PKG_NPM_NAME:=node-pty-prebuilt-multiarch
+PKG_NAME:=$(PKG_NPM_NAME)
+PKG_VERSION:=0.10.1-pre.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=a6722d58a7272c87965fe3a6ac24f44549ca5039fb8dbcdd8a2678e1491c9cea
+PKG_HASH:=a7e19e474941a74a9297b2d07d8096e09df7391fe8192c2a54b70575058f8782
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -25,17 +25,17 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-usb
+define Package/node-pty-prebuilt-multiarch
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Library to access USB devices
-  URL:=https://www.npmjs.com/package/usb
-  DEPENDS:=+node +libusb-1.0
+  TITLE:=Fork pseudoterminals in Node.JS
+  URL:=https://www.npmjs.com/package/node-pty-prebuilt-multiarch
+  DEPENDS:=+node
 endef
 
-define Package/node-usb/description
- Node.js library for communicating with USB devices in JavaScript / CoffeeScript
+define Package/node-pty-prebuilt-multiarch/description
+ This project is a parallel fork of node-pty providing prebuilt packages for certain Node.js and Electron versions.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -44,12 +44,11 @@ TAR_CMD=$(HOST_TAR) -C $(1) $(TAR_OPTIONS)
 NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH)))))
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 
-TARGET_CFLAGS+=$(FPIC) -I$(STAGING_DIR)/usr/include/libusb-1.0
+TARGET_CFLAGS+=$(FPIC)
 TARGET_CPPFLAGS+=$(FPIC)
-TARGET_LDFLAGS+=-lusb-1.0
 
 define Build/Compile
-	GYP_DEFINES='use_system_libusb=1' \
+	rm -rf $(PKG_BUILD_DIR)/prebuilds
 	$(MAKE_VARS) \
 	$(MAKE_FLAGS) \
 	npm_config_arch=$(NODEJS_CPU) \
@@ -64,25 +63,23 @@ define Build/Compile
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 endef
 
-define Package/node-usb/install
+define Package/node-pty-prebuilt-multiarch/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{package.json,*.md} \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{package.json,LICENSE,*.md} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{LICENSE,*.js} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{node_modules,test} \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/{node_modules,lib} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)/build/Release
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/build/Release/usb_bindings.node \
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/$(PKG_NPM_NAME)/build/Release/pty.node \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/build/Release/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-usb/postrm
+define Package/node-pty-prebuilt-multiarch/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/usb || true
-rm -rf /usr/lib/node/usb || true
+rm /usr/lib/node_modules/node-pty-prebuilt-multiarch || true
+rm -rf /usr/lib/node/node-pty-prebuilt-multiarch || true
 endef
 
-$(eval $(call BuildPackage,node-usb))
+$(eval $(call BuildPackage,node-pty-prebuilt-multiarch))

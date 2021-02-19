@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge-camera-ffmpeg
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=3.0.3
-PKG_RELEASE:=3
+PKG_VERSION:=3.0.6
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=0b39f7e20d2986453d800d63995a5dfc3e4b3c2b788c34f8f5142181380d8f9b
+PKG_HASH:=f5c0f319355963b700df471bbba3978dc43fc442c6f2f3150f6470e7c01408bf
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=ISC Apache-2.0 License
