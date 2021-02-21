@@ -3,11 +3,9 @@ since released versions of uClibc don't support isfdtype().
 
 Signed-off-by: Gustavo Zaarias <gustavo@zacarias.com.ar>
 
-Index: acpid-2.0.23/sock.c
-===================================================================
---- acpid-2.0.23.orig/sock.c
-+++ acpid-2.0.23/sock.c
-@@ -53,7 +53,10 @@ int non_root_clients;
+--- a/sock.c
++++ b/sock.c
+@@ -65,7 +65,10 @@ isfdtype(int fd, int fdtype)
  int
  is_socket(int fd)
  {

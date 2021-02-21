@@ -1,6 +1,6 @@
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -129,20 +129,20 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/avro-c.pc
+@@ -128,20 +128,20 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR
          DESTINATION lib/pkgconfig)
  
  add_executable(avrocat avrocat.c)

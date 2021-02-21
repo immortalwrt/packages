@@ -11,7 +11,7 @@
  	esac
 --- a/configure
 +++ b/configure
-@@ -5998,7 +5998,7 @@ if test "$libdir" = "\${exec_prefix}/lib
+@@ -6023,7 +6023,7 @@ if test "$libdir" = "\${exec_prefix}/lib
  	case "$uname" in
  		Linux*)
  			if test -d /usr/lib64 -a ! -d /usr/lib64/fakeroot; then
