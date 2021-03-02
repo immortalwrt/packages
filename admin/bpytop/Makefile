@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2021 ImmortalWrt
+# Copyright (C) 2021 ImmortalWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bpytop
-PKG_VERSION:=1.0.62
+PKG_VERSION:=1.0.63
 PKG_RELEASE:=$(AUTORELEASE)
 
 PYPI_NAME:=bpytop
-PKG_HASH:=9a408ffe6575c4e20621215e532b206fe6b6d2e7e4bd053ab4b4906e6d7ba909
+PKG_HASH:=21d4c87ceae7c9152e8c8094f50843c6174e47a94649dcbecda63c4190168762
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
