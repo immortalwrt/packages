@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=domoticz
 PKG_VERSION:=2020.2
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/domoticz/domoticz/archive/$(PKG_VERSION)/$(PKG_SOURCE)
@@ -19,14 +19,10 @@ PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=License.txt
 
 PKG_BUILD_DEPENDS:=python3 minizip cereal
-PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-CMAKE_INSTALL:=1
-
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/nls.mk
-include $(INCLUDE_DIR)/cmake.mk
+include ../../devel/ninja/ninja-cmake.mk
 
 define Package/domoticz
   SECTION:=utils
@@ -42,7 +38,8 @@ define Package/domoticz
 	+boost-thread \
 	+jsoncpp \
 	+libcurl \
-	+minizip \
+	+python3 \
+	+minizip @BROKEN \
 	+lua5.3 \
 	+libmosquitto \
 	+libopenssl \
@@ -73,8 +70,9 @@ CMAKE_OPTIONS += \
 	-DUSE_PYTHON=yes \
 	-DWITH_LIBUSB=no
 
-TARGET_CFLAGS += -flto -DBOOST_BIND_GLOBAL_PLACEHOLDERS
+TARGET_CFLAGS += -flto
 TARGET_CXXFLAGS += -DWITH_GPIO -flto
+TARGET_LDFLAGS += -lpython3.9
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
