@@ -22,7 +22,6 @@ PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-include $(INCLUDE_DIR)/uclibc++.mk
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fcgi/Default
@@ -40,7 +39,7 @@ endef
 
 define Package/fcgixx
   $(call Package/fcgi/Default)
-  DEPENDS:=fcgi $(CXX_DEPENDS)
+  DEPENDS:=fcgi +libstdcpp
   TITLE:=Shared library of FastCGI++
 endef
 
