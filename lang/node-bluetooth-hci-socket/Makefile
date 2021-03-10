@@ -17,7 +17,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_MIRROR_HASH:=746838c7d99e889603496e6e70fa5f87a39e91ddea700587ac4ddf6437cb224f
 
 #PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
-#PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
+#PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 #PKG_HASH:=69fba6171c1fb981d61c0e789ebcd25869589181a03c836b1b5e4867bab957e5
