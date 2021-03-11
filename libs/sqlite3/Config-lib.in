@@ -9,7 +9,7 @@ config SQLITE3_DYNAMIC_EXTENSIONS
 
 config SQLITE3_ENABLE_COLUMN_METADATA
 	bool "Enable convenient access to meta-data about tables and queries"
-	default n
+	default y
 	help
 	  When this option is defined there are some additional APIs
 	  enabled to acces meta-data about tables and queries (see
