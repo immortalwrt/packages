@@ -192,6 +192,7 @@ define Package/gcc/install
 	ln -s $(REAL_GNU_TARGET_NAME)-g++ $(1)/usr/bin/g++
 	ln -s $(REAL_GNU_TARGET_NAME)-g++ $(1)/usr/bin/$(REAL_GNU_TARGET_NAME)-c++
 	ln -s $(REAL_GNU_TARGET_NAME)-gcc $(1)/usr/bin/gcc
+	ln -s $(REAL_GNU_TARGET_NAME)-gcc $(1)/usr/bin/cc
 	ln -s $(REAL_GNU_TARGET_NAME)-gcc $(1)/usr/bin/$(REAL_GNU_TARGET_NAME)-gcc-$(PKG_VERSION)
 	cp -ar $(PKG_INSTALL_DIR)/usr/lib/gcc $(1)/usr/lib
 	cp -ar $(TOOLCHAIN_DIR)/include $(1)/usr
