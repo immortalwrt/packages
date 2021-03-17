@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=node-expat
 PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=2.3.18
-PKG_RELEASE:=2
+PKG_VERSION:=2.4.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=81fee7f5326a1a9da11b121662c020117600157649ffdba66372236548b8cf89
+PKG_HASH:=4b16bc704278991c62107706661783be01e740039d01cdc7f4007b742881e86a
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
