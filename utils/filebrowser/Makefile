@@ -72,8 +72,8 @@ define Build/Compile
   npm ci; \
   npm run lint ; \
   npm run build ; \
-  $(call GoPackage/Build/Compile) ; \
 )
+	$(call GoPackage/Build/Compile)
 ifeq ($(CONFIG_FILEBROWSER_COMPRESS_UPX),y)
 	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/filebrowser
 endif
