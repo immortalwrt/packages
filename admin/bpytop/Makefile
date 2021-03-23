@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bpytop
 PKG_VERSION:=1.0.62
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 
 PYPI_NAME:=bpytop
 PKG_HASH:=9a408ffe6575c4e20621215e532b206fe6b6d2e7e4bd053ab4b4906e6d7ba909
@@ -19,7 +19,7 @@ PKG_LICENSE_FILES:=LICENSE
 
 include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../../packages/lang/python/python3-package.mk
+include ../../lang/python/python3-package.mk
 
 define Package/bpytop
   SECTION:=admin
