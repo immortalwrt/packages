@@ -31,7 +31,7 @@ define Package/libcron
   TITLE:=A C++ scheduling library using cron formatting
 endef
 
-define Package/rapidjson/description
+define Package/libcron/description
   Libcron offers an easy to use API to add callbacks with corresponding cron-formatted strings.
 endef
 
