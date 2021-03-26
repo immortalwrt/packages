@@ -24,7 +24,7 @@ include $(INCLUDE_DIR)/cmake.mk
 define Package/quickjspp
   SECTION:=lib
   CATEGORY:=Libraries
-  URL:=https://bellard.org/quickjs
+  URL:=https://github.com/ftk/quickjspp
   TITLE:=QuickJS wrapper for C++
   DEPENDS:=+libatomic +libpthread
   PROVIDES:=quickjs
