@@ -1,42 +1,39 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=subconverter
 PKG_VERSION:=0.6.4
-PKG_RELEASE:=3
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tindy2013/subconverter.git
-PKG_SOURCE_DATE:=2020-12-19
-PKG_SOURCE_VERSION:=a57906c9a6edd04da869b12ffb88f397c3ea8af6
-PKG_MIRROR_HASH:=07815478cbfa1644ad016ea4b68a2edc9316f9aa23edf699d82c4c9026e17462
+PKG_SOURCE_DATE:=2021-03-25
+PKG_SOURCE_VERSION:=3afe9986bea32abb3b2a3415bf3018ecb01a5bb4
+PKG_MIRROR_HASH:=5128a1967a7c548a577038f4a64efd8b1c4022c6ad19ccfa8073efbb5e370250
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
-PKG_BUILD_DEPENDS:=duktape jpcre2 rapidjson
+PKG_BUILD_DEPENDS:=jpcre2 libcron quickjspp rapidjson
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 define Package/subconverter
-	SECTION:=utils
-	CATEGORY:=Utilities
-	TITLE:=Utility to convert between various subscription format
-	URL:=https://github.com/tindy2013/subconverter
-	DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +zlib
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=Utility to convert between various subscription format
+  URL:=https://github.com/tindy2013/subconverter
+  DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +zlib
 endef
 
 define Package/subconverter/description
-	Utility to convert between various proxy subscription formats.
+  Utility to convert between various proxy subscription formats.
 endef
 
 TARGET_CXXFLAGS := $(FPIC) $(filter-out -O%,$(TARGET_CXXFLAGS)) -O3
