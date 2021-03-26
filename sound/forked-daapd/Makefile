@@ -34,7 +34,8 @@ URL:=https://github.com/ejurgensen/forked-daapd
 DEPENDS:=+libgpg-error +libgcrypt +libgdbm +zlib +libexpat +libunistring \
 	+libevent2 +libdaemon +libantlr3c +confuse +libopus +alsa-lib +libffmpeg-full \
 	+mxml +libavahi-client +sqlite3-cli +libplist +libcurl +libjson-c \
-	+libprotobuf-c +libgnutls +libsodium +libwebsockets-full $(ICONV_DEPENDS)
+	+libprotobuf-c +libgnutls +libsodium +libwebsockets-full $(ICONV_DEPENDS) \
+	+libuuid
 endef
 
 define Package/forked-daapd/description
