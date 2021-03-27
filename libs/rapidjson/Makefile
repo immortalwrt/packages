@@ -1,15 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# (https://immortalwrt.org)
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rapidjson
-PKG_VERSION:=1.1.0
-PKG_RELEASE:=4
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/Tencent/rapidjson.git
@@ -19,7 +15,7 @@ PKG_MIRROR_HASH:=ef7d015b91f58355b02ce8356214ec7d6bdc3807d01b220834faa00afbcd7a7
 
 PKG_LICENSE:=BSD 3-Clause
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_BUILD_PARALLEL:=1
 CMAKE_INSTALL:=1
