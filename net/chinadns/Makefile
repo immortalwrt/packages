@@ -31,6 +31,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/chinadns
   SECTION:=net
   CATEGORY:=Network
+  SUBMENU:=IP Addresses and Names
   TITLE:=Protect yourself against DNS poisoning in China.
   URL:=https://github.com/shadowsocks/ChinaDNS
 endef
