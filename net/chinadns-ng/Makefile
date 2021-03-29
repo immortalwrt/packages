@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=chinadns-ng
 PKG_VERSION:=1.0-beta.24
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELESE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/zfl9/chinadns-ng.git
@@ -28,15 +28,12 @@ PKG_INSTALL:=1
 include $(INCLUDE_DIR)/package.mk
 
 define Package/chinadns-ng
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=ChinaDNS next generation, refactoring with epoll and ipset.
-	URL:=https://github.com/zfl9/chinadns-ng
-	DEPENDS:=+ipset
-endef
-
-define Package/chinadns-ng/description
-	ChinaDNS next generation, refactoring with epoll and ipset.
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=IP Addresses and Names
+  TITLE:=ChinaDNS next generation, refactoring with epoll and ipset.
+  URL:=https://github.com/zfl9/chinadns-ng
+  DEPENDS:=+ipset
 endef
 
 define Package/chinadns-ng/install

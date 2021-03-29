@@ -13,7 +13,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ChinaDNS
 PKG_VERSION:=2.0.1
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELESE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/lrinQVQ/openwrt-chinadns/releases/download/v$(PKG_VERSION)
@@ -30,14 +30,11 @@ PKG_INSTALL:=1
 include $(INCLUDE_DIR)/package.mk
 
 define Package/ChinaDNS
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=Protect yourself against DNS poisoning in China.
-	URL:=https://github.com/shadowsocks/ChinaDNS
-endef
-
-define Package/ChinaDNS/description
-	Protect yourself against DNS poisoning in China.
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=IP Addresses and Names
+  TITLE:=Protect yourself against DNS poisoning in China.
+  URL:=https://github.com/shadowsocks/ChinaDNS
 endef
 
 define Package/ChinaDNS/conffiles

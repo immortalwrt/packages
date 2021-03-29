@@ -87,6 +87,7 @@ endef
 define Package/pcap-dnsproxy
   SECTION:=net
   CATEGORY:=Network
+  SUBMENU:=IP Addresses and Names
   TITLE:=A local DNS server based on LibPcap
   URL:=https://github.com/chengr28/Pcap_DNSProxy
   DEPENDS:=+libpthread +libstdcpp +libevent2-core \
