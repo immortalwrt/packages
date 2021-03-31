@@ -2,38 +2,38 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=open-app-filter
-PKG_VERSION:=5.0.1
-PKG_RELEASE:=1
+PKG_BASE_VERSION:=5.0.1
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL:=https://github.com/destan19/OpenAppFilter.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-03-08
-PKG_SOURCE_VERSION:=59aa2a1f40ebee65e48c7fd5d28d6c2706e60145
-PKG_MIRROR_HASH:=a969d5a5c16e418844a63fc6d23facb5ad0327d0bcadc72814bbecc2f9c4a099
+PKG_SOURCE_DATE:=2021-03-24
+PKG_SOURCE_VERSION:=fd6fef639b0ea1abbf853df06ed227a515a2b048
+PKG_MIRROR_HASH:=169ad839380638064409e15a7082d41ea5ab5a005f4b9866593ea03b9a4db356
+
+PKG_VERSION:=$(PKG_BASE_VERSION)-$(PKG_SOURCE_DATE)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
+
+PKG_BUILD_PRRALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
 RSTRIP:=:
 
 define KernelPackage/oaf
-	SECTION:=Kernel
-	CATEGORY:=Kernel modules
-	SUBMENU:=Netfilter Extensions
-	TITLE:=open app filter kernel module
-	FILES:=$(PKG_BUILD_DIR)/oaf.ko
-	DEPENDS:=+kmod-ipt-conntrack
-	AUTOLOAD:=$(call AutoLoad,0,oaf)
-endef
-
-define KernelPackage/oaf/description
-	open appfilter kernel module
+  SECTION:=Kernel
+  CATEGORY:=Kernel modules
+  SUBMENU:=Netfilter Extensions
+  TITLE:=open app filter kernel module
+  FILES:=$(PKG_BUILD_DIR)/oaf.ko
+  DEPENDS:=+kmod-ipt-conntrack
+  AUTOLOAD:=$(call AutoLoad,0,oaf)
 endef
 
 define Package/appfilter
-	SECTION:=net
-	CATEGORY:=Network
-	DEPENDS:=+libblobmsg-json +libjson-c +libpthread +libubox +libubus +libuci +kmod-oaf
-	TITLE:=App filter userspace module
+  SECTION:=net
+  CATEGORY:=Network
+  DEPENDS:=+libblobmsg-json +libjson-c +libpthread +libubox +libubus +libuci +kmod-oaf
+  TITLE:=App filter userspace module
 endef
 
 MAKE_OPTS:= \
@@ -44,11 +44,11 @@ MAKE_OPTS:= \
 
 define Build/Configure
 	$(call Build/Configure/Default)
-	$(CP) $(PKG_BUILD_DIR)/oaf/src/* $(PKG_BUILD_DIR)
+	$(CP) $(PKG_BUILD_DIR)/oaf/src/* $(PKG_BUILD_DIR)/
 endef
 
 define Build/Compile
-	$(MAKE) -C "$(LINUX_DIR)" \
+	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
 		$(MAKE_OPTS) \
 		modules
 endef
