@@ -51,7 +51,7 @@ endef
 
 ifneq ($(CONFIG_XRAY_PLUGIN_COMPRESS_GOPROXY),)
 	export GO111MODULE=on
-	export GOPROXY=https://goproxy.io
+	export GOPROXY=https://goproxy.baidu.com
 endif
 
 define Package/xray-plugin
