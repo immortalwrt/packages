@@ -60,7 +60,7 @@ endef
 
 ifeq ($(CONFIG_BROOK_COMPRESS_GOPROXY),y)
 	export GO111MODULE=on
-	export GOPROXY=https://goproxy.io
+	export GOPROXY=https://goproxy.baidu.com
 endif
 
 define Build/Compile
