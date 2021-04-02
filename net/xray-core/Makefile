@@ -98,24 +98,24 @@ define Package/xray-core/conffiles
 /etc/config/xray
 endef
 
-GEOIP_VER:=202103250007
+GEOIP_VER:=202104010913
 GEOIP_FILE:=geoip.dat.$(GEOIP_VER)
 
 define Download/geoip
   URL:=https://github.com/v2fly/geoip/releases/download/$(GEOIP_VER)/
   URL_FILE:=geoip.dat
   FILE:=$(GEOIP_FILE)
-  HASH:=eca0b25e528167dbdec6c130b6a5240284ce20b28158d1448f8dbeddace2e8cf
+  HASH:=f94e464f7f37e6f3c88c2aa5454ab02a4b840bc44c75c5001719a618916906cf
 endef
 
-GEOSITE_VER:=20210330120529
+GEOSITE_VER:=20210401091829
 GEOSITE_FILE:=dlc.dat.$(GEOSITE_VER)
 
 define Download/geosite
   URL:=https://github.com/v2fly/domain-list-community/releases/download/$(GEOSITE_VER)/
   URL_FILE:=dlc.dat
   FILE:=$(GEOSITE_FILE)
-  HASH:=e7f41feadae73854a2e2103aa5e09f3e8d6ed924391e3963d3b1a67ef61d6ad2
+  HASH:=ee9778dc00b703905ca1f400ad13dd462eae52c5aee6465f0a7543b0232c9d08
 endef
 
 ifneq ($(CONFIG_XRAY_CORE_COMPRESS_GOPROXY),)
