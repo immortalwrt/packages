@@ -41,9 +41,9 @@ define Package/adguardhome
 	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
-#define Package/adguardhome/conffiles
-#/etc/adguardhome.yaml
-#endef
+define Package/adguardhome/conffiles
+/etc/adguardhome.yaml
+endef
 
 define Package/adguardhome/description
 Free and open source, powerful network-wide ads and trackers blocking DNS server.
