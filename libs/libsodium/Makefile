@@ -8,13 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libsodium
-PKG_VERSION:=1.0.18
-PKG_RELEASE:=3
+PKG_BASE_VERSION:=1.0.18
+PKG_RELEASE:=4
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://download.libsodium.org/libsodium/releases \
-		https://github.com/jedisct1/libsodium/releases/download/$(PKG_VERSION)
-PKG_HASH:=6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/jedisct1/libsodium.git
+PKG_SOURCE_DATE:=2021-03-20
+PKG_SOURCE_VERSION:=6d566070b48efd2fa099bbe9822914455150aba9
+PKG_MIRROR_HASH:=ad25d56085ba829acaeb07047030a1f319e1579827b564d7155f86ec9a9eaed7
+
+PKG_VERSION:=$(PKG_BASE_VERSION)-$(PKG_SOURCE_DATE)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
 
 PKG_MAINTAINER:=Damiano Renfer <damiano.renfer@gmail.com>
 PKG_LICENSE:=ISC
