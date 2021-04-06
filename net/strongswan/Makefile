@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=strongswan
-PKG_VERSION:=5.9.1
-PKG_RELEASE:=6
+PKG_VERSION:=5.9.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://download.strongswan.org/ https://download2.strongswan.org/
-PKG_HASH:=a337c9fb63d973b8440827755c784031648bf423b7114a04918b0b00fd42cafb
+PKG_HASH:=61c72f741edb2c1295a7b7ccce0317a104b3f9d39efd04c52cd05b01b55ab063
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_MAINTAINER:=Philip Prindeville <philipp@redfish-solutions.com>, Noel Kuntze <noel.kuntze@thermi.consulting>
 PKG_CPE_ID:=cpe:/a:strongswan:strongswan
@@ -537,11 +537,14 @@ define Package/strongswan-swanctl/conffiles
 endef
 
 define Package/strongswan-swanctl/install
+	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/swanctl/{bliss,conf.d,ecdsa,pkcs{12,8},private,pubkey,rsa}
 	$(INSTALL_DIR) $(1)/etc/swanctl/x509{,aa,ac,ca,crl,ocsp}
 	$(CP) $(PKG_INSTALL_DIR)/etc/swanctl/swanctl.conf $(1)/etc/swanctl/
+	echo "include /var/swanctl/swanctl.conf" >> $(1)/etc/swanctl/swanctl.conf
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/swanctl $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/swanctl.init $(1)/etc/init.d/swanctl
 endef
 
 define Package/strongswan-libtls/install
