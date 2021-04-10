@@ -30,7 +30,7 @@ define Package/tinyfecvpn
   SUBMENU:=VPN
   TITLE:=A Network Improving Tool
   URL:=https://github.com/wangyu-/tinyfecVPN
-  DEPENDS:=+libpthread +libstdcpp +kmod-tun
+  DEPENDS:=+libstdcpp +kmod-tun
 endef
 
 define Package/tinyfecvpn/description
@@ -38,7 +38,7 @@ define Package/tinyfecvpn/description
   which works at VPN mode). Improves your Network Quality on a High-latency Lossy Link.
 endef
 
-MAKE_FLAGS += cross
+MAKE_FLAGS += nolimit_cross
 
 define Build/Configure
 	sed -i 's/cc_cross=.*/cc_cross=$(TARGET_CXX)/g' $(PKG_BUILD_DIR)/makefile
