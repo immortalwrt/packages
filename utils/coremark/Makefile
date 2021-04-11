@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=coremark
-PKG_SOURCE_DATE:=2021-03-13
+PKG_SOURCE_DATE:=2021-03-12
 PKG_SOURCE_VERSION:=1541482bf3e6ef7f5c69f5be76b14537b60833d0
 PKG_RELEASE:=1
 
@@ -35,8 +35,6 @@ endef
 define Package/coremark/description
   Embedded Microprocessor Benchmark
 endef
-
-DIR_ARCH:=linux
 
 define Package/coremark/config
 	config COREMARK_OPTIMIZE_O3
@@ -74,7 +72,7 @@ endif
 define Build/Compile
 	$(SED) 's|EXE = .exe|EXE =|' $(PKG_BUILD_DIR)/posix/core_portme.mak
 	mkdir $(PKG_BUILD_DIR)/$(ARCH)
-	$(CP) -r $(PKG_BUILD_DIR)/$(DIR_ARCH)/* $(PKG_BUILD_DIR)/$(ARCH)
+	$(CP) -r $(PKG_BUILD_DIR)/linux/* $(PKG_BUILD_DIR)/$(ARCH)
 	$(MAKE) -C $(PKG_BUILD_DIR) PORT_DIR=$(ARCH) $(MAKE_FLAGS) \
 		PORT_CFLAGS="$(TARGET_CFLAGS)" XCFLAGS="$(EXTRA_CFLAGS)" compile
 endef
