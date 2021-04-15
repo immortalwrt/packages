@@ -61,7 +61,7 @@ endef
 
 MAKE_VARS += \
 	OS=Linux \
-	HAVE_LIBPCIACCESS=n \
+	CONFIG_CON_PCI=n \
 	CONFIG_I_KNOW_WHAT_I_AM_DOING=$(CONFIG_ATHEEPMGR_DANGEROUS_FUNCTIONS) \
 
 define Package/atheepmgr/install
