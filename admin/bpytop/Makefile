@@ -35,9 +35,13 @@ define Package/bpytop/description
 endef
 
 define Package/bpytop/install
-	$(call Py3Package/$(1)/install,$(PKG_INSTALL_DIR))
-	$(INSTALL_DIR) $(1)
-	$(CP) $(PKG_INSTALL_DIR)/* $(1)/
+	$(call Py3Package/$(PKG_NAME)/install,$(1))
+	$(call Py3Package/ProcessFilespec,$(PKG_NAME),$(PKG_INSTALL_DIR),$(1))
+	$(call Python3/CompileAll,$(1))
+	$(call Python3/DeleteSourceFiles,$(1))
+	$(call Python3/DeleteEmptyDirs,$(1))
+	$(call Python3/FixShebang,$(1)/usr/bin/*)
+
 	$(INSTALL_DIR) $(1)/usr/share
 	$(CP) $(PKG_BUILD_DIR)/bpytop-themes $(1)/usr/share/bpytop
 endef
