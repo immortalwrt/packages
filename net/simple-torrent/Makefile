@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=simple-torrent
-PKG_VERSION:=1.2.14
-PKG_RELEASE:=1
+PKG_VERSION:=1.2.19
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/boypt/simple-torrent/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=e3b3357ab8eb9431ec7c22b2f453d219cfe0652c5c26bbf0a052c99271cbf6a5
+PKG_HASH:=766224fd4a62487314f608c9132f0051544388510cd65c37676f66dca1b55386
 
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=LICENSE
@@ -37,18 +37,18 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
 define Package/simple-torrent
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=BitTorrent
-	TITLE:=A self-hosted remote torrent client
-	URL:=https://github.com/boypt/simple-torrent
-	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +libstdcpp
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=BitTorrent
+  TITLE:=A self-hosted remote torrent client
+  URL:=https://github.com/boypt/simple-torrent
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +libstdcpp
 endef
 
 define Package/simple-torrent/description
-	SimpleTorrent is a a self-hosted remote torrent client, written in Go (golang).
-	Started torrents remotely, download sets of files on the local disk of the server,
-	which are then retrievable or streamable via HTTP.
+  SimpleTorrent is a a self-hosted remote torrent client, written in Go (golang).
+  Started torrents remotely, download sets of files on the local disk of the server,
+  which are then retrievable or streamable via HTTP.
 endef
 
 define Package/simple-torrent/config
