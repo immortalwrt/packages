@@ -26,7 +26,7 @@ define Package/perl-file-next
   CATEGORY:=Languages
   TITLE:=File finding module
   URL:=http://search.cpan.org/dist/File-Next/
-  DEPENDS:=perl
+  DEPENDS:=perl +perlbase-file
 endef
 
 define Build/Configure
