@@ -27,6 +27,7 @@ define Package/ack
   TITLE:=A grep-like source code search tool
   URL:=https://beyondgrep.com
   DEPENDS:=+perl +perl-ack
+  PROVIDES:=ack-grep
 endef
 
 define Package/perl-ack
