@@ -12,7 +12,7 @@ PKG_SOURCE_URL:=http://www.cpan.org/authors/id/P/PE/PETDANCE/
 PKG_SOURCE:=File-Next-$(PKG_VERSION).tar.gz
 PKG_HASH:=f900cb39505eb6e168a9ca51a10b73f1bbde1914b923a09ecd72d9c02e6ec2ef
 
-PKG_LICENSE:=Artistic-2.0-Perl
+PKG_LICENSE:=Artistic-2.0
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/perl/File-Next-$(PKG_VERSION)
