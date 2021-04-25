@@ -38,8 +38,3 @@ Subject: [PATCH] Remove concurrency limit
        std::cerr << "Invalid concurrency" << std::endl;
        return false;
      }
--        params->concurrency < 1 || params->concurrency > 4) {
-+        params->concurrency < 1) {
-       std::cerr << "Invalid concurrency" << std::endl;
-       return false;
-     }
