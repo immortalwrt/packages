@@ -23,7 +23,6 @@ start_service() {
 	config_get conffiles "config" "conffiles"
 	config_get datadir "config" "datadir" "/usr/share/v2ray"
 	config_get format "config" "format" "json"
-	config_get fullcone "enabled" "fullcone" "0"
 
 	procd_open_instance "$CONF"
 	procd_set_param command "$PROG" run
