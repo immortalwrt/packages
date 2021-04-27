@@ -95,6 +95,7 @@ endef
 define Package/xray-core/conffiles
 /etc/xray/
 /etc/config/xray
+/usr/share/xray
 endef
 
 GEOIP_VER:=202104010913
@@ -143,7 +144,7 @@ define Package/xray-core/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/main $(1)/usr/bin/xray
 
 	$(INSTALL_DIR) $(1)/etc/xray/
-	$(INSTALL_CONF) $(CURDIR)/files/config.json.example $(1)/etc/xray/
+	$(INSTALL_DATA) $(CURDIR)/files/config.json.example $(1)/etc/xray/
 
 	$(INSTALL_DIR) $(1)/etc/config/
 	$(INSTALL_CONF) $(CURDIR)/files/xray.conf $(1)/etc/config/xray
@@ -156,8 +157,8 @@ endef
 
 define Package/xray-example/install
 	$(INSTALL_DIR) $(1)/etc/xray/
-	$(INSTALL_CONF) $(CURDIR)/files/vpoint_socks_vmess.json $(1)/etc/xray/
-	$(INSTALL_CONF) $(CURDIR)/files/vpoint_vmess_freedom.json $(1)/etc/xray/
+	$(INSTALL_DATA) $(CURDIR)/files/vpoint_socks_vmess.json $(1)/etc/xray/
+	$(INSTALL_DATA) $(CURDIR)/files/vpoint_vmess_freedom.json $(1)/etc/xray/
 endef
 
 define Package/xray-geodata/install
