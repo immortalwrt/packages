@@ -16,6 +16,12 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_V2RAY_CORE_COMPRESS_GOPROXY \
+	CONFIG_V2RAY_CORE_COMPRESS_UPX \
+	CONFIG_V2RAY_CTL_COMPRESS_GOPROXY \
+	CONFIG_V2RAY_CTL_COMPRESS_UPX
+
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
@@ -101,6 +107,35 @@ define Package/v2ray-geodata/description
   This includes GEO datas used for v2ray-core.
 endef
 
+define Package/v2ray-core/config
+menu "v2ray-core Configuration"
+	depends on PACKAGE_v2ray-core
+
+config V2RAY_CORE_COMPRESS_GOPROXY
+	bool "Compiling with GOPROXY proxy"
+	default n
+
+config V2RAY_CORE_COMPRESS_UPX
+	bool "Compress executable files with UPX"
+	default y
+endmenu
+endef
+
+define Package/v2ray-ctl/config
+menu "v2ray-ctl Configuration"
+	depends on PACKAGE_v2ray-ctl
+
+config V2RAY_CTL_COMPRESS_GOPROXY
+	bool "Compiling with GOPROXY proxy"
+	default n
+
+config V2RAY_CTL_COMPRESS_UPX
+	bool "Compress executable files with UPX"
+	default y
+endmenu
+endef
+
+
 define Package/v2ray-core/conffiles
 /etc/config/v2ray
 /etc/v2ray/
@@ -126,6 +161,11 @@ define Download/geosite
   HASH:=ee9778dc00b703905ca1f400ad13dd462eae52c5aee6465f0a7543b0232c9d08
 endef
 
+ifneq ($(CONFIG_V2RAY_CORE_COMPRESS_GOPROXY)$(CONFIG_V2RAY_CTL_COMPRESS_GOPROXY),)
+	export GO111MODULE=on
+	export GOPROXY=https://goproxy.baidu.com
+endif
+
 define Build/Prepare
 	$(call Build/Prepare/Default)
 ifneq ($(CONFIG_PACKAGE_v2ray-geodata),)
@@ -137,11 +177,17 @@ endef
 define Build/Compile
 	$(call GoPackage/Build/Compile)
 	mv $(GO_PKG_BUILD_BIN_DIR)/main $(GO_PKG_BUILD_BIN_DIR)/v2ray
+ifneq ($(CONFIG_V2RAY_CORE_COMPRESS_UPX),)
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/v2ray
+endif
 
 ifneq ($(CONFIG_PACKAGE_v2ray-ctl),)
 	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG)/infra/control/main)
 	$(call GoPackage/Build/Compile)
 	mv $(GO_PKG_BUILD_BIN_DIR)/main $(GO_PKG_BUILD_BIN_DIR)/v2ctl
+ifneq ($(CONFIG_V2RAY_CTL_COMPRESS_UPX),)
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/v2ctl
+endif
 endif
 endef
 
