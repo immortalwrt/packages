@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=perl-mail-spamassassin
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 PKG_VERSION:=3.4.6
 PKG_HASH:=500c7e2a7cdf3aa4dd822d97aaff2ab22235a60cf17a68ab817861d215a4e568
 
