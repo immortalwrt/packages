@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libextractor
 PKG_VERSION:=1.11
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 
 # ToDo:
 # - package missing optional dependencies: libexiv2, gsf, librpm, smf, tidy
