@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=trojan-go
-PKG_VERSION:=0.8.3
+PKG_VERSION:=0.8.3.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/p4gefau1t/trojan-go/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=dbfb536328327bcbbd310b7289ece47d40dcc6aaf7996b563f0e1041e120fb89
+PKG_SOURCE_URL:=https://codeload.github.com/frainzy1477/trojan-go/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=2fc8bc13c881d39656087b6a1702b6275f49dd3f506c955698883ec50ccdb3d0
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_TROJAN_GO_COMPRESS_GOPROXY \
@@ -21,7 +21,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-GO_PKG:=github.com/p4gefau1t/trojan-go
+GO_PKG:=github.com/frainzy1477/trojan-go
 GO_PKG_BUILD_PKG:=$$(GO_PKG)
 
 GO_PKG_TAGS:=full
