@@ -1,0 +1,35 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 11)
+ include_directories("/usr/local/include")
+ 
+ add_executable(ua2f src/ua2f.c)
+-add_executable(test test/test.c)
++add_executable(ua2f-test test/test.c)
+ add_executable(nf-queue ref/nf-queue.c)
+ add_executable(clocktest test/clocktest.c)
+ add_executable(nfct-event ref/nfct-event.c)
+@@ -15,6 +15,7 @@ add_executable(nfq test/nfq.c)
+ target_link_libraries(ua2f mnl netfilter_queue ipset)
+ target_link_libraries(nfct-event mnl netfilter_conntrack)
+ target_link_libraries(nf-queue mnl netfilter_queue ipset)
+-target_link_libraries(test mnl netfilter_queue ipset)
++target_link_libraries(ua2f-test mnl netfilter_queue ipset)
+ target_link_libraries(clocktest mnl netfilter_queue)
+ target_link_libraries(nfq mnl netfilter_queue)
++install(TARGETS ua2f RUNTIME DESTINATION bin)
+--- a/ref/nf-queue.c
++++ b/ref/nf-queue.c
+@@ -12,7 +12,12 @@
+ #include <linux/netfilter/nfnetlink_conntrack.h>
+ 
+ #include <libmnl/libmnl.h>
++
++/* Avoid redefinition */
++#define LIBIPSET_NFPROTO_H
++#define LIBIPSET_NF_INET_ADDR_H
+ #include <libipset/ipset.h>
++
+ #include <libnetfilter_queue/libnetfilter_queue.h>
+ 
+ 
