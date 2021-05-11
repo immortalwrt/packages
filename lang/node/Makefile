@@ -6,12 +6,6 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=node
 
-ifeq ($(CONFIG_NODEJS_10),y)
-PKG_VERSION:=v10.24.1
-PKG_RELEASE:=1
-PKG_HASH:=d72fc2c244603b4668da94081dc4d6067d467fdfa026e06a274012f16600480c
-PATCH_DIR:=./patches/v10.x
-else
 ifeq ($(CONFIG_NODEJS_14),y)
 PKG_VERSION:=v14.16.1
 PKG_RELEASE:=2
@@ -19,10 +13,9 @@ PKG_HASH:=e44adbbed6756c2c1a01258383e9f00df30c147b36e438f6369b5ef1069abac3
 PATCH_DIR:=./patches/v14.x
 else
 PKG_VERSION:=v12.22.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_HASH:=dd650df7773a6ed3e390320ba51ef33cba6499f0e9397709ea3d1debdcbcb989
 PATCH_DIR:=./patches/v12.x
-endif
 endif
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
@@ -64,7 +57,7 @@ define Package/node/description
    package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
 
   *** The following preparations must be made on the host side. ***
-      1. gcc 6.3 or higher is required.
+      1. gcc 8.3 or higher is required.
       2. To build a 32-bit target, gcc-multilib, g++-multilib are required.
       3. Requires libatomic package. (If necessary, install the 32-bit library at the same time.)
      ex) sudo apt-get install gcc-multilib g++-multilib
@@ -89,12 +82,9 @@ define Package/node/config
 
 	choice
 		prompt "Version Selection"
-		default NODEJS_12
+		default NODEJS_14
 		help
 		 Select node.js version.
-
-		config NODEJS_10
-			bool "10.x Maintenance LTS"
 
 		config NODEJS_12
 			bool "12.x Maintenance LTS"
@@ -124,10 +114,6 @@ define Package/node/config
 endef
 
 NODEJS_CPU:=$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH))))
-
-ifeq ($(CONFIG_NODEJS_10),y)
-TARGET_LDFLAGS+=-latomic
-endif
 
 ifneq ($(CONFIG_ARCH_64BIT),y)
 FORCE_32BIT:=-m32
