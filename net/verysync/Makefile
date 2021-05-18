@@ -31,11 +31,11 @@ ifeq ($(ARCH),powerpc64)
 endif
 
 PKG_NAME:=verysync
-PKG_VERSION:=v2.5.5
+PKG_VERSION:=2.6.4
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://dl.verysync.com/releases/$(PKG_VERSION)/
+PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-v$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=http://dl.verysync.com/releases/v$(PKG_VERSION)/
 PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
@@ -43,18 +43,13 @@ include $(INCLUDE_DIR)/package.mk
 TAR_CMD:=$(HOST_TAR) -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
 
 define Package/verysync
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=A efficient data transmission tool
-	URL:=http://www.verysync.com
-endef
-
-define Package/verysync/description
-	Verysync is a efficient data transmission tool.
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=A efficient data transmission tool
+  URL:=http://www.verysync.com
 endef
 
 define Build/Compile
-	true
 endef
 
 define Package/verysync/install
