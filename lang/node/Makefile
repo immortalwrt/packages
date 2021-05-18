@@ -6,16 +6,23 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=node
 
+ifeq ($(CONFIG_NODEJS_16),y)
+PKG_VERSION:=v16.1.0
+PKG_RELEASE:=1
+PKG_HASH:=a0a9230f92c1f1757e63fd1c17cc1a3db63c1d7ef6c1ba1ed4951cc32b02087c
+PATCH_DIR:=./patches/v16.x
+else
 ifeq ($(CONFIG_NODEJS_14),y)
-PKG_VERSION:=v14.16.1
-PKG_RELEASE:=2
-PKG_HASH:=e44adbbed6756c2c1a01258383e9f00df30c147b36e438f6369b5ef1069abac3
+PKG_VERSION:=v14.17.0
+PKG_RELEASE:=1
+PKG_HASH:=56e05bff9331039317db417f772e635e0cd1c55f733f7b1b079d71ab5842c9ed
 PATCH_DIR:=./patches/v14.x
 else
 PKG_VERSION:=v12.22.1
 PKG_RELEASE:=2
 PKG_HASH:=dd650df7773a6ed3e390320ba51ef33cba6499f0e9397709ea3d1debdcbcb989
 PATCH_DIR:=./patches/v12.x
+endif
 endif
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
@@ -91,6 +98,9 @@ define Package/node/config
 
 		config NODEJS_14
 			bool "14.x Active LTS"
+
+		config NODEJS_16
+			bool "16.x Current"
 	endchoice
 
 	choice
