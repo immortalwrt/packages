@@ -95,7 +95,6 @@ endef
 define Package/xray-core/conffiles
 /etc/xray/
 /etc/config/xray
-/usr/share/xray
 endef
 
 GEOIP_VER:=202104010913
