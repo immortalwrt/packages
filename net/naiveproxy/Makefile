@@ -16,7 +16,7 @@ PKG_LICENSE:=BSD 3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
-PKG_BUILD_DEPENDS:=ncurses/host ninja/host python3/host
+PKG_BUILD_DEPENDS:=ninja/host python3/host
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 
@@ -43,7 +43,7 @@ define Package/naiveproxy
   SUBMENU:=Web Servers/Proxies
   URL:=https://github.com/klzgrad/naiveproxy
   TITLE:=Make a fortune quietly
-  DEPENDS:=+libatomic +libnss
+  DEPENDS:=+libatomic
 endef
 
 define Package/naiveproxy/description
@@ -117,7 +117,6 @@ define Build/Compile
 	cd "$(PKG_BUILD_DIR)/src" ; \
 	. ../init_env.sh "$(ARCH)" "$(BOARD)" $(CPU_TYPE) $(CPU_SUBTYPE) "$(TOOLCHAIN_DIR)" ; \
 	export naive_flags="$$$${naive_flags} $$$${naive_ccache_flags}" ; \
-	export OP_STAGING_DIR="$(STAGING_DIR)" ; \
 	mkdir -p "out" ; \
 	./gn/out/gn gen "out/Release" --args="$$$${naive_flags}" --script-executable="$(STAGING_DIR_HOSTPKG)/bin/python3" ; \
 	$(STAGING_DIR_HOSTPKG)/bin/ninja -C "out/Release" naive ; \
