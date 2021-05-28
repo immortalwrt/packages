@@ -42,21 +42,21 @@ define Package/perl-ack
 endef
 
 define Build/Configure
-        $(call perlmod/Configure,,)
+	$(call perlmod/Configure,,)
 endef
 
 define Build/Compile
-        $(call perlmod/Compile,,)
-endef
-
-define Package/perl-ack/install
-        $(call perlmod/Install,$(1),App auto/ack)
+	$(call perlmod/Compile,,)
 endef
 
 define Package/ack/install
 	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ack $(1)/usr/bin/
 	$(call perlmod/FixShebang,$(1)/usr/bin/*)
+endef
+
+define Package/perl-ack/install
+	$(call perlmod/Install,$(1),App auto/ack)
 endef
 
 $(eval $(call BuildPackage,ack))
