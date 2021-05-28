@@ -30,15 +30,15 @@ define Package/perl-file-next
 endef
 
 define Build/Configure
-        $(call perlmod/Configure,,)
+	$(call perlmod/Configure,,)
 endef
 
 define Build/Compile
-        $(call perlmod/Compile,,)
+	$(call perlmod/Compile,,)
 endef
 
 define Package/perl-file-next/install
-        $(call perlmod/Install,$(1),File auto/File)
+	$(call perlmod/Install,$(1),File auto/File)
 endef
 
 $(eval $(call BuildPackage,perl-file-next))
