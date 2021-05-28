@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=homeassistant
-PKG_VERSION:=0.107.7
+PKG_VERSION:=2021.5.5
 PKG_RELEASE:=1
 
 PYPI_NAME:=$(PKG_NAME)
-PKG_HASH:=8d4eff61a311c69b7fbf6239da1c5f7b100eccc16d95a539d1a5d38ced8a1e41
+PKG_HASH:=135bc9ebef7c7c6b7371306a91389b6a8acdecbf9bba6044dca2fa071abb4a62
 
 PKG_MAINTAINER:=Josef Schlehofer <pepe.schlehofer@gmail.com>
 PKG_LICENSE:=MIT
@@ -53,7 +53,6 @@ define Package/$(PKG_NAME)
     +python3-voluptuous-serialize \
     +python3-yaml \
     +python3-zeroconf
-  VARIANT:=python3
 endef
 
 define Package/$(PKG_NAME)/description
