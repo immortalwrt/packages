@@ -12,7 +12,7 @@ PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
-		https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
+                https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=d97d4e06b45c3f7f91f6c8d834e0e4949b4319afe4dbfffc3c31b3c5409b86c7
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
@@ -59,7 +59,7 @@ define Build/Compile
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM) \
 	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
-	npm install --production
+	npm install --production --global-style --no-save --omit=dev --no-package-lock
 	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
@@ -90,9 +90,11 @@ define Host/Compile
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	npm_config_cache=$(TMP_DIR)/npm-cache-$(HOSTTMPNPM) \
 	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(HOSTTMPNPM) \
-	npm install --production
+	npm install --production --global-style --no-save --omit=dev --no-package-lock
 	rm -rf $(TMP_DIR)/npm-tmp-$(HOSTTMPNPM)
 	rm -rf $(TMP_DIR)/npm-cache-$(HOSTTMPNPM)
+	rm -f $(HOST_BUILD_DIR)/node_modules/.package-lock.json
+	find $(HOST_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
 define Host/Install
