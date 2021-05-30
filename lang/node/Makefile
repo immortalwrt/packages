@@ -7,9 +7,9 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=node
 
 ifeq ($(CONFIG_NODEJS_16),y)
-PKG_VERSION:=v16.1.0
+PKG_VERSION:=v16.2.0
 PKG_RELEASE:=1
-PKG_HASH:=a0a9230f92c1f1757e63fd1c17cc1a3db63c1d7ef6c1ba1ed4951cc32b02087c
+PKG_HASH:=d0f93b9842afb8f23c07862e9cd48226e7104547f7b2415d250fdb752d1b35cf
 PATCH_DIR:=./patches/v16.x
 else
 ifeq ($(CONFIG_NODEJS_14),y)
@@ -175,8 +175,13 @@ define Package/node/install
 endef
 
 define Package/node-npm/install
-	$(INSTALL_DIR) $(1)/usr/lib/node_modules
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node_modules/
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules/npm
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/npm/{package.json,LICENSE} \
+		$(1)/usr/lib/node_modules/npm/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/npm/{AUTHORS,*.md} \
+		$(1)/usr/lib/node_modules/npm/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/npm/{node_modules,bin,lib} \
+		$(1)/usr/lib/node_modules/npm/
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(LN) ../lib/node_modules/npm/bin/npm-cli.js $(1)/usr/bin/npm
 	$(LN) ../lib/node_modules/npm/bin/npx-cli.js $(1)/usr/bin/npx
