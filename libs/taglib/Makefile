@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=taglib
-PKG_VERSION:=1.12-beta-2
+PKG_VERSION:=1.12
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/taglib/taglib/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=e273e9d97592cebd4e84e71313e91e9df0fc4a8e00c35daea62325e8bebb87d9
+PKG_HASH:=b5a56f78a8bd962aaaec992b25a031f541b949b6eb30aa232bd6d5fa17cf8fa8
 
 PKG_MAINTAINER:=
 PKG_LICENSE:=LGPL-2.1-or-later
@@ -26,8 +26,7 @@ define Package/taglib
   CATEGORY:=Libraries
   TITLE:=taglib
   URL:=https://github.com/taglib/taglib
-  DEPENDS:=+libstdcpp
-  BUILDONLY:=1
+  DEPENDS:=+zlib +libstdcpp
 endef
 
 define Package/taglib/description
@@ -38,6 +37,7 @@ define Package/taglib/description
 endef
 
 CMAKE_OPTIONS += \
+	-DBUILD_SHARED_LIBS=ON
 	-DBUILD_TESTS=OFF \
 	-DBUILD_EXAMPLES=OFF \
 	-DBUILD_BINDINGS=OFF \
@@ -54,6 +54,11 @@ define Build/InstallDev
 	$(SED) 's,/usr/lib,$$$${exec_prefix}/lib,g' $(1)/usr/lib/pkgconfig/taglib.pc
 	$(INSTALL_DIR) $(2)/bin
 	$(LN) ../../usr/bin/taglib-config $(2)/bin/taglib-config
+endef
+
+define Package/taglib/install
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libtag.so.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,taglib))
