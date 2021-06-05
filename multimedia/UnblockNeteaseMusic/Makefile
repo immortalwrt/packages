@@ -9,14 +9,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UnblockNeteaseMusic
-PKG_VERSION:=0.25.3
-PKG_RELEASE:=6
+PKG_BASE_VERSION:=0.25.3
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/nondanee/UnblockNeteaseMusic.git
-PKG_SOURCE_DATE:=2020-12-22
-PKG_SOURCE_VERSION:=b8d5f4b4fe59cef9c021b99f3cf2606d99fa4790
-PKG_MIRROR_HASH:=bd7fa102415ae8dbcd22829fce5ad0cd358a0869547c30f10271389e6c698317
+PKG_SOURCE_URL:=https://github.com/1715173329/UnblockNeteaseMusic.git
+PKG_SOURCE_DATE:=2021-06-05
+PKG_SOURCE_VERSION:=dc129707e96a5338eddac090ed4af9f0045604b5
+PKG_MIRROR_HASH:=e99c784f20db0a48d46cd6b05050a6cf8d6a07b29011d1017b08727b40f66972
+
+PKG_VERSION:=$(PKG_BASE_VERSION)-$(PKG_SOURCE_DATE)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILE:=LICENSE
@@ -24,12 +26,12 @@ PKG_LICENSE_FILE:=LICENSE
 include $(INCLUDE_DIR)/package.mk
 
 define Package/UnblockNeteaseMusic
-	SECTION:=multimedia
-	CATEGORY:=Multimedia
-	TITLE:=Revive Netease Cloud Music (NodeJS)
-	URL:=https://github.com/nondanee/UnblockNeteaseMusic
-	DEPENDS:=+node +libopenssl
-	PKGARCH:=all
+  SECTION:=multimedia
+  CATEGORY:=Multimedia
+  TITLE:=Revive Netease Cloud Music (NodeJS)
+  URL:=https://github.com/nondanee/UnblockNeteaseMusic
+  DEPENDS:=+node +libopenssl
+  PKGARCH:=all
 endef
 
 define Build/Prepare
@@ -38,7 +40,7 @@ define Build/Prepare
 endef
 
 define Build/Configure
-	echo -e $(PKG_VERSION) > $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/core_ver
+	echo -e $(PKG_BASE_VERSION) > $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/core_ver
 	echo -e $(PKG_SOURCE_VERSION) > $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/local_ver
 endef
 
