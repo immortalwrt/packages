@@ -17,7 +17,6 @@ PKG_MIRROR_HASH:=b99ef18516b705b3e73b15a9d5ddc99add359299b52639fe3c81dd761591d9d
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILE:=LICENSE
-PKG_MAINTAINER:=fabled
 
 PKG_BUILD_PARALLEL:=1
 
@@ -28,7 +27,7 @@ define Package/lua-maxminddb
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=libmaxminddb bindings for lua
-  URL:=https://github.com/jerrykuku/lua-maxminddb
+  URL:=https://github.com/fabled/lua-maxminddb
   DEPENDS:=+lua +libmaxminddb
 endef
 
