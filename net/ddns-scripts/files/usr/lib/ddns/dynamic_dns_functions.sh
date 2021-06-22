@@ -70,8 +70,11 @@ IPV6_REGEX="\(\([0-9A-Fa-f]\{1,4\}:\)\{1,\}\)\(\([0-9A-Fa-f]\{1,4\}\)\{0,1\}\)\(
 # characters that are dangerous to pass to a shell command line
 SHELL_ESCAPE="[\"\'\`\$\!();><{}?|\[\]\*\\\\]"
 
-# dns character set
+# dns character set. "-" must be the last character
 DNS_CHARSET="[@a-zA-Z0-9._-]"
+
+# domains can have * for wildcard. "-" must be the last character
+DNS_CHARSET_DOMAIN="[@a-zA-Z0-9._*-]"
 
 # detect if called by ddns-lucihelper.sh script, disable retrys (empty variable == false)
 LUCI_HELPER=$(printf %s "$MYPROG" | grep -i "luci")
@@ -755,8 +758,8 @@ do_transfer() {
 		# force network/interface-device to use for communication
 		if [ -n "$bind_network" ]; then
 			local __DEVICE
-			network_get_physdev __DEVICE $bind_network || \
-				write_log 13 "Can not detect local device using 'network_get_physdev $bind_network' - Error: '$?'"
+			network_get_device __DEVICE $bind_network || \
+				write_log 13 "Can not detect local device using 'network_get_device $bind_network' - Error: '$?'"
 			write_log 7 "Force communication via device '$__DEVICE'"
 			__PROG="$__PROG --interface $__DEVICE"
 		fi
