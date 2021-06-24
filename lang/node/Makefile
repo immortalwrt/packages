@@ -105,7 +105,7 @@ define Package/node/config
 
 	choice
 		prompt "i18n features"
-		default NODEJS_ICU_NONE
+		default NODEJS_ICU_SMALL
 		help
 		 Select i18n features
 
