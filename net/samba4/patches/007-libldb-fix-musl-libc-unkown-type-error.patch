@@ -13,8 +13,6 @@ Signed-off-by: Changqing Li <changqing.li@windriver.com>
  lib/tevent/tevent.h | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/lib/tevent/tevent.h b/lib/tevent/tevent.h
-index aa6fe0d..2572696 100644
 --- a/lib/tevent/tevent.h
 +++ b/lib/tevent/tevent.h
 @@ -32,6 +32,8 @@
@@ -24,8 +22,5 @@ index aa6fe0d..2572696 100644
 +#include <sys/stat.h>
 +#include <sys/types.h>
  
- struct tevent_context;
- struct tevent_ops;
--- 
-2.7.4
-
+ /* for old gcc releases that don't have the feature test macro __has_attribute */
+ #ifndef __has_attribute
