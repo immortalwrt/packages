@@ -13,6 +13,9 @@ start_service() {
 
 	. /lib/functions/network.sh
 
+	# needs long delay, otherwise service may not register correctly on stratup/reboot (not sure what the issues is?)
+	sleep 5
+
 	if [ -e /etc/ksmbd/smb.conf ] && [ -e /etc/init.d/ksmbd ] && /etc/init.d/ksmbd running; then
 		SMB_CONF="/etc/ksmbd/smb.conf"
 	fi
@@ -29,13 +32,22 @@ start_service() {
 		logger -p daemon.error -t 'wsdd2' "samba36/4 or ksmbd is not running, can't start wsdd2!"
 		exit 1
 	}
+	
+	# cleanup comments
+	local smb_conf
+	smb_conf="$(grep '^[[:blank:]]*[^[:blank:]#;]' $SMB_CONF)"
 
 	local nb_name
-	nb_name="$(grep -i 'netbios name' $SMB_CONF | awk -F'=' '{print $2}' | tr -d ' \n')"
+	nb_name="$(echo "$smb_conf" | grep -i 'netbios name' | awk -F'=' '{print $2}' | tr -d ' \n')"
 	[ -n "$nb_name" ] && NB_PARM="$nb_name"
 
+	# use uppercase for none mdns option
+	local nb_option
+	nb_option="$(echo "$smb_conf" | grep -i 'mdns name' | awk -F'=' '{print $2}' | tr -d ' \n')"
+	[ "$nb_option" != "mdns" ] && NB_PARM="$(echo "$nb_name" | awk '{print toupper($0)}')"
+
 	local wg_name
-	wg_name="$(grep -i 'workgroup' $SMB_CONF | awk -F'=' '{print $2}' | tr -d ' \n')"
+	wg_name="$(echo "$smb_conf" | grep -i 'workgroup' | awk -F'=' '{print $2}' | tr -d ' \n')"
 	[ -n "$wg_name" ] && WG_PARM="$wg_name"
 
 	# resolve lan interface (BUG: No multi-interface binds atm)
@@ -75,6 +87,6 @@ start_service() {
 }
 
 service_triggers() {
-	PROCD_RELOAD_DELAY=1000
+	# PROCD_RELOAD_DELAY=1000
 	procd_add_reload_trigger "dhcp" "system" "samba" "samba4" "ksmbd"
 }
