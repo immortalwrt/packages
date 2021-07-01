@@ -93,6 +93,8 @@ ifneq ($(CONFIG_PACKAGE_mosdns-geodata),)
 endif
 endef
 
+GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) CGO_ENABLED=0
+
 define Build/Compile
 	$(call GoPackage/Build/Compile)
 ifneq ($(CONFIG_MOSDNS_COMPRESS_UPX),)
