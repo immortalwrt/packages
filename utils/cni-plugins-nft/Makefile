@@ -30,7 +30,7 @@ define Package/cni-plugins-nft
   CATEGORY:=Utilities
   TITLE:=CNI Plugins compatible with nftables
   URL:=https://github.com/greenpau/cni-plugins/
-  DEPENDS:=$(GO_ARCH_DEPENDS) +nftables-json
+  DEPENDS:=$(GO_ARCH_DEPENDS) +nftables
 endef
 
 define Package/cni-plugins-nft/description
