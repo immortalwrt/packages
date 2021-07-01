@@ -17,7 +17,7 @@ define Package/gcc
   CATEGORY:=Development
   TITLE:=gcc
   MAINTAINER:=Noble Pepper <gccmaintain@noblepepper.com>
-  DEPENDS:= +binutils +libdouble-conversion +libpcre2-16 +libstdcpp +libzstd +icu @!arc
+  DEPENDS:= +binutils +libdouble-conversion +libpcre2-16 +libstdcpp +libzstd +icu +krb5-libs @!arc
   MENU:=1
 endef
 
