@@ -9,13 +9,11 @@ OpenWrt base build system decide flavor of fortify_source to use
  configure | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/configure b/configure
-index 23b5e93752..c8d2ac1c3e 100755
 --- a/configure
 +++ b/configure
-@@ -1601,6 +1601,8 @@ for opt do
+@@ -1581,6 +1581,8 @@ for opt do
    ;;
-   --gdb=*) gdb_bin="$optarg"
+   --disable-slirp-smbd) slirp_smbd=no
    ;;
 +  --disable-fortify-source) fortify_source="no"
 +  ;;
