@@ -1,7 +1,5 @@
-Index: glog-0.4.0/src/symbolize_unittest.cc
-===================================================================
---- glog-0.4.0.orig/src/symbolize_unittest.cc
-+++ glog-0.4.0/src/symbolize_unittest.cc
+--- a/src/symbolize_unittest.cc
++++ b/src/symbolize_unittest.cc
 @@ -401,7 +401,7 @@ int main(int argc, char **argv) {
    FLAGS_logtostderr = true;
    InitGoogleLogging(argv[0]);

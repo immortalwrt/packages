@@ -1,6 +1,6 @@
 --- a/drivers/timers_unix/timers_unix.c
 +++ b/drivers/timers_unix/timers_unix.c
-@@ -33,7 +33,7 @@
+@@ -33,7 +33,7 @@ void LeaveMutex(void)
  	}
  }
  

@@ -17,8 +17,6 @@ Signed-off-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
  src/os/linux/x86_64/init.c | 16 ++++++----------
  2 files changed, 12 insertions(+), 16 deletions(-)
 
-diff --git a/src/os/linux/i386/init.c b/src/os/linux/i386/init.c
-index d9c6648..94a733e 100644
 --- a/src/os/linux/i386/init.c
 +++ b/src/os/linux/i386/init.c
 @@ -19,18 +19,18 @@
@@ -46,8 +44,6 @@ index d9c6648..94a733e 100644
  }
  
  void initialisePlatform() {
-diff --git a/src/os/linux/x86_64/init.c b/src/os/linux/x86_64/init.c
-index 9d55229..a76a923 100644
 --- a/src/os/linux/x86_64/init.c
 +++ b/src/os/linux/x86_64/init.c
 @@ -19,9 +19,7 @@
@@ -81,6 +77,3 @@ index 9d55229..a76a923 100644
  }
  
  void initialisePlatform() {
--- 
-2.7.4
-

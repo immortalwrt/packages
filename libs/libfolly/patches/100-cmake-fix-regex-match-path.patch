@@ -3,7 +3,7 @@
 @@ -112,17 +112,19 @@ configure_file(
  auto_sources(files "*.cpp" "RECURSE" "${FOLLY_DIR}")
  auto_sources(hfiles "*.h" "RECURSE" "${FOLLY_DIR}")
-
+ 
 +string(REPLACE + \\+ FOLLY_DIR_ESCAPED ${FOLLY_DIR})
 +
  # Exclude tests, benchmarks, and other standalone utility executables from the

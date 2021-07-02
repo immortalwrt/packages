@@ -1,6 +1,6 @@
 --- a/src/sigar_util.c
 +++ b/src/sigar_util.c
-@@ -954,14 +954,10 @@ int sigar_file2str(const char *fname, char *buffer, int buflen)
+@@ -954,14 +954,10 @@ int sigar_file2str(const char *fname, ch
  #define vsnprintf _vsnprintf
  #endif
  

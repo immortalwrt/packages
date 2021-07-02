@@ -1,6 +1,6 @@
---- a/prog/sensors/main.c	2014-01-22 00:11:15.000000000 -0800
-+++ b/prog/sensors/main.c	2019-11-25 17:54:16.000000000 -0800
-@@ -315,10 +315,6 @@
+--- a/prog/sensors/main.c
++++ b/prog/sensors/main.c
+@@ -345,10 +345,6 @@ int main(int argc, char *argv[])
  		print_bus_list();
  	} else if (optind == argc) { /* No chip name on command line */
  		if (!do_the_real_work(NULL, &err)) {

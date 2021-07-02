@@ -1,6 +1,6 @@
---- a/GNUmakefile	2002-11-15 19:57:48.000000000 +0100
-+++ a/GNUmakefile	2014-10-02 16:03:02.864803002 +0200
-@@ -6,7 +6,7 @@
+--- a/GNUmakefile
++++ b/GNUmakefile
+@@ -6,7 +6,7 @@ INSTALL ?= /usr/bin/install
  LDCONFIG ?= /sbin/ldconfig
  
  # Some suggestions: (-mcpu= generates i386 compatible code)
@@ -9,7 +9,7 @@
  #CFLAGS = -O2 -fomit-frame-pointer -pipe -march=i586 -Wall -g
  #CFLAGS = -O6 -fomit-frame-pointer -pipe -march=i586 -Wall -ansi -pedantic
  #CFLAGS = -O6 -fomit-frame-pointer -pipe -march=i686 -Wall -ansi -pedantic
-@@ -15,10 +15,9 @@
+@@ -15,10 +15,9 @@ CFLAGS ?= -O2 -fomit-frame-pointer -pipe
  #CFLAGS = -g -pg -a -pipe -march=i686 -Wall
  #LDFLAGS = -s
  
@@ -21,7 +21,7 @@
  
  PROGRAMS = avlsort setdiff
  LIBRARY = libavl.so.1.5
-@@ -34,16 +33,17 @@
+@@ -34,16 +33,17 @@ avlsort: avlsort.o avl.o
  	$(CC) $(LDFLAGS) $^ -o $@ $(LIBS)
  
  $(LIBRARY): avl.o
