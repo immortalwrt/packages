@@ -1,9 +1,6 @@
+# SPDX-Identifier-License: GPL-3.0-only
 #
 # Copyright (C) 2021 Zxilly <zhouxinyu1001@gmail.com>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
 
 include $(TOPDIR)/rules.mk
 
@@ -12,11 +9,11 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/Zxilly/UA2F.git
-PKG_SOURCE_DATE:=2021-05-31
-PKG_SOURCE_VERSION:=661334b48ed2b3a9ad992a7af894e8b7cba011a8
-PKG_MIRROR_HASH:=2b1da68dfa8d44c8bcaf2e5d36573ec58bbbe0438d9fe783e4d1bf129c126cf0
+PKG_SOURCE_DATE:=2021-06-26
+PKG_SOURCE_VERSION:=d82e7543e7ad45bb76ae0a3f4c6b704721bccc24
+PKG_MIRROR_HASH:=5d5f3c893c21fb07eeba6663969a71e12da2ec3c47cc0cc012ca6168c9e1b9b0
 
-PKG_LICENSE:=GPL-3.0
+PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILE:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
@@ -34,7 +31,7 @@ define Package/ua2f/description
   Change User-agent to Fwords to prevent being checked by Dr.Com.
 endef
 
-EXTRA_LDFLAGS += -lmnl -lnetfilter_queue -lipset
+EXTRA_LDFLAGS+= -lmnl -lnetfilter_queue -lipset
 
 define Build/Compile
 	$(TARGET_CC) $(TARGET_CFLAGS) $(TARGET_LDFLAGS) $(EXTRA_LDFLAGS) \
