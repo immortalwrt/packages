@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=webdav-go
-PKG_VERSION:=4.0.0
+PKG_VERSION:=4.1.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/hacdias/webdav/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=3a6754933cc138623830944cb1ce9151baebe780b8111415c2e0044970586ca5
+PKG_HASH:=ae98ae38355f36d386828ad86e2ec29a901d0dac49e3e4d138a030935803b103
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILE:=LICENSE
@@ -36,17 +36,18 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
 define Package/webdav-go
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=File Transfer
-	TITLE:=A powerful WebDav server written in Golang.
-	URL:=https://github.com/hacdias/webdav
-	DEPENDS:=$(GO_ARCH_DEPENDS) 
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=File Transfer
+  TITLE:=Simple Go WebDAV server
+  URL:=https://github.com/hacdias/webdav
+  DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
 define Package/webdav-go/description
-  webdav command line interface is really easy to use so you can easily create a WebDAV server for your own user.
-  By default, it runs on a random free port and supports JSON, YAML and TOML configuration.
+  WebDAV command line interface is really easy to use so you can easily
+  create a WebDAV server for your own user. By default, it runs on a
+  random free port and supports JSON, YAML and TOML configuration.
 endef
 
 define Package/webdav-go/config
