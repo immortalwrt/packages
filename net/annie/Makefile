@@ -1,24 +1,22 @@
+# SPDX-Identifier-License: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE.txt for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=annie
-PKG_VERSION:=0.10.3
-PKG_RELEASE:=2
+PKG_BASE_VERSION:=0.10.3
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/iawia002/annie.git
-PKG_SOURCE_DATE:=2020-12-15
-PKG_SOURCE_VERSION:=abc3c9df18173c91a5ca7a77fecc0665dea01aa1
-PKG_MIRROR_HASH:=d49d79c342377a1edbf6870f7dd49cb4de70718934151793298004db72fc538a
+PKG_SOURCE_DATE:=2021-07-14
+PKG_SOURCE_VERSION:=3c20ed1e6f07f2a92f055ff3e79ef468de03f63c
+PKG_MIRROR_HASH:=69691746891a4c5bc0dc633c6e771e4dcb6d80c96b2794f554307df5bba5e2a2
 
-PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
+PKG_VERSION:=$(PKG_BASE_VERSION)-$(PKG_SOURCE_DATE)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
+
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
@@ -38,15 +36,11 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
 define Package/annie
-	SECTION:=multimedia
-	CATEGORY:=Multimedia
-	TITLE:=Fast, simple and clean video downloader
-	URL:=https://github.com/iawia002/annie
-	DEPENDS:=$(GO_ARCH_DEPENDS) +ffmpeg
-endef
-
-define Package/annie/description
-	Annie is a fast, simple and clean video downloader built with Go.
+  SECTION:=multimedia
+  CATEGORY:=Multimedia
+  TITLE:=A fast, simple and clean video downloader
+  URL:=https://github.com/iawia002/annie
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ffmpeg
 endef
 
 define Package/annie/config
