@@ -29,7 +29,7 @@ define Package/shairport-sync/default
   SECTION:=sound
   CATEGORY:=Sound
   TITLE:=AirPlay compatible audio player
-  DEPENDS:=@AUDIO_SUPPORT +libpthread +alsa-lib +libalac +libconfig +libdaemon +libpopt +libstdcpp
+  DEPENDS:=@AUDIO_SUPPORT +libpthread +alsa-lib +libalac +libconfig +libdaemon +libpopt
   PROVIDES:=shairport-sync
   URL:=https://github.com/mikebrady/shairport-sync
 endef
