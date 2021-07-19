@@ -1,24 +1,20 @@
+# SPDX-Identifier-License: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UnblockNeteaseMusic-Go
-PKG_VERSION:=0.2.10
+PKG_VERSION:=0.2.12
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/cnsilvan/UnblockNeteaseMusic/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=2103562e399d04fcce0aa017057357e6fcec8beb6dc65c17ad1bdc06f38d6b7a
+PKG_HASH:=3282815e333af4750cb41ceb5b9aa27d1aa877400205eb50e7213feff0fa6099
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
-PKG_MAINTAINER:=Silvan <cnsilvan@gmail.com>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_UNBLOCKNETEASEMUSIC_GO_COMPRESS_GOPROXY \
@@ -57,11 +53,11 @@ ifeq ($(CONFIG_UNBLOCKNETEASEMUSIC_GO_COMPRESS_GOPROXY),y)
 endif
 
 define Package/UnblockNeteaseMusic-Go
-	SECTION:=multimedia
-	CATEGORY:=Multimedia
-	TITLE:=Revive Netease Cloud Music (Golang)
-	URL:=https://github.com/cnsilvan/UnblockNeteaseMusic
-	DEPENDS:=$(GO_ARCH_DEPENDS)
+  SECTION:=multimedia
+  CATEGORY:=Multimedia
+  TITLE:=Revive Netease Cloud Music (Golang)
+  URL:=https://github.com/cnsilvan/UnblockNeteaseMusic
+  DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
 define Build/Compile
