@@ -50,12 +50,20 @@ load_config_arg() {
 	append_param_bool "$1" "verbose"
 }
 
+load_config_list() {
+	is_empty "bogus_nxdomain" "ip_addr" || config_list_foreach "bogus_nxdomain" "ip_addr" "append_param '--bogus-nxdomain'"
+
+	for i in "bootstrap" "fallback" "upstream"; do
+		is_empty "servers" "$i" || config_list_foreach "servers" "$i" "append_param '--$i'"
+	done
+}
+
 load_config_param() {
 	append_param_arg "config" "listen_addr" "--listen" "127.0.0.1"
 	append_param_arg "config" "listen_port" "--port" "5353"
 	append_param_arg "config" "log_file" "--output"
 	append_param_arg "config" "max_go_routines" "--max-go-routines"
-	append_param_arg "config" "rate_limit" "--rate-limit"
+	append_param_arg "config" "rate_limit" "--ratelimit"
 	append_param_arg "config" "udp_buf_size" "--udp-buf-size"
 
 	is_enabled "cache" "enabled" && {
@@ -74,14 +82,6 @@ load_config_param() {
 		append_param "--edns"
 		append_param_arg "edns" "edns_addr" "--edns-addr"
 	}
-}
-
-load_config_list() {
-	is_empty "bogus_nxdomain" "ip_addr" || config_list_foreach "bogus_nxdomain" "ip_addr" "append_param '--bogus-nxdomain'"
-
-	for i in "bootstrap" "fallback" "upstream"; do
-		is_empty "servers" "$i" || config_list_foreach "servers" "$i" "append_param '--$i'"
-	done
 }
 
 start_service() {
