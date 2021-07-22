@@ -68,5 +68,14 @@ ifeq ($(CONFIG_DNSPROXY_COMPRESS_UPX),y)
 endif
 endef
 
+define Package/dnsproxy/install
+	$(call GoPackage/Package/Install/Bin,$(1))
+
+	$(INSTALL_DIR) $(1)/etc/config/
+	$(INSTALL_CONF) $(CURDIR)/files/dnsproxy.config $(1)/etc/config/dnsproxy
+	$(INSTALL_DIR) $(1)/etc/init.d/
+	$(INSTALL_BIN) $(CURDIR)/files/dnsproxy.init $(1)/etc/init.d/dnsproxy
+endef
+
 $(eval $(call GoBinPackage,dnsproxy))
 $(eval $(call BuildPackage,dnsproxy))
