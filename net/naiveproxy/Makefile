@@ -47,7 +47,7 @@ define Package/naiveproxy
 endef
 
 define Package/naiveproxy/description
-  NaïveProxy uses Chrome's network stack to camouflage traffic with strong
+  NaiveProxy uses Chrome's network stack to camouflage traffic with strong
   censorship resistance and low detectability. Reusing Chrome's stack also
   ensures best practices in performance and security.
 endef
