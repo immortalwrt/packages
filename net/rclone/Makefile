@@ -1,21 +1,16 @@
-####
- #  File: /Makefile
- #  Project: rclone
- #  File Created: Friday, 11th October 2019 4:50:49 pm
- #  Author: ElonH[EH](elonhhuang@gmail.com)
- #  License: GNU General Public License v3.0 or later(http://www.gnu.org/licenses/gpl-3.0-standalone.html)
- #  Copyright (C) 2019 [ElonH]
-####
+# SPDX-Identifier-License: GPL-3.0-or-later
+#
+# Copyright (C) 2019-2021 ElonH <elonhhuang@gmail.com>
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rclone
-PKG_VERSION:=1.53.4
-PKG_RELEASE:=1
+PKG_VERSION:=1.56.0
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/rclone/rclone/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=acb53ccef1c1e638e53ca24933510d9be3666145372e1163470aa38414af8d48
+PKG_HASH:=c8dc7927d3c27e9897398855013c5e4eb31a76ab45dd4aed7bcf5f0121375286
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILE:=LICENSE
@@ -42,25 +37,17 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
 define Package/rclone
-	SECTION:=utils
-	CATEGORY:=Utilities
-	TITLE:=rsync for cloud storage.
-	URL:=https://rclone.org
-	DEPENDS:=$(GO_ARCH_DEPENDS)
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=File Transfer
+  TITLE:=rsync for cloud storage.
+  URL:=https://rclone.org
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
 define Package/rclone/description
-	Rclone ("rsync for cloud storage") is a command line program to sync root/usr/bin and
-	directories to and from different cloud storage providers.
-	Cloud storage providers:
-		1Fichier, Alibaba Cloud (Aliyun) Object Storage System (OSS), Amazon Drive, Amazon S3,
-		Backblaze B2, Box, Ceph, C14, DigitalOcean Spaces, Dreamhost, Dropbox, FTP,
-		Google Cloud Storage, Google Drive, Google Photos, HTTP, Hubic, Jottacloud,
-		IBM COS S3, Koofr, Memset Memstore, Mega, Microsoft Azure Blob Storage,
-		Microsoft OneDrive, Minio, Nextcloud, OVH, OpenDrive, Openstack Swift,
-		Oracle Cloud Storage, ownCloud, pCloud, premiumize.me, put.io, QingStor,
-		Rackspace Cloud root/usr/bin, rsync.net, Scaleway, SFTP, Wasabi, WebDAV,
-		Yandex Disk, The local root/usr/binystem.
+  Rclone ("rsync for cloud storage") is a command line program to sync root/usr/bin and
+  directories to and from different cloud storage providers.
 endef
 
 define Package/rclone/config
@@ -77,6 +64,9 @@ ifeq ($(CONFIG_RCLONE_COMPRESS_GOPROXY),y)
 	export GO111MODULE=on
 	export GOPROXY=https://goproxy.baidu.com
 endif
+
+# Disable CGO due to ld linker issue
+GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) CGO_ENABLED=0
 
 define Build/Compile
 	$(call GoPackage/Build/Compile)
