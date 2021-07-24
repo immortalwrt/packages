@@ -51,8 +51,9 @@ define Package/dnsproxy
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
   TITLE:=Simple DNS proxy with DoH, DoT, DoQ and DNSCrypt support
-  URL:=https://github.com/github.com/AdguardTeam/dnsproxy
+  URL:=https://github.com/AdguardTeam/dnsproxy
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
+  USERID:=dnsproxy=411:dnsproxy=411
 endef
 
 define Package/dnsproxy/description
