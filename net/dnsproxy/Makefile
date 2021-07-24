@@ -51,8 +51,9 @@ define Package/dnsproxy
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
   TITLE:=Simple DNS proxy with DoH, DoT, DoQ and DNSCrypt support
-  URL:=https://github.com/github.com/AdguardTeam/dnsproxy
+  URL:=https://github.com/AdguardTeam/dnsproxy
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
+  USERID:=dnsproxy=411:dnsproxy=411
 endef
 
 define Package/dnsproxy/description
@@ -66,6 +67,15 @@ define Build/Compile
 ifeq ($(CONFIG_DNSPROXY_COMPRESS_UPX),y)
 	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/dnsproxy
 endif
+endef
+
+define Package/dnsproxy/install
+	$(call GoPackage/Package/Install/Bin,$(1))
+
+	$(INSTALL_DIR) $(1)/etc/config/
+	$(INSTALL_CONF) $(CURDIR)/files/dnsproxy.config $(1)/etc/config/dnsproxy
+	$(INSTALL_DIR) $(1)/etc/init.d/
+	$(INSTALL_BIN) $(CURDIR)/files/dnsproxy.init $(1)/etc/init.d/dnsproxy
 endef
 
 $(eval $(call GoBinPackage,dnsproxy))
