@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=simple-torrent
-PKG_VERSION:=1.3.3
+PKG_VERSION:=1.3.4
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/boypt/simple-torrent/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=7d26d94c694926928feaab53675be9dbc92f232064dd4ace13b809daece96dff
+PKG_HASH:=641b4e6f34b6cc0331e7ec804bfed32f91f36e714edceae860f85398868a7d69
 
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=LICENSE
