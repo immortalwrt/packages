@@ -12,6 +12,9 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/p4gefau1t/trojan-go/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=487aee96ce31e6f5939ef464c997f7ce6cfb888915ca0e92940bdcda65f2e0e0
 
+PKG_LICENSE:=GPL-3.0
+PKG_LICENSE_FILES:=LICENSE
+
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_TROJAN_GO_COMPRESS_GOPROXY \
 	CONFIG_TROJAN_GO_COMPRESS_UPX
@@ -30,7 +33,7 @@ GO_PKG_LDFLAGS_X:= \
 GO_PKG_TAGS:=full
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
+include ../../lang/golang/golang-package.mk
 
 define Package/trojan-go
   SECTION:=net
@@ -42,9 +45,6 @@ define Package/trojan-go
 endef
 
 define Package/trojan-go/config
-menu "Configuration"
-	depends on PACKAGE_trojan-go
-
 config TROJAN_GO_COMPRESS_GOPROXY
 	bool "Compiling with GOPROXY proxy"
 	default n
@@ -52,8 +52,6 @@ config TROJAN_GO_COMPRESS_GOPROXY
 config TROJAN_GO_COMPRESS_UPX
 	bool "Compress executable files with UPX"
 	default y
-
-endmenu
 endef
 
 ifeq ($(CONFIG_TROJAN_GO_COMPRESS_GOPROXY),y)
