@@ -30,7 +30,7 @@ GO_PKG_LDFLAGS:=-s -w -X 'main.VERSION=$(PKG_VERSION)-$(PKG_RELEASE) for OpenWrt
 # Can't use GO_PKG_LDFLAGS_X to define X args with space
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
+include ../../lang/golang/golang-package.mk
 
 define Package/kcptun/Default
   define Package/kcptun-$(1)
