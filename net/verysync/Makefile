@@ -27,11 +27,12 @@ ifeq ($(ARCH),powerpc64)
 endif
 
 PKG_NAME:=verysync
-PKG_VERSION:=2.8.2
+PKG_VERSION:=2.9.1
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-v$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://dl.verysync.com/releases/v$(PKG_VERSION)/
+PKG_SOURCE_URL:=http://dl.verysync.com/releases/v$(PKG_VERSION)/ \
+		http://dl-cn.verysync.com/releases/v$(PKG_VERSION)/
 PKG_HASH:=skip
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-v$(PKG_VERSION)
 
