@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (C) 2007-2011 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
@@ -31,20 +31,20 @@ define Package/wol/description
  It wakes up hardware that is Magic Packet compliant.
 endef
 
+define Package/wol/conffiles
+/etc/config/wol
+endef
+
 CONFIGURE_VARS += \
-	ac_cv_func_malloc_0_nonnull=yes \
-	ac_cv_func_realloc_0_nonnull=yes \
-	ac_cv_func_mmap_fixed_mapped=yes \
-	jm_cv_func_working_malloc=yes \
 	ac_cv_func_alloca_works=yes \
+	ac_cv_func_malloc_0_nonnull=yes \
+	ac_cv_func_mmap_fixed_mapped=yes \
+	ac_cv_func_realloc_0_nonnull=yes \
+	jm_cv_func_working_malloc=yes
 
 define Package/wol/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/$(PKG_NAME) $(1)/usr/bin/
-endef
-
-define Package/wol/conffiles
-/etc/config/wol
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/wol $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,wol))
