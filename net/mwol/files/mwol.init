@@ -34,7 +34,7 @@ start_service_real() {
 		procd_open_instance
 
 		procd_set_param command $PROG -c /tmp/mwol.json
-		
+
 		procd_set_param respawn
 
 		procd_set_param stdout 1
@@ -42,16 +42,15 @@ start_service_real() {
 
 		procd_close_instance
 	fi
-
 }
 
-service_triggers() { 
+service_triggers() {
 	procd_add_reload_trigger "mwol"
 }
 
 start_service()
 {
 	config_load mwol
-	
+
 	config_foreach start_service_real mwol
 }

@@ -12,14 +12,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mwol
-PKG_VERSION:=1.0.0
-PKG_RELEASE=2
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/Mleaf/mwol.git
-PKG_SOURCE_DATE:=2020-01-08
-PKG_SOURCE_VERSION:=59f9805901b4ac2916a0273ffbc29197fcd17a62
-PKG_MIRROR_HASH:=64f88b81ed88b1695f240fe4c0414bd32a5cf6e53ea008c67713ae8315ff3d0d
+PKG_SOURCE_DATE:=2021-08-20
+PKG_SOURCE_VERSION:=5291e45b3baedd8bd38358bcd275ce35296df82e
+PKG_MIRROR_HASH:=5dde8ddc828c02b642e37e4e9726ab6f50e39c982da9b9d0a8e2595387504f1b
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=COPYING
@@ -33,13 +32,14 @@ include $(INCLUDE_DIR)/cmake.mk
 define Package/mwol
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libpthread +libmosquitto-ssl +luci-lib-json +libopenssl
+  DEPENDS:=+libmosquitto-ssl +libopenssl +libpthread +luci-lib-json
   TITLE:=MQTT Wake On Lan
   URL:=http://www.mleaf.org
 endef
 
 define Package/mwol/description
-	mwol is a project that uses mqtt to implement reverse proxy and wake up the computer.
+  Mwol is a project that uses mqtt to implement reverse proxy and
+  wake up the computer.
 endef
 
 define Package/mwol/install
