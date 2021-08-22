@@ -40,9 +40,9 @@ define Package/dockerd
   MENU:=1
 endef
 
-#define Package/dockerd/conffiles
-#/etc/config/dockerd
-#endef
+define Package/dockerd/conffiles
+/etc/config/dockerd
+endef
 
 define Package/dockerd/description
 The Docker CE Engine.
@@ -124,11 +124,11 @@ define Package/dockerd/install
 	$(INSTALL_DIR) $(1)/etc/docker
 	$(INSTALL_CONF) ./files/daemon.json $(1)/etc/docker/
 
-	#$(INSTALL_DIR) $(1)/etc/init.d
-	#$(INSTALL_BIN) ./files/dockerd.init $(1)/etc/init.d/dockerd
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/dockerd.init $(1)/etc/init.d/dockerd
 
-	#$(INSTALL_DIR) $(1)/etc/config
-	#$(INSTALL_CONF) ./files/etc/config/dockerd $(1)/etc/config/dockerd
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) ./files/etc/config/dockerd $(1)/etc/config/dockerd
 
 	# Must be after systcl 11-br-netfilter.conf from kmod-br-netfilter
 	$(INSTALL_DIR) $(1)/etc/sysctl.d
@@ -136,22 +136,22 @@ define Package/dockerd/install
 		$(1)/etc/sysctl.d/12-br-netfilter-ip.conf
 endef
 
-#define Package/dockerd/postinst
-##!/bin/sh
-#[ -n "$$IPKG_INSTROOT" ] || {
-#	/etc/init.d/dockerd enable
-#	/etc/init.d/dockerd uciadd
-#	/etc/init.d/dockerd start
-#}
-#endef
+define Package/dockerd/postinst
+#!/bin/sh
+[ -n "$$IPKG_INSTROOT" ] || {
+	/etc/init.d/dockerd enable
+	/etc/init.d/dockerd uciadd
+	/etc/init.d/dockerd start
+}
+endef
 
-#define Package/dockerd/prerm
-##!/bin/sh
-#[ -n "$$IPKG_INSTROOT" ] || {
-#	/etc/init.d/dockerd disable
-#	/etc/init.d/dockerd stop
-#	/etc/init.d/dockerd ucidel
-#}
-#endef
+define Package/dockerd/prerm
+#!/bin/sh
+[ -n "$$IPKG_INSTROOT" ] || {
+	/etc/init.d/dockerd disable
+	/etc/init.d/dockerd stop
+	/etc/init.d/dockerd ucidel
+}
+endef
 
 $(eval $(call BuildPackage,dockerd))
