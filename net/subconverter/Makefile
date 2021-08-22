@@ -31,7 +31,7 @@ define Package/subconverter
   CATEGORY:=Utilities
   TITLE:=Utility to convert between various subscription format
   URL:=https://github.com/tindy2013/subconverter
-  DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +zlib
+  DEPENDS:=+libatomic +libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +zlib
 endef
 
 define Package/subconverter/description
@@ -42,7 +42,9 @@ TARGET_CXXFLAGS := $(FPIC) $(filter-out -O%,$(TARGET_CXXFLAGS)) -O3
 TARGET_CXXFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -flto
 TARGET_LDFLAGS += -Wl,--gc-sections -flto
 
-CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
+CMAKE_OPTIONS += \
+	 -DCMAKE_BUILD_TYPE=Release \
+	 -DCMAKE_EXE_LINKER_FLAGS="-latomic"
 
 define Package/subconverter/install
 	$(INSTALL_DIR) $(1)/usr/bin
