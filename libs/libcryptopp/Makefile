@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libcryptopp
-PKG_VERSION:=8.3.0
-PKG_RELEASE:=2
+PKG_VERSION:=8.5.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=cryptopp$(subst .,,$(PKG_VERSION)).zip
 PKG_SOURCE_URL:=https://www.cryptopp.com/
-PKG_HASH:=db38a15a6b1c337c665e2ebeb731dd0754b05e45504897d0f2fe4ae9f5ee589a
+PKG_HASH:=95fc50d59488ebf61a735cce2b2ec2c2561fc682077c7b496273d65a1ed93d9e
 
 PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
@@ -27,15 +27,15 @@ UNZIP_CMD:=unzip -q -d $(PKG_BUILD_DIR) $(DL_DIR)/$(PKG_SOURCE)
 define Package/libcryptopp
   SECTION:=libs
   CATEGORY:=Libraries
-  TITLE:=Crypto++ is library for creating C++ programs which use cryptographic algorithms
+  TITLE:=Free C++ class library of cryptographic schemes
   URL:=https://packages.debian.org/sid/libcrypto++-dev
   DEPENDS:=+libpthread +libstdcpp
 endef
 
-define Package/package/libcryptopp
-  Crypto++ is library for creating C++ programs which use cryptographic algorithms.
-  The library uses a Pipes & Filters architecture with heavy use of templates and
-  abstract base classes.
+define Package/libcryptopp/description
+  Crypto++ is library for creating C++ programs which use cryptographic
+  algorithms. The library uses a Pipes & Filters architecture with heavy
+  use of templates and abstract base classes.
 endef
 
 define Build/Prepare
