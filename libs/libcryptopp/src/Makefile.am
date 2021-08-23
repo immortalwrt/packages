@@ -204,7 +204,7 @@ libcryptopp_la_DEPENDENCIES += $(libothers_la_OBJECTS)
 
 ## Man, did Autotools fuck this up royally...
 ## https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-libcryptopp_la_LDFLAGS = $(AM_LDFLAGS) -release 8.3.0 -version-info 8:3
+libcryptopp_la_LDFLAGS = $(AM_LDFLAGS) -release 8.5.0 -version-info 8:5
 
 ## Source files with special needs
 libcryptlib_la_SOURCES = cryptlib.cpp
@@ -397,7 +397,7 @@ CLEANFILES = adhoc.cpp
 ## TestPrograms/ is included in the tarball but not installed.
 ## https://www.gnu.org/software/automake/manual/html_node/Data.html
 
-# Create with 'ls TestVectors/*.dat'. These files get installed.
+# Create with 'ls TestData/*.dat'. These files get installed.
 testdata_FILES = \
     TestData/3desval.dat     TestData/fhmqv160.dat  TestData/rc2val.dat \
     TestData/3wayval.dat     TestData/fhmqv256.dat  TestData/rc5val.dat \
