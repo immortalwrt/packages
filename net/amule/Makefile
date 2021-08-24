@@ -7,15 +7,13 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=aMule
-PKG_VERSION:=2.3.2
-PKG_RELEASE:=5
+PKG_NAME:=amule
+PKG_VERSION:=2.3.3
+PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/amule-project/amule.git
-PKG_SOURCE_DATE:=2021-01-30
-PKG_SOURCE_VERSION:=c3a1018329633234ac941055b64a43b9e2df7fad
-PKG_MIRROR_HASH:=f03b60e909346c4d984aeb9cf3a115b5b43fa6158ee01ed41b99e7217b436bb7
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/amule-project/amule/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=934f79d4dab41c2d1caea31d6c6e10337c409ba5bb8bd6fac6c63e924e82c9b8
 
 PKG_CONFIG_DEPEDS:= CONFIG_AMULE_CRYPTOPP_STATIC_LINKING
 
@@ -38,9 +36,9 @@ define Package/amule
 endef
 
 define Package/amule/config
-	config AMULE_CRYPTOPP_STATIC_LINKING
-		bool "Link libcryptopp statically"
-		default n
+config AMULE_CRYPTOPP_STATIC_LINKING
+	bool "Link libcryptopp statically"
+	default n
 endef
 
 TARGET_LDFLAGS+= -liconv
@@ -48,7 +46,6 @@ TARGET_LDFLAGS+= -liconv
 CONFIGURE_ARGS+= \
 	--disable-static \
 	--disable-rpath \
-	--with-gnu-ld \
 	--disable-ccache \
 	--disable-optimize \
 	--disable-profile \
@@ -62,11 +59,13 @@ CONFIGURE_ARGS+= \
 	--disable-ed2k \
 	--disable-alc \
 	--disable-alcc \
+	--disable-debug \
 	--disable-fileview \
 	--disable-plasmamule \
 	--without-wxdebug \
 	--enable-dlp \
 	--enable-upnp \
+	--with-gnu-ld \
 	--with-zlib="$(STAGING_DIR)/usr" \
 	--with-gdlib-prefix="$(STAGING_DIR)/usr" \
 	--with-libpng-prefix="$(STAGING_DIR)/usr" \
@@ -75,8 +74,7 @@ CONFIGURE_ARGS+= \
 	--with-libiconv-prefix="$(ICONV_PREFIX)" \
 	--with-libintl-prefix="$(INTL_PREFIX)" \
 	--with-libupnp-prefix="$(STAGING_DIR)/usr" \
-	--without-x \
-	--disable-debug 
+	--without-x
 
 MAKE_FLAGS += HOSTCC="$(HOSTCC)"
 
