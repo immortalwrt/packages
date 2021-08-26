@@ -48,7 +48,7 @@
 #define API_JSON "json"
 #define API_JSON_EXT "." API_JSON
 #define API_PACKAGES "packages"
-#define API_REQUEST "api/build"
+#define API_REQUEST "api/v1/build"
 #define API_STATUS_QUEUED "queued"
 #define API_STATUS_STARTED "started"
 #define API_STORE "store"
@@ -236,7 +236,7 @@ enum {
 	TARGET_ENQUEUED_AT,
 	TARGET_IMAGE_PREFIX,
 	TARGET_IMAGES,
-	TARGET_MESSAGE,
+	TARGET_DETAIL,
 	TARGET_MANIFEST,
 	TARGET_METADATA_VERSION,
 	TARGET_REQUEST_HASH,
@@ -263,7 +263,7 @@ static const struct blobmsg_policy target_policy[__TARGET_MAX] = {
 	[TARGET_IMAGE_PREFIX] = { .name = "image_prefix", .type = BLOBMSG_TYPE_STRING },
 	[TARGET_IMAGES] = { .name = "images", .type = BLOBMSG_TYPE_ARRAY },
 	[TARGET_MANIFEST] = { .name = "manifest", .type = BLOBMSG_TYPE_TABLE },
-	[TARGET_MESSAGE] = { .name = "message", .type = BLOBMSG_TYPE_STRING },
+	[TARGET_DETAIL] = { .name = "detail", .type = BLOBMSG_TYPE_STRING },
 	[TARGET_METADATA_VERSION] = { .name = "metadata_version", .type = BLOBMSG_TYPE_INT32 },
 	[TARGET_REQUEST_HASH] = { .name = "request_hash", .type = BLOBMSG_TYPE_STRING },
 	[TARGET_SOURCE_DATE_EPOCH] = { .name = "source_date_epoch", .type = BLOBMSG_TYPE_STRING },
@@ -443,7 +443,9 @@ static int openwrt_release_verrevcmp(const char *ver1, const char *ver2)
 	char mver1[16], mver2[16];
 
 	strncpy(mver1, ver1, sizeof(mver1) - 1);
+	mver1[sizeof(mver1) - 1] = '\0';
 	strncpy(mver2, ver2, sizeof(mver2) - 1);
+	mver2[sizeof(mver2) - 1] = '\0';
 
 	release_replace_rc(mver1);
 	release_replace_rc(mver2);
@@ -1544,6 +1546,31 @@ static inline bool status_delay(const char *status)
 	       !strcmp(API_STATUS_STARTED, status);
 }
 
+static void usage(const char *arg0)
+{
+	fprintf(stdout, "%s: Attended sysUpgrade CLI client\n", arg0);
+	fprintf(stdout, "Usage: auc [-b <branch>] [-B <ver>] [-c] %s[-f] [-h] [-r] [-y]\n",
+#ifdef AUC_DEBUG
+"[-d] "
+#else
+""
+#endif
+		);
+	fprintf(stdout, " -b <branch>\tuse specific release branch\n");
+	fprintf(stdout, " -B <ver>\tuse specific release version\n");
+	fprintf(stdout, " -c\t\tonly check if system is up-to-date\n");
+#ifdef AUC_DEBUG
+	fprintf(stdout, " -d\t\tenable debugging output\n");
+#endif
+	fprintf(stdout, " -f\t\tuse force\n");
+	fprintf(stdout, " -h\t\toutput help\n");
+	fprintf(stdout, " -r\t\tcheck only for release upgrades\n");
+	fprintf(stdout, " -F <fstype>\toverride filesystem type\n");
+	fprintf(stdout, " -y\t\tdon't wait for user confirmation\n");
+
+}
+
+
 /* this main function is too big... todo: split */
 int main(int args, char *argv[]) {
 	static struct blob_buf checkbuf, infobuf, reqbuf, imgbuf, upgbuf;
@@ -1570,25 +1597,7 @@ int main(int args, char *argv[]) {
 	while (argc<args) {
 		if (!strncmp(argv[argc], "-h", 3) ||
 		    !strncmp(argv[argc], "--help", 7)) {
-			fprintf(stdout, "%s: Attended sysUpgrade CLI client\n", argv[0]);
-			fprintf(stdout, "Usage: auc [-b <branch>] [-B <ver>] [-c] %s[-f] [-h] [-r] [-y]\n",
-#ifdef AUC_DEBUG
-"[-d] "
-#else
-""
-#endif
-				);
-			fprintf(stdout, " -b <branch>\tuse specific release branch\n");
-			fprintf(stdout, " -B <ver>\tuse specific release version\n");
-			fprintf(stdout, " -c\t\tonly check if system is up-to-date\n");
-#ifdef AUC_DEBUG
-			fprintf(stdout, " -d\t\tenable debugging output\n");
-#endif
-			fprintf(stdout, " -f\t\tuse force\n");
-			fprintf(stdout, " -h\t\toutput help\n");
-			fprintf(stdout, " -r\t\tcheck only for release upgrades\n");
-			fprintf(stdout, " -F <fstype>\toverride filesystem type\n");
-			fprintf(stdout, " -y\t\tdon't wait for user confirmation\n");
+			usage(argv[0]);
 			return 0;
 		}
 
@@ -1680,7 +1689,7 @@ int main(int args, char *argv[]) {
 			rootfs_type, target_fstype);
 
 	if (request_branches(!(target_branch || target_version))) {
-		rc=-ENETUNREACH;
+		rc=-ENODATA;
 		goto freeboard;
 	}
 
@@ -1692,7 +1701,7 @@ int main(int args, char *argv[]) {
 
 	fprintf(stdout, "Available: %s %s\n", branch->version_number, branch->version_code);
 
-	revcmp = openwrt_release_verrevcmp(revision, branch->version_code);
+	revcmp = verrevcmp(revision, branch->version_code);
 	if (revcmp < 0)
 			upg_check |= PKG_UPGRADE;
 	else if (revcmp > 0)
@@ -1702,6 +1711,7 @@ int main(int args, char *argv[]) {
 		goto freebranches;
 
 	if (release_only && !(upg_check & PKG_UPGRADE)) {
+		fprintf(stderr, "Nothing to be updated. Use '-f' to force.\n");
 		rc=0;
 		goto freebranches;
 	}
@@ -1720,6 +1730,12 @@ int main(int args, char *argv[]) {
 
 	if (!force && (upg_check & PKG_DOWNGRADE)) {
 		fprintf(stderr, "Refusing to downgrade. Use '-f' to force.\n");
+		rc=-ENOTRECOVERABLE;
+		goto freebranches;
+	};
+
+	if (!force && (upg_check & PKG_NOT_FOUND)) {
+		fprintf(stderr, "Not all installed packages found in remote lists. Use '-f' to force.\n");
 		rc=-ENOTRECOVERABLE;
 		goto freebranches;
 	};
@@ -1903,8 +1919,8 @@ freebranches:
 	    )
 		fputs(blobmsg_get_string(tb[TARGET_STDERR]), stderr);
 
-	if (tb[TARGET_MESSAGE]) {
-		fputs(blobmsg_get_string(tb[TARGET_MESSAGE]), stderr);
+	if (tb[TARGET_DETAIL]) {
+		fputs(blobmsg_get_string(tb[TARGET_DETAIL]), stderr);
 		fputc('\n', stderr);
 	}
 
