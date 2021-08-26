@@ -71,5 +71,11 @@ ifeq ($(CONFIG_V2RAY_PLUGIN_COMPRESS_UPX),y)
 endif
 endef
 
+define Package/v2ray-plugin/install
+	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
+	$(INSTALL_DIR) $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/v2ray-plugin $(1)/usr/bin/v2ray-plugin
+endef
+
 $(eval $(call GoBinPackage,v2ray-plugin))
 $(eval $(call BuildPackage,v2ray-plugin))
