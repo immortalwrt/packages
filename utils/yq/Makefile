@@ -21,7 +21,6 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_YQ_COMPRESS_UPX
 
 GO_PKG:=github.com/mikefarah/yq
-GO_PKG_LDFLAGS:=-s -w
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
