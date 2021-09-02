@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=azure-iot-device-http
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.13.4
+PKG_VERSION:=1.13.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=df9007b168d09f4911941ee53fa83465bcb88e04f6a1bc2316c4845665aa7b1f
+PKG_HASH:=21b35726fc332c87a7e5a8dcd4e18b34bc04dfcbff84dcafb6f738a4e1170b32
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
