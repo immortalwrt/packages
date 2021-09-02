@@ -1,16 +1,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qBittorrent-Enhanced-Edition
-PKG_VERSION:=4.3.7.10
+PKG_VERSION:=4.3.8.10
 PKG_RELEASE=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/c0re100/qBittorrent-Enhanced-Edition/tar.gz/release-$(PKG_VERSION)?
-PKG_HASH:=d05565e617df1fb1cb6403c111810d30a845cdf4304ac841778e7127b5414340
+PKG_HASH:=6862c410ea5417f38aeef34b78960ae8ceefe58c3f0f5429f05e87367738bcb3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-release-$(PKG_VERSION)
 
-PKG_LICENSE:=GPL-2.0+
+PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
 
 PKG_BUILD_PARALLEL:=1
@@ -18,7 +18,7 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+define Package/qBittorrent-Enhanced-Edition
   SUBMENU:=BitTorrent
   SECTION:=net
   CATEGORY:=Network
@@ -27,7 +27,7 @@ define Package/$(PKG_NAME)
   DEPENDS:=+boost +libtorrent-rasterbar +python3 +qt5-core +qt5-network +qt5-sql +qt5-xml
 endef
 
-define Package/$(PKG_NAME)/description
+define Package/qBittorrent-Enhanced-Edition/description
 qBittorrent is a bittorrent client programmed in C++ / Qt that uses
 libtorrent (sometimes called libtorrent-rasterbar) by Arvid Norberg.
 It aims to be a good alternative to all other bittorrent clients out
@@ -57,4 +57,4 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/qbittorrent-nox $(1)/usr/bin
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call BuildPackage,qBittorrent-Enhanced-Edition))
