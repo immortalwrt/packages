@@ -1,9 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
 # Copyright (C) 2021 ImmortalWrt.org
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
 
 include $(TOPDIR)/rules.mk
 
@@ -34,18 +31,11 @@ define Package/bpytop/description
   processor, memory, disks, network and processes.
 endef
 
-define Package/bpytop/install
-	$(call Py3Package/$(PKG_NAME)/install,$(1))
-	$(call Py3Package/ProcessFilespec,$(PKG_NAME),$(PKG_INSTALL_DIR),$(1))
-	$(call Python3/CompileAll,$(1))
-	$(call Python3/DeleteSourceFiles,$(1))
-	$(call Python3/DeleteEmptyDirs,$(1))
-	$(call Python3/FixShebang,$(1)/usr/bin/*)
-
+define Py3Package/bpytop/install
 	$(INSTALL_DIR) $(1)/usr/share
 	$(CP) $(PKG_BUILD_DIR)/themes $(1)/usr/share/bpytop
 endef
 
 $(eval $(call Py3Package,bpytop))
 $(eval $(call BuildPackage,bpytop))
-#$(eval $(call BuildPackage,bpytop-src))
+$(eval $(call BuildPackage,bpytop-src))
