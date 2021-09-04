@@ -87,10 +87,15 @@ endif
 define Package/vsftpd/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME) $(1)/usr/sbin/
-	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_CONF) ./files/$(PKG_NAME).conf $(1)/etc/$(PKG_NAME).conf
+	$(INSTALL_BIN) ./files/$(PKG_NAME)_wrapper $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/$(PKG_NAME)_prepare $(1)/usr/sbin/
+	#$(INSTALL_DIR) $(1)/etc
+	#$(INSTALL_CONF) ./files/$(PKG_NAME).conf $(1)/etc/$(PKG_NAME).conf
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_BIN) ./files/vsftpd.uci $(1)/etc/config/vsftpd
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/$(PKG_NAME).init $(1)/etc/init.d/$(PKG_NAME)
+	#$(INSTALL_BIN) ./files/$(PKG_NAME).init $(1)/etc/init.d/$(PKG_NAME)
+	$(INSTALL_BIN) ./files/$(PKG_NAME)-uci.init $(1)/etc/init.d/$(PKG_NAME)
 	$(INSTALL_DIR) $(1)/etc/vsftpd
 endef
 
