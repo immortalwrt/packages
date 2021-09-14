@@ -7,9 +7,9 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL:=https://github.com/destan19/OpenAppFilter.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-03-24
-PKG_SOURCE_VERSION:=fd6fef639b0ea1abbf853df06ed227a515a2b048
-PKG_MIRROR_HASH:=169ad839380638064409e15a7082d41ea5ab5a005f4b9866593ea03b9a4db356
+PKG_SOURCE_DATE:=2021-06-28
+PKG_SOURCE_VERSION:=81f2e7abab6005f5fb49e26171c5ef0c10213a7f
+PKG_MIRROR_HASH:=b7fb1a589cfe9fe56dec52e346d47d2471feb0f8447abc7d120ebb3c502b0093
 
 PKG_VERSION:=$(PKG_BASE_VERSION)-$(PKG_SOURCE_DATE)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
 
@@ -58,15 +58,12 @@ define Package/appfilter/conffiles
 endef
 
 define Package/appfilter/install
-	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/appfilter $(1)/etc/config $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/open-app-filter/files/appfilter.sh $(1)/usr/bin/appfilter.sh
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/open-app-filter/files/gen_class.sh $(1)/usr/bin/gen_class.sh
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/open-app-filter/files/appfilter.lua $(1)/usr/bin/appfilter
-	$(INSTALL_DIR) $(1)/etc/appfilter
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/open-app-filter/files/feature.cfg $(1)/etc/appfilter/feature.cfg
-	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/open-app-filter/files/appfilter.config $(1)/etc/config/appfilter
-	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/open-app-filter/files/appfilter.init $(1)/etc/init.d/appfilter
 endef
 
