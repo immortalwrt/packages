@@ -25,6 +25,7 @@ define Package/wifidog-ng/default
   SECTION:=net
   CATEGORY:=Network
   TITLE:=Next generation WifiDog implemented in Lua
+  URL:=https://github.com/zhaojh329/wifidog-ng
   DEPENDS:=+kmod-wifidog-ng +libubox-lua +libuci-lua +libubus-lua \
 	  +ipset +dnsmasq-full +luasocket
 endef
@@ -62,8 +63,8 @@ endef
 
 define Package/wifidog-ng/default/install
 	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/config \
-		$(1)/etc/wifidog-ng $(1)//etc/hotplug.d/dhcp $(1)/usr/lib/lua
-	$(INSTALL_BIN) ./files//wifidog-ng.lua $(1)/usr/bin/wifidog-ng
+		$(1)/etc/wifidog-ng $(1)/etc/hotplug.d/dhcp $(1)/usr/lib/lua
+	$(INSTALL_BIN) ./files/wifidog-ng.lua $(1)/usr/bin/wifidog-ng
 	$(INSTALL_BIN) ./files/wifidog-ng.init $(1)/etc/init.d/wifidog-ng
 	$(INSTALL_CONF) ./files/wifidog-ng.config $(1)/etc/config/wifidog-ng
 	$(INSTALL_CONF) ./files/ssl.key $(1)/etc/wifidog-ng
@@ -86,15 +87,12 @@ define KernelPackage/wifidog-ng
   FILES:=$(PKG_BUILD_DIR)/wifidog-ng.ko
 endef
 
-include $(INCLUDE_DIR)/kernel-defaults.mk
-
 define Build/Compile
 	$(MAKE) $(KERNEL_MAKEOPTS) M="$(PKG_BUILD_DIR)" modules
 endef
 
+$(eval $(call KernelPackage,wifidog-ng))
 $(eval $(call BuildPackage,wifidog-ng-nossl))
 $(eval $(call BuildPackage,wifidog-ng-mbedtls))
 $(eval $(call BuildPackage,wifidog-ng-wolfssl))
 $(eval $(call BuildPackage,wifidog-ng-openssl))
-
-$(eval $(call KernelPackage,wifidog-ng))

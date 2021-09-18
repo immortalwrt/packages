@@ -59,7 +59,7 @@ static int update_gw_interface(const char *interface)
     } endfor_ifa(in_dev)
 #endif
 
-QUIT:   
+QUIT:
     dev_put(dev);
 
     return ret;
