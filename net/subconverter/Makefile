@@ -31,7 +31,8 @@ define Package/subconverter
   CATEGORY:=Utilities
   TITLE:=Utility to convert between various subscription format
   URL:=https://github.com/tindy2013/subconverter
-  DEPENDS:=+libatomic +libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +zlib
+  DEPENDS:=+libatomic +libcurl +libevent2 +libpcre2 +libpthread \
+	+libstdcpp +libyaml-cpp +toml11 +zlib
 endef
 
 define Package/subconverter/description
