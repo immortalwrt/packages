@@ -33,7 +33,7 @@ define Package/webui-aria2
 endef
 
 define Package/webui-aria2/description
-	The aim for this project is to create the worlds best and hottest
+  The aim for this project is to create the worlds best and hottest
   interface to interact with aria2. Very simple to use.
 endef
 
