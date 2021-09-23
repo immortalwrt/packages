@@ -71,6 +71,11 @@ ifneq ($(CONFIG_V2RAYA_COMPRESS_GOPROXY),)
 	export GOPROXY=https://goproxy.baidu.com
 endif
 
+define Package/v2raya/conffiles
+/etc/v2raya/
+/etc/config/v2raya
+endef
+
 define Build/Compile
 	( \
 		pushd $(PKG_BUILD_DIR)/../gui ; \
