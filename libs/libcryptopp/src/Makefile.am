@@ -204,7 +204,7 @@ libcryptopp_la_DEPENDENCIES += $(libothers_la_OBJECTS)
 
 ## Man, did Autotools fuck this up royally...
 ## https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-libcryptopp_la_LDFLAGS = $(AM_LDFLAGS) -release 8.5.0 -version-info 8:5
+libcryptopp_la_LDFLAGS = $(AM_LDFLAGS) -release 8.6.0 -version-info 8:6
 
 ## Source files with special needs
 libcryptlib_la_SOURCES = cryptlib.cpp
@@ -427,113 +427,115 @@ testdata_FILES = \
 
 # Create with 'ls TestVectors/*.txt'. These files get installed.
 testvector_FILES = \
-    TestVectors/aead.txt              TestVectors/rsa_pss.txt \
-    TestVectors/aes.txt               TestVectors/rw.txt \
-    TestVectors/all.txt               TestVectors/salsa.txt \
-    TestVectors/aria.txt              TestVectors/seal.txt \
-    TestVectors/blake2b.txt           TestVectors/seed.txt \
-    TestVectors/blake2s.txt           TestVectors/sha1_160_fips_180.txt \
-    TestVectors/blake2.txt            TestVectors/sha1_fips_180.txt \
-    TestVectors/camellia.txt          TestVectors/sha2_224_fips_180.txt \
-    TestVectors/ccm.txt               TestVectors/sha2_256_fips_180.txt \
-    TestVectors/chacha20poly1305.txt  TestVectors/sha2_384_fips_180.txt \
-    TestVectors/chacha_tls.txt        TestVectors/sha2_512_fips_180.txt \
-    TestVectors/chacha.txt            TestVectors/sha2_fips_180.txt \
-    TestVectors/cham.txt              TestVectors/sha2.txt \
-    TestVectors/cmac.txt              TestVectors/sha3_224_fips_202.txt \
-    TestVectors/dlies.txt             TestVectors/sha3_256_fips_202.txt \
-    TestVectors/dsa_1363.txt          TestVectors/sha3_384_fips_202.txt \
-    TestVectors/dsa_rfc6979.txt       TestVectors/sha3_512_fips_202.txt \
-    TestVectors/dsa.txt               TestVectors/sha3_fips_202.txt \
-    TestVectors/eax.txt               TestVectors/sha3.txt \
-    TestVectors/esign.txt             TestVectors/shacal2.txt \
-    TestVectors/gcm.txt               TestVectors/shake.txt \
-    TestVectors/hc128.txt             TestVectors/sha.txt \
-    TestVectors/hc256.txt             TestVectors/simeck.txt \
-    TestVectors/hight.txt             TestVectors/simon.txt \
-    TestVectors/hkdf.txt              TestVectors/siphash.txt \
-    TestVectors/hmac.txt              TestVectors/skipjack.txt \
-    TestVectors/kalyna.txt            TestVectors/sm3.txt \
-    TestVectors/keccak.txt            TestVectors/sm4.txt \
-    TestVectors/lea.txt               TestVectors/sosemanuk.txt \
-    TestVectors/mars.txt              TestVectors/speck.txt \
-    TestVectors/nr.txt                TestVectors/tea.txt \
-    TestVectors/panama.txt            TestVectors/threefish.txt \
-    TestVectors/poly1305aes.txt       TestVectors/ttmac.txt \
-    TestVectors/poly1305_tls.txt      TestVectors/vmac.txt \
-    TestVectors/rabbit.txt            TestVectors/wake.txt \
-    TestVectors/Readme.txt            TestVectors/whrlpool.txt \
-    TestVectors/rsa_oaep.txt          TestVectors/xchacha.txt \
-    TestVectors/rsa_pkcs1_1_5.txt     TestVectors/xts.txt
+    TestVectors/aead.txt              TestVectors/rsa_oaep.txt \          
+    TestVectors/aes.txt               TestVectors/rsa_pkcs1_1_5.txt \
+    TestVectors/all.txt               TestVectors/rsa_pss.txt \
+    TestVectors/aria.txt              TestVectors/rw.txt \
+    TestVectors/blake2b.txt           TestVectors/salsa.txt \
+    TestVectors/blake2s.txt           TestVectors/seal.txt \
+    TestVectors/blake2.txt            TestVectors/seed.txt \
+    TestVectors/camellia.txt          TestVectors/sha1_160_fips_180.txt \
+    TestVectors/ccm.txt               TestVectors/sha1_fips_180.txt \
+    TestVectors/chacha20poly1305.txt  TestVectors/sha2_224_fips_180.txt \
+    TestVectors/chacha_tls.txt        TestVectors/sha2_256_fips_180.txt \
+    TestVectors/chacha.txt            TestVectors/sha2_384_fips_180.txt \
+    TestVectors/cham.txt              TestVectors/sha2_512_fips_180.txt \
+    TestVectors/cmac.txt              TestVectors/sha2_fips_180.txt \
+    TestVectors/dlies.txt             TestVectors/sha2.txt \
+    TestVectors/dsa_1363.txt          TestVectors/sha3_224_fips_202.txt \
+    TestVectors/dsa_rfc6979.txt       TestVectors/sha3_256_fips_202.txt \
+    TestVectors/dsa.txt               TestVectors/sha3_384_fips_202.txt \
+    TestVectors/eax.txt               TestVectors/sha3_512_fips_202.txt \
+    TestVectors/esign.txt             TestVectors/sha3_fips_202.txt \
+    TestVectors/gcm.txt               TestVectors/sha3.txt \
+    TestVectors/hc128.txt             TestVectors/shacal2.txt \
+    TestVectors/hc256.txt             TestVectors/shake.txt \
+    TestVectors/hight.txt             TestVectors/sha.txt \
+    TestVectors/hkdf.txt              TestVectors/simeck.txt \
+    TestVectors/hmac.txt              TestVectors/simon.txt \
+    TestVectors/kalyna.txt            TestVectors/siphash.txt \
+    TestVectors/keccak.txt            TestVectors/skipjack.txt \
+    TestVectors/lea.txt               TestVectors/sm3.txt \
+    TestVectors/lsh.txt               TestVectors/sm4.txt \
+    TestVectors/lsh256.txt            TestVectors/sosemanuk.txt \
+    TestVectors/lsh512.txt            TestVectors/speck.txt \
+    TestVectors/lsh512_256.txt        TestVectors/tea.txt \
+    TestVectors/mars.txt              TestVectors/threefish.txt \
+    TestVectors/nr.txt                TestVectors/ttmac.txt \ 
+    TestVectors/panama.txt            TestVectors/vmac.txt \     
+    TestVectors/poly1305aes.txt       TestVectors/wake.txt \
+    TestVectors/poly1305_tls.txt      TestVectors/whrlpool.txt \
+    TestVectors/rabbit.txt            TestVectors/xchacha.txt \
+    TestVectors/Readme.txt            TestVectors/xts.txt
 
-# Create with 'ls TestPrograms/test_*.cxx'. These files do not get installed.
+# Create with 'ls TestPrograms/test_*.cpp'. These files do not get installed.
 # They exist so the feature tests can be run from the configure directory.
 testprogs_FILES= \
-	TestPrograms/test_32bit.cxx
-	TestPrograms/test_64bit.cxx
-	TestPrograms/test_arm_acle_header.cxx
-	TestPrograms/test_arm_aes.cxx
-	TestPrograms/test_arm_asimd.cxx
-	TestPrograms/test_arm_crc.cxx
-	TestPrograms/test_arm_neon.cxx
-	TestPrograms/test_arm_neon_header.cxx
-	TestPrograms/test_arm_pmull.cxx
-	TestPrograms/test_arm_sha1.cxx
-	TestPrograms/test_arm_sha256.cxx
-	TestPrograms/test_arm_sha3.cxx
-	TestPrograms/test_arm_sha512.cxx
-	TestPrograms/test_arm_sm3.cxx
-	TestPrograms/test_arm_sm4.cxx
-	TestPrograms/test_asm_mixed.cxx
-	TestPrograms/test_cxx11_alignas.cxx
-	TestPrograms/test_cxx11_alignof.cxx
-	TestPrograms/test_cxx11_assert.cxx
-	TestPrograms/test_cxx11_atomic.cxx
-	TestPrograms/test_cxx11_auto.cxx
-	TestPrograms/test_cxx11_constexpr.cxx
-	TestPrograms/test_cxx11.cxx
-	TestPrograms/test_cxx11_deletefn.cxx
-	TestPrograms/test_cxx11_enumtype.cxx
-	TestPrograms/test_cxx11_initializer.cxx
-	TestPrograms/test_cxx11_lambda.cxx
-	TestPrograms/test_cxx11_noexcept.cxx
-	TestPrograms/test_cxx11_nullptr.cxx
-	TestPrograms/test_cxx11_staticinit.cxx
-	TestPrograms/test_cxx11_sync.cxx
-	TestPrograms/test_cxx11_vartemplates.cxx
-	TestPrograms/test_cxx14.cxx
-	TestPrograms/test_cxx17_assert.cxx
-	TestPrograms/test_cxx17.cxx
-	TestPrograms/test_cxx17_exceptions.cxx
-	TestPrograms/test_cxx98_exception.cxx
-	TestPrograms/test_cxx.cxx
-	TestPrograms/test_glibc.cxx
-	TestPrograms/test_newlib.cxx
-	TestPrograms/test_ppc_aes.cxx
-	TestPrograms/test_ppc_altivec.cxx
-	TestPrograms/test_ppc_power7.cxx
-	TestPrograms/test_ppc_power8.cxx
-	TestPrograms/test_ppc_power9.cxx
-	TestPrograms/test_ppc_sha.cxx
-	TestPrograms/test_ppc_vmull.cxx
-	TestPrograms/test_pthreads.cxx
-	TestPrograms/test_x86_aes.cxx
-	TestPrograms/test_x86_avx2.cxx
-	TestPrograms/test_x86_avx512.cxx
-	TestPrograms/test_x86_avx.cxx
-	TestPrograms/test_x86_clmul.cxx
-	TestPrograms/test_x86_cpuid.cxx
-	TestPrograms/test_x86_rdrand.cxx
-	TestPrograms/test_x86_rdseed.cxx
-	TestPrograms/test_x86_sha.cxx
-	TestPrograms/test_x86_sse2.cxx
-	TestPrograms/test_x86_sse3.cxx
-	TestPrograms/test_x86_sse41.cxx
-	TestPrograms/test_x86_sse42.cxx
-	TestPrograms/test_x86_ssse3.cxx
-	TestPrograms/test_x86_via_aes.cxx
-	TestPrograms/test_x86_via_rng.cxx
-	TestPrograms/test_x86_via_sha.cxx
+	TestPrograms/test_32bit.cpp
+	TestPrograms/test_64bit.cpp
+	TestPrograms/test_arm_acle_header.cpp
+	TestPrograms/test_arm_aes.cpp
+	TestPrograms/test_arm_asimd.cpp
+	TestPrograms/test_arm_crc.cpp
+	TestPrograms/test_arm_neon.cpp
+	TestPrograms/test_arm_neon_header.cpp
+	TestPrograms/test_arm_pmull.cpp
+	TestPrograms/test_arm_sha1.cpp
+	TestPrograms/test_arm_sha256.cpp
+	TestPrograms/test_arm_sha3.cpp
+	TestPrograms/test_arm_sha512.cpp
+	TestPrograms/test_arm_sm3.cpp
+	TestPrograms/test_arm_sm4.cpp
+	TestPrograms/test_asm_mixed.cpp
+	TestPrograms/test_cxx11_alignas.cpp
+	TestPrograms/test_cxx11_alignof.cpp
+	TestPrograms/test_cxx11_assert.cpp
+	TestPrograms/test_cxx11_atomic.cpp
+	TestPrograms/test_cxx11_auto.cpp
+	TestPrograms/test_cxx11_constexpr.cpp
+	TestPrograms/test_cxx11.cpp
+	TestPrograms/test_cxx11_deletefn.cpp
+	TestPrograms/test_cxx11_enumtype.cpp
+	TestPrograms/test_cxx11_initializer.cpp
+	TestPrograms/test_cxx11_lambda.cpp
+	TestPrograms/test_cxx11_noexcept.cpp
+	TestPrograms/test_cxx11_nullptr.cpp
+	TestPrograms/test_cxx11_staticinit.cpp
+	TestPrograms/test_cxx11_sync.cpp
+	TestPrograms/test_cxx11_vartemplates.cpp
+	TestPrograms/test_cxx14.cpp
+	TestPrograms/test_cxx17_assert.cpp
+	TestPrograms/test_cxx17.cpp
+	TestPrograms/test_cxx17_exceptions.cpp
+	TestPrograms/test_cxx98_exception.cpp
+	TestPrograms/test_cxx.cpp
+	TestPrograms/test_glibc.cpp
+	TestPrograms/test_newlib.cpp
+	TestPrograms/test_ppc_aes.cpp
+	TestPrograms/test_ppc_altivec.cpp
+	TestPrograms/test_ppc_power7.cpp
+	TestPrograms/test_ppc_power8.cpp
+	TestPrograms/test_ppc_power9.cpp
+	TestPrograms/test_ppc_sha.cpp
+	TestPrograms/test_ppc_vmull.cpp
+	TestPrograms/test_pthreads.cpp
+	TestPrograms/test_x86_aes.cpp
+	TestPrograms/test_x86_avx2.cpp
+	TestPrograms/test_x86_avx512.cpp
+	TestPrograms/test_x86_avx.cpp
+	TestPrograms/test_x86_clmul.cpp
+	TestPrograms/test_x86_cpuid.cpp
+	TestPrograms/test_x86_rdrand.cpp
+	TestPrograms/test_x86_rdseed.cpp
+	TestPrograms/test_x86_sha.cpp
+	TestPrograms/test_x86_sse2.cpp
+	TestPrograms/test_x86_sse3.cpp
+	TestPrograms/test_x86_sse41.cpp
+	TestPrograms/test_x86_sse42.cpp
+	TestPrograms/test_x86_ssse3.cpp
+	TestPrograms/test_x86_via_aes.cpp
+	TestPrograms/test_x86_via_rng.cpp
+	TestPrograms/test_x86_via_sha.cpp
 
 nobase_dist_pkgdata_DATA = \
     $(testdata_FILES) \
