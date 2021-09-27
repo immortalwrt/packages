@@ -428,8 +428,8 @@ testdata_FILES = \
 
 # Create with 'ls TestVectors/*.txt'. These files get installed.
 testvector_FILES = \
-    TestVectors/aead.txt              TestVectors/rsa_oaep.txt            
-    TestVectors/aes.txt               TestVectors/rsa_pkcs1_1_5.txt
+    TestVectors/aead.txt              TestVectors/rsa_oaep.txt \          
+    TestVectors/aes.txt               TestVectors/rsa_pkcs1_1_5.txt \
     TestVectors/all.txt               TestVectors/rsa_pss.txt \
     TestVectors/aria.txt              TestVectors/rw.txt \
     TestVectors/blake2b.txt           TestVectors/salsa.txt \
