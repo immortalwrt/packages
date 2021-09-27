@@ -1,20 +1,17 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2020 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2020-2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=you-get
-PKG_VERSION:=0.4.1500
-PKG_RELEASE:=1
+PKG_VERSION:=0.4.1545
+PKG_RELEASE:=$(AUTORELEASE)
 
 PYPI_NAME:=you-get
-PKG_HASH:=5a6cc0d661fe0cd4210bf467d6c89afd8611609e402690254722c1415736da92
+PKG_HASH:=63e9b0527424c565303fe3d8ede1cd35d48a4ecf4afe72e1c12b0e90b9fdcd39
 
-PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
@@ -46,4 +43,4 @@ endef
 
 $(eval $(call Py3Package,you-get))
 $(eval $(call BuildPackage,you-get))
-#$(eval $(call BuildPackage,you-get-src))
+$(eval $(call BuildPackage,you-get-src))
