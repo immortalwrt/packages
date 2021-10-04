@@ -47,26 +47,26 @@ endmenu
 endef
 
 OPENBLAS_TARGET=$(call qstrip,$(CONFIG_OPENBLAS_TARGET_OVERRIDE))
+CPU_TYPE=$(call qstrip,$(CONFIG_CPU_TYPE))
 
 ifeq ($(OPENBLAS_TARGET),)
+# initialize to GENERIC as default
+OPENBLAS_TARGET:=GENERIC
+
 ifeq ($(ARCH),aarch64)
   OPENBLAS_TARGET:=ARMV8
 else ifeq ($(ARCH),arm)
   OPENBLAS_TARGET:=ARMV5
 else ifeq ($(ARCH),mips)
-  OPENBLAS_TARGET:=MIPS24K
+  ifeq ($(CPU_TYPE),24kc)
+    OPENBLAS_TARGET:=MIPS24K
+  endif # CPU_TYPE == 24kc
 else ifeq ($(ARCH),mipsel)
-  OPENBLAS_TARGET:=MIPS24K
+  ifeq ($(CPU_TYPE),24kc)
+    OPENBLAS_TARGET:=MIPS24K
+  endif # CPU_TYPE == 24kc
 else ifeq ($(ARCH),powerpc)
   OPENBLAS_TARGET:=PPC440
-else ifeq ($(ARCH),mips64)
-  OPENBLAS_TARGET:=I6400
-else ifeq ($(ARCH),mips64el)
-  OPENBLAS_TARGET:=I6400
-else ifeq ($(ARCH),i386)
-  OPENBLAS_TARGET:=GENERIC
-else ifeq ($(ARCH),x86_64)
-  OPENBLAS_TARGET:=GENERIC
 endif
 endif # ifeq ($(OPENBLAS_TARGET),)
 
