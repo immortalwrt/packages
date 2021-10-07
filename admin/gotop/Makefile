@@ -1,10 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
@@ -36,16 +32,15 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
 define Package/gotop
-	SECTION:=admin
-	CATEGORY:=Administration
-	TITLE:=A terminal based graphical activity monitor
-	URL:=https://github.com/xxxserxxx/gotop
-	DEPENDS:=$(GO_ARCH_DEPENDS)
+  SECTION:=admin
+  CATEGORY:=Administration
+  TITLE:=A terminal based graphical activity monitor
+  URL:=https://github.com/xxxserxxx/gotop
+  DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
 define Package/gotop/description
-	Another terminal based graphical activity monitor,
-	inspired by gtop and vtop, this time written in Go!
+  Another terminal based graphical activity monitor.
 endef
 
 define Package/gotop/config
