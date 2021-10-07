@@ -1,10 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
@@ -30,15 +26,14 @@ define Package/redsocks2
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=Web Servers/Proxies
-  TITLE:=Redirect any TCP connection to a SOCKS or HTTPS proxy server
+  TITLE:=Redirect TCP connection to proxy server
   URL:=https://github.com/semigodking/redsocks
   DEPENDS:=+libevent2 +libopenssl
 endef
 
 define Package/redsocks2/description
   This is a modified version of original redsocks.
-  The name is changed to be REDSOCKS2 since this release to distinguish with original redsocks.
-  This variant is useful for anti-GFW (Great Fire Wall).
+  Transparent redirector of any TCP/UDP connection to proxy.
 endef
 
 MAKE_VARS += DISABLE_SHADOWSOCKS=true
