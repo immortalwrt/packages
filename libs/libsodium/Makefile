@@ -19,7 +19,7 @@ PKG_MIRROR_HASH:=ad25d56085ba829acaeb07047030a1f319e1579827b564d7155f86ec9a9eaed
 
 PKG_VERSION:=$(PKG_BASE_VERSION)-$(PKG_SOURCE_DATE)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
 
-PKG_MAINTAINER:=Damiano Renfer <damiano.renfer@gmail.com>
+PKG_MAINTAINER:=Damiano Renfer <x9w2n7xnu@relay.firefox.com>
 PKG_LICENSE:=ISC
 PKG_LICENSE_FILES:=LICENSE
 
