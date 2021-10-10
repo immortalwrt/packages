@@ -73,6 +73,7 @@ jobs:
           $DOCKER opde feeds
       - name: Find affected packages
         run: |
+          $DOCKER touch .opde/addon.conf # TODO: remove it
           $DOCKER opde find-affected /feed/changelist -post -o .opde/addon.conf
           $DOCKER cat .opde/addon.conf
       - name: Opde config
