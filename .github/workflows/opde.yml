@@ -1,0 +1,94 @@
+name: Opde Build
+
+on:
+  pull_request:
+
+jobs:
+  worker:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86
+            subtarget: "64"
+
+    steps:
+      - name: Set up Environment Variable
+        run: |
+          OP_BASE_DIR="$(realpath ${{github.workspace}}/..)"
+          OP_DIR="$OP_BASE_DIR/openwrt"
+          echo "Openwrt SDK Dir: $OP_DIR"
+          mkdir $OP_DIR
+          echo "OP_DIR=$OP_DIR" >> $GITHUB_ENV
+          BRANCH="${GITHUB_BASE_REF#refs/heads/}"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          OPDE_VER="$OPDE_VER"
+          echo "OPDE_VER=$OPDE_VER" >> $GITHUB_ENV
+          echo "Building for $OPDE_VER"
+      #- name: Free disk space
+      #  run: |
+      #    sudo -E swapoff -a
+      #    sudo -E rm -f /swapfile
+      #    sudo -E docker image prune -a -f
+      #    sudo -E snap set system refresh.retain=2
+      #    sudo -E apt-get -y purge azure* dotnet* firefox ghc* google* hhvm llvm* mono* mysql* openjdk* php* zulu* powershell* msodbc*
+      #    sudo -E apt-get -y autoremove --purge
+      #    sudo -E apt-get clean
+      #    sudo -E rm -rf /usr/share/dotnet /usr/local/lib/android/sdk /etc/mysql /etc/php /usr/local/share/boost
+      #    [ -n "$AGENT_TOOLSDIRECTORY" ] && sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      #    df -h
+      - name: Checkout Packages repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: pull docker image
+        run: |
+          docker pull immortalwrt/opde:worker-$OPDE_VER
+          docker tag immortalwrt/opde:worker-$OPDE_VER immortalwrt/opde:worker
+          docker images
+      - name: Copy SDK
+        run: |
+          docker run -v $OP_DIR:/openwrt_bak immortalwrt/opde:worker sudo chown opde:opde -R /openwrt_bak
+          docker run -v $OP_DIR:/openwrt_bak immortalwrt/opde:worker rsync -av /openwrt/ /openwrt_bak
+      - name: Opde feeds
+        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde feeds
+      - name: Detect Changed Makefile
+        run: |
+          git diff --diff-filter=d --name-only HEAD~ | \
+          grep -v ".*/src/Makefile" | \
+          sed -e 's@.*/\(.\+\)/Makefile@package/feeds/packages/\1@' | \
+          tee changelist
+          sudo cp changelist $OP_DIR/changelist
+          sudo chown 1000:1000 $OP_DIR/changelist
+      - name: Find affected packages
+        run: |
+          docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde find-affected changelist -post -o .opde/addon.conf
+          cat .opde/addon.conf
+      - name: Opde config
+        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde config -i .opde/addon.conf
+      - name: Show config
+        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker cat .opde/min-config.in
+      - name: Opde download
+        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde download
+      - name: Opde build
+        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde build
+      - name: Fix premission
+        run: sudo chown $(id -u -n):$(id -g -n) -R $OP_DIR
+
+      - name: Prepare upload
+        run: |
+          mkdir /tmp/opdelogs && cp -rf $OP_DIR/.opde $OP_DIR/logs /tmp/opdelogs
+          mv $OP_DIR/bin /tmp/opdebin
+          rm $OP_DIR -rf
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Log
+          path: /tmp/opdelogs
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Packages
+          path: /tmp/opdebin
+      - name: debug # docker run -it -v $PWD:/openwrt immortalwrt/opde:base bash
+        uses: mxschmitt/action-tmate@v2
+        if: always()
