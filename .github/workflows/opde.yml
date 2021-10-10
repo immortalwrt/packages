@@ -34,6 +34,7 @@ jobs:
           echo "Feed: $FEED_NAME $FEED_GIT"
           DOCKER="docker run -v $PWD:/feed -v $OP_DIR:/openwrt opde:worker"
           echo "Docker command: $DOCKER"
+          echo "DOCKER=$DOCKER" >> $GITHUB_ENV
       #- name: Free disk space
       #  run: |
       #    sudo -E swapoff -a
