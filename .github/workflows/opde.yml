@@ -66,10 +66,13 @@ jobs:
         run: |
           docker run -v $OP_DIR:/openwrt_bak opde:worker sudo chown opde:opde -R /openwrt_bak
           docker run -v $OP_DIR:/openwrt_bak opde:worker rsync -av /openwrt/ /openwrt_bak
-      - name: Opde feeds
+      - name: replace feed
         run: |
           $DOCKER sudo chown opde:opde -R /feed
           $DOCKER sed -i "s%src-git $FEED_NAME $FEED_GIT%src-link $FEED_NAME /feed%" feeds.conf.default
+          $DOCKER cat feeds.conf.default
+      - name: Opde feeds
+        run: |
           $DOCKER opde feeds
       - name: Find affected packages
         run: |
