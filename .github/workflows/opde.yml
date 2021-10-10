@@ -69,7 +69,7 @@ jobs:
       - name: Opde feeds
         run: |
           $DOCKER sudo chown opde:opde -R /feed
-          $DOCKER sed -i "s%src-git #FEED_NAME $FEED_GIT%src-link $FEED_NAME /feed%" feeds.conf.default
+          $DOCKER sed -i "s%src-git $FEED_NAME $FEED_GIT%src-link $FEED_NAME /feed%" feeds.conf.default
           $DOCKER opde feeds
       - name: Find affected packages
         run: |
