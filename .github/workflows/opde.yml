@@ -100,6 +100,6 @@ jobs:
         with:
           name: Packages
           path: /tmp/opdebin
-      #- name: debug # docker run -it -v $PWD:/openwrt immortalwrt/opde:base bash
-      #  uses: mxschmitt/action-tmate@v2
-      #  if: always()
+      - name: debug # docker run -it -v $PWD:/openwrt immortalwrt/opde:base bash
+        uses: mxschmitt/action-tmate@v2
+        if: always()
