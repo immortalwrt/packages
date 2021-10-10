@@ -27,6 +27,13 @@ jobs:
           OPDE_VER="${{matrix.target}}_${{matrix.subtarget}}-$BRANCH"
           echo "OPDE_VER=$OPDE_VER" >> $GITHUB_ENV
           echo "Building for $OPDE_VER"
+          FEED_NAME="packages"
+          FEED_GIT="https://github.com/immortalwrt/packages.git"
+          echo "FEED_NAME=$FEED_NAME" >> $GITHUB_ENV
+          echo "FEED_GIT=$FEED_GIT" >> $GITHUB_ENV
+          echo "Feed: $FEED_NAME $FEED_GIT"
+          DOCKER="docker run -v $PWD:/feed -v $OP_DIR:/openwrt opde:worker"
+          echo "Docker command: $DOCKER"
       #- name: Free disk space
       #  run: |
       #    sudo -E swapoff -a
@@ -43,37 +50,38 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: pull docker image
-        run: |
-          docker pull immortalwrt/opde:worker-$OPDE_VER
-          docker tag immortalwrt/opde:worker-$OPDE_VER immortalwrt/opde:worker
-          docker images
-      - name: Copy SDK
-        run: |
-          docker run -v $OP_DIR:/openwrt_bak immortalwrt/opde:worker sudo chown opde:opde -R /openwrt_bak
-          docker run -v $OP_DIR:/openwrt_bak immortalwrt/opde:worker rsync -av /openwrt/ /openwrt_bak
-      - name: Opde feeds
-        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde feeds
       - name: Detect Changed Makefile
         run: |
           git diff --diff-filter=d --name-only HEAD~ | \
           grep -v ".*/src/Makefile" | \
           sed -e 's@.*/\(.\+\)/Makefile@package/feeds/packages/\1@' | \
           tee changelist
-          sudo cp changelist $OP_DIR/changelist
-          sudo chown 1000:1000 $OP_DIR/changelist
+      - name: pull docker image
+        run: |
+          docker pull immortalwrt/opde:base-$OPDE_VER # TODO: switch back to worker
+          docker tag immortalwrt/opde:base-$OPDE_VER opde:worker
+          docker images
+      - name: Copy SDK
+        run: |
+          docker run -v $OP_DIR:/openwrt_bak opde:worker sudo chown opde:opde -R /openwrt_bak
+          docker run -v $OP_DIR:/openwrt_bak opde:worker rsync -av /openwrt/ /openwrt_bak
+      - name: Opde feeds
+        run: |
+          $DOCKER sudo chown opde:opde -R /feed
+          $DOCKER sed -i "s%src-git #FEED_NAME $FEED_GIT%src-link $FEED_NAME /feed%" feeds.conf.default
+          $DOCKER opde feeds
       - name: Find affected packages
         run: |
-          docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde find-affected changelist -post -o .opde/addon.conf
-          cat .opde/addon.conf
+          $DOCKER opde find-affected /feed/changelist -post -o .opde/addon.conf
+          $DOCKER cat .opde/addon.conf
       - name: Opde config
-        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde config -i .opde/addon.conf
+        run: $DOCKER opde config -i .opde/addon.conf
       - name: Show config
-        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker cat .opde/min-config.in
+        run: $DOCKER cat .opde/min-config.in
       - name: Opde download
-        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde download
+        run: $DOCKER opde download
       - name: Opde build
-        run: docker run -v $OP_DIR:/openwrt immortalwrt/opde:worker opde build
+        run: $DOCKER opde build
       - name: Fix premission
         run: sudo chown $(id -u -n):$(id -g -n) -R $OP_DIR
 
@@ -90,6 +98,6 @@ jobs:
         with:
           name: Packages
           path: /tmp/opdebin
-      - name: debug # docker run -it -v $PWD:/openwrt immortalwrt/opde:base bash
-        uses: mxschmitt/action-tmate@v2
-        if: always()
+      #- name: debug # docker run -it -v $PWD:/openwrt immortalwrt/opde:base bash
+      #  uses: mxschmitt/action-tmate@v2
+      #  if: always()
