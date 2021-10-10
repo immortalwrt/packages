@@ -74,14 +74,12 @@ jobs:
       - name: Opde feeds
         run: |
           $DOCKER opde feeds
+          $DOCKER opde config
       - name: Find affected packages
-        run: |
-          $DOCKER touch .opde/addon.conf # TODO: remove it
+        run: | # TODO: move to `opde config`
+          $DOCKER touch .opde/addon.conf
           $DOCKER opde find-affected /feed/changelist -post -o .opde/addon.conf
           $DOCKER cat .opde/addon.conf
-      - name: debug
-        uses: mxschmitt/action-tmate@v2
-        if: always()
       - name: Opde config
         run: $DOCKER opde config -i .opde/addon.conf
       - name: Show config
