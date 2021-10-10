@@ -23,7 +23,7 @@ jobs:
           echo "OP_DIR=$OP_DIR" >> $GITHUB_ENV
           BRANCH="${GITHUB_BASE_REF#refs/heads/}"
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-          OPDE_VER="$OPDE_VER"
+          OPDE_VER="${{matrix.target}}_${{matrix.subtarget}}-$BRANCH"
           echo "OPDE_VER=$OPDE_VER" >> $GITHUB_ENV
           echo "Building for $OPDE_VER"
       #- name: Free disk space
