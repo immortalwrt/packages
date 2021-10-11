@@ -53,7 +53,7 @@ endef
 
 define Package/libharu/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libhpdf.soxxx $(1)/usr/lib/
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libhpdf.so $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libharu))
