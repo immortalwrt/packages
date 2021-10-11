@@ -22,7 +22,6 @@ jobs:
           mkdir $OP_DIR
           echo "OP_DIR=$OP_DIR" >> $GITHUB_ENV
           BRANCH="${GITHUB_BASE_REF#refs/heads/}"
-          BRANCH="master" # TODO: remove it when merge into master
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           OPDE_VER="${{matrix.target}}_${{matrix.subtarget}}-$BRANCH"
           echo "OPDE_VER=$OPDE_VER" >> $GITHUB_ENV
@@ -91,16 +90,25 @@ jobs:
       - name: Fix premission
         run: sudo chown $(id -u -n):$(id -g -n) -R $OP_DIR
 
+      - name: Check
+        run: |
+          ERR_PACKS=$(cat .opde/log.out | grep ERROR | grep -v fullconenat || true)
+          echo $ERR_PACKS
+          [[ $errors == "" ]]
+
       - name: Prepare upload
+        if: always()
         run: |
           mkdir /tmp/opdelogs && cp -rf $OP_DIR/.opde $OP_DIR/logs /tmp/opdelogs
           mv $OP_DIR/bin /tmp/opdebin
           rm $OP_DIR -rf
       - uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: Log
           path: /tmp/opdelogs
       - uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: Packages
           path: /tmp/opdebin
