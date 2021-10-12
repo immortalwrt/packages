@@ -92,7 +92,7 @@ jobs:
 
       - name: Check
         run: |
-          ERR_PACKS=$(cat .opde/log.out | grep ERROR | grep -v fullconenat || true)
+          ERR_PACKS=$(cat $OP_DIR/.opde/log.out | grep ERROR | grep -v fullconenat || true)
           echo $ERR_PACKS
           [[ $errors == "" ]]
 
