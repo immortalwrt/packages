@@ -1,9 +1,6 @@
+# SDPX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2021 Elon Huang
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 Elon Huang <elonhhuang@gmail.com>
 
 include $(TOPDIR)/rules.mk
 
@@ -12,25 +9,25 @@ PKG_VERSION:=2.3.0
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/libharu/libharu/tar.gz/RELEASE_2_3_0?
+PKG_SOURCE_URL:=https://codeload.github.com/libharu/libharu/tar.gz/RELEASE_$(subst .,_,$(PKG_VERSION))?
 PKG_HASH:=8f9e68cc5d5f7d53d1bc61a1ed876add1faf4f91070dbc360d8b259f46d9a4d2
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-RELEASE_2_3_0
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-RELEASE_$(subst .,_,$(PKG_VERSION))
 
-PKG_MAINTAINER:= ElonH <elonhhuang@gmail.com>
-PKG_LICENSE:=MIT
+PKG_MAINTAINER:=Elon Huang <elonhhuang@gmail.com>
+PKG_LICENSE:=zlib
 PKG_LICENSE_FILES:=LICENSE
-#PKG_CPE_ID:=cpe:/a:yaml-cpp_project:yaml-cpp
 
+PKG_BUILD_PARALLEL:=1
 CMAKE_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 define Package/libharu
-  SECTION:=development
+  SECTION:=libs
   CATEGORY:=Libraries
-  TITLE:=libhura
-  URL:=https://github.com/libharu/libharu
+  TITLE:=free PDF library
+  URL:=http://libharu.org/
   DEPENDS:=+libstdcpp +libpng
 endef
 
@@ -53,7 +50,7 @@ endef
 
 define Package/libharu/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libhpdf.so $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libhpdf.so* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libharu))
