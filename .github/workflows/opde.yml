@@ -12,6 +12,10 @@ jobs:
         include:
           - target: x86
             subtarget: "64"
+          - target: bcm27xx
+            subtarget: bcm2711
+          - target: bcm27xx
+            subtarget: bcm2710
 
     steps:
       - name: Set up Environment Variable
