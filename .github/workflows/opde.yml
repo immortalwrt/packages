@@ -30,7 +30,7 @@ jobs:
           echo "Openwrt SDK Dir: $OP_DIR"
           mkdir $OP_DIR
           echo "OP_DIR=$OP_DIR" >> $GITHUB_ENV
-          BRANCH="${GITHUB_BASE_REF#refs/heads/}"
+          BRANCH="master"
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           OPDE_VER="${{matrix.target}}_${{matrix.subtarget}}-$BRANCH"
           echo "OPDE_VER=$OPDE_VER" >> $GITHUB_ENV
