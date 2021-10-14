@@ -102,8 +102,8 @@ jobs:
       - name: Check
         run: |
           ERR_PACKS=$(cat $OP_DIR/.opde/log.out | grep ERROR | grep -v fullconenat || true)
-          echo $ERR_PACKS
-          [[ $errors == "" ]]
+          for i in $ERR_PACKS; do echo $i; done
+          [[ $ERR_PACKS == "" ]]
 
       - name: Prepare upload
         if: always()
@@ -114,12 +114,12 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: Log
+          name: Log-${{env.OPDE_VER}}
           path: /tmp/opdelogs
       - uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: Packages
+          name: Packages-${{env.OPDE_VER}}
           path: /tmp/opdebin
       #- name: debug # docker run -it -v $PWD:/openwrt immortalwrt/opde:base bash
       #  uses: mxschmitt/action-tmate@v2
