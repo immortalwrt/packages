@@ -25,7 +25,7 @@ start_service() {
   [ "$enabled" -gt 0 ] || return 0
 
   config_get user syncthing user 'root'
-  config_get gui_address syncthing gui_address "http://127.0.0.1:8384"
+  config_get gui_address syncthing gui_address "0.0.0.0:8384"
   config_get home syncthing home "/etc/syncthing"
 
   # For backwards compatibility
