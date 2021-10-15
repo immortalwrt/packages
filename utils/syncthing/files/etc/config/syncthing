@@ -2,7 +2,7 @@
 config syncthing 'syncthing'
 	option enabled '0'
 
-	option gui_address 'http://127.0.0.1:8384'
+	option gui_address '0.0.0.0:8384'
 
 	# Use internal flash for evaluation purpouses. Use external storage
 	#   for production.
