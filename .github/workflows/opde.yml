@@ -62,6 +62,7 @@ jobs:
       - name: Detect Changed Makefile
         run: |
           git diff --diff-filter=d --name-only HEAD~ | \
+          grep "Makefile" | \
           grep -v ".*/src/Makefile" | \
           sed -e 's@.*/\(.\+\)/Makefile@package/feeds/packages/\1@' | \
           tee changelist
