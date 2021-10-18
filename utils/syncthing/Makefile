@@ -47,10 +47,10 @@ define Package/syncthing
   USERID:=syncthing=499:syncthing=499
 endef
 
-#define Package/syncthing/conffiles
-#/etc/config/syncthing
-#/etc/syncthing
-#endef
+define Package/syncthing/conffiles
+/etc/config/syncthing
+/etc/syncthing
+endef
 
 define Package/syncthing/description
 		Syncthing replaces proprietary sync and cloud services with something
@@ -81,11 +81,11 @@ ifeq ($(CONFIG_SYNCTHING_COMPRESS_UPX),y)
 endif
 endef
 
-#define Package/syncthing/install
-#	$(call GoPackage/Package/Install/Bin,$(1))
-#
-#	$(CP) ./files/* $(1)/
-#endef
+define Package/syncthing/install
+	$(call GoPackage/Package/Install/Bin,$(1))
+
+	$(CP) ./files/* $(1)/
+endef
 
 $(eval $(call GoBinPackage,syncthing))
 $(eval $(call BuildPackage,syncthing))
