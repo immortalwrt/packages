@@ -42,6 +42,7 @@ config XRAY_PLUGIN_PROVIDE_V2RAY_PLUGIN
 
 config XRAY_PLUGIN_COMPRESS_GOPROXY
 	bool "Compiling with GOPROXY proxy"
+	depends on @!mips64
 	default n
 
 config XRAY_PLUGIN_COMPRESS_UPX
