@@ -54,6 +54,7 @@ config HYSTERIA_COMPRESS_GOPROXY
 
 config HYSTERIA_COMPRESS_UPX
 	bool "Compress executable files with UPX"
+	depends on @!mips64
 	default y
 endef
 
