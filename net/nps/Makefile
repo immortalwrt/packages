@@ -53,13 +53,15 @@ Package/nps/description = $(Package/nps/description/template)
 define Package/npc/config
 	config NPC_COMPRESS_UPX
 		bool "Compress executable files with UPX"
-		default y
+		depends on !mips64
+		default y if mips||mipsel
 endef
 
 define Package/nps/config
 	config NPS_COMPRESS_UPX
 		bool "Compress executable files with UPX"
-		default y
+		depends on !mips64
+		default y if mips||mipsel
 endef
 
 define Build/Compile

@@ -54,7 +54,8 @@ config BAIDUPCS_WEB_COMPRESS_GOPROXY
 
 config BAIDUPCS_WEB_COMPRESS_UPX
 	bool "Compress executable files with UPX"
-	default y
+	depends on !mips64
+	default y if mips||mipsel
 endef
 
 ifeq ($(CONFIG_BAIDUPCS_WEB_COMPRESS_GOPROXY),y)
