@@ -1,9 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
@@ -35,17 +32,17 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
 define Package/brook
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=Web Servers/Proxies
-	TITLE:=A cross-platform proxy software
-	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
-	URL:=https://github.com/txthinking/brook
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=Web Servers/Proxies
+  TITLE:=A cross-platform proxy software
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
+  URL:=https://github.com/txthinking/brook
 endef
 
 define Package/brook/description
-	Brook is a cross-platform strong encryption and not detectable proxy.
-	Zero-Configuration.
+  Brook is a cross-platform strong encryption and not detectable proxy.
+  Zero-Configuration.
 endef
 
 define Package/brook/config
@@ -55,7 +52,8 @@ define Package/brook/config
 
 	config BROOK_COMPRESS_UPX
 		bool "Compress executable files with UPX"
-		default y
+		depends on !mips64
+		default y if mips||mipsel
 endef
 
 ifeq ($(CONFIG_BROOK_COMPRESS_GOPROXY),y)

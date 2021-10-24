@@ -38,7 +38,8 @@ config DNSLOOKUP_COMPRESS_GOPROXY
 
 config DNSLOOKUP_COMPRESS_UPX
 	bool "Compress executable files with UPX"
-	default y
+	depends on !mips64
+	default y if mips||mipsel
 endef
 
 ifeq ($(CONFIG_DNSLOOKUP_COMPRESS_GOPROXY),y)

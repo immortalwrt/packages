@@ -63,7 +63,8 @@ config V2RAYA_COMPRESS_GOPROXY
 
 config V2RAYA_COMPRESS_UPX
 	bool "Compress executable files with UPX"
-	default y
+	depends on !mips64
+	default y if mips||mipsel
 endef
 
 ifneq ($(CONFIG_V2RAYA_COMPRESS_GOPROXY),)

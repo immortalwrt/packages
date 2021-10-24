@@ -46,7 +46,8 @@ config XRAY_PLUGIN_COMPRESS_GOPROXY
 
 config XRAY_PLUGIN_COMPRESS_UPX
 	bool "Compress executable files with UPX"
-	default y
+	depends on !mips64
+	default y if mips||mipsel
 endef
 
 ifneq ($(CONFIG_XRAY_PLUGIN_COMPRESS_GOPROXY),)
