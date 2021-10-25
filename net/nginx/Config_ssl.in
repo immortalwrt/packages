@@ -259,4 +259,11 @@ config NGINX_TS_MODULE
 		Add support for MPEG-TS Live Module module.
 	default n
 
+config NGINX_NJS_MODULE
+	bool
+	prompt "Enable NJS module"
+	help
+		Add support for Javascript dynamic module.
+	default n
+
 endmenu
