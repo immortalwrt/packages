@@ -3,7 +3,7 @@
 # Copyright (C) 2021 KFERMercer <KFER.Mercer@gmail.com>
 
 # to get the latest version & md5 checksum:
-# curl -L -s -k -H "Accept:text/plain" "http://router.uu.163.com/api/plugin?type=openwrt-$(ARCH)"
+# curl -L -s -k -H "Accept:text/plain" "https://router.uu.163.com/api/plugin?type=openwrt-$(ARCH)"
 
 include $(TOPDIR)/rules.mk
 
@@ -12,7 +12,7 @@ PKG_VERSION:=2.17.8
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(ARCH)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://uu.gdl.netease.com/uuplugin/openwrt-$(ARCH)/v$(PKG_VERSION)/uu.tar.gz?
+PKG_SOURCE_URL:=https://uu.gdl.netease.com/uuplugin/openwrt-$(ARCH)/v$(PKG_VERSION)/uu.tar.gz?
 ifeq ($(ARCH),aarch64)
   PKG_MD5SUM:=ebfe9e59227ba79e4a6c9acd5e52726d
 else ifeq ($(ARCH),arm)
