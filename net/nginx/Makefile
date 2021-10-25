@@ -16,7 +16,8 @@ PKG_SOURCE_URL:=https://nginx.org/download/
 PKG_HASH:=68ba0311342115163a0354cad34f90c05a7e8bf689dc498abf07899eda155560
 
 PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
-				Ansuel Smith <ansuelsmth@gmail.com>
+				Ansuel Smith <ansuelsmth@gmail.com> \
+				Nicolas Penin <nicolas.penin@dragon-angel.fr>
 PKG_LICENSE:=2-clause BSD-like license
 PKG_CPE_ID:=cpe:/a:nginx:nginx
 
@@ -70,6 +71,7 @@ PKG_CONFIG_DEPENDS := \
 	CONFIG_NGINX_STREAM_SSL_PREREAD_MODULE \
 	CONFIG_NGINX_RTMP_MODULE \
 	CONFIG_NGINX_TS_MODULE \
+	CONFIG_NGINX_NJS_MODULE \
 	CONFIG_OPENSSL_ENGINE \
 	CONFIG_OPENSSL_WITH_NPN
 
@@ -259,7 +261,7 @@ ifneq ($(BUILD_VARIANT),all-module)
     ADDITIONAL_MODULES += --with-http_secure_link_module
   endif
   ifeq ($(CONFIG_NGINX_HTTP_SUB),y)
-	ADDITIONAL_MODULES += --with-http_sub_module
+	  ADDITIONAL_MODULES += --with-http_sub_module
   endif
   ifeq ($(CONFIG_NGINX_STREAM_CORE_MODULE),y)
     ADDITIONAL_MODULES += --with-stream
@@ -282,6 +284,10 @@ ifneq ($(BUILD_VARIANT),all-module)
   ifeq ($(CONFIG_NGINX_TS_MODULE),y)
     ADDITIONAL_MODULES += --add-module=$(PKG_BUILD_DIR)/nginx-ts
   endif
+  ifeq ($(CONFIG_NGINX_NJS_MODULE),y)
+    ADDITIONAL_MODULES += --add-module=$(PKG_BUILD_DIR)/nginx-njs
+  endif
+
 else
   CONFIG_NGINX_HEADERS_MORE:=y
   CONFIG_NGINX_HTTP_BROTLI:=y
@@ -319,6 +325,21 @@ endef
 
 define Package/nginx-mod-luci/description
  Support file for LuCI in nginx. Include custom nginx configuration, autostart script for uwsgi.
+endef
+
+define Package/nginx-mod-njs
+  TITLE:=njs in nginx
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=Web Servers/Proxies
+  TITLE:=dynamic module for Nginx
+  URL:=http://nginx.org/
+  DEPENDS:=+nginx
+  CONFLICTS:=nginx-all-module
+endef
+
+define Package/nginx-mod-njs/description
+ Dynamic njs module for Nginx.
 endef
 
 
@@ -443,6 +464,20 @@ define Prepare/nginx-ts
 	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
 endef
 
+define Download/nginx-njs
+  VERSION:=376b540b9692c61c1a17b78c65192287b60d8e15
+  SUBDIR:=nginx-njs
+  FILE:=njs-$$(VERSION).tax.xz
+  URL:=https://github.com/nginx/njs.git
+  MIRROR_HASH:=skip
+  PROTO:=git
+endef
+
+define Prepare/nginx-njs
+	$(eval $(Download/nginx-njs))
+	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
+endef
+
 define Download/nginx-naxsi
   VERSION:=951123ad456bdf5ac94e8d8819342fe3d49bc002
   SUBDIR:=nginx-naxsi
@@ -556,6 +591,11 @@ ifeq ($(CONFIG_NGINX_TS_MODULE),y)
   $(Prepare/nginx-ts)
 endif
 
+ifeq ($(CONFIG_NGINX_NJS_MODULE),y)
+  $(eval $(call Download,nginx-njs))
+  $(Prepare/nginx-njs)
+endif
+
 ifneq "$(or $(CONFIG_NGINX_DAV),$(QUILT))" ""
   $(eval $(call Download,nginx-dav-ext-module))
   $(Prepare/nginx-dav-ext-module)
@@ -572,6 +612,7 @@ endef
 $(eval $(call BuildPackage,nginx-ssl))
 $(eval $(call BuildPackage,nginx-all-module))
 $(eval $(call BuildPackage,nginx-mod-luci))
+$(eval $(call BuildPackage,nginx-mod-njs))
 
 # TODO: remove after a transition period (together with pkg nginx-util):
 # It is for smoothly substituting nginx and nginx-mod-luci-ssl (by nginx-ssl
