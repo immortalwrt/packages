@@ -135,7 +135,6 @@ export BUILD_CC="$(TARGET_CC)"
 TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
 
 CONFIGURE_ARGS += \
-	--disable-linux-caps \
 	--disable-geoip \
 	--with-openssl="$(STAGING_DIR)/usr" \
 	--with-libtool \
