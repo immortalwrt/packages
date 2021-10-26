@@ -261,7 +261,7 @@ ifneq ($(BUILD_VARIANT),all-module)
     ADDITIONAL_MODULES += --with-http_secure_link_module
   endif
   ifeq ($(CONFIG_NGINX_HTTP_SUB),y)
-	  ADDITIONAL_MODULES += --with-http_sub_module
+    ADDITIONAL_MODULES += --with-http_sub_module
   endif
   ifeq ($(CONFIG_NGINX_STREAM_CORE_MODULE),y)
     ADDITIONAL_MODULES += --with-stream
