@@ -469,7 +469,7 @@ define Download/nginx-njs
   SUBDIR:=nginx-njs
   FILE:=njs-$$(VERSION).tax.xz
   URL:=https://github.com/nginx/njs.git
-  MIRROR_HASH:=skip
+  MIRROR_HASH:=96984ed32ee1cb617495b177dc646d3ae365f5be93263cd300212aa3a22fad2f
   PROTO:=git
 endef
 
