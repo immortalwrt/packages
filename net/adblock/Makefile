@@ -14,11 +14,12 @@ PKG_MAINTAINER:=Dirk Brenken <dev@brenken.org>
 include $(INCLUDE_DIR)/package.mk
 
 define Package/adblock
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=Powerful adblock script to block ad/abuse domains by using DNS
-	DEPENDS:=+jshn +jsonfilter +coreutils-sort +wget-ssl +libustream-openssl
-	PKGARCH:=all
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=Powerful adblock script to block ad/abuse domains by using DNS
+  DEPENDS:=+jshn +jsonfilter +coreutils-sort +wget-ssl \
+    @(PACKAGE_libustream-mbedtls||PACKAGE_libustream-openssl||PACKAGE_libustream-wolfssl)
+  PKGARCH:=all
 endef
 
 define Package/adblock/description
