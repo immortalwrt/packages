@@ -1,10 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
@@ -26,17 +22,17 @@ PKG_INSTALL:=1
 include $(INCLUDE_DIR)/package.mk
 
 define Package/microsocks
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=Web Servers/Proxies
-	TITLE:=tiny, portable SOCKS5 server with very moderate resource usage
-	URL:=https://github.com/rofl0r/microsocks
-	DEPENDS:=+libpthread
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=Web Servers/Proxies
+  TITLE:=Tiny, portable SOCKS5 server
+  URL:=https://github.com/rofl0r/microsocks
+  DEPENDS:=+libpthread
 endef
 
 define Package/microsocks/description
-	A SOCKS5 service that you can run on your remote boxes to tunnel connections
-	through them, if for some reason SSH doesn't cut it for you.
+  A SOCKS5 service that you can run on your remote boxes to tunnel connections
+  through them, if for some reason SSH doesn't cut it for you.
 endef
 
 define Package/microsocks/install

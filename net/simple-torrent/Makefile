@@ -1,20 +1,16 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=simple-torrent
-PKG_VERSION:=1.3.8
+PKG_VERSION:=1.3.9
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/boypt/simple-torrent/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=11568c2d927ce2375659332c995df60156e69a17c8e0755f6ce7cf1fe033af4e
+PKG_HASH:=3bdc4df30d04e4e94c04961bd001b7e7e4182bf171475d68de1560c3af1dc7bf
 
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=LICENSE

@@ -24,12 +24,9 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-COMPILE_TIME:= $(shell TZ=UTC date '+%Y-%m-%d %H:%M:%S')
 GO_PKG:=github.com/cloudflare/cloudflared
 GO_PKG_LDFLAGS:=-s -w
-GO_PKG_LDFLAGS+= \
-	-X 'main.Version=$(PKG_VERSION)' \
-	-X 'main.BuildTime=$(COMPILE_TIME)'
+GO_PKG_LDFLAGS_X:=main.Version=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
