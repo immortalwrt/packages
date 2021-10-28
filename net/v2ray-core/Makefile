@@ -205,9 +205,6 @@ define Package/v2ray-core/install
 	$(INSTALL_CONF) $(CURDIR)/files/v2ray.conf $(1)/etc/config/v2ray
 	$(INSTALL_DIR) $(1)/etc/init.d/
 	$(INSTALL_BIN) $(CURDIR)/files/v2ray.init $(1)/etc/init.d/v2ray
-
-	$(INSTALL_DIR) $(1)/etc/capabilities/
-	$(INSTALL_DATA) $(CURDIR)/files/v2ray.capabilities $(1)/etc/capabilities/v2ray.json
 endef
 
 define Package/v2ray-ctl/install
