@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=azure-iothub
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.14.4
+PKG_VERSION:=1.14.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=fbce9464ada8f313ab1a9d691aef8cdc837d9f8e635fac455cbab22b5c3f69d0
+PKG_HASH:=82ebb65488089efa34bc86f3fee2beff5588ea605e13395044c2a2b821ad15f2
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
