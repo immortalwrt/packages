@@ -1,6 +1,7 @@
 # SPDX-Identifier-License: GPL-3.0-only
 #
-# Copyright (C) 2021 Zxilly <zhouxinyu1001@gmail.com>
+# Copyright (C) 2021 Xinyu Zhou <zhouxinyu1001@gmail.com>
+# Copyright (C) 2021 Tianling Shen <cnsztl@immortalwrt.org>
 
 include $(TOPDIR)/rules.mk
 
@@ -9,15 +10,16 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/Zxilly/UA2F.git
-PKG_SOURCE_DATE:=2021-08-10
-PKG_SOURCE_VERSION:=6fe0b262016da48446197a5e307a04a4e9b66612
-PKG_MIRROR_HASH:=43d25d95fc16134b2b3f2ffae2b52af5b96fd9d0d450a5b468a8967ce981aa1b
+PKG_SOURCE_DATE:=2021-11-02
+PKG_SOURCE_VERSION:=d4e4c4dfe1acb111c9883daaa8642f764df0665a
+PKG_MIRROR_HASH:=b87b70206243a0f2ca6c79669f41ba33c9b8e3a0fbc0aaf254e2b5db722a3fa6
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILE:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/ua2f
   SECTION:=net
@@ -25,23 +27,17 @@ define Package/ua2f
   SUBMENU:=Routing and Redirection
   TITLE:=Change User-Agent to Fwords
   URL:=https://github.com/Zxilly/UA2F
-  DEPENDS:=+iptables-mod-nfqueue +libipset +libnetfilter-conntrack +libnetfilter-queue
+  DEPENDS:=+ipset +iptables-mod-conntrack-extra +iptables-mod-nfqueue \
+    +libnetfilter-conntrack +libnetfilter-queue
 endef
 
 define Package/ua2f/description
   Change User-agent to Fwords to prevent being checked by Dr.Com.
 endef
 
-EXTRA_LDFLAGS+= -lmnl -lnetfilter_queue -lipset
-
-define Build/Compile
-	$(TARGET_CC) $(TARGET_CFLAGS) $(TARGET_LDFLAGS) $(EXTRA_LDFLAGS) \
-		$(PKG_BUILD_DIR)/src/ua2f.c -o $(PKG_BUILD_DIR)/src/ua2f
-endef
-
 define Package/ua2f/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ua2f $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ua2f $(1)/usr/bin/
 
 	$(INSTALL_DIR) $(1)/etc/config $(1)/etc/init.d $(1)/etc/uci-defaults
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/ua2f.config $(1)/etc/config/ua2f
