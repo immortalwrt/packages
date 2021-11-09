@@ -48,7 +48,7 @@ endef
 define Package/trojan-go/description
   Trojan features multiple protocols over TLS to avoid both
   active/passive detections and ISP QoS limitations.
-ende
+endef
 
 define Package/trojan-go/config
 config TROJAN_GO_COMPRESS_GOPROXY
