@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nano
 PKG_VERSION:=5.9
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/nano
@@ -41,7 +41,9 @@ endef
 
 CONFIGURE_ARGS += \
 	--enable-tiny \
-	--without-slang
+	--disable-utf8 \
+	--disable-color \
+	--enable-linenumbers
 
 CONFIGURE_VARS += \
 	ac_cv_header_regex_h=no \

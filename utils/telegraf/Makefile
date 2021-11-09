@@ -3,12 +3,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=telegraf
-PKG_VERSION:=1.20.2
+PKG_VERSION:=1.20.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/influxdata/telegraf/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=3b0db9f48a76bb5076eded0ceab6ea568b295bbc525cdd8ad1ecf700ef317c18
+PKG_HASH:=cf8fd4d38970648281101e8a71b1a48c5765c8aaa9d67619c00272c9192e9057
 
 PKG_MAINTAINER:=Jonathan Pagel <jonny_tischbein@systemli.org>
 PKG_LICENSE:=MIT
@@ -59,6 +59,12 @@ define Package/telegraf-full/description
 	(Full build. including all plugins)
 endef
 
+define Package/telegraf/conffiles
+/etc/telegraf.conf
+endef
+
+Package/telegraf-full/conffiles = $(Package/telegraf/conffiles)
+
 define Build/Prepare
 	$(call Build/Prepare/Default)
 ifeq ($(BUILD_VARIANT),small)
@@ -70,7 +76,7 @@ define Package/telegraf/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 	$(INSTALL_DIR) $(1)/etc/init.d $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/init.d/telegraf $(1)/etc/init.d/telegraf
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/etc/telegraf.conf $(1)/etc/config/telegraf.conf
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/etc/telegraf.conf $(1)/etc/telegraf.conf
 endef
 
 define Package/telegraf-full/install
