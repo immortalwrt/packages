@@ -19,6 +19,8 @@ PKG_LICENSE_FILE:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
 
+UNZIP_CMD:=unzip -q -d $(PKG_BUILD_DIR) $(DL_DIR)/$(PKG_SOURCE)
+
 define Package/dns2socks
   SECTION:=net
   CATEGORY:=Network
@@ -29,11 +31,9 @@ define Package/dns2socks
 endef
 
 define Package/dns2socks/description
-  This is a command line utility to resolve DNS requests via 
+  This is a command line utility to resolve DNS requests via
   a SOCKS tunnel like Tor or a HTTP proxy.
 endef
-
-UNZIP_CMD:=unzip -q -d $(PKG_BUILD_DIR) $(DL_DIR)/$(PKG_SOURCE)
 
 define Build/Compile
 	$(TARGET_CC) \
