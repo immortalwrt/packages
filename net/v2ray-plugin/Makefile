@@ -1,12 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
 # Copyright (C) 2020 SharerMax
-#
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
@@ -54,15 +49,12 @@ ifeq ($(CONFIG_V2RAY_PLUGIN_COMPRESS_GOPROXY),y)
 endif
 
 define Package/v2ray-plugin
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=SIP003 plugin for shadowsocks, based on v2ray
-	URL:=https://github.com/teddysun/v2ray-plugin
-	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-certificates
-endef
-
-define Package/v2ray-plugin/description
-	Yet another SIP003 plugin for shadowsocks, based on v2ray
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=Web Servers/Proxies
+  TITLE:=SIP003 plugin for shadowsocks, based on v2ray
+  URL:=https://github.com/teddysun/v2ray-plugin
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
 define Build/Compile
