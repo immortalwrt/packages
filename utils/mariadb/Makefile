@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2018 Sebastian Kemper <sebastian_ml@gmx.net>
+# Copyright (C) 2021 Michal Hrusecky <michal@hrusecky.net>
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,19 +9,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mariadb
-PKG_VERSION:=10.4.17
+PKG_VERSION:=10.4.21
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL := \
-	https://mirror.netcologne.de/mariadb/$(PKG_NAME)-$(PKG_VERSION)/source \
-	https://mirror.lstn.net/mariadb/$(PKG_NAME)-$(PKG_VERSION)/source \
-	https://ftp.yz.yamagata-u.ac.jp/pub/dbms/mariadb/$(PKG_NAME)-$(PKG_VERSION)/source \
-	https://downloads.mariadb.org/interstitial/$(PKG_NAME)-$(PKG_VERSION)/source
+PKG_SOURCE_URL := https://archive.mariadb.org/$(PKG_NAME)-$(PKG_VERSION)/source
 
-PKG_HASH:=a7b104e264311cd46524ae546ff0c5107978373e4a01cf7fd8a241454548d16e
+PKG_HASH:=94dd2e6f5d286de8a7dccffe984015d4253a0568281c7440e772cfbe098a291d
 PKG_MAINTAINER:=Michal Hrusecky <Michal@Hrusecky.net>
-PKG_LICENSE:=GPL-2.0
+PKG_LICENSE:=GPL-2.0-only
 PKG_LICENSE_FILES:=COPYING THIRDPARTY
 
 PKG_CPE_ID:=cpe:/a:mariadb:mariadb
@@ -32,8 +29,6 @@ PKG_USE_MIPS16:=0
 HOST_BUILD_DEPENDS:=libxml2/host
 # Without libevent2 tests/async_queries sporadically fails on the bots
 PKG_BUILD_DEPENDS:=libevent2 mariadb/host
-
-CMAKE_INSTALL:=1
 
 CONF_DIR:=/etc/mysql
 PLUGIN_DIR:=/usr/lib/mariadb/plugin
@@ -178,8 +173,7 @@ MARIADB_COMMON_DEPENDS := \
 	+libatomic \
 	+libopenssl \
 	+libstdcpp \
-	+zlib \
-	@!USE_UCLIBC
+	+zlib
 
 # Pass CPPFLAGS in the CFLAGS as otherwise the build system will
 # ignore them.
@@ -476,11 +470,6 @@ define Build/Prepare
 	$(SED) '/ADD_DEFINITIONS(-DLIBICONV_PLUG)/d' $(PKG_BUILD_DIR)/libmariadb/libmariadb/CMakeLists.txt
 	$(foreach e,$(MARIADB_DISABLE_ENGINES),$(call Package/mariadb/disable/engine,$(PKG_BUILD_DIR),$(e));)
 	$(foreach p,$(MARIADB_DISABLE_PLUGINS),$(call Package/mariadb/disable/plugin,$(PKG_BUILD_DIR),$(p));)
-endef
-
-# Define Build/InstallDev, otherwise build system starts installing files into
-# staging area, which would interfere with mariadb-connector-c.
-define Build/InstallDev
 endef
 
 define Package/mariadb-client/install
