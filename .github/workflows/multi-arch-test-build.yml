@@ -22,6 +22,10 @@ jobs:
             target: ipq40xx-generic
             tag: sdk-ipq40xx_generic
 
+          - arch: mips_24kc
+            target: ath79-generic
+            tag: sdk-ath79_generic
+
           - arch: mipsel_24kc
             target: ramips-mt7621
             tag: sdk-ramips_mt7621
