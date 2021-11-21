@@ -19,7 +19,6 @@ PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/xtaci/kcptun
 
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.VERSION=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -62,9 +61,6 @@ This package only contains kcptun $(1).
 
   define Package/kcptun-$(1)/install
 		$$(call GoPackage/Package/Install/Bin,$$(PKG_INSTALL_DIR))
-
-		$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(PKG_INSTALL_DIR)/usr/bin/$(1)
-
 
 		$$(INSTALL_DIR) $$(1)/usr/bin
 		$$(INSTALL_BIN) $$(PKG_INSTALL_DIR)/usr/bin/$(1) $$(1)/usr/bin/kcptun-$(1)
