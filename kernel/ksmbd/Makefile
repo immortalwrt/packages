@@ -1,12 +1,20 @@
 include $(TOPDIR)/rules.mk
 
+ifeq ($(LEGACY_1806),1)
+  PKG_VERSION:=3.3.7
+  PKG_HASH:=d92706e2dc00bd612698be2c39759ea6170a869e657bae4a80cf6424a333babe
+  EXTRA_DEPENDS:=+kmod-lib-crc32c
+else
+  PKG_VERSION:=3.4.2
+  PKG_HASH:=939fd4829b5aeadce75b51d2b22046f4e41d2b15ee6489b37f481f33c152a6f3
+  EXTRA_DEPENDS:=+kmod-fs-nfsd +kmod-nf-nathelper-extra
+endif
+
 PKG_NAME:=ksmbd
-PKG_VERSION:=3.4.2
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/cifsd-team/cifsd/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=939fd4829b5aeadce75b51d2b22046f4e41d2b15ee6489b37f481f33c152a6f3
 
 PKG_MAINTAINER:=Andy Walsh <andy.walsh44+github@gmail.com>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -37,8 +45,7 @@ define KernelPackage/fs-ksmbd
 		+kmod-crypto-aead \
 		+kmod-crypto-ccm \
 		+kmod-crypto-gcm \
-		+kmod-fs-nfsd \
-		+kmod-nf-nathelper-extra
+		$(EXTRA_DEPENDS)
 endef
 
 # The last two DEPENDS are hacks in order to get CONFIG_ASN1 and CONFIG_OID_REGISTRY
