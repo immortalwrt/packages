@@ -46,7 +46,7 @@ config YQ_COMPRESS_GOPROXY
 config YQ_COMPRESS_UPX
 	bool "Compress executable files with UPX"
 	depends on !mips64
-	default y if mips||mipsel
+	default n
 endef
 
 ifeq ($(CONFIG_YQ_COMPRESS_GOPROXY),y)
