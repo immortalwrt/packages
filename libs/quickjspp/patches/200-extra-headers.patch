@@ -1,0 +1,11 @@
+--- a/quickjs/CMakeLists.txt
++++ b/quickjs/CMakeLists.txt
+@@ -7,7 +7,7 @@ set(quickjs_def CONFIG_VERSION="${versio
+ 
+ add_library(quickjs ${quickjs_src})
+ target_compile_definitions(quickjs PRIVATE ${quickjs_def} )
+-set_target_properties(quickjs PROPERTIES PUBLIC_HEADER "quickjs.h;quickjs-libc.h")
++set_target_properties(quickjs PROPERTIES PUBLIC_HEADER "quickjs.h;quickjs-atom.h;quickjs-libc.h;quickjs-opcode.h")
+ 
+ add_library(quickjs-dumpleaks ${quickjs_src})
+ target_compile_definitions(quickjs-dumpleaks PRIVATE ${quickjs_def} DUMP_LEAKS=1)
