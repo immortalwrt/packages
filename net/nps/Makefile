@@ -54,14 +54,14 @@ define Package/npc/config
 	config NPC_COMPRESS_UPX
 		bool "Compress executable files with UPX"
 		depends on !mips64
-		default y if mips||mipsel
+		default n
 endef
 
 define Package/nps/config
 	config NPS_COMPRESS_UPX
 		bool "Compress executable files with UPX"
 		depends on !mips64
-		default y if mips||mipsel
+		default n
 endef
 
 define Build/Compile

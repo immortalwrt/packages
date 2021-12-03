@@ -48,7 +48,7 @@ config GO_ALIYUNDRIVE_WEBDAV_COMPRESS_GOPROXY
 config GO_ALIYUNDRIVE_WEBDAV_COMPRESS_UPX
 	bool "Compress executable files with UPX"
 	depends on !mips64
-	default y if mips||mipsel
+	default n
 endef
 
 ifeq ($(CONFIG_GO_ALIYUNDRIVE_WEBDAV_COMPRESS_GOPROXY),y)

@@ -40,7 +40,7 @@ config BITSRUNLOGIN_GO_COMPRESS_GOPROXY
 config BITSRUNLOGIN_GO_COMPRESS_UPX
 	bool "Compress executable files with UPX"
 	depends on !mips64
-	default y if mips||mipsel
+	default n
 endef
 
 ifeq ($(CONFIG_BITSRUNLOGIN_GO_COMPRESS_GOPROXY),y)
