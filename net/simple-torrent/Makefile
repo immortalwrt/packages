@@ -54,7 +54,7 @@ config SIMPLE_TORRENT_COMPRESS_GOPROXY
 config SIMPLE_TORRENT_COMPRESS_UPX
 	bool "Compress executable files with UPX"
 	depends on !mips64
-	default y if mips||mipsel
+	default n
 endef
 
 ifeq ($(CONFIG_SIMPLE_TORRENT_COMPRESS_GOPROXY),y)

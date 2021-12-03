@@ -89,7 +89,7 @@ config XRAY_CORE_COMPRESS_GOPROXY
 config XRAY_CORE_COMPRESS_UPX
 	bool "Compress executable files with UPX"
 	depends on !mips64
-	default y if mips||mipsel
+	default n
 endmenu
 endef
 
