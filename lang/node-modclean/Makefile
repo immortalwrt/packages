@@ -4,16 +4,16 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=node-gyp
-PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=8.4.1
+PKG_NPM_NAME:=modclean
+PKG_NAME:=node-$(PKG_NPM_NAME)
+PKG_VERSION:=3.0.0-beta.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=9b15f2e20bc62d3f318763aff83df91d6c8f16214fb1cba918fa1362a2c27dc8
+PKG_HASH:=88532b71a73c214f6d4841b13cf83f6cc03de81c181c37316b29e4e57701970d
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -29,17 +29,17 @@ PKG_USE_MIPS16:=0
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-gyp
+define Package/node-modclean
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Node.js native addon build tool
-  URL:=https://www.npmjs.org/package/node-gyp
+  TITLE:=Remove unwanted files and directories from your node_modules folder
+  URL:=https://www.npmjs.org/package/modclean
   DEPENDS:=+node
 endef
 
-define Package/node-gyp/description
- node-gyp is a cross-platform command-line tool written in Node.js for compiling native addon modules for Node.js. It contains a vendored copy of the gyp-next project that was previously used by the Chromium team, extended to support the development of Node.js native addons.
+define Package/node-modclean/description
+ Remove unwanted files and directories from your node_modules folder
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -66,24 +66,24 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-gyp/install
+define Package/node-modclean/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{*.md,*.gypi,gyp} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.js} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{node_modules,bin,lib} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/node-gyp.js $(1)/usr/bin/node-gyp
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/modclean.js $(1)/usr/bin/modclean
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-gyp/postrm
+define Package/node-modclean/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/node-gyp || true
-rm -rf /usr/lib/node/node-gyp || true
+rm /usr/lib/node_modules/modclean || true
+rm -rf /usr/lib/node/modclean || true
 endef
 
 define Host/Compile
@@ -103,13 +103,13 @@ define Host/Install
 	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)
 	$(CP) $(HOST_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/{*.md,*.gypi,gyp} \
+	$(CP) $(HOST_BUILD_DIR)/{*.md,*.js} \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
 	$(CP) $(HOST_BUILD_DIR)/{node_modules,bin,lib} \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/bin
-	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/node-gyp.js $(1)/bin/node-gyp
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/modclean.js $(1)/bin/modclean
 endef
 
 $(eval $(call HostBuild))
-$(eval $(call BuildPackage,node-gyp))
+$(eval $(call BuildPackage,node-modclean))
