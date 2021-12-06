@@ -6,20 +6,20 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zigbee2mqtt
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.21.2
-PKG_RELEASE:=1
+PKG_VERSION:=1.22.1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=6a3ba5dd0f5cdad3ad9f59943d9d7c220fe6b17c7a0eacce35af92ca942b6ed6
+PKG_HASH:=2b0376248a891662626a9f8429cabac5e2eb7bb1054f6cbdf37a936b16bc9ac2
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_BUILD_DEPENDS:=node/host
+PKG_BUILD_DEPENDS:=node/host node-modclean/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
@@ -60,9 +60,12 @@ define Build/Compile
 	rm -f $(PKG_BUILD_DIR)/node_modules/zigbee2mqtt-frontend/dist/report.html
 	rm -f $(PKG_BUILD_DIR)/node_modules/zigbee2mqtt-frontend/dist/*.map
 	rm -f $(PKG_BUILD_DIR)/node_modules/zigbee2mqtt-frontend/dist/*/*.map
+	#rm -rf $(PKG_BUILD_DIR)/node_modules/zigbee-herdsman-converters/node_modules/zigbee-herdsman
 	rm -rf $(PKG_BUILD_DIR)/node_modules/moment/min
 	rm -rf $(PKG_BUILD_DIR)/node_modules/moment/src
 	rm -rf $(PKG_BUILD_DIR)/node_modules/moment/locale
+	modclean --no-progress -r --patterns="default:safe" --additional-patterns="*.d.ts" \
+	         --path $(PKG_BUILD_DIR) --ignore="examples,example*"
 	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
