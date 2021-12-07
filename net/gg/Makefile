@@ -42,5 +42,9 @@ define Package/gg/description
   Usage example: gg python -m pip install torch.
 endef
 
+define Package/gg/conffiles
+/root/.ggconfig.toml
+endif
+
 $(eval $(call GoBinPackage,gg))
 $(eval $(call BuildPackage,gg))
