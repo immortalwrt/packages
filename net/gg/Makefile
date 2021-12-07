@@ -44,7 +44,7 @@ endef
 
 define Package/gg/conffiles
 /root/.ggconfig.toml
-endif
+endef
 
 $(eval $(call GoBinPackage,gg))
 $(eval $(call BuildPackage,gg))
