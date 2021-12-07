@@ -30,7 +30,7 @@ define Package/gg
   CATEGORY:=Network
   TITLE:=A command-line tool for one-click proxy
   URL:=https://github.com/mzz2017/gg
-  DEPENDS:=@(arm||x86_64) +ca-bundle
+  DEPENDS:=@(aarch64||arm||x86_64) +ca-bundle
 endef
 
 define Package/gg/description
