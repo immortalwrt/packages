@@ -17,6 +17,7 @@ jobs:
           - arch: aarch64_cortex-a53
             target: bcm27xx-bcm2710
             tag: sdk-bcm27xx_bcm2710
+            runtime_test: true
 
           - arch: arm_cortex-a7_neon-vfpv4
             target: ipq40xx-generic
@@ -33,6 +34,7 @@ jobs:
           - arch: x86_64
             target: x86-64
             tag: sdk-x86_64
+            runtime_test: true
 
     steps:
       - uses: actions/checkout@v2
@@ -103,7 +105,7 @@ jobs:
       - name: Build Docker container
         if: ${{ matrix.runtime_test }}
         run: |
-          docker build -t test-container --build-arg ARCH .github/workflows/
+          docker build -t test-container --build-arg ARCH="$ARCH" --build-arg BRANCH="$BRANCH" .github/workflows/
         env:
           ARCH: ${{ matrix.arch }}
 
