@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=htop
-PKG_VERSION:=3.0.5
-PKG_RELEASE:=2
+PKG_VERSION:=3.1.2
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/htop-dev/htop/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=4c2629bd50895bd24082ba2f81f8c972348aa2298cc6edc6a21a7fa18b73990c
+PKG_HASH:=fe9559637c8f21f5fd531a4c072048a404173806acbdad1359c6b82fd87aa001
 
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
@@ -55,9 +55,12 @@ define Package/htop/config
 endef
 
 CONFIGURE_ARGS += \
-	--with-sensors=$(if $(CONFIG_HTOP_LMSENSORS),yes,no) \
-	--enable-linux-affinity \
+	--$(if $(CONFIG_HTOP_LMSENSORS),en,dis)able-sensors \
+	--enable-affinity \
+	--disable-capabilities \
+	--disable-delayacct \
 	--disable-unicode \
+	--disable-unwind \
 	--disable-hwloc
 
 CONFIGURE_VARS += \
