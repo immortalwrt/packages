@@ -31,7 +31,7 @@ GO_PKG_LDFLAGS_X:=main.version=v$(PKG_VERSION)
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
-define Package/mosdns/Default
+define Package/mosdns
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
