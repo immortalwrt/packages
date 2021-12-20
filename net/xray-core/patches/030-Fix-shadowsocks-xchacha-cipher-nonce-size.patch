@@ -1,4 +1,4 @@
-From 305e1d716cbd9c6f5c3513dcdad1cd48d525036c Mon Sep 17 00:00:00 2001
+From 9ea1bf7c1dfad892aafc8807b56ce398bb2eb819 Mon Sep 17 00:00:00 2001
 From: yuhan6665 <1588741+yuhan6665@users.noreply.github.com>
 Date: Sat, 18 Dec 2021 23:23:09 -0500
 Subject: [PATCH] Fix shadowsocks xchacha cipher nonce size
@@ -9,11 +9,9 @@ Subject: [PATCH] Fix shadowsocks xchacha cipher nonce size
  proxy/shadowsocks/validator.go | 6 +++---
  3 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/common/crypto/auth.go b/common/crypto/auth.go
-index 13866a4d5..8c659ff06 100644
 --- a/common/crypto/auth.go
 +++ b/common/crypto/auth.go
-@@ -39,10 +39,6 @@ func GenerateIncreasingNonce(nonce []byte) BytesGenerator {
+@@ -39,10 +39,6 @@ func GenerateIncreasingNonce(nonce []byt
  	}
  }
  
@@ -24,11 +22,9 @@ index 13866a4d5..8c659ff06 100644
  func GenerateAEADNonceWithSize(nonceSize int) BytesGenerator {
  	c := make([]byte, nonceSize)
  	for i := 0; i < nonceSize; i++ {
-diff --git a/proxy/shadowsocks/protocol.go b/proxy/shadowsocks/protocol.go
-index ee2b62c86..d310b009c 100644
 --- a/proxy/shadowsocks/protocol.go
 +++ b/proxy/shadowsocks/protocol.go
-@@ -86,7 +86,7 @@ func ReadTCPSession(validator *Validator, reader io.Reader) (*protocol.RequestHe
+@@ -86,7 +86,7 @@ func ReadTCPSession(validator *Validator
  		if aead != nil {
  			auth := &crypto.AEADAuthenticator{
  				AEAD:           aead,
@@ -37,11 +33,9 @@ index ee2b62c86..d310b009c 100644
  			}
  			r = crypto.NewAuthenticationReader(auth, &crypto.AEADChunkSizeParser{
  				Auth: auth,
-diff --git a/proxy/shadowsocks/validator.go b/proxy/shadowsocks/validator.go
-index b36e9bc82..5be81447c 100644
 --- a/proxy/shadowsocks/validator.go
 +++ b/proxy/shadowsocks/validator.go
-@@ -93,11 +93,11 @@ func (v *Validator) Get(bs []byte, command protocol.RequestCommand) (u *protocol
+@@ -93,11 +93,11 @@ func (v *Validator) Get(bs []byte, comma
  			var matchErr error
  			switch command {
  			case protocol.RequestCommandTCP:
