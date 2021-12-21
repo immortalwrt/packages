@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=uglify-js
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=3.14.3
+PKG_VERSION:=3.14.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=440778ee84fe8daa2e0aa48cc27da977c088541ee019a5637ca3031bcafe30b1
+PKG_HASH:=4ee1d8725b4b0062645f412812659ee612517b1d84956efa568fb39dbf125f5b
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=BSD-2-Clause

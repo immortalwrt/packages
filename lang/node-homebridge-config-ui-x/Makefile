@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge-config-ui-x
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.41.3
+PKG_VERSION:=4.41.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=27a4835d32d13d8c156a97b3894d48d49171d02966854447a7bab74ce011c4b9
+PKG_HASH:=8e537231f655251d253a40473e17fb521bd55fe9626b7dbfff4ab4eab7c84d1c
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_USE_MIPS16:=0

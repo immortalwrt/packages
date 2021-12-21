@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=coap
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=0.26.0
+PKG_VERSION:=1.0.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=59b4573e734e0c5e9345d762948772ecdd326faa4357d21d341b179a2805f063
+PKG_HASH:=00c8936867e84cb148fc1e823e05320cbbed8c6137764c2445a146d1519c1de9
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -63,11 +63,9 @@ endef
 
 define Package/node-coap/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md,*.js} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,lib} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{examples,test} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist,examples} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
