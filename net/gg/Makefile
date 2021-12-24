@@ -14,7 +14,7 @@ PKG_HASH:=51d1ccfb10ba0d9e8fdd68f4a566b8ed772980be1cf1d03da1969313f88b8bb6
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=AGPL-3.0-only
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE_FILES:=LICENSE-AGPL
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
@@ -44,7 +44,9 @@ define Package/gg/description
 endef
 
 define Package/gg/conffiles
+/root/.config/gg/config.toml
 /root/.ggconfig.toml
+/etc/ggconfig.toml
 endef
 
 $(eval $(call GoBinPackage,gg))
