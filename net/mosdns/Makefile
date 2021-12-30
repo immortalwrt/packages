@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mosdns
-PKG_VERSION:=2.2.0
+PKG_VERSION:=2.2.2
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=b892580bcf0eef59dae36e942afda043b15cb82a2189182060126027b642d3fc
+PKG_HASH:=ff1c2c22dc9fa258309ef533ff007c7140d2f08fae69a923a39781458f906bd4
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -31,23 +31,13 @@ GO_PKG_LDFLAGS_X:=main.version=v$(PKG_VERSION)
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
-define Package/mosdns/Default
+define Package/mosdns
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
   TITLE:=A plug-in DNS forwarder/splitter
   URL:=https://github.com/IrineSistiana/mosdns
-endef
-
-define Package/mosdns
-  $(call Package/mosdns/Default)
-  DEPENDS:=$(GO_ARCH_DEPENDS)
-endef
-
-define Package/mosdns-geodata
-  $(call Package/mosdns/Default)
-  TITLE+= (geodata resources)
-  DEPENDS:=mosdns
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
 define Package/mosdns/config
@@ -66,34 +56,6 @@ ifeq ($(CONFIG_MOSDNS_COMPRESS_GOPROXY),y)
 	export GOPROXY=https://goproxy.baidu.com
 endif
 
-GEOIP_VER:=202110210032
-GEOIP_FILE:=geoip.dat.$(GEOIP_VER)
-
-define Download/geoip
-  URL:=https://github.com/v2fly/geoip/releases/download/$(GEOIP_VER)/
-  URL_FILE:=geoip.dat
-  FILE:=$(GEOIP_FILE)
-  HASH:=932cd484471f8066c040ab84a04fdd70df6c5cee99545de610e1f337bb696220
-endef
-
-GEOSITE_VER:=20211018134657
-GEOSITE_FILE:=dlc.dat.$(GEOSITE_VER)
-
-define Download/geosite
-  URL:=https://github.com/v2fly/domain-list-community/releases/download/$(GEOSITE_VER)/
-  URL_FILE:=dlc.dat
-  FILE:=$(GEOSITE_FILE)
-  HASH:=60b2388b11f1f9b6e14794fbacdf3bf693e3101e3ec651ce5423d8caceda5497
-endef
-
-define Build/Prepare
-	$(call Build/Prepare/Default)
-ifneq ($(CONFIG_PACKAGE_mosdns-geodata),)
-	$(call Download,geoip)
-	$(call Download,geosite)
-endif
-endef
-
 define Build/Compile
 	$(call GoPackage/Build/Compile)
 ifneq ($(CONFIG_MOSDNS_COMPRESS_UPX),)
@@ -109,12 +71,6 @@ define Package/mosdns/install
 	$(INSTALL_DATA) ./files/config.yaml $(1)/etc/mosdns/config.yaml
 endef
 
-define Package/mosdns-geodata/install
-	$(INSTALL_DIR) $(1)/etc/mosdns
-	$(INSTALL_DATA) $(DL_DIR)/$(GEOIP_FILE) $(1)/etc/mosdns/geoip.dat
-	$(INSTALL_DATA) $(DL_DIR)/$(GEOSITE_FILE) $(1)/etc/mosdns/geosite.dat
-endef
-
 define Package/mosdns/postinst
 #!/bin/sh
 
@@ -128,4 +84,3 @@ endef
 
 $(eval $(call GoBinPackage,mosdns))
 $(eval $(call BuildPackage,mosdns))
-$(eval $(call BuildPackage,mosdns-geodata))
