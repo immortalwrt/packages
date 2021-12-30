@@ -52,6 +52,9 @@ transmission() {
 	local mem_percentage
 	local nice
 	local web_home
+	local ca_bundle
+	config_get_bool ca_bundle "$cfg" ca_bundle 1
+	[ "$ca_bundle" -gt 0 ] && ca_bundle_file="/etc/ssl/certs/ca-certificates.crt"
 
 	section_enabled "$section" || return 1
 
@@ -128,13 +131,15 @@ transmission() {
 		logger -t transmission "Starting with $USE virt mem"
 	fi
 
-	if test -d "$web_home"; then
-		procd_set_param env TRANSMISSION_WEB_HOME="$web_home"
-	fi
+	[ -d "$web_home" ] && procd_set_param env TRANSMISSION_WEB_HOME="$web_home"
+	[ "$ca_bundle" -gt 0 ] && procd_set_param env CURL_CA_BUNDLE="$ca_bundle_file"
 
 	procd_add_jail transmission log
 	procd_add_jail_mount "$config_file"
 	procd_add_jail_mount_rw "$download_dir"
+	web_home="${web_home:-/usr/share/transmission/web}"
+	[ -d "$web_home" ] && procd_add_jail_mount "$web_home"
+	[ -f "$ca_bundle_file" ] && procd_add_jail_mount "$ca_bundle_file"
 	procd_close_instance
 }
 
