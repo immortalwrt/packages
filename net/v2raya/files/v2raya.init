@@ -47,9 +47,11 @@ start_service() {
 	append_param_arg "config" "log_max_days" "3"
 	append_param_arg "config" "v2ray_bin"
 	append_param_arg "config" "v2ray_confdir"
-	append_param_arg "config" "vless_grpc_inbound_cert_key"
 	append_param_bool "config" "log_disable_color"
 	append_param_bool "config" "log_disable_timestamp"
+	if [ v2ray-core = "v4" ];  then
+	append_param_arg "config" "vless_grpc_inbound_cert_key"
+	fi
 
 	procd_set_param limits core="unlimited"
 	procd_set_param respawn
