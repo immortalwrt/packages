@@ -35,6 +35,7 @@ define Package/cxxopts
   URL:=https://github.com/jarro2783/cxxopts
   TITLE:=Lightweight C++ command line option parser
   DEPENDS:=+libc
+  BUILDONLY:=1
 endef
 
 define Package/cxxopts/description
