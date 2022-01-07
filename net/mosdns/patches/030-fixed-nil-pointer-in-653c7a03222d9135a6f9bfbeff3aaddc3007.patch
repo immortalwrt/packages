@@ -1,0 +1,27 @@
+From 189e1c810fcdda95fee732fb37ba73e08055989f Mon Sep 17 00:00:00 2001
+From: IrineSistiana <49315432+IrineSistiana@users.noreply.github.com>
+Date: Thu, 6 Jan 2022 23:07:28 +0800
+Subject: [PATCH] fixed nil pointer in 653c7a03222d9135a6f9bfbeff3aaddc300762b4
+ #240
+
+---
+ dispatcher/plugin/executable/forward/forward.go | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+--- a/dispatcher/plugin/executable/forward/forward.go
++++ b/dispatcher/plugin/executable/forward/forward.go
+@@ -116,12 +116,11 @@ func newForwarder(bp *handler.BP, args *
+ 		})
+ 	}
+ 
++	f.bu = bundled_upstream.NewBundledUpstream(bu, bp.L())
++
+ 	if args.FastestIP {
+ 		f.fastIPHandler = fastip.NewFastestAddr()
+-	} else {
+-		f.bu = bundled_upstream.NewBundledUpstream(bu, bp.L())
+ 	}
+-
+ 	return f, nil
+ }
+ 
