@@ -84,7 +84,8 @@ register_client_interface () {
 	ip link add dev $ifname type wireguard
 
 	ip -6 a a dev $ifname $client_ip
-	wg set $ifname listen-port $port private-key $gw_key peer $pubkey allowed-ips ::/0 endpoint "${endpoint}:${gw_port}"
+	ip -6 a a dev $ifname fe80::2/64
+	wg set $ifname listen-port $port private-key $gw_key peer $pubkey allowed-ips 0.0.0.0/0,::0/0 endpoint "${endpoint}:${gw_port}"
 	ip link set up dev $ifname
 	ip link set mtu $mtu_client dev $ifname # configure mtu here!
 }
