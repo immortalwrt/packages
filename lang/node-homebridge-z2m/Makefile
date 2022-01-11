@@ -4,19 +4,19 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=homebridge-cmd4
+PKG_NPM_NAME:=homebridge-z2m
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=6.0.4
+PKG_VERSION:=1.6.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=f1bacce106ec6d362ffcc77601f5f552103ae2b48d3ddb4af56ea1f377352709
+PKG_HASH:=6c19a41d34a282f70ad54af6b5904941db47fad22f5c27eef59033d5a68ced89
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=MIT
+PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=node/host
@@ -25,17 +25,17 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-homebridge-cmd4
+define Package/node-homebridge-z2m
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Exec Plugin for Homebridge supporting all
-  URL:=https://www.npmjs.com/package/homebridge-cmd4
-  DEPENDS:=+node +node-homebridge
+  TITLE:=Expose your Zigbee devices to HomeKit with ease
+  URL:=https://www.npmjs.com/package/homebridge-z2m
+  DEPENDS:=+node +node-homebridge +node-mqtt
 endef
 
-define Package/node-homebridge-cmd4/description
- Cmd4 is a plugin for Homebridge that lets you see what Homebridge and Homekit are all about, without actually owning a single accessory! For the more advanced user, Cmd4 brings CLI support for all device types (Accessories) and characteristics.
+define Package/node-homebridge-z2m/description
+ Expose your Zigbee devices to HomeKit with ease, by integrating Zigbee2MQTT with Homebridge (via an MQTT message broker).
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -61,22 +61,22 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-homebridge-cmd4/install
+define Package/node-homebridge-z2m/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{README.md,*.js} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,config.schema.json} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,Extras,utils,lib} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist,exposes} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-homebridge-cmd4/postrm
+define Package/node-homebridge-z2m/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/homebridge-cmd4 || true
-rm -rf /usr/lib/node/homebridge-cmd4 || true
+rm /usr/lib/node_modules/homebridge-z2m || true
+rm -rf /usr/lib/node/homebridge-z2m || true
 endef
 
-$(eval $(call BuildPackage,node-homebridge-cmd4))
+$(eval $(call BuildPackage,node-homebridge-z2m))
