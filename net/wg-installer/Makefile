@@ -54,12 +54,22 @@ endef
 
 define Package/wg-installer-server-hotplug-babeld
 	$(call Package/wg-installer-server)
-	DEPENDS:=wg-installer-server
+	DEPENDS:=wg-installer-server +coreutils-dirname +coreutils-realpath
 endef
 
 define Package/wg-installer-server-hotplug-babeld/install
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/net/
 	$(INSTALL_BIN) ./wg-server/hotplug.d/99-mesh-babeld $(1)/etc/hotplug.d/net/99-mesh-babeld
+endef
+
+define Package/wg-installer-server-hotplug-olsrd
+	$(call Package/wg-installer-server)
+	DEPENDS:=wg-installer-server +coreutils-dirname +coreutils-realpath
+endef
+
+define Package/wg-installer-server-hotplug-olsrd/install
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/net/
+	$(INSTALL_BIN) ./wg-server/hotplug.d/99-mesh-olsrd $(1)/etc/hotplug.d/net/99-mesh-olsrd
 endef
 
 define Package/wg-installer-client
@@ -86,4 +96,5 @@ endef
 
 $(eval $(call BuildPackage,wg-installer-server))
 $(eval $(call BuildPackage,wg-installer-server-hotplug-babeld))
+$(eval $(call BuildPackage,wg-installer-server-hotplug-olsrd))
 $(eval $(call BuildPackage,wg-installer-client))
