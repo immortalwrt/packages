@@ -8,16 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=smcroute
-PKG_VERSION:=2.5.3
+PKG_VERSION:=2.5.5
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/troglobit/smcroute/releases/download/$(PKG_VERSION)
-PKG_HASH:=4342b95c99e410cab75e9ee80f20480e0170d8b07b8e31553ba1bec3e377fc56
-
-PKG_FIXUP:=autoreconf
+PKG_HASH:=2569cd97fa2047df14203a7144be53a1b32928cb460421a302bbcce381b42bc3
 
 include $(INCLUDE_DIR)/package.mk
 
