@@ -2,7 +2,7 @@ diff --git a/ports/unix/Makefile b/ports/unix/Makefile
 index cbdd3f3..0ab157d 100644
 --- a/ports/unix/Makefile
 +++ b/ports/unix/Makefile
-@@ -38,7 +38,7 @@ INC +=  -I$(TOP)
+@@ -36,7 +36,7 @@ INC +=  -I$(TOP)
  INC += -I$(BUILD)
  
  # compiler settings
