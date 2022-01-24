@@ -44,7 +44,7 @@ endef
 
 ifeq ($(CONFIG_CLOUDFLARED_COMPRESS_GOPROXY),y)
 	export GO111MODULE=on
-	export GOPROXY=https://goproxy.baidu.com
+	export GOPROXY=https://goproxy.bj.bcebos.com
 endif
 
 define Package/cloudflared
