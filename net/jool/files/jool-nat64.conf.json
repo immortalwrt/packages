@@ -1,0 +1,74 @@
+{
+	"comment": "Sample full NAT64 configuration.",
+
+	"instance": "instance name",
+	"framework": "netfilter",
+
+	"global": {
+		"pool6": "64:ff9b::/96",
+
+		"manually-enabled": false,
+
+		"zeroize-traffic-class": true,
+		"override-tos": false,
+		"tos": 254,
+		"mtu-plateaus": [1, 2, 3, 4, 5, 6],
+		"maximum-simultaneous-opens": 16,
+		"source-icmpv6-errors-better": true,
+		"handle-rst-during-fin-rcv": true,
+		"f-args": 10,
+
+		"logging-bib": true,
+		"logging-session": true,
+
+		"address-dependent-filtering": true,
+		"drop-icmpv6-info": true,
+		"drop-externally-initiated-tcp": true,
+
+		"udp-timeout": "1:00:00",
+		"tcp-est-timeout": "10:00:00",
+		"tcp-trans-timeout": "5:00",
+		"icmp-timeout": "5:30",
+
+		"ss-enabled": true,
+		"ss-flush-asap": false,
+		"ss-flush-deadline": 1000,
+		"ss-capacity": 256,
+		"ss-max-payload": 600
+	},
+
+	"pool4": [
+		{
+			"mark": 1,
+			"protocol": "UDP",
+			"prefix": "192.0.2.1",
+			"port range": "61001-62000",
+			"max-iterations": 1500
+		}, {
+			"comment": "mark, port range and max-iterations are optional.",
+			"protocol": "TCP",
+			"prefix": "192.0.2.2/31"
+		}, {
+			"mark": 1,
+			"protocol": "ICMP",
+			"prefix": "192.0.2.1/32",
+			"port range": "1000-2000"
+		}
+	],
+
+	"bib": [
+		{
+			"protocol": "TCP",
+			"ipv6 address": "2001:db8::1#80",
+			"ipv4 address": "192.0.2.2#80"
+		}, {
+			"protocol": "UDP",
+			"ipv6 address": "2001:db8::2#10000",
+			"ipv4 address": "192.0.2.1#61500"
+		}, {
+			"protocol": "ICMP",
+			"ipv6 address": "2001:db8:AAAA::1#44",
+			"ipv4 address": "192.0.2.1#1044"
+		}
+	]
+}

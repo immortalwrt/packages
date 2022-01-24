@@ -6,28 +6,15 @@ if [ "${DEVTYPE}" != "wireguard" ]; then
 fi
 
 # check if correct naming
-slicedint=$(echo $INTERFACE | cut -c1-3)
+slicedint=$(echo "$INTERFACE" | cut -c1-3)
 if [ "${slicedint}" != "wg_" ]; then
 	exit 0
 fi
 
-if [ "${ACTION}" == "add" ]; then
-	uci add olsrd Interface
-	uci set olsrd.@Interface[-1].ignore=0
-	uci set olsrd.@Interface[-1].interface="${INTERFACE}"
-	uci set olsrd.@Interface[-1].Mode="ether"
-	uci -c "$(dirname $(realpath /etc/config/olsrd))" commit olsrd
-	/etc/init.d/olsrd reload
+if [ "${ACTION}" = "add" ]; then
+	ubus call olsrd add_interface '{"ifname":'\""$INTERFACE"\"'}'
 fi
 
-if [ "${ACTION}" == "remove" ]; then
-	i=0
-	while uci get olsrd.@Interface[$i] &> /dev/null ; do
-		if [ "$(uci get olsrd.@Interface[$i].interface)" == "${INTERFACE}" ]; then
-			uci delete olsrd.@Interface[$i]
-		fi
-		i=$((i+1));
-	done
-	uci -c "$(dirname $(realpath /etc/config/olsrd))" commit olsrd
-	/etc/init.d/olsrd reload
+if [ "${ACTION}" = "remove" ]; then
+	ubus call olsrd del_interface '{"ifname":'\""$INTERFACE"\"'}'
 fi
