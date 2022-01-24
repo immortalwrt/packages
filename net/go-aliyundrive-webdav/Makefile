@@ -53,7 +53,7 @@ endef
 
 ifeq ($(CONFIG_GO_ALIYUNDRIVE_WEBDAV_COMPRESS_GOPROXY),y)
 	export GO111MODULE=on
-	export GOPROXY=https://goproxy.baidu.com
+	export GOPROXY=https://goproxy.bj.bcebos.com
 endif
 
 define Package/go-aliyundrive-webdav/conffiles
