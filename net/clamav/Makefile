@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=clamav
-PKG_VERSION:=0.103.3
+PKG_VERSION:=0.104.2
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.clamav.net/downloads/production/
-PKG_HASH:=9f6e3d18449f3d1a3992771d696685249dfa12736fe2b2929858f2c7d8276ae9
+PKG_HASH:=3e45e46d9aaeb3a6956ed30376237ab7c4cd9573bc0f5d6fc15c588d30978d9d
 
 PKG_MAINTAINER:=Marko Ratkaj <marko.ratkaj@sartura.hr> \
 		Lucian Cristian <lucian.cristian@gmail.com>
@@ -30,7 +30,7 @@ include $(INCLUDE_DIR)/nls.mk
 
 define Package/clamav/Default
   SECTION:=net
-  DEPENDS:=+libstdcpp +libpthread +zlib +libbz2 +libxml2 +libcurl +libjson-c +libmilter-sendmail +libopenssl +libltdl +libpcre2 $(ICONV_DEPENDS)
+  DEPENDS:=+check +libstdcpp +libpthread +zlib +libbz2 +libxml2 +libcurl +libjson-c +libmilter-sendmail +libopenssl +libltdl +libpcre2 $(ICONV_DEPENDS)
   CATEGORY:=Network
   SUBMENU:=Web Servers/Proxies
   TITLE:=ClamAV
