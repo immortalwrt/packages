@@ -187,7 +187,17 @@ endif
 ##	CONFIGURE_ARGS += --disable-libopus
 ##endif
 
+#required to cross-compile hdhomerun on non-Linux build host
+MAKE_FLAGS += \
+	OS=Linux
+
+#required to always have "build.linux" dir, not "build.darwin" on macos
+CONFIGURE_VARS += \
+	PLATFORM=linux
+
+#--platfrom=linux is required to cross-compile tvheadend on non-Linux build host
 CONFIGURE_ARGS += \
+	--platform=linux \
 	--arch=$(ARCH) \
 	--disable-libsystemd_daemon \
 	--disable-dbus_1 \
@@ -209,7 +219,7 @@ CONFIGURE_ARGS += \
 	--disable-libfdkaac_static \
 	--disable-pcloud_cache \
 	--enable-bundle \
-	--disable-uripaser \
+	--disable-uriparser \
 	--nowerror=unused-variable
 
 ## Transcoding | Remove these from CONFIGURE_ARGS.
@@ -230,7 +240,7 @@ define Build/Prepare
 		> $(PKG_BUILD_DIR)/debian/changelog
 endef
 
-define Package/conffiles
+define Package/tvheadend/conffiles
 /etc/config/tvheadend
 endef
 

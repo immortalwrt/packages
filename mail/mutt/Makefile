@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mutt
-PKG_VERSION:=2.1.3
+PKG_VERSION:=2.1.5
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL:=https://bitbucket.org/mutt/mutt/downloads/ \
 		http://ftp.mutt.org/pub/mutt/
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=ef759cc94b921b099a3ee88085d384fd3564c97f511e907bc83cf9812dd5e47c
+PKG_HASH:=92a309e47e363a97d62425bcb71adceae5ab5c4c413dbcac37fa98ed70c12be0
 
 PKG_MAINTAINER:=Phil Eichinger <phil@zankapfel.net>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -30,7 +30,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/mutt
   SECTION:=mail
   CATEGORY:=Mail
-  DEPENDS:=+MUTT_GNUTLS:libgnutls +MUTT_OPENSSL:libopenssl +libncursesw +MUTT_SASL:libsasl2 +terminfo +zlib
+  DEPENDS:=+MUTT_HCACHE:libgdbm +MUTT_GNUTLS:libgnutls +MUTT_OPENSSL:libopenssl +libncursesw +MUTT_SASL:libsasl2 +terminfo +zlib
   TITLE:=Console mail client
   URL:=http://www.mutt.org/
   MENU:=1
@@ -47,6 +47,7 @@ CONFIGURE_ARGS += \
 	$(if $(CONFIG_MUTT_POP),--enable-pop) \
 	$(if $(CONFIG_MUTT_IMAP),--enable-imap) \
 	$(if $(CONFIG_MUTT_SMTP),--enable-smtp) \
+	$(if $(CONFIG_MUTT_HCACHE),--enable-hcache) \
 	$(if $(CONFIG_MUTT_SASL),--with-sasl) \
 	--with-mailpath=/var/mail \
 	$(if $(CONFIG_MUTT_GNUTLS),--with-gnutls) \
@@ -60,42 +61,7 @@ define Package/mutt/install
 endef
 
 define Package/mutt/config
-	config MUTT_POP
-		depends on PACKAGE_mutt
-		bool "POP support"
-		default y
-		help
-			Enables POP support in mutt.
-	config MUTT_IMAP
-		depends on PACKAGE_mutt
-		bool "IMAP support"
-		default y
-		help
-			Enables IMAP support in mutt
-	config MUTT_SMTP
-		depends on PACKAGE_mutt
-		bool "SMTP support"
-		default n
-		help
-			Enables SMTP support in mutt.
-	config MUTT_SASL
-		depends on PACKAGE_mutt
-		bool "SASL support"
-		default n
-		help
-			Enables SASL support in mutt (libsasl2).
-	config MUTT_GNUTLS
-		depends on PACKAGE_mutt
-		bool "GnuTLS support"
-		default n
-		help
-			Enables GnuTLS support in mutt (libgnutls).
-	config MUTT_OPENSSL
-		depends on PACKAGE_mutt
-		bool "OpenSSL support"
-		default y
-		help
-			Enables OpenSSL support in mutt (libopenssl).
+  source "$(SOURCE)/Config.in"
 endef
 
 $(eval $(call BuildPackage,mutt))
