@@ -6,14 +6,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=forever
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.0.1
+PKG_VERSION:=4.0.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=eca586008aff4c5e92f134712009c3b7db0d03653f1e19babb59e1e688645764
+PKG_HASH:=d8f9391901af92e157a059700d81f1c40dd5f4e7ff792d0102c748a797947a65
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
