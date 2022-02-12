@@ -4,19 +4,19 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=aws-iot-device-sdk-v2
-PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.6.5
+PKG_NPM_NAME:=ts-node
+PKG_NAME:=$(PKG_NPM_NAME)
+PKG_VERSION:=10.5.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmmirror.com/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=7fdd42ff2e1756df5a379e3d98ddfb0ed0f04de0f5c5a8a95aebcc61e094e3d8
+PKG_HASH:=ef11641d7f35640bb19b1aa6c7209cbe9faaff63056a654fdce47471a1f8d379
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=Apache-2.0
+PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=node/host
@@ -25,17 +25,18 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-aws-iot-device-sdk-v2
+define Package/ts-node
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=AWS IoT Device SDK for JavaScript v2
-  URL:=https://www.npmjs.com/package/aws-iot-device-sdk-v2
-  DEPENDS:=+node +node-aws-crt
+  TITLE:=TypeScript execution environment and REPL for node.js
+  URL:=https://typestrong.org/ts-node/
+  DEPENDS:=+node +node-npm
 endef
 
-define Package/node-aws-iot-device-sdk-v2/description
- This SDK is built on the AWS Common Runtime, a collection of libraries (aws-c-common, aws-c-io, aws-c-mqtt, aws-c-http, aws-c-cal ...) written in C to be cross-platform, high-performance, secure, and reliable. The libraries are bound to JS by the awscrt package.
+define Package/ts-node/description
+ ts-node is a TypeScript execution engine and REPL for Node.js.
+ It JIT transforms TypeScript into JavaScript, enabling you to directly execute TypeScript on Node.js without precompiling. This is accomplished by hooking node's module loading APIs, enabling it to be used seamlessly alongside other Node.js tools and libraries.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -58,25 +59,31 @@ define Build/Compile
 	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -delete || true
 endef
 
-define Package/node-aws-iot-device-sdk-v2/install
+define Package/ts-node/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE,*.md,esm.mjs,tsconfig.*.json} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{LICENSE,NOTICE} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,transpilers,dist,dist-raw} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{dist,lib,docs} \
+	$(CP) $(PKG_BUILD_DIR)/{register,esm,node12,node14,node16} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/dist/bin.js $(1)/usr/bin/ts-node
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/dist/bin-script-deprecated.js $(1)/usr/bin/ts-script
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/dist/bin-script.js $(1)/usr/bin/ts-node-script
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/dist/bin-cwd.js $(1)/usr/bin/ts-node-cwd
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/dist/bin-transpile.js $(1)/usr/bin/ts-node-transpile-only
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-aws-iot-device-sdk-v2/postrm
+define Package/ts-node/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/aws-iot-device-sdk-v2 || true
-rm -rf /usr/lib/node/aws-iot-device-sdk-v2 || true
+rm /usr/lib/node_modules/ts-node || true
+rm -rf /usr/lib/node/ts-node || true
 endef
 
-$(eval $(call BuildPackage,node-aws-iot-device-sdk-v2))
+$(eval $(call BuildPackage,ts-node))

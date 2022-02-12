@@ -11,7 +11,7 @@ PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
-                https://registry.npm.taobao.org/$(PKG_NPM_NAME)/-/ \
+                https://registry.npmmirror.com/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=276200eb97ab41a80cdfac0e90979c61c2ba6a3a052a312228b3e2f8c6563f3d
 
