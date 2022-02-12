@@ -7,9 +7,9 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=node
 
 ifeq ($(CONFIG_NODEJS_16),y)
-PKG_VERSION:=v16.13.2
+PKG_VERSION:=v16.14.0
 PKG_RELEASE:=1
-PKG_HASH:=98b1de1ff92a292b93d2b2c93bc2a98656647b3d0c0d5623069f4f8047a8b4a0
+PKG_HASH:=05eb64193e391fa8a2c159c0f60c171824715165f80c67fcab9dbc944e30c623
 PATCH_DIR:=./patches/v16.x
 else
 ifeq ($(CONFIG_NODEJS_14),y)
@@ -27,7 +27,7 @@ endif
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/nodejs-release/$(PKG_VERSION) \
-                https://npm.taobao.org/mirrors/node/$(PKG_VERSION) \
+                https://cdn.npmmirror.com/binaries/node/$(PKG_VERSION) \
                 https://nodejs.org/dist/$(PKG_VERSION)
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
