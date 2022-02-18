@@ -920,9 +920,12 @@ static int init_ustream_ssl(void) {
 
 static int ask_user(void)
 {
+	char user_input;
 	fprintf(stderr, "Are you sure you want to continue the upgrade process? [N/y] ");
-	if (getchar() != 'y')
+	user_input = getchar();
+	if ((user_input != 'y') && (user_input != 'Y'))
 		return -EINTR;
+
 	return 0;
 }
 
@@ -1360,6 +1363,10 @@ static int select_image(struct blob_attr *images, const char *target_fstype, cha
 		ret = get_image_by_type(images, combined_type, fstype, image_name, image_sha256);
 		if (!ret)
 			return 0;
+
+		ret = get_image_by_type(images, "sdcard", fstype, image_name, image_sha256);
+		if (!ret)
+			return 0;
 	}
 
 	/* fallback to squashfs unless fstype requested explicitly */
@@ -1369,6 +1376,10 @@ static int select_image(struct blob_attr *images, const char *target_fstype, cha
 			return 0;
 
 		ret = get_image_by_type(images, combined_type, "squashfs", image_name, image_sha256);
+		if (!ret)
+			return 0;
+
+		ret = get_image_by_type(images, "sdcard", fstype, image_name, image_sha256);
 	}
 
 	return ret;
