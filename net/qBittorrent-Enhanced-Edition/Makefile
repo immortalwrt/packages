@@ -6,7 +6,7 @@ PKG_RELEASE=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/c0re100/qBittorrent-Enhanced-Edition/tar.gz/release-$(PKG_VERSION)?
-PKG_HASH:=7296c4ed516baaa004f78ed6ef3be8f2f932cabaf6339eb14b11aeda53907fd9
+PKG_HASH:=6615145de1ae717f06fb8c44e110be00b4548854c77e1d19226a23aff89b5715
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-release-$(PKG_VERSION)
 
