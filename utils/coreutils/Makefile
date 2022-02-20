@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=coreutils
-PKG_VERSION:=8.32
-PKG_RELEASE:=5
+PKG_VERSION:=9.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/coreutils
-PKG_HASH:=4458d8de7849df44ccab15e16b1548b285224dbba5f08fac070c1c0e0bcc4cfa
+PKG_HASH:=ce30acdf4a41bc5bb30dd955e9eaa75fa216b4e3deb08889ed32433c7b3b97ce
 
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=GPL-3.0-or-later
@@ -56,9 +56,9 @@ DIR_OTHERS := \
 	base32 b2sum basenc csplit dir dircolors fmt join numfmt pathchk pinky	\
 	pr ptx sha224sum sha384sum stdbuf tsort vdir
 
-$(eval $(foreach a,$(DIR_BIN),ALTS_$(a):=300:/bin/$(a):/usr/bin/gnu-$(a)$(newline)))
-$(eval $(foreach a,$(DIR_USR_BIN),ALTS_$(a):=300:/usr/bin/$(a):/usr/bin/gnu-$(a)$(newline)))
-$(eval $(foreach a,$(DIR_USR_SBIN),ALTS_$(a):=300:/usr/sbin/$(a):/usr/bin/gnu-$(a)$(newline)))
+$(eval $(foreach a,$(DIR_BIN),ALTS_$(a):=300:/bin/$(a):/usr/libexec/$(a)-coreutils$(newline)))
+$(eval $(foreach a,$(DIR_USR_BIN),ALTS_$(a):=300:/usr/bin/$(a):/usr/libexec/$(a)-coreutils$(newline)))
+$(eval $(foreach a,$(DIR_USR_SBIN),ALTS_$(a):=300:/usr/sbin/$(a):/usr/libexec/$(a)-coreutils$(newline)))
 
 DEPENDS_sort = +libpthread
 DEPENDS_timeout = +librt
@@ -137,8 +137,8 @@ endef
 
 define BuildPlugin
   define Package/$(1)/install
-	$(INSTALL_DIR) $$(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(2) $$(1)/usr/bin/$(if $(ALTS_$(2)),gnu-$(2),$(2))
+	$(INSTALL_DIR) $$(1)/usr/$(if $(ALTS_$(2)),libexec,bin)
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(2) $$(1)/usr/$(if $(ALTS_$(2)),libexec/$(2)-coreutils,bin/$(2))
 	$(foreach f,$(FILES_$(2)),
 		$(INSTALL_DIR) $$(1)/$(dir $(f))
 		$(INSTALL_BIN) $(PKG_INSTALL_DIR)/$(f) $$(1)/$(f)
