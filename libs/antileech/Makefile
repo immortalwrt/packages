@@ -1,15 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021-2022 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=antileech
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_DATE:=2019-10-09
@@ -26,12 +22,11 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
 
 define Package/antileech
-  SUBMENU:=P2P
-  SECTION:=net
-  CATEGORY:=Network
+  SECTION:=libs
+  CATEGORY:=Libraries
   TITLE:=AntiLeech for aMule
   URL:=https://github.com/persmule/amule-dlp.antiLeech
-  DEPENDS:=+amule +libc +libwxbase
+  DEPENDS:=+libc +libwxbase
 endef
 
 define Package/antileech/description
