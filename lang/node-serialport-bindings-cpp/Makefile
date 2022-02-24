@@ -5,14 +5,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NPM_SCOPE:=serialport
-PKG_NPM_NAME:=bindings
+PKG_NPM_NAME:=bindings-cpp
 PKG_NAME:=node-$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)
-PKG_VERSION:=10.0.1
+PKG_VERSION:=10.6.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
-PKG_HASH:=ec66bae30d29777527cd5f7771c967da9495bddb6e4dedc7b73630dde9964a1a
+PKG_HASH:=a45abd0835f4e385b7bd62ae6b32c6710b051d245963ebba25b0ae2509470183
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -24,17 +24,17 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-serialport-bindings
+define Package/node-serialport-bindings-cpp
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=SerialPort Bindings
-  URL:=https://www.npmjs.com/package/@serialport/bindings
+  TITLE:=SerialPort Hardware bindings for node serialport written in c++
+  URL:=https://www.npmjs.com/package/@serialport/bindings-cpp
   DEPENDS:=+node
 endef
 
-define Package/node-serialport-bindings/description
- The Binding is how Node-SerialPort talks to the underlying system. By default, we auto detect Windows, Linux and OS X, and load the appropriate module for your system. You can assign SerialPort.Binding to any binding you like.
+define Package/node-serialport-bindings-cpp/description
+ The Bindings provide a low level interface to work with your serialport. It is possible to use them alone but it's usually easier to use them with an interface.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -60,11 +60,11 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-serialport-bindings/install
+define Package/node-serialport-bindings-cpp/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE,*.md} \
 		$(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,lib} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist} \
 		$(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
 	$(INSTALL_DIR) $(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/build/Release
 	$(CP) $(PKG_BUILD_DIR)/build/Release/bindings.node \
@@ -74,12 +74,12 @@ define Package/node-serialport-bindings/install
 		$(1)/usr/lib/node_modules/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
 endef
 
-define Package/node-serialport-bindings/postrm
+define Package/node-serialport-bindings-cpp/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/@serialport/bindings || true
-rm -rf /usr/lib/node/@serialport/bindings || true
+rm /usr/lib/node_modules/@serialport/bindings-cpp || true
+rm -rf /usr/lib/node/@serialport/bindings-cpp || true
 rmdir /usr/lib/node_modules/@serialport || true
 rmdir /usr/lib/node/@serialport || true
 endef
 
-$(eval $(call BuildPackage,node-serialport-bindings))
+$(eval $(call BuildPackage,node-serialport-bindings-cpp))
