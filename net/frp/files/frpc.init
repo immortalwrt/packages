@@ -21,7 +21,9 @@ config_cb() {
 		option_cb() {
 			local option="$1"
 			local value="$2"
-			echo "$option = $value" >> "$conf_file"
+			[ "$option" = "name" ] && \
+			sed -i "s/$CONFIG_SECTION/$value/g" "$conf_file" || \
+			echo "$option = $value" >> "$conf_file";
 		}
 		list_cb() {
 			local name="$1"
@@ -33,6 +35,11 @@ config_cb() {
 		option_cb() { return 0; }
 		list_cb() { return 0; }
 	fi
+}
+
+service_triggers()
+{
+	procd_add_reload_trigger "$NAME"
 }
 
 start_service() {
@@ -69,4 +76,9 @@ start_service() {
 	[ $respawn -eq 1 ] && procd_set_param respawn
 	[ -n "$env" ] && config_list_foreach "$init_cfg" env "procd_append_param env"
 	procd_close_instance
+}
+
+reload_service() {
+	stop
+	start
 }

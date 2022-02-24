@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=frp
-PKG_VERSION:=0.38.0
+PKG_VERSION:=0.39.0
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v${PKG_VERSION}?
-PKG_HASH:=8a5e1af0455916ee17e1ad8d8bad32b637e50226d4bc991c0052fef88efc4745
+PKG_HASH:=639ad416587b03751569b0d51c097bcc52727643e0656064843efb5d0b08ba72
 
 PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
 PKG_LICENSE:=Apache-2.0
@@ -33,6 +33,11 @@ define Package/frp/install
 	$(INSTALL_CONF) ./files/$(2).config $(1)/etc/config/$(2)
 	$(INSTALL_DIR) $(1)/etc/init.d/
 	$(INSTALL_BIN) ./files/$(2).init $(1)/etc/init.d/$(2)
+
+	if [ -r ./files/$(2).uci-defaults ]; then \
+		$(INSTALL_DIR) $(1)/etc/uci-defaults; \
+		$(INSTALL_DATA) ./files/$(2).uci-defaults $(1)/etc/uci-defaults/$(2); \
+	fi
 endef
 
 define Package/frp/template
