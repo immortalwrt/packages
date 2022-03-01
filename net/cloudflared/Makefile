@@ -12,7 +12,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/cloudflare/cloudflared/tar.gz/$(PKG_VERSION)?
 PKG_HASH:=28bccb9a99cfcccade673f1c14cdbecc5fba7ab58fa6f1062cd671d749904ba5
 
-PKG_LICENSE:=Proprietary
+PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
