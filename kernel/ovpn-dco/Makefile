@@ -26,7 +26,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/ovpn-dco
   SUBMENU:=Network Support
   TITLE:=OpenVPN data channel offload
-  DEPENDS:=+kmod-crypto-aead +kmod-udptunnel4 +kmod-udptunnel6
+  DEPENDS:=+kmod-crypto-aead +kmod-udptunnel4 +kmod-udptunnel6 $(if $(LEGACY_1806),@BROKEN)
   FILES:=$(PKG_BUILD_DIR)/drivers/net/ovpn-dco/ovpn-dco.ko
   AUTOLOAD:=$(call AutoLoad,30,ovpn-dco)
 endef
