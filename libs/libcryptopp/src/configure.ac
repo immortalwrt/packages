@@ -900,7 +900,7 @@ if test "$IS_IA32" = "1" && test "x$enable_asm" != "xno"; then
    CXXFLAGS="-msse2 $WAQ_FLAG"
    AC_MSG_CHECKING([if $CXXNAME supports mixed ASM])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_asm_mixed.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_asm_mixed.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -934,7 +934,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse2.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse2.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -959,7 +959,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse3.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse3.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -981,7 +981,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_ssse3.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_ssse3.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -992,6 +992,8 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
       AC_SUBST([CRYPTOPP_CHAM_FLAG], [$CXXFLAGS])
       AC_SUBST([CRYPTOPP_KECCAK_FLAG], [$CXXFLAGS])
       AC_SUBST([CRYPTOPP_LEA_FLAG], [$CXXFLAGS])
+      AC_SUBST([CRYPTOPP_LSH256_FLAG], [$CXXFLAGS])
+      AC_SUBST([CRYPTOPP_LSH512_FLAG], [$CXXFLAGS])
       AC_SUBST([CRYPTOPP_SIMON128_FLAG], [$CXXFLAGS])
       AC_SUBST([CRYPTOPP_SPECK128_FLAG], [$CXXFLAGS])
       AC_DEFINE([CRYPTOPP_SSSE3_AVAILABLE], [1], [Enable SSSE3])
@@ -1011,7 +1013,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse41.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse41.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1037,7 +1039,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse42.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse42.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1062,7 +1064,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_clmul.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_clmul.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1081,7 +1083,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_clmul.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_clmul.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1104,7 +1106,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_aes.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_aes.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1125,7 +1127,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_aes.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_aes.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1149,13 +1151,12 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_avx.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_avx.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
 
    if test "$retval" = "0"; then
-      AC_SUBST([CRYPTOPP_CHACHA_AVX_FLAG], [$CXXFLAGS])
       AC_DEFINE([CRYPTOPP_AVX_AVAILABLE], [1], [Enable AVX])
    else
       AC_DEFINE([CRYPTOPP_DISABLE_AVX], [1], [Disable AVX])
@@ -1173,13 +1174,15 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_avx2.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_avx2.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
 
    if test "$retval" = "0"; then
       AC_SUBST([CRYPTOPP_CHACHA_AVX2_FLAG], [$CXXFLAGS])
+      AC_SUBST([CRYPTOPP_LSH256_AVX2_FLAG], [$CXXFLAGS])
+      AC_SUBST([CRYPTOPP_LSH512_AVX2_FLAG], [$CXXFLAGS])
       AC_DEFINE([CRYPTOPP_AVX2_AVAILABLE], [1], [Enable AVX2])
    else
       AC_DEFINE([CRYPTOPP_DISABLE_AVX2], [1], [Disable AVX2])
@@ -1197,7 +1200,7 @@ if test "$IS_IA32" = "1" && test "$IS_GNUC_COMPILER" = "1"; then
 
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sha.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sha.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1225,7 +1228,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=sse2"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse2.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse2.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1253,7 +1256,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=sse3"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse3.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse3.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1272,7 +1275,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=ssse3"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_ssse3.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_ssse3.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1285,6 +1288,8 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
       AC_SUBST([CRYPTOPP_CHAM_FLAG], [$CXXFLAGSX])
       AC_SUBST([CRYPTOPP_KECCAK_FLAG], [$CXXFLAGSX])
       AC_SUBST([CRYPTOPP_LEA_FLAG], [$CXXFLAGSX])
+      AC_SUBST([CRYPTOPP_LSH256_FLAG], [$CXXFLAGSX])
+      AC_SUBST([CRYPTOPP_LSH512_FLAG], [$CXXFLAGSX])
       AC_SUBST([CRYPTOPP_SIMON128_FLAG], [$CXXFLAGSX])
       AC_SUBST([CRYPTOPP_SPECK128_FLAG], [$CXXFLAGSX])
       AC_DEFINE([CRYPTOPP_SSSE3_AVAILABLE], [1], [Enable SSSE3])
@@ -1299,7 +1304,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=sse4_1"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse41.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse41.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1319,7 +1324,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=sse4_2"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse42.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sse42.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1342,7 +1347,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=aes"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_clmul.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_clmul.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1363,7 +1368,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=aes"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_aes.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_aes.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1384,7 +1389,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=avx"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_avx.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_avx.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1403,7 +1408,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=avx2"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_avx2.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_avx2.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1411,6 +1416,8 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    if test "$retval" = "0"; then
       CXXFLAGSX="$CXXFLAGS -D__AVX2__=1"
       AC_SUBST([CRYPTOPP_CHACHA_AVX2_FLAG], [$CXXFLAGSX])
+      AC_SUBST([CRYPTOPP_LSH256_AVX2_FLAG], [$CXXFLAGSX])
+      AC_SUBST([CRYPTOPP_LSH512_AVX2_FLAG], [$CXXFLAGSX])
       AC_DEFINE([CRYPTOPP_AVX2_AVAILABLE], [1], [Enable AVX2])
       AM_LDFLAGS="$AM_LDFLAGS $CXXFLAGS"
    else
@@ -1424,7 +1431,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=avx_i"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_rdrand.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_rdrand.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1442,7 +1449,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    CXXFLAGS="-xarch=avx2_i"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_rdseed.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_rdseed.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1459,7 +1466,7 @@ if test "$IS_IA32" != "0" && test "$IS_SUN_COMPILER" != "0"; then
    ##CXXFLAGS="-xarch=avx2_i"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sha.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_x86_sha.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1499,7 +1506,7 @@ if test "$IS_ARM32" != "0" && test "$IS_ANDROID_OS" = "0"; then
    CXXFLAGS="-march=armv7-a"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1507,7 +1514,7 @@ if test "$IS_ARM32" != "0" && test "$IS_ANDROID_OS" = "0"; then
    CXXFLAGS="-march=armv7-a -mfpu=neon"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_neon.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_neon.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1549,7 +1556,7 @@ if test "$IS_ARM32" != "0" && test "$IS_ANDROID_OS" != "0"; then
    CXXFLAGS="-march=armv7-a -mfloat-abi=softfp -mfpu=neon"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_neon.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_neon.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1593,15 +1600,15 @@ if test "$IS_ARM32" != "0" && test "$IS_LINUX_OS" != "0"; then
    CXXFLAGS="-march=armv7-a -Wa,--noexecstack"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
 
    if test "$retval" = "0"; then
       AM_CONDITIONAL([CRYPTOGAMS_ARM_SOURCES], [true])
-      AC_SUBST([CRYPTOPGAMS_ARMV4_FLAG], [$CXXFLAGS])
-      AC_SUBST([CRYPTOPGAMS_ARMV4_THUMB_FLAG], [$CXXFLAGS])
+      AC_SUBST([CRYPTOPGAMS_ARM_FLAG], [$CXXFLAGS])
+      AC_SUBST([CRYPTOPGAMS_ARM_THUMB_FLAG], [$CXXFLAGS])
    fi
 
    # For Clang, aes_armv4.S needs -mthumb
@@ -1610,13 +1617,13 @@ if test "$IS_ARM32" != "0" && test "$IS_LINUX_OS" != "0"; then
       CXXFLAGS="-march=armv7-a -mthumb -Wa,--noexecstack"
       AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
       XXX_COMPILE_IFELSE(
-         [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cxx`])],
+         [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cpp`])],
          [AC_MSG_RESULT([yes])],
          [AC_MSG_RESULT([no])]
       )
 
       if test "$retval" = "0"; then
-         AC_SUBST([CRYPTOPGAMS_ARMV4_THUMB_FLAG], [$CXXFLAGS])
+         AC_SUBST([CRYPTOPGAMS_ARM_THUMB_FLAG], [$CXXFLAGS])
       fi
    fi
 
@@ -1651,7 +1658,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8-a"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_asimd.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_asimd.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1674,7 +1681,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-mfix-cortex-a53-835769"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1686,7 +1693,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-mfix-cortex-a53-843419"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1698,7 +1705,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8-a+crc"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_crc.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_crc.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1714,7 +1721,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8-a+crypto"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS (AES)])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_aes.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_aes.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1730,7 +1737,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8-a+crypto"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS (PMULL)])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_pmull.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_pmull.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1747,7 +1754,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8-a+crypto"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS (SHA1)])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sha1.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sha1.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1763,7 +1770,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8-a+crypto"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS (SHA256)])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sha256.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sha256.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1779,7 +1786,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8.3-a+sha3"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS (SHA512)])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sha3.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sha3.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1795,7 +1802,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8.3-a+sha3"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS (SHA3)])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sha3.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sha3.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1811,7 +1818,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8.3-a+sm4"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS (SM3)])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sm3.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sm3.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -1827,7 +1834,7 @@ if test "$IS_ARMV8" != "0"; then
    CXXFLAGS="-march=armv8.3-a+sm4"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS (SM4)])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sm4.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_arm_sm4.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2002,7 +2009,7 @@ if test "$IS_PPC" != "0"; then
    CXXFLAGS="$ALTIVEC_FLAG"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_LINK_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_altivec.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_altivec.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2017,7 +2024,7 @@ if test "$IS_PPC" != "0"; then
    CXXFLAGS="$POWER7_VSX_FLAG"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_LINK_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_power7.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_power7.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2029,7 +2036,7 @@ if test "$IS_PPC" != "0"; then
      CXXFLAGS="$POWER7_PWR_FLAG"
      AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
      XXX_LINK_IFELSE(
-        [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_power7.cxx`])],
+        [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_power7.cpp`])],
         [AC_MSG_RESULT([yes])],
         [AC_MSG_RESULT([no])]
      )
@@ -2046,7 +2053,7 @@ if test "$IS_PPC" != "0"; then
    CXXFLAGS="$POWER8_FLAG"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_LINK_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_power8.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_power8.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2060,7 +2067,7 @@ if test "$IS_PPC" != "0"; then
    CXXFLAGS="$POWER9_FLAG"
    AC_MSG_CHECKING([if $CXXNAME supports $CXXFLAGS])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_power9.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_ppc_power9.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2158,7 +2165,7 @@ if true; then
 
    AC_MSG_CHECKING([whether runtime library is Newlib])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_newlib.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_newlib.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2192,7 +2199,7 @@ if test "$IS_DEBUG" = "1"; then
 
    AC_MSG_CHECKING([whether runtime library is libstdc++])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_glibc.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_glibc.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2233,7 +2240,7 @@ if true; then
 
    AC_MSG_CHECKING([whether runtime library is C++11])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx11.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx11.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2253,7 +2260,7 @@ if true; then
 
    AC_MSG_CHECKING([whether runtime library is C++17])
    XXX_COMPILE_IFELSE(
-      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx17.cxx`])],
+      [AC_LANG_SOURCE([`cat TestPrograms/test_cxx17.cpp`])],
       [AC_MSG_RESULT([yes])],
       [AC_MSG_RESULT([no])]
    )
@@ -2680,6 +2687,18 @@ fi
 if test x"$CRYPTOPP_LEA_FLAG" != "x"; then
    echo "CRYPTOPP_LEA_FLAG: $CRYPTOPP_LEA_FLAG"
 fi
+if test x"$CRYPTOPP_LSH256_FLAG" != "x"; then
+   echo "CRYPTOPP_LSH256_FLAG: $CRYPTOPP_LSH256_FLAG"
+fi
+if test x"$CRYPTOPP_LSH512_FLAG" != "x"; then
+   echo "CRYPTOPP_LSH512_FLAG: $CRYPTOPP_LSH512_FLAG"
+fi
+if test x"$CRYPTOPP_LSH256_AVX2_FLAG" != "x"; then
+   echo "CRYPTOPP_LSH256_AVX2_FLAG: $CRYPTOPP_LSH256_AVX2_FLAG"
+fi
+if test x"$CRYPTOPP_LSH512_AVX2_FLAG" != "x"; then
+   echo "CRYPTOPP_LSH512_AVX2_FLAG: $CRYPTOPP_LSH512_AVX2_FLAG"
+fi
 if test x"$CRYPTOPP_KECCAK_FLAG" != "x"; then
    echo "CRYPTOPP_KECCAK_FLAG: $CRYPTOPP_KECCAK_FLAG"
 fi
@@ -2704,8 +2723,8 @@ fi
 if test x"$CRYPTOPP_SM4_FLAG" != "x"; then
    echo "CRYPTOPP_SM4_FLAG: $CRYPTOPP_SM4_FLAG"
 fi
-if test x"$CRYPTOPGAMS_ARMV4_FLAG" != "x"; then
-   echo "CRYPTOPGAMS_ARMV4_FLAG: $CRYPTOPGAMS_ARMV4_FLAG"
+if test x"$CRYPTOPGAMS_ARM_FLAG" != "x"; then
+   echo "CRYPTOPGAMS_ARM_FLAG: $CRYPTOPGAMS_ARM_FLAG"
 fi
 
 echo ""
