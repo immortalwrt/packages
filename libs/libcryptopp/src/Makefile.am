@@ -75,6 +75,10 @@ EXTRA_LTLIBRARIES = \
    libgf2n_simd.la \
    libkeccak_simd.la \
    liblea_simd.la \
+   liblsh256_sse.la \
+   liblsh256_avx.la \
+   liblsh512_sse.la \
+   liblsh512_avx.la \
    libneon_simd.la \
    libppc_simd.la \
    libppc_power7.la \
@@ -126,6 +130,10 @@ libcryptopp_la_LIBADD = \
    $(libgf2n_simd_la_OBJECTS) \
    $(libkeccak_simd_la_OBJECTS) \
    $(liblea_simd_la_OBJECTS) \
+   $(liblsh256_sse_la_OBJECTS) \
+   $(liblsh256_avx_la_OBJECTS) \
+   $(liblsh512_sse_la_OBJECTS) \
+   $(liblsh512_avx_la_OBJECTS) \
    $(libneon_simd_la_OBJECTS) \
    $(libppc_simd_la_OBJECTS) \
    $(libppc_power7_la_OBJECTS) \
@@ -169,10 +177,14 @@ libcryptopp_la_DEPENDENCIES = \
    $(libcham_simd_la_OBJECTS) \
    $(libcrc_simd_la_OBJECTS) \
    $(libdonna_sse_la_OBJECTS) \
-   $(libkeccak_simd_la_OBJECTS) \
-   $(liblea_simd_la_OBJECTS) \
    $(libgcm_simd_la_OBJECTS) \
    $(libgf2n_simd_la_OBJECTS) \
+   $(libkeccak_simd_la_OBJECTS) \
+   $(liblea_simd_la_OBJECTS) \
+   $(liblsh256_sse_la_OBJECTS) \
+   $(liblsh256_avx_la_OBJECTS) \
+   $(liblsh512_sse_la_OBJECTS) \
+   $(liblsh512_avx_la_OBJECTS) \
    $(libneon_simd_la_OBJECTS) \
    $(libppc_simd_la_OBJECTS) \
    $(libppc_power7_la_OBJECTS) \
@@ -204,7 +216,7 @@ libcryptopp_la_DEPENDENCIES += $(libothers_la_OBJECTS)
 
 ## Man, did Autotools fuck this up royally...
 ## https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-libcryptopp_la_LDFLAGS = $(AM_LDFLAGS) -release 8.5.0 -version-info 8:5
+libcryptopp_la_LDFLAGS = $(AM_LDFLAGS) -release 8.6.0 -version-info 8:6
 
 ## Source files with special needs
 libcryptlib_la_SOURCES = cryptlib.cpp
@@ -252,6 +264,18 @@ libkeccak_simd_la_CXXFLAGS = $(AM_CXXFLAGS) $(CRYPTOPP_KECCAK_FLAG)
 liblea_simd_la_SOURCES = lea_simd.cpp
 liblea_simd_la_CXXFLAGS = $(AM_CXXFLAGS) $(CRYPTOPP_LEA_FLAG)
 
+liblsh256_sse_la_SOURCES = lsh256_sse.cpp
+liblsh256_sse_la_CXXFLAGS = $(AM_CXXFLAGS) $(CRYPTOPP_LSH256_FLAG)
+
+liblsh256_avx_la_SOURCES = lsh256_avx.cpp
+liblsh256_avx_la_CXXFLAGS = $(AM_CXXFLAGS) $(CRYPTOPP_LSH256_AVX2_FLAG)
+
+liblsh512_sse_la_SOURCES = lsh512_sse.cpp
+liblsh512_sse_la_CXXFLAGS = $(AM_CXXFLAGS) $(CRYPTOPP_LSH512_FLAG)
+
+liblsh512_avx_la_SOURCES = lsh512_avx.cpp
+liblsh512_avx_la_CXXFLAGS = $(AM_CXXFLAGS) $(CRYPTOPP_LSH512_AVX2_FLAG)
+
 libneon_simd_la_SOURCES = neon_simd.cpp
 libneon_simd_la_CXXFLAGS = $(AM_CXXFLAGS) $(CRYPTOPP_NEON_FLAG)
 
@@ -297,10 +321,10 @@ if CRYPTOGAMS_ARM_SOURCES
    libsha1_armv4_la_SOURCES = sha1_armv4.S
    libsha256_armv4_la_SOURCES = sha256_armv4.S
    libsha512_armv4_la_SOURCES = sha512_armv4.S
-   libaes_armv4_la_CCASFLAGS = $(AM_CXXFLAGS) $(CRYPTOPGAMS_ARMV4_THUMB_FLAG)
-   libsha1_armv4_la_CCASFLAGS = $(AM_CXXFLAGS) $(CRYPTOPGAMS_ARMV4_FLAG)
-   libsha256_armv4_la_CCASFLAGS = $(AM_CXXFLAGS) $(CRYPTOPGAMS_ARMV4_FLAG)
-   libsha512_armv4_la_CCASFLAGS = $(AM_CXXFLAGS) $(CRYPTOPGAMS_ARMV4_FLAG)
+   libaes_armv4_la_CCASFLAGS = $(AM_CXXFLAGS) $(CRYPTOPGAMS_ARM_THUMB_FLAG)
+   libsha1_armv4_la_CCASFLAGS = $(AM_CXXFLAGS) $(CRYPTOPGAMS_ARM_FLAG)
+   libsha256_armv4_la_CCASFLAGS = $(AM_CXXFLAGS) $(CRYPTOPGAMS_ARM_FLAG)
+   libsha512_armv4_la_CCASFLAGS = $(AM_CXXFLAGS) $(CRYPTOPGAMS_ARM_FLAG)
 endif
 
 ## cpufeatures library on Android
@@ -326,19 +350,19 @@ libothers_la_SOURCES = \
 	fipstest.cpp gcm.cpp gf256.cpp gf2_32.cpp gf2n.cpp gfpcrypt.cpp \
 	gost.cpp gzip.cpp hc128.cpp hc256.cpp hex.cpp hight.cpp hmac.cpp \
 	hrtimer.cpp ida.cpp idea.cpp iterhash.cpp kalyna.cpp kalynatab.cpp \
-	keccak.cpp keccak_core.cpp lea.cpp luc.cpp mars.cpp marss.cpp md2.cpp \
-	md4.cpp md5.cpp misc.cpp modes.cpp mqueue.cpp mqv.cpp nbtheory.cpp \
-	oaep.cpp osrng.cpp padlkrng.cpp panama.cpp pkcspad.cpp poly1305.cpp \
-	polynomi.cpp pssr.cpp pubkey.cpp queue.cpp rabbit.cpp rabin.cpp \
-	randpool.cpp rc2.cpp rc5.cpp rc6.cpp rdrand.cpp rdtables.cpp \
-	rijndael.cpp ripemd.cpp rng.cpp rsa.cpp rw.cpp safer.cpp salsa.cpp \
-	scrypt.cpp seal.cpp seed.cpp serpent.cpp sha.cpp sha3.cpp shacal2.cpp \
-	shake.cpp shark.cpp sharkbox.cpp simeck.cpp simon.cpp skipjack.cpp \
-	sm3.cpp sm4.cpp sosemanuk.cpp speck.cpp square.cpp squaretb.cpp \
-	strciphr.cpp tea.cpp tftables.cpp threefish.cpp tiger.cpp tigertab.cpp \
-	ttmac.cpp tweetnacl.cpp twofish.cpp vmac.cpp wake.cpp whrlpool.cpp \
-	xed25519.cpp xtr.cpp xtrcrypt.cpp xts.cpp zdeflate.cpp zinflate.cpp \
-	zlib.cpp
+	keccak.cpp keccak_core.cpp lea.cpp lsh256.cpp lsh512.cpp luc.cpp \
+	mars.cpp marss.cpp md2.cpp md4.cpp md5.cpp misc.cpp modes.cpp \
+	mqueue.cpp mqv.cpp nbtheory.cpp oaep.cpp osrng.cpp padlkrng.cpp \
+	panama.cpp pkcspad.cpp poly1305.cpp polynomi.cpp pssr.cpp pubkey.cpp \
+	queue.cpp rabbit.cpp rabin.cpp randpool.cpp rc2.cpp rc5.cpp rc6.cpp \
+	rdrand.cpp rdtables.cpp rijndael.cpp ripemd.cpp rng.cpp rsa.cpp rw.cpp \
+	safer.cpp salsa.cpp scrypt.cpp seal.cpp seed.cpp serpent.cpp sha.cpp \
+	sha3.cpp shacal2.cpp shake.cpp shark.cpp sharkbox.cpp simeck.cpp \
+	simon.cpp skipjack.cpp sm3.cpp sm4.cpp sosemanuk.cpp speck.cpp \
+	square.cpp squaretb.cpp strciphr.cpp tea.cpp tftables.cpp threefish.cpp \
+	tiger.cpp tigertab.cpp ttmac.cpp tweetnacl.cpp twofish.cpp vmac.cpp \
+	wake.cpp whrlpool.cpp xed25519.cpp xtr.cpp xtrcrypt.cpp xts.cpp \
+	zdeflate.cpp zinflate.cpp zlib.cpp
 
 # To build this list, see the head notes.
 pkginclude_HEADERS = \
@@ -354,18 +378,18 @@ pkginclude_HEADERS = \
 	filters.h fips140.h fltrimpl.h gcm.h gf256.h gf2_32.h gf2n.h gfpcrypt.h \
 	gost.h gzip.h hashfwd.h hc128.h hc256.h hex.h hight.h hkdf.h hmac.h \
 	hmqv.h hrtimer.h ida.h idea.h integer.h iterhash.h kalyna.h keccak.h \
-	lea.h local.h lubyrack.h luc.h mars.h md2.h md4.h md5.h mdc.h \
-	mersenne.h misc.h modarith.h modes.h modexppc.h mqueue.h mqv.h \
-	naclite.h nbtheory.h nr.h oaep.h oids.h osrng.h ossig.h padlkrng.h \
-	panama.h pch.h pkcspad.h poly1305.h polynomi.h ppc_simd.h pssr.h \
-	pubkey.h pwdbased.h queue.h rabbit.h rabin.h randpool.h rc2.h rc5.h \
-	rc6.h rdrand.h rijndael.h ripemd.h rng.h rsa.h rw.h safer.h salsa.h \
-	scrypt.h seal.h secblock.h secblockfwd.h seckey.h seed.h serpent.h \
-	serpentp.h sha.h sha3.h shacal2.h shake.h shark.h simeck.h simon.h \
-	simple.h siphash.h skipjack.h sm3.h sm4.h smartptr.h sosemanuk.h \
-	speck.h square.h stdcpp.h strciphr.h tea.h threefish.h tiger.h trap.h \
-	trunhash.h ttmac.h tweetnacl.h twofish.h vmac.h wake.h whrlpool.h \
-	words.h xed25519.h xtr.h xtrcrypt.h xts.h zdeflate.h zinflate.h zlib.h
+	lea.h lsh.h lubyrack.h luc.h mars.h md2.h md4.h md5.h mdc.h mersenne.h \
+	misc.h modarith.h modes.h modexppc.h mqueue.h mqv.h naclite.h \
+	nbtheory.h nr.h oaep.h oids.h osrng.h ossig.h padlkrng.h panama.h pch.h \
+	pkcspad.h poly1305.h polynomi.h ppc_simd.h pssr.h pubkey.h pwdbased.h \
+	queue.h rabbit.h rabin.h randpool.h rc2.h rc5.h rc6.h rdrand.h \
+	rijndael.h ripemd.h rng.h rsa.h rw.h safer.h salsa.h scrypt.h seal.h \
+	secblock.h secblockfwd.h seckey.h seed.h serpent.h serpentp.h sha.h \
+	sha3.h shacal2.h shake.h shark.h simeck.h simon.h simple.h siphash.h \
+	skipjack.h sm3.h sm4.h smartptr.h sosemanuk.h speck.h square.h stdcpp.h \
+	strciphr.h tea.h threefish.h tiger.h trap.h trunhash.h ttmac.h \
+	tweetnacl.h twofish.h vmac.h wake.h whrlpool.h words.h xed25519.h xtr.h \
+	xtrcrypt.h xts.h zdeflate.h zinflate.h zlib.h
 
 noinst_HEADERS = \
     local.h \
@@ -399,141 +423,143 @@ CLEANFILES = adhoc.cpp
 
 # Create with 'ls TestData/*.dat'. These files get installed.
 testdata_FILES = \
-    TestData/3desval.dat     TestData/fhmqv160.dat  TestData/rc2val.dat \
-    TestData/3wayval.dat     TestData/fhmqv256.dat  TestData/rc5val.dat \
-    TestData/aria.dat        TestData/fhmqv384.dat  TestData/rc6val.dat \
-    TestData/camellia.dat    TestData/fhmqv512.dat  TestData/rijndael.dat \
-    TestData/cast128v.dat    TestData/gostval.dat   TestData/rsa1024.dat \
-    TestData/cast256v.dat    TestData/hmqv160.dat   TestData/rsa2048a.dat \
-    TestData/defdmac1.bin    TestData/hmqv256.dat   TestData/rsa2048.dat \
-    TestData/defdmac2.bin    TestData/hmqv384.dat   TestData/rsa400pb.dat \
-    TestData/descert.dat     TestData/hmqv512.dat   TestData/rsa400pv.dat \
-    TestData/dh1024.dat      TestData/ideaval.dat   TestData/rsa512a.dat \
-    TestData/dh2048.dat      TestData/luc1024.dat   TestData/rw1024.dat \
-    TestData/dlie1024.dat    TestData/luc2048.dat   TestData/rw2048.dat \
-    TestData/dlie2048.dat    TestData/lucc1024.dat  TestData/saferval.dat \
-    TestData/dsa1024b.dat    TestData/lucc512.dat   TestData/serpentv.dat \
-    TestData/dsa1024.dat     TestData/lucd1024.dat  TestData/shacal2v.dat \
-    TestData/dsa512.dat      TestData/lucd512.dat   TestData/sharkval.dat \
-    TestData/ecies_p160.dat  TestData/lucs1024.dat  TestData/skipjack.dat \
-    TestData/ecies_t163.dat  TestData/lucs512.dat   TestData/squareva.dat \
-    TestData/ed25519.dat     TestData/marsval.dat   TestData/twofishv.dat \
-    TestData/ed25519v0.dat   TestData/mqv1024.dat   TestData/usage.dat \
-    TestData/ed25519v1.dat   TestData/mqv2048.dat   TestData/x25519.dat \
-    TestData/elgc1024.dat    TestData/nr1024.dat    TestData/x25519v0.dat \
-    TestData/esig1023.dat    TestData/nr2048.dat    TestData/x25519v1.dat \
-    TestData/esig1536.dat    TestData/rabi1024.dat  TestData/xtrdh171.dat \
-    TestData/esig2046.dat    TestData/rabi2048.dat  TestData/xtrdh342.dat
+	TestData/3desval.dat     TestData/fhmqv384.dat  TestData/rc6val.dat \
+	TestData/3wayval.dat     TestData/fhmqv512.dat  TestData/rijndael.dat \
+	TestData/aria.dat        TestData/gostval.dat   TestData/rsa1024.dat \
+	TestData/camellia.dat    TestData/hmqv160.dat   TestData/rsa2048a.dat \
+	TestData/cast128v.dat    TestData/hmqv256.dat   TestData/rsa2048.dat \
+	TestData/cast256v.dat    TestData/hmqv384.dat   TestData/rsa400pb.dat \
+	TestData/descert.dat     TestData/hmqv512.dat   TestData/rsa400pv.dat \
+	TestData/dh1024.dat      TestData/ideaval.dat   TestData/rsa512a.dat \
+	TestData/dh2048.dat      TestData/luc1024.dat   TestData/rw1024.dat \
+	TestData/dlie1024.dat    TestData/luc2048.dat   TestData/rw2048.dat \
+	TestData/dlie2048.dat    TestData/lucc1024.dat  TestData/saferval.dat \
+	TestData/dsa1024b.dat    TestData/lucc512.dat   TestData/serpentv.dat \
+	TestData/dsa1024.dat     TestData/lucd1024.dat  TestData/shacal2v.dat \
+	TestData/dsa512.dat      TestData/lucd512.dat   TestData/sharkval.dat \
+	TestData/ecies_p160.dat  TestData/lucs1024.dat  TestData/skipjack.dat \
+	TestData/ecies_t163.dat  TestData/lucs512.dat   TestData/squareva.dat \
+	TestData/ed25519.dat     TestData/marsval.dat   TestData/twofishv.dat \
+	TestData/ed25519v0.dat   TestData/mqv1024.dat   TestData/usage.dat \
+	TestData/ed25519v1.dat   TestData/mqv2048.dat   TestData/x25519.dat \
+	TestData/elgc1024.dat    TestData/nr1024.dat    TestData/x25519v0.dat \
+	TestData/esig1023.dat    TestData/nr2048.dat    TestData/x25519v1.dat \
+	TestData/esig1536.dat    TestData/rabi1024.dat  TestData/xtrdh171.dat \
+	TestData/esig2046.dat    TestData/rabi2048.dat  TestData/xtrdh342.dat \
+	TestData/fhmqv160.dat    TestData/rc2val.dat \
+	TestData/fhmqv256.dat    TestData/rc5val.dat
 
 # Create with 'ls TestVectors/*.txt'. These files get installed.
 testvector_FILES = \
-    TestVectors/aead.txt              TestVectors/rsa_pss.txt \
-    TestVectors/aes.txt               TestVectors/rw.txt \
-    TestVectors/all.txt               TestVectors/salsa.txt \
-    TestVectors/aria.txt              TestVectors/seal.txt \
-    TestVectors/blake2b.txt           TestVectors/seed.txt \
-    TestVectors/blake2s.txt           TestVectors/sha1_160_fips_180.txt \
-    TestVectors/blake2.txt            TestVectors/sha1_fips_180.txt \
-    TestVectors/camellia.txt          TestVectors/sha2_224_fips_180.txt \
-    TestVectors/ccm.txt               TestVectors/sha2_256_fips_180.txt \
-    TestVectors/chacha20poly1305.txt  TestVectors/sha2_384_fips_180.txt \
-    TestVectors/chacha_tls.txt        TestVectors/sha2_512_fips_180.txt \
-    TestVectors/chacha.txt            TestVectors/sha2_fips_180.txt \
-    TestVectors/cham.txt              TestVectors/sha2.txt \
-    TestVectors/cmac.txt              TestVectors/sha3_224_fips_202.txt \
-    TestVectors/dlies.txt             TestVectors/sha3_256_fips_202.txt \
-    TestVectors/dsa_1363.txt          TestVectors/sha3_384_fips_202.txt \
-    TestVectors/dsa_rfc6979.txt       TestVectors/sha3_512_fips_202.txt \
-    TestVectors/dsa.txt               TestVectors/sha3_fips_202.txt \
-    TestVectors/eax.txt               TestVectors/sha3.txt \
-    TestVectors/esign.txt             TestVectors/shacal2.txt \
-    TestVectors/gcm.txt               TestVectors/shake.txt \
-    TestVectors/hc128.txt             TestVectors/sha.txt \
-    TestVectors/hc256.txt             TestVectors/simeck.txt \
-    TestVectors/hight.txt             TestVectors/simon.txt \
-    TestVectors/hkdf.txt              TestVectors/siphash.txt \
-    TestVectors/hmac.txt              TestVectors/skipjack.txt \
-    TestVectors/kalyna.txt            TestVectors/sm3.txt \
-    TestVectors/keccak.txt            TestVectors/sm4.txt \
-    TestVectors/lea.txt               TestVectors/sosemanuk.txt \
-    TestVectors/mars.txt              TestVectors/speck.txt \
-    TestVectors/nr.txt                TestVectors/tea.txt \
-    TestVectors/panama.txt            TestVectors/threefish.txt \
-    TestVectors/poly1305aes.txt       TestVectors/ttmac.txt \
-    TestVectors/poly1305_tls.txt      TestVectors/vmac.txt \
-    TestVectors/rabbit.txt            TestVectors/wake.txt \
-    TestVectors/Readme.txt            TestVectors/whrlpool.txt \
-    TestVectors/rsa_oaep.txt          TestVectors/xchacha.txt \
-    TestVectors/rsa_pkcs1_1_5.txt     TestVectors/xts.txt
+	TestVectors/aead.txt              TestVectors/rsa_oaep.txt \
+	TestVectors/aes.txt               TestVectors/rsa_pkcs1_1_5.txt \
+	TestVectors/all.txt               TestVectors/rsa_pss.txt \
+	TestVectors/aria.txt              TestVectors/rw.txt \
+	TestVectors/blake2b.txt           TestVectors/salsa.txt \
+	TestVectors/blake2s.txt           TestVectors/seal.txt \
+	TestVectors/blake2.txt            TestVectors/seed.txt \
+	TestVectors/camellia.txt          TestVectors/sha1_160_fips_180.txt \
+	TestVectors/ccm.txt               TestVectors/sha1_fips_180.txt \
+	TestVectors/chacha20poly1305.txt  TestVectors/sha2_224_fips_180.txt \
+	TestVectors/chacha_tls.txt        TestVectors/sha2_256_fips_180.txt \
+	TestVectors/chacha.txt            TestVectors/sha2_384_fips_180.txt \
+	TestVectors/cham.txt              TestVectors/sha2_512_fips_180.txt \
+	TestVectors/cmac.txt              TestVectors/sha2_fips_180.txt \
+	TestVectors/dlies.txt             TestVectors/sha2.txt \
+	TestVectors/dsa_1363.txt          TestVectors/sha3_224_fips_202.txt \
+	TestVectors/dsa_rfc6979.txt       TestVectors/sha3_256_fips_202.txt \
+	TestVectors/dsa.txt               TestVectors/sha3_384_fips_202.txt \
+	TestVectors/eax.txt               TestVectors/sha3_512_fips_202.txt \
+	TestVectors/esign.txt             TestVectors/sha3_fips_202.txt \
+	TestVectors/gcm.txt               TestVectors/sha3.txt \
+	TestVectors/hc128.txt             TestVectors/shacal2.txt \
+	TestVectors/hc256.txt             TestVectors/shake.txt \
+	TestVectors/hight.txt             TestVectors/sha.txt \
+	TestVectors/hkdf.txt              TestVectors/simeck.txt \
+	TestVectors/hmac.txt              TestVectors/simon.txt \
+	TestVectors/kalyna.txt            TestVectors/siphash.txt \
+	TestVectors/keccak.txt            TestVectors/skipjack.txt \
+	TestVectors/lea.txt               TestVectors/sm3.txt \
+	TestVectors/lsh256.txt            TestVectors/sm4.txt \
+	TestVectors/lsh512_256.txt        TestVectors/sosemanuk.txt \
+	TestVectors/lsh512.txt            TestVectors/speck.txt \
+	TestVectors/lsh.txt               TestVectors/tea.txt \
+	TestVectors/mars.txt              TestVectors/threefish.txt \
+	TestVectors/nr.txt                TestVectors/ttmac.txt \
+	TestVectors/panama.txt            TestVectors/vmac.txt \
+	TestVectors/poly1305aes.txt       TestVectors/wake.txt \
+	TestVectors/poly1305_tls.txt      TestVectors/whrlpool.txt \
+	TestVectors/rabbit.txt            TestVectors/xchacha.txt \
+	TestVectors/Readme.txt            TestVectors/xts.txt
 
-# Create with 'ls TestPrograms/test_*.cxx'. These files do not get installed.
+# Create with 'ls TestPrograms/test_*.cpp'. These files do not get installed.
 # They exist so the feature tests can be run from the configure directory.
 testprogs_FILES= \
-	TestPrograms/test_32bit.cxx
-	TestPrograms/test_64bit.cxx
-	TestPrograms/test_arm_acle_header.cxx
-	TestPrograms/test_arm_aes.cxx
-	TestPrograms/test_arm_asimd.cxx
-	TestPrograms/test_arm_crc.cxx
-	TestPrograms/test_arm_neon.cxx
-	TestPrograms/test_arm_neon_header.cxx
-	TestPrograms/test_arm_pmull.cxx
-	TestPrograms/test_arm_sha1.cxx
-	TestPrograms/test_arm_sha256.cxx
-	TestPrograms/test_arm_sha3.cxx
-	TestPrograms/test_arm_sha512.cxx
-	TestPrograms/test_arm_sm3.cxx
-	TestPrograms/test_arm_sm4.cxx
-	TestPrograms/test_asm_mixed.cxx
-	TestPrograms/test_cxx11_alignas.cxx
-	TestPrograms/test_cxx11_alignof.cxx
-	TestPrograms/test_cxx11_assert.cxx
-	TestPrograms/test_cxx11_atomic.cxx
-	TestPrograms/test_cxx11_auto.cxx
-	TestPrograms/test_cxx11_constexpr.cxx
-	TestPrograms/test_cxx11.cxx
-	TestPrograms/test_cxx11_deletefn.cxx
-	TestPrograms/test_cxx11_enumtype.cxx
-	TestPrograms/test_cxx11_initializer.cxx
-	TestPrograms/test_cxx11_lambda.cxx
-	TestPrograms/test_cxx11_noexcept.cxx
-	TestPrograms/test_cxx11_nullptr.cxx
-	TestPrograms/test_cxx11_staticinit.cxx
-	TestPrograms/test_cxx11_sync.cxx
-	TestPrograms/test_cxx11_vartemplates.cxx
-	TestPrograms/test_cxx14.cxx
-	TestPrograms/test_cxx17_assert.cxx
-	TestPrograms/test_cxx17.cxx
-	TestPrograms/test_cxx17_exceptions.cxx
-	TestPrograms/test_cxx98_exception.cxx
-	TestPrograms/test_cxx.cxx
-	TestPrograms/test_glibc.cxx
-	TestPrograms/test_newlib.cxx
-	TestPrograms/test_ppc_aes.cxx
-	TestPrograms/test_ppc_altivec.cxx
-	TestPrograms/test_ppc_power7.cxx
-	TestPrograms/test_ppc_power8.cxx
-	TestPrograms/test_ppc_power9.cxx
-	TestPrograms/test_ppc_sha.cxx
-	TestPrograms/test_ppc_vmull.cxx
-	TestPrograms/test_pthreads.cxx
-	TestPrograms/test_x86_aes.cxx
-	TestPrograms/test_x86_avx2.cxx
-	TestPrograms/test_x86_avx512.cxx
-	TestPrograms/test_x86_avx.cxx
-	TestPrograms/test_x86_clmul.cxx
-	TestPrograms/test_x86_cpuid.cxx
-	TestPrograms/test_x86_rdrand.cxx
-	TestPrograms/test_x86_rdseed.cxx
-	TestPrograms/test_x86_sha.cxx
-	TestPrograms/test_x86_sse2.cxx
-	TestPrograms/test_x86_sse3.cxx
-	TestPrograms/test_x86_sse41.cxx
-	TestPrograms/test_x86_sse42.cxx
-	TestPrograms/test_x86_ssse3.cxx
-	TestPrograms/test_x86_via_aes.cxx
-	TestPrograms/test_x86_via_rng.cxx
-	TestPrograms/test_x86_via_sha.cxx
+	TestPrograms/test_32bit.cpp \
+	TestPrograms/test_64bit.cpp \
+	TestPrograms/test_arm_acle_header.cpp \
+	TestPrograms/test_arm_aes.cpp \
+	TestPrograms/test_arm_asimd.cpp \
+	TestPrograms/test_arm_crc.cpp \
+	TestPrograms/test_arm_neon.cpp \
+	TestPrograms/test_arm_neon_header.cpp \
+	TestPrograms/test_arm_pmull.cpp \
+	TestPrograms/test_arm_sha1.cpp \
+	TestPrograms/test_arm_sha256.cpp \
+	TestPrograms/test_arm_sha3.cpp \
+	TestPrograms/test_arm_sha512.cpp \
+	TestPrograms/test_arm_sm3.cpp \
+	TestPrograms/test_arm_sm4.cpp \
+	TestPrograms/test_asm_mixed.cpp \
+	TestPrograms/test_cxx11_alignas.cpp \
+	TestPrograms/test_cxx11_alignof.cpp \
+	TestPrograms/test_cxx11_assert.cpp \
+	TestPrograms/test_cxx11_atomic.cpp \
+	TestPrograms/test_cxx11_auto.cpp \
+	TestPrograms/test_cxx11_constexpr.cpp \
+	TestPrograms/test_cxx11.cpp \
+	TestPrograms/test_cxx11_deletefn.cpp \
+	TestPrograms/test_cxx11_enumtype.cpp \
+	TestPrograms/test_cxx11_initializer.cpp \
+	TestPrograms/test_cxx11_lambda.cpp \
+	TestPrograms/test_cxx11_noexcept.cpp \
+	TestPrograms/test_cxx11_nullptr.cpp \
+	TestPrograms/test_cxx11_staticinit.cpp \
+	TestPrograms/test_cxx11_sync.cpp \
+	TestPrograms/test_cxx11_vartemplates.cpp \
+	TestPrograms/test_cxx14.cpp \
+	TestPrograms/test_cxx17_assert.cpp \
+	TestPrograms/test_cxx17.cpp \
+	TestPrograms/test_cxx17_exceptions.cpp \
+	TestPrograms/test_cxx98_exception.cpp \
+	TestPrograms/test_cxx.cpp \
+	TestPrograms/test_glibc.cpp \
+	TestPrograms/test_newlib.cpp \
+	TestPrograms/test_ppc_aes.cpp \
+	TestPrograms/test_ppc_altivec.cpp \
+	TestPrograms/test_ppc_power7.cpp \
+	TestPrograms/test_ppc_power8.cpp \
+	TestPrograms/test_ppc_power9.cpp \
+	TestPrograms/test_ppc_sha.cpp \
+	TestPrograms/test_ppc_vmull.cpp \
+	TestPrograms/test_pthreads.cpp \
+	TestPrograms/test_x86_aes.cpp \
+	TestPrograms/test_x86_avx2.cpp \
+	TestPrograms/test_x86_avx512.cpp \
+	TestPrograms/test_x86_avx.cpp \
+	TestPrograms/test_x86_clmul.cpp \
+	TestPrograms/test_x86_cpuid.cpp \
+	TestPrograms/test_x86_rdrand.cpp \
+	TestPrograms/test_x86_rdseed.cpp \
+	TestPrograms/test_x86_sha.cpp \
+	TestPrograms/test_x86_sse2.cpp \
+	TestPrograms/test_x86_sse3.cpp \
+	TestPrograms/test_x86_sse41.cpp \
+	TestPrograms/test_x86_sse42.cpp \
+	TestPrograms/test_x86_ssse3.cpp \
+	TestPrograms/test_x86_via_aes.cpp \
+	TestPrograms/test_x86_via_rng.cpp \
+	TestPrograms/test_x86_via_sha.cpp
 
 nobase_dist_pkgdata_DATA = \
     $(testdata_FILES) \
@@ -552,7 +578,7 @@ nobase_dist_pkgdata_DATA = \
 dist-hook:
 	chmod -R u+w $(distdir)
 	cp -r TestPrograms/ $(distdir)
-	rm -f $(distdir)/TestPrograms/dump2def.cxx
+	rm -f $(distdir)/TestPrograms/dump2def.cpp
 
 ## Automake bug workaround. If libcryptopp_la_SOURCES is an empty list, Automake assumes
 ## C source files and drives link through the C compiler. We provide the empty adhoc.cpp
