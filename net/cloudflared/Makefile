@@ -5,68 +5,44 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cloudflared
-PKG_VERSION:=2022.2.2
+PKG_VERSION:=2022.3.0
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/cloudflare/cloudflared/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=28bccb9a99cfcccade673f1c14cdbecc5fba7ab58fa6f1062cd671d749904ba5
+PKG_HASH:=619426d20457e3f40b3e604d528d645df123042d6f9edcf6fc98d00433f3d094
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
-
-PKG_CONFIG_DEPENDS:= \
-	CONFIG_CLOUDFLARED_COMPRESS_GOPROXY \
-	CONFIG_CLOUDFLARED_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/cloudflare/cloudflared
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.Version=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
-define Package/cloudflared/config
-config CLOUDFLARED_COMPRESS_GOPROXY
-	bool "Compiling with GOPROXY proxy"
-	default n
-
-config CLOUDFLARED_COMPRESS_UPX
-	bool "Compress executable files with UPX"
-	depends on !mips64
-	default n
-endef
-
-ifeq ($(CONFIG_CLOUDFLARED_COMPRESS_GOPROXY),y)
-	export GO111MODULE=on
-	export GOPROXY=https://goproxy.bj.bcebos.com
-endif
-
 define Package/cloudflared
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=Argo Tunnel client
-  URL:=https://developers.cloudflare.com/argo-tunnel/
+  SUBMENU:=Web Servers/Proxies
+  TITLE:=Cloudflare Tunnel client
+  URL:=https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
 define Package/cloudflared/description
-  Contains the command-line client for Argo Tunnel, a tunneling daemon
-  that proxies any local webserver through the Cloudflare network.
-  Extensive documentation can be found in the Argo Tunnel section of
-  the Cloudflare Docs.
-endef
+  Contains the command-line client for Cloudflare Tunnel, a tunneling
+  daemon that proxies traffic from the Cloudflare network to your origins.
 
-define Build/Compile
-	$(call GoPackage/Build/Compile)
-ifeq ($(CONFIG_CLOUDFLARED_COMPRESS_UPX),y)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/cloudflared
-endif
+  This daemon sits between Cloudflare network and your origin (e.g. a
+  webserver). Cloudflare attracts client requests and sends them to you
+  via this daemon, without requiring you to poke holes on your firewall
+  --- your origin can remain as closed as possible.
 endef
 
 $(eval $(call GoBinPackage,cloudflared))
