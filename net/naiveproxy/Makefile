@@ -16,7 +16,6 @@ PKG_LICENSE:=BSD 3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
-PKG_BUILD_DEPENDS:=python3/host
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 
@@ -103,8 +102,8 @@ define Build/Compile
 		export naive_flags+=" $$$${naive_ccache_flags}" ; \
 		mkdir -p "out" ; \
 		./gn/out/gn gen "out/Release" --args="$$$${naive_flags}" --script-executable="$(PYTHON)" ; \
+		$(NINJA) -C "$(PKG_BUILD_DIR)/src/out/Release" naive ; \
 	)
-	+$(NINJA) -C "$(PKG_BUILD_DIR)/src/out/Release" naive
 endef
 
 define Package/naiveproxy/conffiles
