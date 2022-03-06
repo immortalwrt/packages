@@ -16,7 +16,7 @@ PKG_LICENSE:=BSD 3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
-PKG_BUILD_DEPENDS:=ninja/host python3/host
+PKG_BUILD_DEPENDS:=ninja/host
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 
