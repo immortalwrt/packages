@@ -74,7 +74,7 @@ define Build/Prepare
 endef
 
 CONFIGURE_ARGS = \
-	$(if $(CONFIG_PACKAGE_libip6tc),--ipv6) \
+	$(if $(CONFIG_IPV6),--ipv6) \
 	--igd2 \
 	--leasefile \
 	--portinuse \
