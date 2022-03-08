@@ -56,7 +56,7 @@ config LIBCURL_IMAP
 
 config LIBCURL_LDAP
 	bool "LDAP protocol"
-	default y
+	default n
 
 config LIBCURL_LDAPS
 	bool "Enable LDAPS support"
