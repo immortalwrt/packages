@@ -26,13 +26,14 @@ STRIP:=true
 define Package/cups/Default
   URL:=http://www.cups.org/
   SUBMENU:=Printing
+  DEPENDS:=+libcups
 endef
 
 define Package/cups
   $(call Package/cups/Default)
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libcups +libusb-1.0 +libstdcpp
+  DEPENDS+=+libusb-1.0 +libstdcpp
   TITLE:=Common UNIX Printing System (daemon)
 endef
 
@@ -50,7 +51,6 @@ define Package/cups-bsd
   $(call Package/cups/Default)
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libcups
   TITLE:=Common UNIX Printing System - BSD commands (old)
 endef
 
@@ -58,7 +58,7 @@ define Package/cups-client
 $(call Package/cups/Default)
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libcups +libcupsimage
+  DEPENDS+=+libcupsimage
   TITLE:=Common UNIX Printing System - Client commands
 endef
 
@@ -70,7 +70,7 @@ define Package/cups-filters
   $(call Package/cups/Default)
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libcupsimage
+  DEPENDS+=+libcupsimage
   TITLE:=Common UNIX Printing System - Filter
 endef
 
@@ -78,6 +78,7 @@ define Package/cups-ppdc
   $(call Package/cups/Default)
   SECTION:=net
   CATEGORY:=Network
+  DEPENDS+=+libstdcpp
   TITLE:=Common UNIX Printing System - PPDC utils
 endef
 
@@ -85,7 +86,7 @@ define Package/libcups
   $(call Package/cups/Default)
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+zlib +libpthread +libpng +libjpeg
+  DEPENDS:=+libpthread +libpng +libjpeg +zlib
   TITLE:=Common UNIX Printing System - Core library
 endef
 
@@ -93,24 +94,7 @@ define Package/libcupsimage
   $(call Package/cups/Default)
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+libcups
   TITLE:=Common UNIX Printing System - Image library
-endef
-
-define Package/libcupsmime
-  $(call Package/cups/Default)
-  SECTION:=libs
-  CATEGORY:=Libraries
-  DEPENDS:=+libcups
-  TITLE:=Common UNIX Printing System - MIME library
-endef
-
-define Package/libcupsppdc
-  $(call Package/cups/Default)
-  SECTION:=libs
-  CATEGORY:=Libraries
-  DEPENDS:=+libcups +libstdcpp
-  TITLE:=Common UNIX Printing System - PPDC library
 endef
 
 CONFIGURE_ARGS+= \
@@ -193,19 +177,17 @@ endef
 define Package/cups-client/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) \
-		$(PKG_INSTALL_DIR)/usr/bin/{lp,cancel,cupstestppd,cupstestdsc} \
+		$(PKG_INSTALL_DIR)/usr/bin/{lp,cancel,cupstestppd} \
 		$(PKG_INSTALL_DIR)/usr/bin/{ipptool,lpoptions,lpstat} \
 		$(1)/usr/bin/
 
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) \
-		$(PKG_INSTALL_DIR)/usr/sbin/{cupsaccept,cupsaddsmb,cupsfilter} \
+		$(PKG_INSTALL_DIR)/usr/sbin/{cupsaccept,cupsfilter} \
 		$(PKG_INSTALL_DIR)/usr/sbin/{lpadmin,lpinfo,lpmove} \
 		$(1)/usr/sbin/
-	$(LN) cupsaccept $(1)/usr/sbin/accept
 	$(LN) cupsaccept $(1)/usr/sbin/cupsenable
 	$(LN) cupsaccept $(1)/usr/sbin/cupsdisable
-	$(LN) cupsaccept $(1)/usr/sbin/reject
 	$(LN) cupsaccept $(1)/usr/sbin/cupsreject
 endef
 
