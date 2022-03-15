@@ -11,7 +11,7 @@ PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tindy2013/subconverter.git
 PKG_SOURCE_DATE:=2022-02-28
 PKG_SOURCE_VERSION:=ebe68f64b183ac755e1224f706a7c04953710076
-PKG_MIRROR_HASH:=skip
+PKG_MIRROR_HASH:=792b89d519b9b4e09edfffc95896b3c18ba338db24ec0736a2fba9a68a4cca18
 PKG_VERSION:=0.7.1-$(call version_abbrev,$(PKG_SOURCE_VERSION))
 
 PKG_LICENSE:=GPL-3.0
@@ -30,11 +30,11 @@ define Package/subconverter
   CATEGORY:=Utilities
   TITLE:=Utility to convert between various proxy subscription format
   URL:=https://github.com/tindy2013/subconverter
-  DEPENDS:=+libcron +libcurl +libevent2 +libpcre2 +libpthread \
-    +libquickjs +libstdcpp +libyaml-cpp +zlib
+  DEPENDS:=+libcron +libcurl +libevent2 +libpcre2 +libquickjs \
+    +libstdcpp +libyaml-cpp
 endef
 
-TARGET_CXXFLAGS := $(FPIC) $(filter-out -O%,$(TARGET_CXXFLAGS)) -O3
+TARGET_CXXFLAGS := $(filter-out -O%,$(TARGET_CXXFLAGS)) -O3
 TARGET_CXXFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -flto
 TARGET_LDFLAGS += -Wl,--gc-sections -flto
 
