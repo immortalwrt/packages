@@ -307,6 +307,7 @@ static int load_config() {
 	struct uci_context *uci_ctx;
 	struct uci_package *uci_attendedsysupgrade;
 	struct uci_section *uci_s;
+	char *url;
 
 	uci_ctx = uci_alloc_context();
 	if (!uci_ctx)
@@ -319,13 +320,23 @@ static int load_config() {
 		fprintf(stderr, "Failed to load attendedsysupgrade config\n");
 		return -1;
 	}
-
 	uci_s = uci_lookup_section(uci_ctx, uci_attendedsysupgrade, "server");
 	if (!uci_s) {
+		fprintf(stderr, "Failed to read server config section\n");
+		return -1;
+	}
+	url = uci_lookup_option_string(uci_ctx, uci_s, "url");
+	if (!url) {
 		fprintf(stderr, "Failed to read server url from config\n");
 		return -1;
 	}
-	serverurl = strdup(uci_lookup_option_string(uci_ctx, uci_s, "url"));
+	if (strncmp(url, "https://", strlen("https://")) &&
+	    strncmp(url, "http://", strlen("http://"))) {
+		fprintf(stderr, "Server url invalid (needs to be http://... or https://...)\n");
+		return -1;
+	}
+
+	serverurl = strdup(url);
 
 	uci_s = uci_lookup_section(uci_ctx, uci_attendedsysupgrade, "client");
 	if (!uci_s) {
@@ -920,9 +931,12 @@ static int init_ustream_ssl(void) {
 
 static int ask_user(void)
 {
+	char user_input;
 	fprintf(stderr, "Are you sure you want to continue the upgrade process? [N/y] ");
-	if (getchar() != 'y')
+	user_input = getchar();
+	if ((user_input != 'y') && (user_input != 'Y'))
 		return -EINTR;
+
 	return 0;
 }
 
@@ -1360,6 +1374,10 @@ static int select_image(struct blob_attr *images, const char *target_fstype, cha
 		ret = get_image_by_type(images, combined_type, fstype, image_name, image_sha256);
 		if (!ret)
 			return 0;
+
+		ret = get_image_by_type(images, "sdcard", fstype, image_name, image_sha256);
+		if (!ret)
+			return 0;
 	}
 
 	/* fallback to squashfs unless fstype requested explicitly */
@@ -1369,6 +1387,10 @@ static int select_image(struct blob_attr *images, const char *target_fstype, cha
 			return 0;
 
 		ret = get_image_by_type(images, combined_type, "squashfs", image_name, image_sha256);
+		if (!ret)
+			return 0;
+
+		ret = get_image_by_type(images, "sdcard", fstype, image_name, image_sha256);
 	}
 
 	return ret;
@@ -1430,6 +1452,7 @@ static void usage(const char *arg0)
 #endif
 	fprintf(stdout, " -f\t\tuse force\n");
 	fprintf(stdout, " -h\t\toutput help\n");
+	fprintf(stdout, " -n\t\tdry-run (don't download or upgrade)\n");
 	fprintf(stdout, " -r\t\tcheck only for release upgrades\n");
 	fprintf(stdout, " -F <fstype>\toverride filesystem type\n");
 	fprintf(stdout, " -y\t\tdon't wait for user confirmation\n");
@@ -1451,9 +1474,10 @@ int main(int args, char *argv[]) {
 	struct blob_attr *tbr[__REPLY_MAX];
 	struct blob_attr *tb[__TARGET_MAX] = {}; /* make sure tb is NULL initialized even if blobmsg_parse isn't called */
 	struct stat imgstat;
-	int check_only = 0;
-	int retry_delay = 0;
-	int upg_check = 0;
+	bool check_only = false;
+	bool retry_delay = false;
+	bool upg_check = false;
+	bool dry_run = false;
 	int revcmp;
 	int addargs;
 	unsigned char argc = 1;
@@ -1485,7 +1509,7 @@ int main(int args, char *argv[]) {
 		}
 
 		if (!strncmp(argv[argc], "-c", 3))
-			check_only = 1;
+			check_only = true;
 
 		if (!strncmp(argv[argc], "-f", 3))
 			force = true;
@@ -1494,6 +1518,9 @@ int main(int args, char *argv[]) {
 			target_fstype = argv[argc + 1];
 			addargs = 1;
 		}
+
+		if (!strncmp(argv[argc], "-n", 3))
+			dry_run = true;
 
 		if (!strncmp(argv[argc], "-r", 3))
 			release_only = true;
@@ -1686,7 +1713,6 @@ int main(int args, char *argv[]) {
 			}
 			use_get = true;
 		} else if (retry_delay) {
-			fputc('\n', stderr);
 			retry_delay = 0;
 		}
 
@@ -1720,7 +1746,13 @@ int main(int args, char *argv[]) {
 	         blobmsg_get_string(tb[TARGET_BINDIR]),
 	         image_name);
 
-	fprintf(stderr, "Downloading image from %s\n", url);
+	if (dry_run) {
+		fprintf(stderr, "\nImage available at %s\n", url);
+		rc = 0;
+		goto freebranches;
+	}
+
+	fprintf(stderr, "\nDownloading image from %s\n", url);
 	rc = server_request(url, NULL, NULL);
 	if (rc)
 		goto freebranches;
@@ -1792,7 +1824,6 @@ freebranches:
 		fputc('\n', stderr);
 	}
 
-	/* ToDo */
 freeboard:
 	if (rootfs_type)
 		free(rootfs_type);
