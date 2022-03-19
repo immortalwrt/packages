@@ -46,7 +46,19 @@ define Package/cloudflared/description
 endef
 
 define Package/cloudflared/conffiles
-/root/.cloudflared/
+/etc/config/cloudflared
+/etc/cloudflared/
+endef
+
+define Package/cloudflared/install
+	$(call GoPackage/Package/Install/Bin,$(1))
+
+	$(INSTALL_DIR) $(1)/etc/cloudflared/
+	$(INSTALL_CONF) $(CURDIR)/files/sample_config.yml $(1)/etc/cloudflared/config.yml
+	$(INSTALL_DIR) $(1)/etc/config/
+	$(INSTALL_CONF) $(CURDIR)/files/cloudflared.config $(1)/etc/config/cloudflared
+	$(INSTALL_DIR) $(1)/etc/init.d/
+	$(INSTALL_BIN) $(CURDIR)/files/cloudflared.init $(1)/etc/init.d/cloudflared
 endef
 
 $(eval $(call GoBinPackage,cloudflared))
