@@ -45,6 +45,7 @@ define Host/Configure
 endef
 
 HOST_CFLAGS += $(if $(CONFIG_HOST_OS_MACOS),-Wno-implicit-function-declaration,)
+HOST_LDFLAGS += -Wl,-rpath$(comma)$(STAGING_DIR_HOSTPKG)/lib
 
 define Host/Compile
 	# Build hamcorebuilder using host compiler and let it generate
