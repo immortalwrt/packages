@@ -21,6 +21,7 @@ define KernelPackage/mdio-netlink
   CATEGORY:=Kernel modules
   SUBMENU:=Network Support
   TITLE:=mdio-netlink Linux MDIO netlink kernel module
+  DEPENDS:=$(if $(LEGACY_1806),@BROKEN)
   KCONFIG:=CONFIG_PHYLIB=y CONFIG_MDIO_BUS=y
   URL:=https://github.com/wkz/mdio-tools.git
   FILES:=$(PKG_BUILD_DIR)/kernel/mdio-netlink.ko
