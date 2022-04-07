@@ -4,11 +4,9 @@ PKG_NAME:=syncthing
 PKG_VERSION:=1.19.2
 PKG_RELEASE:=$(AUTORELEASE)
 
-PKG_SOURCE:=syncthing-source-v$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/syncthing/syncthing/releases/download/v$(PKG_VERSION)
-PKG_HASH:=dcf93ef2fea1150b5b2e27d1c5e8e4853bd440b766a8355309af1607be08ce80
-
-PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/$(PKG_NAME)
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/syncthing/syncthing/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=81be2d3b22fa7282eee9cc1dc7569975fa62e7149700dcedaf03d372fb012a1e
 
 PKG_MAINTAINER:=Paul Spooren <mail@aparcar.org>
 PKG_LICENSE:=MPL-2.0
@@ -19,9 +17,13 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-GO_PKG:=github.com/syncthing/syncthing/
-GO_PKG_BUILD_PKG:=github.com/syncthing/syncthing/cmd/syncthing/
+GO_PKG:=github.com/syncthing/syncthing
+GO_PKG_BUILD_PKG:= \
+	$(GO_PKG)/lib/api/auto \
+	$(GO_PKG)/cmd/strelaypoolsrv/auto \
+	$(GO_PKG)/cmd/syncthing
 GO_PKG_INSTALL_EXTRA:=^gui/
+GO_PKG_GO_GENERATE:=1
 
 GO_PKG_LDFLAGS_X:=\
 	github.com/syncthing/syncthing/lib/build.Version=v$(PKG_VERSION) \
