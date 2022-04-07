@@ -23,9 +23,6 @@ PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/cbeuw/GoQuiet
-GO_PKG_BUILD_PKG:= \
-	$(GO_PKG)/cmd/gq-client \
-	$(GO_PKG)/cmd/gq-server
 GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
