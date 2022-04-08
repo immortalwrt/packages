@@ -50,6 +50,7 @@ define Build/Compile
 		npm ci; \
 		npm run lint ; \
 		npm run build ; \
+		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
 endef
