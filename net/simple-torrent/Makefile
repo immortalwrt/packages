@@ -16,16 +16,11 @@ PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
-PKG_CONFIG_DEPENDS:= \
-	CONFIG_SIMPLE_TORRENT_COMPRESS_GOPROXY \
-	CONFIG_SIMPLE_TORRENT_COMPRESS_UPX
-
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/boypt/simple-torrent
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.VERSION=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -44,29 +39,6 @@ define Package/simple-torrent/description
   SimpleTorrent is a a self-hosted remote torrent client, written in Go (golang).
   Started torrents remotely, download sets of files on the local disk of the server,
   which are then retrievable or streamable via HTTP.
-endef
-
-define Package/simple-torrent/config
-config SIMPLE_TORRENT_COMPRESS_GOPROXY
-	bool "Compiling with GOPROXY proxy"
-	default n
-
-config SIMPLE_TORRENT_COMPRESS_UPX
-	bool "Compress executable files with UPX"
-	depends on !mips64
-	default n
-endef
-
-ifeq ($(CONFIG_SIMPLE_TORRENT_COMPRESS_GOPROXY),y)
-	export GO111MODULE=on
-	export GOPROXY=https://goproxy.bj.bcebos.com
-endif
-
-define Build/Compile
-	$(call GoPackage/Build/Compile)
-ifeq ($(CONFIG_SIMPLE_TORRENT_COMPRESS_UPX),y)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/simple-torrent
-endif
 endef
 
 $(eval $(call GoBinPackage,simple-torrent))
