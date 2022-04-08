@@ -12,17 +12,12 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=MPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_CONFIG_DEPENDS:= \
-	CONFIG_XRAY_CORE_COMPRESS_GOPROXY \
-	CONFIG_XRAY_CORE_COMPRESS_UPX \
-
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/xtls/xray-core
 GO_PKG_BUILD_PKG:=github.com/xtls/xray-core/main
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/core.build=OpenWrt \
 	$(GO_PKG)/core.version=$(PKG_VERSION)
@@ -64,36 +59,9 @@ define Package/xray-example/description
   This includes example configuration files for xray-core.
 endef
 
-define Package/xray-core/config
-menu "Xray-core Configuration"
-	depends on PACKAGE_xray-core
-
-config XRAY_CORE_COMPRESS_GOPROXY
-	bool "Compiling with GOPROXY proxy"
-	default n
-
-config XRAY_CORE_COMPRESS_UPX
-	bool "Compress executable files with UPX"
-	depends on !mips64
-	default n
-endmenu
-endef
-
 define Package/xray-core/conffiles
 /etc/xray/
 /etc/config/xray
-endef
-
-ifneq ($(CONFIG_XRAY_CORE_COMPRESS_GOPROXY),)
-	export GO111MODULE=on
-	export GOPROXY=https://goproxy.bj.bcebos.com
-endif
-
-define Build/Compile
-	$(call GoPackage/Build/Compile)
-ifneq ($(CONFIG_XRAY_CORE_COMPRESS_UPX),)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/main
-endif
 endef
 
 define Package/xray-core/install
