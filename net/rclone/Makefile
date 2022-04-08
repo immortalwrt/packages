@@ -18,17 +18,12 @@ PKG_LICENSE_FILE:=LICENSE
 PKG_MAINTAINER:=Elon Huang <elonhhuang@gmail.com> \
 		Tianling Shen <cnsztl@immortalwrt.org>
 
-PKG_CONFIG_DEPENDS:= \
-	CONFIG_RCLONE_COMPRESS_GOPROXY \
-	CONFIG_RCLONE_COMPRESS_UPX
-
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/rclone/rclone
 GO_PKG_EXCLUDES:=test
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:= \
 	github.com/rclone/rclone/fs.Version=v$(PKG_VERSION) \
 	main.Version=v$(PKG_VERSION) \
@@ -63,31 +58,8 @@ define Package/rclone/description
   files and directories to and from different cloud storage providers.
 endef
 
-define Package/rclone/config
-config RCLONE_COMPRESS_GOPROXY
-	bool "Compiling with GOPROXY proxy"
-	default n
-
-config RCLONE_COMPRESS_UPX
-	bool "Compress executable files with UPX"
-	depends on !mips64
-	default n
-endef
-
-ifeq ($(CONFIG_RCLONE_COMPRESS_GOPROXY),y)
-	export GO111MODULE=on
-	export GOPROXY=https://goproxy.bj.bcebos.com
-endif
-
 define Package/rclone-config/conffiles
 /etc/config/rclone
-endef
-
-define Build/Compile
-	$(call GoPackage/Build/Compile)
-ifeq ($(CONFIG_RCLONE_COMPRESS_UPX),y)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/rclone
-endif
 endef
 
 define Package/rclone/install
