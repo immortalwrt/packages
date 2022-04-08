@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gotop
 PKG_VERSION:=4.1.3
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/xxxserxxx/gotop/tar.gz/v$(PKG_VERSION)?
@@ -14,18 +14,13 @@ PKG_HASH:=c0a02276e718b988d1220dc452063759c8634d42e1c01a04c021486c1e61612d
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILE:=LICENSE
-PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
-
-PKG_CONFIG_DEPENDS:= \
-	CONFIG_GOTOP_COMPRESS_GOPROXY \
-	CONFIG_GOTOP_COMPRESS_UPX
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/xxxserxxx/gotop
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.Version=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -41,29 +36,6 @@ endef
 
 define Package/gotop/description
   Another terminal based graphical activity monitor.
-endef
-
-define Package/gotop/config
-config GOTOP_COMPRESS_GOPROXY
-	bool "Compiling with GOPROXY proxy"
-	default n
-
-config GOTOP_COMPRESS_UPX
-	bool "Compress executable files with UPX"
-	depends on !mips64
-	default n
-endef
-
-ifeq ($(CONFIG_GOTOP_COMPRESS_GOPROXY),y)
-	export GO111MODULE=on
-	export GOPROXY=https://goproxy.bj.bcebos.com
-endif
-
-define Build/Compile
-	$(call GoPackage/Build/Compile)
-ifeq ($(CONFIG_GOTOP_COMPRESS_UPX),y)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/gotop
-endif
 endef
 
 $(eval $(call GoBinPackage,gotop))
