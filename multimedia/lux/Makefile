@@ -21,8 +21,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/iawia002/lux
-GO_PKG_BUILD_PKG:=$$(GO_PKG)
-GO_PKG_LDFLAGS:=-s -w
+GO_PKG_BUILD_PKG:=$(GO_PKG)
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
