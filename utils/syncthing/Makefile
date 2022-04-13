@@ -20,7 +20,6 @@ PKG_USE_MIPS16:=0
 GO_PKG:=github.com/syncthing/syncthing
 GO_PKG_BUILD_PKG:= \
 	$(GO_PKG)/lib/api/auto \
-	$(GO_PKG)/cmd/strelaypoolsrv/auto \
 	$(GO_PKG)/cmd/syncthing
 GO_PKG_INSTALL_EXTRA:=^gui/
 GO_PKG_GO_GENERATE:=1
