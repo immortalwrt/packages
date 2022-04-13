@@ -4,16 +4,16 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=twilio
+PKG_NPM_NAME:=classic-level
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=3.76.0
+PKG_VERSION:=1.2.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmmirror.com/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=dfd4076e80593820b24490dcf723415684fcdeeb0eed1a9652bea9792990946f
+PKG_HASH:=cd722aa4ddfad527340d53aa33f2eb7433d61adf934bebac02d116a12143aebe
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -25,17 +25,17 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-twilio
+define Package/node-classic-level
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=A Twilio helper library
-  URL:=https://www.npmjs.org/package/twilio
-  DEPENDS:=+node
+  TITLE:=An abstract-level database backed by LevelDB
+  URL:=https://www.npmjs.org/package/classic-level
+  DEPENDS:=+node +node-leveldown
 endef
 
-define Package/node-twilio/description
- A Twilio helper library
+define Package/node-classic-level/description
+ An abstract-level database backed by LevelDB. The successor to leveldown with builtin encodings, sublevels, events, promises and support of Uint8Array.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -54,29 +54,30 @@ define Build/Compile
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM) \
 	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
-	npm install --production --global-style --no-save --omit=dev --no-package-lock
+	npm install --production --global-style --no-save --omit=dev --no-package-lock --build-from-source --target_arch=$(NODEJS_CPU)
 	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-twilio/install
+define Package/node-classic-level/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md,*.js} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{LICENSE,*.js} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,deps} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,lib} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)/build/Release
+	$(CP) $(PKG_BUILD_DIR)/build/Release/classic_level.node \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/build/Release/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-twilio/postrm
+define Package/node-classic-level/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/twilio || true
-rm -rf /usr/lib/node/twilio || true
+rm /usr/lib/node_modules/classic-level || true
+rm -rf /usr/lib/node/classic-level || true
 endef
 
-$(eval $(call BuildPackage,node-twilio))
+$(eval $(call BuildPackage,node-classic-level))
