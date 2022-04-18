@@ -22,7 +22,6 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
-PKG_LIBFFI_VERSION:=3.4.2
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -45,7 +44,7 @@ TAR_CMD=$(HOST_TAR) -C $(1) $(TAR_OPTIONS)
 NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH)))))
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 
-TARGET_CFLAGS+=$(FPIC) -I$(BUILD_DIR)/libffi-$(PKG_LIBFFI_VERSION)/$(GNU_TARGET_NAME)-gnu
+TARGET_CFLAGS+=$(FPIC)
 TARGET_CPPFLAGS+=$(FPIC)
 
 define Build/Compile
