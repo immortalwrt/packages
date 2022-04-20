@@ -5,15 +5,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=yt-dlp
-PKG_VERSION:=2022.3.8.2
+PKG_VERSION:=2022.4.8
 PKG_RELEASE:=$(AUTORELEASE)
 
 PYPI_NAME:=yt-dlp
-PKG_HASH:=68546578c18e6ce87450b53769d5d5b7f5a23e5209784976db6c7ccbf7954b21
+PKG_HASH:=8758d016509d4574b90fbde975aa70adaef71ed5e7a195141588f6d6945205ba
 
 PKG_LICENSE:=Unlicense
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrtorg>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
