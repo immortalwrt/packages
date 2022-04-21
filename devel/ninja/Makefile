@@ -57,8 +57,6 @@ define Package/ninja/description
 endef
 
 define Package/ninja/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ninja $(1)/usr/bin/
 endef
 
 define Build/Configure
