@@ -32,7 +32,7 @@ define Package/node-aws-crt
   CATEGORY:=Languages
   TITLE:=NodeJS bindings for the AWS Common Runtime
   URL:=https://www.npmjs.com/package/aws-crt
-  DEPENDS:=+node @(x86_64||aarch64||arm||i386)
+  DEPENDS:=@BROKEN +node @(x86_64||aarch64||arm||i386)
 endef
 
 define Package/node-aws-crt/description
