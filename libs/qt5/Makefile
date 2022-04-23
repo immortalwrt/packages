@@ -48,7 +48,7 @@ define Package/qt5/Default
 	SUBMENU:=Qt5
 	TITLE:=qt5
 	URL:=http://qt-project.org
-	DEPENDS:=+librt +libstdcpp +libpthread
+	DEPENDS:=@!TARGET_gemini +librt +libstdcpp +libpthread
 endef
 
 define Package/qt5-core
