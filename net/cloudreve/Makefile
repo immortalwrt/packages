@@ -5,19 +5,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cloudreve
-PKG_VERSION:=3.4.3
+PKG_VERSION:=3.5.0
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/cloudreve/Cloudreve.git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_MIRROR_HASH:=0a78a959ff7c5bfa823b750e4ea43df089e62bc12fc0e90aa833ba9e67621eeb
+PKG_MIRROR_HASH:=819c15f7c283ee6bc548815d0f8d554e21c8caa91135201d368420736b86bcf3
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
-PKG_BUILD_DEPENDS:=golang/host node/host node-yarn/host statik/host
+PKG_BUILD_DEPENDS:=golang/host node/host node-yarn/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
@@ -45,12 +45,9 @@ endef
 
 define Build/Compile
 	( \
-		pushd $(PKG_BUILD_DIR) ; \
-		cd assets ; \
+		pushd $(PKG_BUILD_DIR)/assets ; \
 		yarn install ; \
 		yarn run build ; \
-		cd ../ ; \
-		statik -src=assets/build/  -include=*.html,*.js,*.json,*.css,*.png,*.svg,*.ico -f ; \
 		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
