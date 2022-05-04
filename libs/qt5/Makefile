@@ -77,7 +77,8 @@ endef
 
 CONFIGURE_ARGS = \
 		-prefix /usr \
-		-extprefix $(TOOLCHAIN_DIR) \
+		-hostprefix $(STAGING_DIR_HOSTPKG) \
+		-extprefix $(STAGING_DIR)/usr \
 		-sysroot $(STAGING_DIR) \
 		-plugindir /usr/lib/Qt/plugins \
 		-R /usr/lib \
