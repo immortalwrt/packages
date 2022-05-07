@@ -3,7 +3,7 @@ name: Test Build
 on:
   push:
     branches:
-      - openwrt-21.02
+      - openwrt-18.06
   pull_request:
 
 jobs:
