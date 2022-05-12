@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015-2021 Dirk Brenken (dev@brenken.org)
+# Copyright (c) 2015-2022 Dirk Brenken (dev@brenken.org)
 # This is free software, licensed under the GNU General Public License v3.
 #
 
@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=adblock
 PKG_VERSION:=4.1.3
-PKG_RELEASE:=4
+PKG_RELEASE:=9
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_MAINTAINER:=Dirk Brenken <dev@brenken.org>
 
@@ -59,7 +59,7 @@ define Package/adblock/install
 	$(INSTALL_CONF) ./files/adblock.whitelist $(1)/etc/adblock
 	$(INSTALL_CONF) ./files/adblock.categories $(1)/etc/adblock
 	$(INSTALL_CONF) ./files/adblock.sources $(1)/etc/adblock
-	gzip -9 $(1)/etc/adblock/adblock.sources
+	gzip -9n $(1)/etc/adblock/adblock.sources
 endef
 
 $(eval $(call BuildPackage,adblock))

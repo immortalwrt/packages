@@ -1,10 +1,10 @@
 #!/bin/sh
 # dns based ad/abuse domain blocking
-# Copyright (c) 2015-2021 Dirk Brenken (dev@brenken.org)
+# Copyright (c) 2015-2022 Dirk Brenken (dev@brenken.org)
 # This is free software, licensed under the GNU General Public License v3.
 
 # set (s)hellcheck exceptions
-# shellcheck disable=1091,2010,2016,2034,2039,2059,2086,2091,2129,2143,2154,2181,2183,2188
+# shellcheck disable=1091,2010,2016,2034,2039,2059,2086,2091,2129,2143,2154,2181,2183,2188,3040,3043,3060
 
 # set initial defaults
 #
@@ -217,9 +217,6 @@ f_conf()
 			elif [ "${option}" = "adb_eng_sources" ]
 			then
 				eval "${option}=\"$(printf "%s" "${adb_eng_sources}") ${value}\""
-			elif [ "${option}" = "adb_sha_sources" ]
-			then
-				eval "${option}=\"$(printf "%s" "${adb_sha_sources}") ${value}\""
 			elif [ "${option}" = "adb_stb_sources" ]
 			then
 				eval "${option}=\"$(printf "%s" "${adb_stb_sources}") ${value}\""
@@ -319,7 +316,7 @@ f_dns()
 				adb_dnsinstance="${adb_dnsinstance:-"0"}"
 				adb_dnsuser="${adb_dnsuser:-"dnsmasq"}"
 				adb_dnsdir="${adb_dnsdir:-"/tmp/dnsmasq.d"}"
-				adb_dnsheader="${adb_dnsheader}"
+				adb_dnsheader="${adb_dnsheader:-""}"
 				adb_dnsdeny="${adb_dnsdeny:-"${adb_awk} '{print \"address=/\"\$0\"/\"}'"}"
 				adb_dnsallow="${adb_dnsallow:-"${adb_awk} '{print \"local=/\"\$0\"/#\"}'"}"
 				adb_dnssafesearch="${adb_dnssafesearch:-"${adb_awk} -v item=\"\$item\" '{print \"address=/\"\$0\"/\"item\"\"}'"}"
@@ -331,7 +328,7 @@ f_dns()
 				adb_dnsinstance="${adb_dnsinstance:-"0"}"
 				adb_dnsuser="${adb_dnsuser:-"unbound"}"
 				adb_dnsdir="${adb_dnsdir:-"/var/lib/unbound"}"
-				adb_dnsheader="${adb_dnsheader}"
+				adb_dnsheader="${adb_dnsheader:-""}"
 				adb_dnsdeny="${adb_dnsdeny:-"${adb_awk} '{print \"local-zone: \\042\"\$0\"\\042 static\"}'"}"
 				adb_dnsallow="${adb_dnsallow:-"${adb_awk} '{print \"local-zone: \\042\"\$0\"\\042 transparent\"}'"}"
 				adb_dnssafesearch="${adb_dnssafesearch:-"${adb_awk} -v item=\"\$item\" '{type=\"AAAA\";if(match(item,/^([0-9]{1,3}\.){3}[0-9]{1,3}$/)){type=\"A\"}}{print \"local-data: \\042\"\$0\" \"type\" \"item\"\\042\"}'"}"
@@ -369,7 +366,7 @@ f_dns()
 				adb_dnsinstance="${adb_dnsinstance:-"0"}"
 				adb_dnsuser="${adb_dnsuser:-"root"}"
 				adb_dnsdir="${adb_dnsdir:-"/tmp"}"
-				adb_dnsheader="${adb_dnsheader}"
+				adb_dnsheader="${adb_dnsheader:-""}"
 				adb_dnsdeny="${adb_dnsdeny:-"0"}"
 				adb_dnsallow="${adb_dnsallow:-"1"}"
 				adb_dnssafesearch="${adb_dnssafesearch:-"0"}"
@@ -1296,9 +1293,9 @@ f_jsnup()
 			memory="$("${adb_awk}" '/^MemTotal|^MemFree|^MemAvailable/{ORS="/"; print int($2/1000)}' "/proc/meminfo" 2>/dev/null | "${adb_awk}" '{print substr($0,1,length($0)-1)}')"
 			if [ "$(( (adb_endtime-adb_starttime)/60 ))" -lt 60 ]
 			then
-				runtime="${adb_action}, $(( (adb_endtime-adb_starttime)/60 ))m $(( (adb_endtime-adb_starttime)%60 ))s, ${memory:-0}, $(date "+%d.%m.%Y %H:%M:%S")"
+				runtime="${adb_action}, $(( (adb_endtime-adb_starttime)/60 ))m $(( (adb_endtime-adb_starttime)%60 ))s, ${memory:-0}, $(date -Iseconds)"
 			else
-				runtime="${adb_action}, n/a, ${memory:-0}, $(date "+%d.%m.%Y %H:%M:%S")"
+				runtime="${adb_action}, n/a, ${memory:-0}, $(date -Iseconds)"
 			fi
 			if [ "${status}" = "error" ]
 			then
@@ -1486,15 +1483,9 @@ f_main()
 		# download queue processing
 		#
 		unset src_cat src_entries
-		if [ "${src_name}" = "shallalist" ] || [ "${src_name}" = "utcapitole" ]
+		if [ "${src_name}" = "utcapitole" ] && [ -n "${adb_utc_sources}" ]
 		then
-			if [ "${src_name}" = "shallalist" ] && [ -n "${adb_sha_sources}" ]
-			then
-				src_cat="${adb_sha_sources}"
-			elif [ "${src_name}" = "utcapitole" ] && [ -n "${adb_utc_sources}" ]
-			then
-				src_cat="${adb_utc_sources}"
-			fi
+			src_cat="${adb_utc_sources}"
 			if [ -n "${src_cat}" ]
 			then
 				(

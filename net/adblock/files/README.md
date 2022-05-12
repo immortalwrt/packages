@@ -22,9 +22,10 @@ A lot of people already use adblocker plugins within their desktop browsers, but
 | energized           |         | VAR  | compilation      | [Link](https://energized.pro)                                                     |
 | firetv_tracking     |         | S    | tracking         | [Link](https://github.com/Perflyst/PiHoleBlocklist)                               |
 | games_tracking      |         | S    | tracking         | [Link](https://www.gameindustry.eu)                                               |
-| gaming              |         | S    | gaming           | [Link](https://github.com/abyssin/pihole-blocklist)                               |
+| hblock              |         | XL   | compilation      | [Link](https://hblock.molinero.dev)                                               |
 | notracking          |         | XL   | tracking         | [Link](https://github.com/notracking/hosts-blocklists)                            |
 | oisd_basic          |         | L    | general          | [Link](https://oisd.nl)                                                           |
+| oisd_nsfw           |         | XL   | general          | [Link](https://oisd.nl)                                                           |
 | oisd_full           |         | XXL  | general          | [Link](https://oisd.nl)                                                           |
 | openphish           |         | S    | phishing         | [Link](https://openphish.com)                                                     |
 | phishing_army       |         | S    | phishing         | [Link](https://phishing.army)                                                     |
@@ -36,7 +37,7 @@ A lot of people already use adblocker plugins within their desktop browsers, but
 | reg_fr              |         | S    | reg_france       | [Link](https://forums.lanik.us/viewforum.php?f=91)                                |
 | reg_id              |         | M    | reg_indonesia    | [Link](https://easylist.to)                                                       |
 | reg_it              |         | M    | reg_italy        | [Link](https://easylist.to)                                                       |
-| reg_kr              |         | S    | reg_korea        | [Link](https://list-kr.github.io)                                                 |
+| reg_kr              |         | S    | reg_korea        | [Link](https://github.com/List-KR/List-KR)                                        |
 | reg_nl              |         | M    | reg_netherlands  | [Link](https://easylist.to)                                                       |
 | reg_pl1             |         | S    | reg_poland       | [Link](https://kadantiscam.netlify.com)                                           |
 | reg_pl2             |         | S    | reg_poland       | [Link](https://www.certyficate.it)                                                |
@@ -44,10 +45,8 @@ A lot of people already use adblocker plugins within their desktop browsers, but
 | reg_ru              |         | M    | reg_russia       | [Link](https://easylist.to)                                                       |
 | reg_se              |         | M    | reg_sweden       | [Link](https://github.com/lassekongo83/Frellwits-filter-lists)                    |
 | reg_vn              |         | S    | reg_vietnam      | [Link](https://bigdargon.github.io/hostsVN)                                       |
-| shallalist          |         | VAR  | general          | [Link](https://www.shallalist.de)                                                 |
 | smarttv_tracking    |         | S    | tracking         | [Link](https://github.com/Perflyst/PiHoleBlocklist)                               |
 | spam404             |         | S    | general          | [Link](https://github.com/Dawsey21)                                               |
-| stalkerware         |         | S    | tracking         | [Link](https://github.com/astryzia/stalkerware-urls)                              |
 | stevenblack         |         | VAR  | compilation      | [Link](https://github.com/StevenBlack/hosts)                                      |
 | stopforumspam       |         | S    | spam             | [Link](https://www.stopforumspam.com)                                             |
 | utcapitole          |         | VAR  | general          | [Link](https://dsi.ut-capitole.fr/blacklists/index_en.php)                        |
