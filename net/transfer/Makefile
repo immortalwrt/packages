@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=transfer
-PKG_VERSION:=0.4.15
+PKG_VERSION:=0.4.17
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/Mikubill/transfer/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=8a1a95a7a132fb1079f7d0aed5a02e3f7c9e9869de8dc2751920a3ae0892b211
+PKG_HASH:=7ba0f7de5107b4dcc977e9a6887f223ef7731cc81cbc33fea0344b1b3a065c58
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=MIT
@@ -20,8 +20,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-GO_PKG:=transfer
-GO_PKG_LDFLAGS_X:=main.build=v$(PKG_VERSION)
+GO_PKG:=github.com/Mikubill/transfer
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
