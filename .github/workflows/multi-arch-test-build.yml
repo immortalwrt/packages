@@ -36,19 +36,19 @@ jobs:
 
           - arch: aarch64_cortex-a53
             target: mvebu-cortexa53
-            runtime_test: false
+            runtime_test: true
 
           - arch: arm_cortex-a15_neon-vfpv4
             target: armvirt-32
-            runtime_test: false
+            runtime_test: true
 
           - arch: i386_pentium-mmx
-            target: x86-legacy
+            target: x86-geode
             runtime_test: false
 
           - arch: x86_64
             target: x86-64
-            runtime_test: false
+            runtime_test: true
 
     steps:
       - uses: actions/checkout@v2
