@@ -33,9 +33,21 @@ define Package/dockerd
   CATEGORY:=Utilities
   TITLE:=Docker Community Edition Daemon
   URL:=https://www.docker.com/
-  DEPENDS:=$(GO_ARCH_DEPENDS) +btrfs-progs +ca-certificates +containerd +libdevmapper +libnetwork +tini \
-           +KERNEL_SECCOMP:libseccomp +iptables-mod-extra +kmod-br-netfilter +kmod-ikconfig +kmod-nf-conntrack-netlink +kmod-nf-ipvs \
-           +kmod-nf-nat +kmod-veth +iptables-legacy +iptables-mod-nat-extra
+  DEPENDS:=$(GO_ARCH_DEPENDS) \
+    +ca-certificates \
+    +containerd \
+    +iptables \
+    +iptables-mod-extra \
+    +IPV6:ip6tables \
+    +IPV6:kmod-ipt-nat6 \
+    +KERNEL_SECCOMP:libseccomp \
+    +kmod-ipt-nat \
+    +kmod-ipt-physdev \
+    +kmod-nf-ipvs \
+    +kmod-veth \
+    +libnetwork \
+    +tini \
+    +uci-firewall
   USERID:=docker:docker
   MENU:=1
 endef
@@ -132,8 +144,11 @@ define Package/dockerd/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bundles/binary-daemon/dockerd $(1)/usr/bin/
 
 	$(INSTALL_DIR) $(1)/opt/docker/
+
+  ifeq ($(CONFIG_DOCKER_CHECK_CONFIG),y)
 	$(INSTALL_DIR) $(1)/usr/share/docker/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/check-config.sh $(1)/usr/share/docker/
+  endif
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/dockerd.init $(1)/etc/init.d/dockerd
