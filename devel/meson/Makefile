@@ -37,7 +37,7 @@ define Package/meson
   CATEGORY:=Development
   TITLE:=meson
   URL:=https://mesonbuild.com/
-  DEPENDS:=+ninja +python3-pkg-resources
+  DEPENDS:=+python3-pkg-resources
 endef
 
 define Package/meson/description
