@@ -32,7 +32,7 @@ define Package/cshark
   DEPENDS:=+libjson-c +libpcap +libuci +libubox +libuclient +libustream-mbedtls
 endef
 
-CMAKE_OPTIONS = \
+CMAKE_OPTIONS += \
 	-DWITH_DEBUG=OFF
 
 define Package/cshark/conffiles
