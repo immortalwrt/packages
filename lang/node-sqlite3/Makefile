@@ -9,13 +9,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=sqlite3
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=5.0.2
-PKG_RELEASE:=2
+PKG_VERSION:=5.0.8
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=c2d364341eff7c6ae1c57ad62cfea3bb3e2cd7a3ae1eddbdde701e9ed52f2f39
+PKG_HASH:=fe701c378336347574530a63eeeddd9ee5aa25b8b950bd0df5c4d2aa047c1336
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
@@ -37,7 +37,7 @@ define Package/node-sqlite3
 endef
 
 define Package/node-sqlite3/description
- Node.js package to access serial ports for reading and writing OR Welcome your robotic JavaScript overlords. Better yet, program them!
+ Asynchronous, non-blocking SQLite3 bindings for Node.js
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -65,7 +65,7 @@ endef
 
 define Package/node-sqlite3/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md,*.js} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{node_modules,LICENSE,lib} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/

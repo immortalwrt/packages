@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=coap
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.0.4
+PKG_VERSION:=1.0.9
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=edd79120da1e86f6696349755b06aa1220dd902ff8aca92720a0ab3e242e7fed
+PKG_HASH:=4894efcd8679cfb2074f58119f52e5691a5bc77c1cfb13474e7674c5fc1b66ca
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
