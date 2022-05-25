@@ -54,10 +54,11 @@ $(call Package/openobex/Default)
 endef
 
 CMAKE_OPTIONS += \
-	-DBUILD_DOCUMENTATION:BOOL=OFF \
+	-DBUILD_DOCUMENTATION:BOOL=OFF
 
-MAKE_FLAGS += \
-	openobex openobex-apps \
+define Build/Compile
+	$(call Build/Compile/Default,openobex openobex-apps)
+endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
