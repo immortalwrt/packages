@@ -42,6 +42,9 @@ define Package/libfido2/description
  libfido2 supports the FIDO U2F (CTAP 1) and FIDO 2.0 (CTAP 2) protocols.
 endef
 
+CMAKE_OPTIONS+= \
+	BUILD_EXAMPLES=OFF \
+	BUILD_MANPAGES=OFF
 
 define Package/libfido2/install
 	$(INSTALL_DIR) $(1)/usr/lib
