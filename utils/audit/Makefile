@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=audit
 PKG_VERSION:=2.8.5
-PKG_RELEASE:=2
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://people.redhat.com/sgrubb/audit
@@ -19,11 +19,11 @@ PKG_LICENSE_FILES:=COPYING
 PKG_CPE_ID:=cpe:/a:linux_audit_project:linux_audit
 
 PKG_FIXUP:=autoreconf
+PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-packages/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/host-build.mk
 
 define Package/audit/Default
   TITLE:=Audit Daemon
@@ -138,7 +138,6 @@ define Package/audit/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/auditd $(1)/usr/sbin/
 endef
 
-$(eval $(call HostBuild))
 $(eval $(call BuildPackage,libauparse))
 $(eval $(call BuildPackage,audit-utils))
 $(eval $(call BuildPackage,audit))
