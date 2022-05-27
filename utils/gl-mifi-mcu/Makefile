@@ -15,6 +15,7 @@ define KernelPackage/gl-mifi-mcu
   TITLE:=GL.iNet GL-MiFI Power monitoring support
   AUTOLOAD:=$(call AutoLoad,60,gl-mifi-mcu)
   FILES:=$(PKG_BUILD_DIR)/gl-mifi-mcu.ko
+  DEPENDS:=@!LINUX_4_9
 endef
 
 define KernelPackage/gl-mifi-mcu/description
