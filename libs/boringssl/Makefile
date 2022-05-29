@@ -35,7 +35,9 @@ define Package/boringssl/description
 	An implementation of the TLS protocol
 endef
 
-CMAKE_OPTIONS+=-DBUILD_SHARED_LIBS=ON
+CMAKE_OPTIONS+= \
+	-DBUILD_SHARED_LIBS=ON \
+	-DCMAKE_EXE_LINKER_FLAGS="-latomic"
 
 define Package/boringssl/install
 	$(INSTALL_DIR) $(1)/usr/lib/boringssl
