@@ -22,7 +22,7 @@ define Package/apk
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=apk package manager
-  DEPENDS:=+zlib +libopenssl @!arc
+  DEPENDS:=+zlib +libopenssl @!arc @!armeb
   URL:=$(PKG_SOURCE_URL)
 endef
 
