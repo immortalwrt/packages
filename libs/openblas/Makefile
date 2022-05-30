@@ -26,6 +26,7 @@ define Package/openblas
   URL:=https://www.openblas.net/
   DEPENDS:= \
        @!arc \
+       @!armeb \
        @!powerpc \
        +INSTALL_GFORTRAN:libgfortran
 endef
