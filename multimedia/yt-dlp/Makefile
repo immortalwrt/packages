@@ -1,19 +1,15 @@
-# SPDX-License-Identifier: GPL-3.0-only
-#
-# Copyright (C) 2021 ImmortalWrt.org
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=yt-dlp
-PKG_VERSION:=2022.4.8
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_VERSION:=2022.5.18
+PKG_RELEASE:=1
 
 PYPI_NAME:=yt-dlp
-PKG_HASH:=8758d016509d4574b90fbde975aa70adaef71ed5e7a195141588f6d6945205ba
+PKG_HASH:=3a7b59d2fb4b39ce8ba8e0b9c5a37fe20e5624f46a2346b4ae66ab1320e35134
 
+PKG_MAINTAINER:=Michal Vasilek <michal.vasilek@nic.cz>
 PKG_LICENSE:=Unlicense
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
@@ -22,25 +18,25 @@ include ../../lang/python/python3-package.mk
 define Package/yt-dlp
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  TITLE:=A youtube-dl fork with additional features and fixes
+  TITLE:=Utility to download videos from YouTube.com
   URL:=https://github.com/yt-dlp/yt-dlp
+  PROVIDES:=youtube-dl
   DEPENDS:= \
     +ca-certificates \
-    +python3 \
+    +python3-asyncio \
     +python3-codecs \
     +python3-ctypes \
     +python3-email \
-    +python3-mutagen \
-    +python3-cryptodomex \
-    +python3-setuptools \
-    +python3-websockets \
+    +python3-openssl \
+    +python3-sqlite3 \
+    +python3-urllib \
     +python3-xml
 endef
 
 define Package/yt-dlp/description
-  yt-dlp is a youtube-dl fork based on the now inactive youtube-dlc.
-  The main focus of this project is adding new features and patches
-  while also keeping up to date with the original project.
+  yt-dlp is a small command-line program to download videos
+  from YouTube.com and other video sites.
+  It requires the Python3 interpreter.
 endef
 
 $(eval $(call Py3Package,yt-dlp))
