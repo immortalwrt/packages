@@ -31,7 +31,7 @@ define Package/tinyfecvpn
   SUBMENU:=VPN
   TITLE:=A Network Improving Tool
   URL:=https://github.com/wangyu-/tinyfecVPN
-  DEPENDS:=+libstdcpp +kmod-tun +USE_GLIBC:+libatomic
+  DEPENDS:=+libstdcpp +kmod-tun +USE_GLIBC:libatomic
 endef
 
 define Package/tinyfecvpn/description
