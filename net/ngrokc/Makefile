@@ -32,6 +32,10 @@ define Build/Prepare
 	$(CP) $(PKG_BUILD_DIR)/Makefile.openssl $(PKG_BUILD_DIR)/Makefile
 endef
 
+ifdef CONFIG_USE_GLIBC
+  TARGET_LDFLAGS+= -latomic
+endif
+
 define Package/ngrokc/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ngrokc $(1)/usr/bin
