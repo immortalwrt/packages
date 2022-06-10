@@ -1,15 +1,13 @@
+# SPDX-License-Identifier: MIT
 #
 # Copyright (c) 2017 Yu Wang <wangyucn@gmail.com>
 # Copyright (c) 2020 Nishant Sharma <nishant@hopbox.in>
-#
-# This is free software, licensed under MIT
-#
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UDPspeeder
 PKG_VERSION:=20210116.0
-PKG_RELEASE:=2
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/wangyu-/$(PKG_NAME)/tar.gz/$(PKG_VERSION)?
@@ -24,18 +22,22 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/package.mk
 
 define Package/UDPspeeder
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=UDP Network Speed-Up Tool
-	URL:=https://github.com/wangyu-/UDPspeeder
-	DEPENDS:= +libstdcpp +librt +libatomic
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=UDP Network Speed-Up Tool
+  URL:=https://github.com/wangyu-/UDPspeeder
+  DEPENDS:= +libstdcpp +librt +libatomic
 endef
 
 define Package/UDPspeeder/description
-	 A Tunnel which Improves your Network Quality on a High-latency Lossy Link by using Forward Error Correction,for All Traffics(TCP/UDP/ICMP)
+   A Tunnel which Improves your Network Quality on a High-latency Lossy
+   Link by using Forward Error Correction,for All Traffics(TCP/UDP/ICMP)
 endef
 
 MAKE_FLAGS += cross
+ifdef CONFIG_USE_GLIBC
+  TARGET_LDFLAGS+= -latomic
+endif
 
 define Build/Prepare
 	$(PKG_UNPACK)
