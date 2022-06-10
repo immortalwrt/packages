@@ -22,6 +22,7 @@ PKG_MAINTAINER:=Lim Guo Wei <limguowei@gmail.com> \
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE.md
 
+PKG_CONFIG_DEPENDS:=CONFIG_USE_GLIBC
 PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
@@ -31,6 +32,7 @@ define Package/coremark
   CATEGORY:=Utilities
   TITLE:=CoreMark Embedded Microprocessor Benchmark
   URL:=https://github.com/eembc/coremark
+  DEPENDS:=+USE_GLIBC:libpthread
 endef
 
 define Package/coremark/description
@@ -61,6 +63,9 @@ define Package/coremark/config
 endef
 
 TARGET_CFLAGS += -flto
+ifdef CONFIG_USE_GLIBC
+  TARGET_LDFLAGS += -lpthread
+endif
 
 ifeq ($(CONFIG_COREMARK_OPTIMIZE_O3),y)
 	TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
