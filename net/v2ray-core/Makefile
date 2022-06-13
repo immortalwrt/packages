@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=v2ray-core
-PKG_VERSION:=4.45.0
+PKG_VERSION:=5.0.7
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/v2fly/v2ray-core/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=fb8731295d8bbad9ef9157dbd3bc62655752d36544e0cc4077d4fa8a8a4ea295
+PKG_HASH:=67a3c5f19eb4b21dd270bb60a17220512d4ff221d2da3070e66926686f140ce3
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -20,8 +20,8 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-GO_PKG:=github.com/v2fly/v2ray-core/v4
-GO_PKG_BUILD_PKG:=github.com/v2fly/v2ray-core/v4/main
+GO_PKG:=github.com/v2fly/v2ray-core/v5
+GO_PKG_BUILD_PKG:=$(GO_PKG)/main
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG).build=OpenWrt \
 	$(GO_PKG).version=$(PKG_VERSION)
@@ -39,11 +39,6 @@ endef
 define Package/v2ray-core
   $(call Package/v2ray/template)
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
-endef
-
-define Package/v2ray-ctl
-  $(call Package/v2ray/template)
-  DEPENDS:=v2ray-core
 endef
 
 define Package/v2ray-example
@@ -69,12 +64,6 @@ define Package/v2ray-core/description
   $(call Package/v2ray/description)
 endef
 
-define Package/v2ray-ctl/description
-  $(call Package/v2ray/description)
-
-  This includes configuration tool for v2ray-core.
-endef
-
 define Package/v2ray-example/description
   $(call Package/v2ray/description)
 
@@ -92,21 +81,10 @@ define Package/v2ray-core/conffiles
 /etc/v2ray/
 endef
 
-define Build/Compile
-	$(call GoPackage/Build/Compile)
-	mv $(GO_PKG_BUILD_BIN_DIR)/main $(GO_PKG_BUILD_BIN_DIR)/v2ray
-
-ifneq ($(CONFIG_PACKAGE_v2ray-ctl),)
-	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG)/infra/control/main)
-	$(call GoPackage/Build/Compile)
-	mv $(GO_PKG_BUILD_BIN_DIR)/main $(GO_PKG_BUILD_BIN_DIR)/v2ctl
-endif
-endef
-
 define Package/v2ray-core/install
 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
 	$(INSTALL_DIR) $(1)/usr/bin/
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/v2ray $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/main $(1)/usr/bin/v2ray
 
 	$(INSTALL_DIR) $(1)/etc/v2ray/
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/release/config/config.json $(1)/etc/v2ray/
@@ -115,13 +93,6 @@ define Package/v2ray-core/install
 	$(INSTALL_CONF) $(CURDIR)/files/v2ray.conf $(1)/etc/config/v2ray
 	$(INSTALL_DIR) $(1)/etc/init.d/
 	$(INSTALL_BIN) $(CURDIR)/files/v2ray.init $(1)/etc/init.d/v2ray
-endef
-
-define Package/v2ray-ctl/install
-	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
-
-	$(INSTALL_DIR) $(1)/usr/bin/
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/v2ctl $(1)/usr/bin/
 endef
 
 define Package/v2ray-example/install
@@ -136,6 +107,5 @@ define Package/v2ray-extra/install
 endef
 
 $(eval $(call BuildPackage,v2ray-core))
-$(eval $(call BuildPackage,v2ray-ctl))
 $(eval $(call BuildPackage,v2ray-example))
 $(eval $(call BuildPackage,v2ray-extra))
