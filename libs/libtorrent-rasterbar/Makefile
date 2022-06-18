@@ -23,7 +23,7 @@ define Package/libtorrent-rasterbar
   URL:=https://libtorrent.org/
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+boost-system +libatomic +libstdcpp +libopenssl $(ICONV_DEPENDS)
+  DEPENDS:=+boost +boost-system +libatomic +libstdcpp +libopenssl $(ICONV_DEPENDS)
 endef
 
 define Package/libtorrent-rasterbar/description
