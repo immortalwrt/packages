@@ -2,18 +2,15 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=open-app-filter
-PKG_BASE_VERSION:=5.0.1
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL:=https://github.com/destan19/OpenAppFilter.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-06-28
-PKG_SOURCE_VERSION:=81f2e7abab6005f5fb49e26171c5ef0c10213a7f
-PKG_MIRROR_HASH:=b7fb1a589cfe9fe56dec52e346d47d2471feb0f8447abc7d120ebb3c502b0093
+PKG_SOURCE_DATE:=2022-06-21
+PKG_SOURCE_VERSION:=7d4b72fd04bd41c8d74366cd75354610855be9a6
+PKG_MIRROR_HASH:=bd84ad51fcaaeb21f8145294473ba9e3c0d02166270ad7dd5b53a0c683d4a52f
 
-PKG_VERSION:=$(PKG_BASE_VERSION)-$(PKG_SOURCE_DATE)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
-
-PKG_BUILD_PRRALLEL:=1
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -24,7 +21,7 @@ define KernelPackage/oaf
   CATEGORY:=Kernel modules
   SUBMENU:=Netfilter Extensions
   TITLE:=open app filter kernel module
-  FILES:=$(PKG_BUILD_DIR)/oaf.ko
+  FILES:=$(PKG_BUILD_DIR)/oaf/src/oaf.ko
   DEPENDS:=+kmod-ipt-conntrack
   AUTOLOAD:=$(call AutoLoad,0,oaf)
 endef
@@ -36,21 +33,9 @@ define Package/appfilter
   TITLE:=App filter userspace module
 endef
 
-MAKE_OPTS:= \
-	$(KERNEL_MAKE_FLAGS) \
-	M="$(PKG_BUILD_DIR)" \
-	EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-	$(EXTRA_KCONFIG)
-
-define Build/Configure
-	$(call Build/Configure/Default)
-	$(CP) $(PKG_BUILD_DIR)/oaf/src/* $(PKG_BUILD_DIR)/
-endef
-
 define Build/Compile
-	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
-		$(MAKE_OPTS) \
-		modules
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
+		M="$(PKG_BUILD_DIR)/oaf/src" modules
 endef
 
 define Package/appfilter/conffiles
