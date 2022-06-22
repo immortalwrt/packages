@@ -25,7 +25,6 @@ HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/glib-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:=libiconv/host
 HOST_BUILD_DEPENDS:=libiconv/host libffi/host pcre/host
 PKG_CONFIG_DEPENDS:=CONFIG_BUILD_NLS
-PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
@@ -44,12 +43,10 @@ define Package/glib2/description
   The GLib library of C routines
 endef
 
-HOST_LDFLAGS += -Wl,-rpath,$(STAGING_DIR_HOSTPKG)/lib
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
-TARGET_LDFLAGS += -Wl,--gc-sections $(if $(INTL_FULL),-lintl)
+TARGET_LDFLAGS += -Wl,--gc-sections
 
 COMP_ARGS= \
-	-Diconv=external \
 	-Dselinux=disabled \
 	-Dlibmount=disabled \
 	-Dman=false \
@@ -98,10 +95,6 @@ define Build/InstallDev
 		$(1)/usr/lib/
 
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
-ifneq ($(INTL_FULL),)
-	$(SED) '/^Libs:/s/$$$$/ -lintl/' \
-		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/glib-2.0.pc
-endif
 	$(INSTALL_DATA) \
 		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/*.pc \
 		$(1)/usr/lib/pkgconfig
