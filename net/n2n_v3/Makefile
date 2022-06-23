@@ -11,12 +11,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=n2n
-PKG_VERSION:=2.8
+PKG_VERSION:=3.0
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/ntop/n2n/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=ad9ab95a79dcf6b412c36489f50de54bb54417b5cea854eb54722b6cb8f0fd04
+PKG_HASH:=25fcabba7bfcf25f4c9cd7fecc7ce11de48beb0b0f3506053d8485604ea8f50d
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -62,11 +62,7 @@ define Build/Configure
 endef
 
 define Package/n2n-edge/conffiles
-/etc/config/n2n-edge.conf
-endef
-
-define Package/n2n-supernode/conffiles
-/etc/config/n2n-supernode.conf
+/etc/config/n2n_v3
 endef
 
 define Package/n2n-edge/install
@@ -74,9 +70,9 @@ define Package/n2n-edge/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/edge $(1)/usr/bin/
 
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/n2n_v2.config $(1)/etc/config/n2n_v2
+	$(INSTALL_CONF) ./files/n2n_v3.config $(1)/etc/config/n2n_v3
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/n2n_v2.init $(1)/etc/init.d/n2n_v2
+	$(INSTALL_BIN) ./files/n2n_v3.init $(1)/etc/init.d/n2n_v3
 endef
 
 define Package/n2n-supernode/install
