@@ -11,6 +11,7 @@ start_instance() {
     case "$type" in
       edge)
         config_get_bool enabled "$cfg" 'enabled' '0'
+        config_get_bool masquerade "$cfg" 'masquerade' '0'
         [ "$enabled" = "0" ] && return 1
         config_get tunname "$cfg" 'tunname'
         config_get mode "$cfg" 'mode'
@@ -33,7 +34,7 @@ start_instance() {
         /usr/bin/edge -u 0 -g 0 -d $tunname -a ${mode}:${address} -c $community $([ -n "$key" ] && echo -k $key) -l ${supernode}:${port}$supernode_bak $args $mtu
         iptables -I FORWARD -i "$tunname" -j ACCEPT -m comment --comment 'n2n edge eth'
         iptables -I FORWARD -o "$tunname" -j ACCEPT -m comment --comment 'n2n edge eth'
-        iptables -t nat -I POSTROUTING -o "$tunname" -j MASQUERADE -m comment --comment 'n2n edge net'
+        [ "$masquerade" = "1" ] && iptables -t nat -I POSTROUTING -o "$tunname" -j MASQUERADE -m comment --comment 'n2n edge net'
       ;;
       supernode)
         config_get_bool enabled "$cfg" 'enabled' '0'
@@ -62,9 +63,10 @@ stop_instance() {
     case "$type" in
       edge)
         config_get tunname "$cfg" 'tunname'
+        config_get_bool masquerade "$cfg" 'masquerade' '0'
         iptables -D FORWARD -i "$tunname" -j ACCEPT -m comment --comment 'n2n edge eth' 2>/dev/null
         iptables -D FORWARD -o "$tunname" -j ACCEPT -m comment --comment 'n2n edge eth' 2>/dev/null
-        iptables -t nat -D POSTROUTING -o "$tunname" -j MASQUERADE -m comment --comment 'n2n edge net' 2>/dev/null
+        [ "$masquerade" = "1" ] && iptables -t nat -D POSTROUTING -o "$tunname" -j MASQUERADE -m comment --comment 'n2n edge net' 2>/dev/null
         killall -9 edge
       ;;
       supernode)
