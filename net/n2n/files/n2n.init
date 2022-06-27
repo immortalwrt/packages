@@ -31,7 +31,7 @@ start_instance() {
         [ "$route" = "1" ] && args='-r'
         [ "$mode" = 'dhcp' ] && address='0.0.0.0'
         [ "-$mtu" != "-" ] && mtu="-M $mtu"
-        /usr/bin/edge -u 0 -g 0 -d $tunname -a ${mode}:${address} -c $community ${key:+-k $key} -l ${supernode}:${port}$supernode_bak $args $mtu
+        /usr/bin/n2n-edge -u 0 -g 0 -d $tunname -a ${mode}:${address} -c $community ${key:+-k $key} -l ${supernode}:${port}$supernode_bak $args $mtu
         iptables -I FORWARD -i "$tunname" -j ACCEPT -m comment --comment 'n2n edge eth'
         iptables -I FORWARD -o "$tunname" -j ACCEPT -m comment --comment 'n2n edge eth'
         [ "$masquerade" = "1" ] && iptables -t nat -I POSTROUTING -o "$tunname" -j MASQUERADE -m comment --comment 'n2n edge net'
@@ -41,7 +41,7 @@ start_instance() {
         [ "$enabled" = "0" ] && return 1
         config_get port "$cfg" 'port'
         config_get subnet "$cfg" 'subnet'
-        /usr/bin/supernode -p $port -a $subnet &
+        /usr/bin/n2n-supernode -p $port -a $subnet &
         iptables -I INPUT -p udp --dport $port -j ACCEPT -m comment --comment 'n2n supernode port'
       ;;
       route)
@@ -78,7 +78,7 @@ stop_instance() {
 }
 
 start() {
-    config_load 'n2n_v3'
+    config_load 'n2n'
     config_foreach start_instance 'edge'
     config_foreach start_instance 'supernode'
     sleep 2
@@ -86,7 +86,7 @@ start() {
 }
 
 stop() {
-    config_load 'n2n_v3'
+    config_load 'n2n'
     config_foreach stop_instance 'edge'
     config_foreach stop_instance 'supernode'
 }
