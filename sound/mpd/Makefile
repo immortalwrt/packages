@@ -18,6 +18,7 @@ PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
 
 PKG_CONFIG_DEPENDS:= \
+	CONFIG_AUDIO_SUPPORT \
 	CONFIG_BUILD_PATENTED \
 	CONFIG_IPV6 \
 
@@ -180,7 +181,7 @@ ifeq ($(BUILD_VARIANT),full)
 	-Dupnp=npupnp \
 	-Dmms=enabled \
 	-Dsoundcloud=enabled \
-	-Dffmpeg=$(if $(CONFIG_BUILD_PATENTED),en,dis)abled \
+	-Dffmpeg=enabled \
 	-Dmad=$(if $(CONFIG_BUILD_PATENTED),dis,en)abled \
 	-Dtremor=disabled \
 	-Dvorbis=enabled \
