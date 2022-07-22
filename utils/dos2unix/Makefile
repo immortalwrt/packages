@@ -32,6 +32,7 @@ define dos2unix/template
     CATEGORY:=Utilities
     TITLE:=Text file format converters ($(1))
     URL:=http://waterlan.home.xs4all.nl/dos2unix.html
+    PROVIDES:=$(2)
   endef
 
   define Package/$(1)/description
