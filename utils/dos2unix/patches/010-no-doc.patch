@@ -1,0 +1,24 @@
+--- a/Makefile
++++ b/Makefile
+@@ -366,8 +366,7 @@ DEFS            = $(EXTRA_DEFS) $(DEFS_U
+ 
+ # .......................................................... targets ...
+ 
+-all: $(BIN) $(MAC2UNIX_BIN) $(UNIX2DOS_BIN) $(UNIX2MAC_BIN) doc \
+-     mofiles man
++all: $(BIN) $(MAC2UNIX_BIN) $(UNIX2DOS_BIN) $(UNIX2MAC_BIN)
+ 
+ status:
+ 	@echo "D2U_OS       = $(D2U_OS)"
+@@ -606,10 +605,9 @@ ifdef ENABLE_NLS
+ 	$(foreach psfile, $(wildcard man/*/man1/*.ps), $(INSTALL_DATA) $(psfile) $(DESTDIR)$(docdir)/$(word 2,$(subst /, ,$(psfile),)) ;)
+ endif
+ 
+-install: install-bin install-man install-mo install-doc
++install: install-bin
+ 	# Run a new instance of 'make' otherwise the $$(wildcard ) function my not have been expanded,
+ 	# because the files may not have been there when make was started.
+-	$(MAKE) install-pdf
+ 
+ uninstall:
+ 	@echo "-- target: uninstall"
