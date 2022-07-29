@@ -63,6 +63,7 @@ TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
 
 define Package/zerotier/conffiles
 /etc/config/zerotier
+/etc/config/zero/
 endef
 
 define Package/zerotier/install
