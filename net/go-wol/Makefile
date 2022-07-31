@@ -33,5 +33,12 @@ define Package/go-wol
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
+define Package/go-wol/install
+	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
+
+	$(INSTALL_DIR) $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/wol $(1)/usr/bin/go-wol
+endef
+
 $(eval $(call GoBinPackage,go-wol))
 $(eval $(call BuildPackage,go-wol))
