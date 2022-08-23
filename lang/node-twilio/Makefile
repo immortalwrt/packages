@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=twilio
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=3.78.0
+PKG_VERSION:=3.80.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=bcf69059739ef5846c0bd9f4a29527e54eabb2db07ba681d3a936f1cecd673ef
+PKG_HASH:=e5c6e1481f83f787093fafeb5fe43c094dbe337261e5ed13b4795624e29c7545
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
