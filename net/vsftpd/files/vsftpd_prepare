@@ -226,6 +226,7 @@ if [ x`get_value vuser enabled` = x1 ]; then
 	output_const "guest_enable" YES
 	output_field vuser username "guest_username" ftp
 
+	output_const "uci_config_name" vsftpd
 	output_const "user_config_dir" "/var/run/vsftpd/users"
 
 	config_foreach vusers_iterate user
