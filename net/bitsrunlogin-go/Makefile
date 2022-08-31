@@ -1,9 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021-2022 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
@@ -15,7 +12,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/Mmx233/BitSrunLoginGo/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=5b5c8db5869be4ccadb81938b86c33362e170f119145d0fe3493f03f53a7eedd
 
-PKG_LICENSE:=AGPL-3.0
+PKG_LICENSE:=AGPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=golang/host
@@ -27,14 +24,29 @@ GO_PKG:=github.com/Mmx233/BitSrunLoginGo
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
-define Package/BitSrunLoginGo
+define Package/bitsrunlogin-go
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=Campus Network
   TITLE:=Bit Srun auto login tool
   URL:=https://github.com/Mmx233/BitSrunLoginGo
-  DEPENDS:=$(GO_ARCH_DEPENDS)
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
-$(eval $(call GoBinPackage,BitSrunLoginGo))
-$(eval $(call BuildPackage,BitSrunLoginGo))
+define Package/bitsrunlogin-go/conffiles
+/etc/config/bitsrunlogin-go
+endef
+
+define Package/bitsrunlogin-go/install
+	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
+
+	$(INSTALL_DIR) $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/BitSrunLoginGo $(1)/usr/bin/bitsrunlogin-go
+
+	$(INSTALL_DIR) $(1)/etc/config $(1)/etc/init.d
+	$(INSTALL_CONF) $(CURDIR)/files/bitsrunlogin-go.config $(1)/etc/config/bitsrunlogin-go
+	$(INSTALL_BIN) $(CURDIR)/files/bitsrunlogin-go.init $(1)/etc/init.d/bitsrunlogin-go
+endef
+
+$(eval $(call GoBinPackage,bitsrunlogin-go))
+$(eval $(call BuildPackage,bitsrunlogin-go))
