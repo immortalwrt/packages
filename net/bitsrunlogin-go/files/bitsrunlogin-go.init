@@ -1,0 +1,103 @@
+#!/bin/sh /etc/rc.common
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Copyright (C) 2022 Tianling Shen <cnsztl@immortalwrt.org>
+
+USE_PROCD=1
+
+START=99
+STOP=10
+
+extra_command read_log "Read log file"
+
+CONF="bitsrunlogin-go"
+PROG="/usr/bin/bitsrunlogin-go"
+PROG_CONF="$PROG-config"
+RUN_DIR="/var/run/$CONF"
+
+start_service() {
+	config_load "$CONF"
+
+	local enabled
+	config_get_bool enabled "config" "enabled"
+	[ "$enabled" -eq "1" ] || exit 1
+
+	local domain usertype username password
+	local enable_https skip_cert_verify timeout
+	local interfaces
+
+	config_get domain "config" "domain"
+	config_get usertype "config" "usertype"
+	config_get username "config" "username"
+	config_get password "config" "password"
+	config_get_bool enable_https "config" "enable_https" "0"
+	config_get_bool skip_cert_verify "config" "skip_cert_verify" "0"
+	config_get timeout "config" "timeout" "5"
+	config_get interfaces "config" "interfaces"
+
+	mkdir -p "$RUN_DIR"
+	json_init
+	json_add_object "form"
+	json_add_string "domain" "$domain"
+	json_add_string "user_type" "$usertype"
+	json_add_string "username" "$username"
+	json_add_string "password" "$password"
+	json_close_object
+	json_add_object "meta"
+	json_add_string "n" "200"
+	json_add_string "type" "1"
+	json_add_string "acid" "5"
+	json_add_string "enc" "srun_bx1"
+	json_close_object
+	json_add_object "settings"
+	json_add_object "basic"
+	json_add_boolean "https" "$enable_https"
+	json_add_boolean "skip_cert_verify" "$skip_cert_verify"
+	json_add_int "timeout" "$timeout"
+	[ -z "$interfaces" ] || json_add_string "interfaces" "$interfaces"
+	json_close_object
+	json_add_object "guardian"
+	json_add_boolean "enable" 0
+	json_add_int "duration" 300
+	json_close_object
+	json_add_object "daemon"
+	json_add_boolean "enable" 0
+	json_add_string "path" "$RUN_DIR/.BitSrun"
+	json_close_object
+	json_add_object "debug"
+	json_add_boolean "enable" 1
+	json_add_boolean "write_log" 1
+	json_add_string "log_path" "$RUN_DIR"
+	json_close_object
+	json_close_object
+	json_dump > "$RUN_DIR/$CONF.json"
+
+	procd_open_instance
+	procd_set_param command "$PROG"
+	procd_append_param command -config "$RUN_DIR/$CONF.json"
+	procd_set_param respawn
+	procd_close_instance
+}
+
+stop_service() {
+	rm -rf "$RUN_DIR"
+}
+
+reload_service() {
+	stop
+	start
+}
+
+service_triggers() {
+	procd_add_reload_trigger "$CONF"
+}
+
+read_log() {
+	if ls "$RUN_DIR"/*.log >"/dev/null" 2>&1; then
+		cat "$RUN_DIR"/*.log
+		exit 0
+	else
+		echo -e "Log is unavailable."
+		exit 2
+	fi
+}
