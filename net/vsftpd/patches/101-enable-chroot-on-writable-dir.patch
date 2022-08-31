@@ -1,6 +1,6 @@
 --- a/secutil.c
 +++ b/secutil.c
-@@ -129,16 +129,5 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
+@@ -129,16 +129,5 @@ vsf_secutil_change_credentials(const str
    {
      vsf_sysutil_set_no_procs();
    }
