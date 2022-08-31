@@ -19,7 +19,7 @@
  #endif
  
  /* Prefer libcap based capabilities over raw syscall capabilities */
-@@ -242,14 +244,24 @@ void vsf_insert_uwtmp(const struct mystr* p_user_str,
+@@ -242,14 +244,24 @@ void vsf_insert_uwtmp(const struct mystr
  void vsf_remove_uwtmp(void);
  
  #ifndef VSF_SYSDEP_HAVE_PAM
@@ -45,7 +45,7 @@
    if (p_pwd == NULL)
    {
      return 0;
-@@ -305,6 +317,51 @@ vsf_sysdep_check_auth(struct mystr* p_user_str,
+@@ -305,6 +317,51 @@ vsf_sysdep_check_auth(struct mystr* p_us
    return 0;
  }
  
@@ -99,7 +99,7 @@
  #if (defined(__sun) || defined(__hpux)) && \
 --- a/tunables.c
 +++ b/tunables.c
-@@ -146,6 +146,7 @@ const char* tunable_rsa_private_key_file;
+@@ -146,6 +146,7 @@ const char* tunable_rsa_private_key_file
  const char* tunable_dsa_private_key_file;
  const char* tunable_ca_certs_file;
  const char* tunable_ssl_sni_hostname;
@@ -117,7 +117,7 @@
  void
 --- a/tunables.h
 +++ b/tunables.h
-@@ -148,6 +148,7 @@ extern const char* tunable_rsa_private_key_file;
+@@ -148,6 +148,7 @@ extern const char* tunable_rsa_private_k
  extern const char* tunable_dsa_private_key_file;
  extern const char* tunable_ca_certs_file;
  extern const char* tunable_ssl_sni_hostname;
