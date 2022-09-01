@@ -21,7 +21,7 @@ start_service() {
 
 	local domain usertype username password
 	local enable_https skip_cert_verify timeout duration
-	local interfaces
+	local interfaces debug
 
 	config_get domain "config" "domain"
 	config_get usertype "config" "usertype"
@@ -32,6 +32,7 @@ start_service() {
 	config_get timeout "config" "timeout" "5"
 	config_get duration "config" "duration" "3600"
 	config_get interfaces "config" "interfaces"
+	config_get_bool debug "config" "debug" "0"
 
 	mkdir -p "$RUN_DIR"
 	json_init
@@ -63,7 +64,7 @@ start_service() {
 	json_add_string "path" "$RUN_DIR/.BitSrun"
 	json_close_object
 	json_add_object "log"
-	json_add_boolean "debug_level" 0
+	json_add_boolean "debug_level" "$debug"
 	json_add_boolean "write_file" 1
 	json_add_string "log_path" "$RUN_DIR"
 	json_add_string "log_name" "$CONF.log"
