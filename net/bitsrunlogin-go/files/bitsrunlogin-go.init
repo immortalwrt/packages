@@ -8,11 +8,8 @@ USE_PROCD=1
 START=99
 STOP=10
 
-extra_command read_log "Read log file"
-
 CONF="bitsrunlogin-go"
 PROG="/usr/bin/bitsrunlogin-go"
-PROG_CONF="$PROG-config"
 RUN_DIR="/var/run/$CONF"
 
 start_service() {
@@ -65,10 +62,11 @@ start_service() {
 	json_add_boolean "enable" 0
 	json_add_string "path" "$RUN_DIR/.BitSrun"
 	json_close_object
-	json_add_object "debug"
-	json_add_boolean "enable" 1
-	json_add_boolean "write_log" 1
+	json_add_object "log"
+	json_add_boolean "debug_level" 0
+	json_add_boolean "write_file" 1
 	json_add_string "log_path" "$RUN_DIR"
+	json_add_string "log_name" "$CONF.log"
 	json_close_object
 	json_close_object
 	json_dump > "$RUN_DIR/$CONF.json"
@@ -91,14 +89,4 @@ reload_service() {
 
 service_triggers() {
 	procd_add_reload_trigger "$CONF"
-}
-
-read_log() {
-	if ls "$RUN_DIR"/*.log >"/dev/null" 2>&1; then
-		cat "$RUN_DIR"/*.log
-		exit 0
-	else
-		echo -e "Log is unavailable."
-		exit 2
-	fi
 }
