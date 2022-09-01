@@ -19,11 +19,11 @@ start_service() {
 	config_load "$CONF"
 
 	local enabled
-	config_get_bool enabled "config" "enabled"
+	config_get_bool enabled "config" "enabled" "0"
 	[ "$enabled" -eq "1" ] || exit 1
 
 	local domain usertype username password
-	local enable_https skip_cert_verify timeout
+	local enable_https skip_cert_verify timeout duration
 	local interfaces
 
 	config_get domain "config" "domain"
@@ -33,6 +33,7 @@ start_service() {
 	config_get_bool enable_https "config" "enable_https" "0"
 	config_get_bool skip_cert_verify "config" "skip_cert_verify" "0"
 	config_get timeout "config" "timeout" "5"
+	config_get duration "config" "duration" "3600"
 	config_get interfaces "config" "interfaces"
 
 	mkdir -p "$RUN_DIR"
@@ -57,8 +58,8 @@ start_service() {
 	[ -z "$interfaces" ] || json_add_string "interfaces" "$interfaces"
 	json_close_object
 	json_add_object "guardian"
-	json_add_boolean "enable" 0
-	json_add_int "duration" 300
+	json_add_boolean "enable" 1
+	json_add_int "duration" "$duration"
 	json_close_object
 	json_add_object "daemon"
 	json_add_boolean "enable" 0
