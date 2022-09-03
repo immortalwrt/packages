@@ -38,7 +38,7 @@ start_service() {
 	json_init
 	json_add_object "form"
 	json_add_string "domain" "$domain"
-	json_add_string "user_type" "$usertype"
+	json_add_string "usertype" "$usertype"
 	json_add_string "username" "$username"
 	json_add_string "password" "$password"
 	json_close_object
