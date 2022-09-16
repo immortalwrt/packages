@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=iperf
 PKG_VERSION:=3.11
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://downloads.es.net/pub/iperf
@@ -37,20 +37,27 @@ endef
 define Package/iperf3
 $(call Package/iperf3/default)
   VARIANT:=nossl
+  DEPENDS:=+libiperf3
 endef
 
 define Package/iperf3-ssl
 $(call Package/iperf3/default)
   TITLE+= with iperf_auth support
   VARIANT:=ssl
-  DEPENDS:= +libopenssl
+  DEPENDS:=+libopenssl
+endef
+
+define Package/libiperf3
+  SECTION:=libs
+  CATEGORY:=Libraries
+  TITLE:=Internet Protocol bandwidth measuring library
+  URL:=https://github.com/esnet/iperf
 endef
 
 TARGET_CFLAGS += -D_GNU_SOURCE
-CONFIGURE_ARGS += --disable-shared
 
 ifeq ($(BUILD_VARIANT),ssl)
-	CONFIGURE_ARGS += --with-openssl="$(STAGING_DIR)/usr"
+	CONFIGURE_ARGS += --with-openssl="$(STAGING_DIR)/usr" --disable-shared
 else
 	CONFIGURE_ARGS += --without-openssl
 endif
@@ -61,6 +68,17 @@ define Package/iperf3/description
  Iperf is a modern alternative for measuring TCP and UDP bandwidth
  performance, allowing the tuning of various parameters and
  characteristics.
+endef
+
+define Package/libiperf3/description
+ Libiperf is a library providing an API for iperf3 functionality.
+endef
+
+define Build/InstallDev
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(INSTALL_DIR) $(1)/usr/include
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libiperf.* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
 endef
 
 # autoreconf fails if the README file isn't present
@@ -79,5 +97,11 @@ define Package/iperf3-ssl/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/iperf3 $(1)/usr/bin/
 endef
 
+define Package/libiperf3/install
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libiperf.so.* $(1)/usr/lib
+endef
+
 $(eval $(call BuildPackage,iperf3))
 $(eval $(call BuildPackage,iperf3-ssl))
+$(eval $(call BuildPackage,libiperf3))
