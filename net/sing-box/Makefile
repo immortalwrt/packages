@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
-PKG_VERSION:=1.1-beta6
+PKG_VERSION:=1.1-beta7
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/SagerNet/sing-box/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=6cadde3259f79401327bb9fafa4aa6d50a73d1d9680dbc126beea932e2c3be73
+PKG_HASH:=52405dddf200b0277b5db05947f07d12e25eee12212d20bf61d898463ff92cf2
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILE:=LICENSE
