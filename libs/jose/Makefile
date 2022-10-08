@@ -22,10 +22,17 @@ PKG_LICENSE_FILES:=COPYING
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/meson.mk
 
+define Package/libjose
+  SECTION:=libs
+  TITLE:=Provides a full crypto stack including key generation, signing and encryption.
+  DEPENDS:=+zlib +jansson +libopenssl +libpthread
+  URL:=https://github.com/latchset/jose
+endef
+
 define Package/jose
   SECTION:=utils
   TITLE:=Provides a full crypto stack including key generation, signing and encryption.
-  DEPENDS:=+jansson +libopenssl +zlib
+  DEPENDS:=+libjose
   URL:=https://github.com/latchset/jose
 endef
 
@@ -35,17 +42,25 @@ define Package/jose/description
 	crypto stack including key generation, signing and encryption.
 endef
 
-MESON_ARGS += \
-	-Ddefault_library=static
+define Package/libjose/description
+	libjose is a library for performing various tasks on JSON
+	Object Signing and Encryption (JOSE) objects. José provides a full
+	crypto stack including key generation, signing and encryption.
+endef
 
 define Build/InstallDev
 	$(INSTALL_DIR)	$(1)/usr/lib
 	$(INSTALL_DIR)  $(1)/usr/include
 	$(INSTALL_DIR)	$(1)/usr/include/$(PKG_NAME)
 	$(INSTALL_DIR)	$(1)/usr/lib/pkgconfig
-	$(CP)	$(PKG_INSTALL_DIR)/usr/lib/lib$(PKG_NAME).a	$(1)/usr/lib
+	$(CP)	$(PKG_INSTALL_DIR)/usr/lib/lib$(PKG_NAME).so*	$(1)/usr/lib
 	$(CP)	$(PKG_INSTALL_DIR)/usr/include/$(PKG_NAME)/*.h	$(1)/usr/include/$(PKG_NAME)
 	$(CP)	$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/*.pc	$(1)/usr/lib/pkgconfig
+endef
+
+define Package/libjose/install
+	$(INSTALL_DIR)	$(1)/usr/lib
+	$(CP)		$(PKG_INSTALL_DIR)/usr/lib/lib$(PKG_NAME).so*	$(1)/usr/lib/
 endef
 
 define Package/jose/install
@@ -53,4 +68,5 @@ define Package/jose/install
 	$(INSTALL_BIN)  $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME)          $(1)/usr/bin/
 endef
 
+$(eval $(call BuildPackage,libjose))
 $(eval $(call BuildPackage,jose))
