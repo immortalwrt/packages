@@ -19,6 +19,7 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_SING_BOX_BUILD_ACME \
 	CONFIG_SING_BOX_BUILD_ECH \
+	CONFIG_SING_BOX_BUILD_GRPC \
 	CONFIG_SING_BOX_BUILD_GVISOR \
 	CONFIG_SING_BOX_BUILD_QUIC \
 	CONFIG_SING_BOX_BUILD_SHADOWSOCKSR \
@@ -55,6 +56,12 @@ define Package/sing-box/config
     bool "Build with TLS ECH extension support"
     default y
 
+    config SING_BOX_BUILD_GRPC
+    bool "Build with standard gPRC support"
+    default n
+    help
+      Standard gRPC has good compatibility but poor performance.
+
     config SING_BOX_BUILD_GVISOR
     bool "Build with gVisor support"
     default y
@@ -80,28 +87,32 @@ define Package/sing-box/config
   endif
 endef
 
+PKG_BUILD_TAGS:=
 ifneq ($(CONFIG_SING_BOX_BUILD_ACME),)
-  GO_PKG_TAGS+=with_acme
+  PKG_BUILD_TAGS+=with_acme
 endif
 ifneq ($(CONFIG_SING_BOX_BUILD_ECH),)
-  GO_PKG_TAGS+=with_ech
+  PKG_BUILD_TAGS+=with_ech
+endif
+ifneq ($(CONFIG_SING_BOX_BUILD_GRPC),)
+  PKG_BUILD_TAGS+=with_grpc
 endif
 ifneq ($(CONFIG_SING_BOX_BUILD_GVISOR),)
-  GO_PKG_TAGS+=gvisor
+  PKG_BUILD_TAGS+=with_gvisor
 endif
 ifneq ($(CONFIG_SING_BOX_BUILD_QUIC),)
-  GO_PKG_TAGS+=with_quic
+  PKG_BUILD_TAGS+=with_quic
 endif
 ifneq ($(CONFIG_SING_BOX_BUILD_SHADOWSOCKSR),)
-  GO_PKG_TAGS+=with_shadowsocksr
+  PKG_BUILD_TAGS+=with_shadowsocksr
 endif
 ifneq ($(CONFIG_SING_BOX_BUILD_UTLS),)
-  GO_PKG_TAGS+=with_utls
+  PKG_BUILD_TAGS+=with_utls
 endif
 ifneq ($(CONFIG_SING_BOX_BUILD_WIREGUARD),)
-  GO_PKG_TAGS+=with_wireguard
+  PKG_BUILD_TAGS+=with_wireguard
 endif
-GO_PKG_TAGS:=$(subst $(space),$(comma),$(strip $(GO_PKG_TAGS)))
+GO_PKG_TAGS:=$(subst $(space),$(comma),$(strip $(PKG_BUILD_TAGS)))
 
 $(eval $(call GoBinPackage,sing-box))
 $(eval $(call BuildPackage,sing-box))
