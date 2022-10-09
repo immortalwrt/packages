@@ -33,6 +33,7 @@ define Package/mosdns
   TITLE:=A plug-in DNS forwarder/splitter
   URL:=https://github.com/IrineSistiana/mosdns
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
+  PROVIDES:=mosdns-neo
 endef
 
 GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) CGO_ENABLED=0
