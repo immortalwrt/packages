@@ -44,7 +44,7 @@ define Package/libQt6/Default
   SUBMENU:=Qt6
   TITLE:=Qt6
   URL:=http://qt-project.org
-  DEPENDS:=@!arc +libatomic +libdouble-conversion +libstdcpp +zlib
+  DEPENDS:=@!(arc||TARGET_gemini) +libatomic +libdouble-conversion +libstdcpp +zlib
 endef
 
 define Package/libQt6
