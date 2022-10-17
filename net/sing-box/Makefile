@@ -43,7 +43,11 @@ define Package/sing-box
   SUBMENU:=Web Servers/Proxies
   TITLE:=The universal proxy platform
   URL:=https://sing-box.sagernet.org/
-  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +SING_BOX_BUILD_GVISOR:kmod-tun
+  DEPENDS:=$(GO_ARCH_DEPENDS) \
+    +ca-bundle \
+    +kmod-inet-diag \
+    +kmod-netlink-diag \
+    +SING_BOX_BUILD_GVISOR:kmod-tun
 endef
 
 define Package/sing-box/config
