@@ -49,7 +49,7 @@ start_service() {
 	json_add_object "meta"
 	json_add_string "n" "200"
 	json_add_string "type" "1"
-	json_add_string "acid" "$acid"
+	json_add_string "acid" "$acid" "5"
 	json_add_string "enc" "srun_bx1"
 	json_close_object
 	json_add_object "settings"
