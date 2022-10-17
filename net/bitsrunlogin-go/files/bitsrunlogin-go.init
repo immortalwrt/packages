@@ -17,7 +17,10 @@ start_service() {
 
 	local enabled
 	config_get_bool enabled "config" "enabled" "0"
-	[ "$enabled" -eq "1" ] || exit 1
+	
+	if [ ! "$enabled" -eq "1" ]; then 
+	    return 0
+	fi
 
 	local domain usertype username password
 	local enable_https skip_cert_verify timeout duration
