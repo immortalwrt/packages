@@ -17,9 +17,10 @@ start_service() {
 
 	local enabled
 	config_get_bool enabled "config" "enabled" "0"
-	[ "$enabled" -eq "1" ] || exit 1
+	
+	[ "$enabled" -eq "1" ] || return 1
 
-	local domain usertype username password
+	local domain usertype username password acid
 	local enable_https skip_cert_verify timeout duration
 	local interfaces debug
 
@@ -27,6 +28,7 @@ start_service() {
 	config_get usertype "config" "usertype"
 	config_get username "config" "username"
 	config_get password "config" "password"
+	config_get acid "config" "acid" "5"
 	config_get_bool enable_https "config" "enable_https" "0"
 	config_get_bool skip_cert_verify "config" "skip_cert_verify" "0"
 	config_get timeout "config" "timeout" "5"
@@ -45,7 +47,7 @@ start_service() {
 	json_add_object "meta"
 	json_add_string "n" "200"
 	json_add_string "type" "1"
-	json_add_string "acid" "5"
+	json_add_string "acid" "$acid"
 	json_add_string "enc" "srun_bx1"
 	json_close_object
 	json_add_object "settings"
