@@ -17,7 +17,6 @@ start_service() {
 
 	local enabled
 	config_get_bool enabled "config" "enabled" "0"
-	
 	[ "$enabled" -eq "1" ] || return 1
 
 	local domain usertype username password acid
