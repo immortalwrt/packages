@@ -260,7 +260,7 @@ $(call Package/strongswan/Default)
 	+strongswan-mod-fips-prf \
 	+strongswan-mod-gmp \
 	+strongswan-mod-hmac \
-	@(PACKAGE_strongswan-mod-kdf||PACKAGE_strongswan-mod-openssl||PACKAGE_strongswan-mod-wolfssl) \
+	+strongswan-mod-openssl \
 	+strongswan-mod-kernel-netlink \
 	+strongswan-mod-md5 \
 	+strongswan-mod-mgf1 \
@@ -300,7 +300,7 @@ $(call Package/strongswan/Default)
 	+strongswan-mod-des \
 	+strongswan-mod-gmpdh \
 	+strongswan-mod-hmac \
-	@(PACKAGE_strongswan-mod-kdf||PACKAGE_strongswan-mod-openssl||PACKAGE_strongswan-mod-wolfssl) \
+	+strongswan-mod-openssl \
 	+strongswan-mod-kernel-netlink \
 	+strongswan-mod-md5 \
 	+strongswan-mod-mgf1 \
@@ -330,7 +330,7 @@ $(call Package/strongswan/Default)
 	+strongswan-mod-aes \
 	+strongswan-mod-gmp \
 	+strongswan-mod-hmac \
-	@(PACKAGE_strongswan-mod-kdf||PACKAGE_strongswan-mod-openssl||PACKAGE_strongswan-mod-wolfssl) \
+	+strongswan-mod-openssl \
 	+strongswan-mod-kernel-netlink \
 	+strongswan-mod-mgf1 \
 	+strongswan-mod-nonce \
