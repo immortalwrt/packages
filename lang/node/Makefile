@@ -6,22 +6,22 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=node
 
-ifeq ($(CONFIG_NODEJS_18),y)
-PKG_VERSION:=v18.10.0
-PKG_RELEASE:=1
-PKG_HASH:=ad711b54e2be4a7d24f37c73fb2801adeaf6d26d298d431be98d6abc0202e89f
-PATCH_DIR:=./patches/v18.x
-else
 ifeq ($(CONFIG_NODEJS_16),y)
-PKG_VERSION:=v16.17.1
+PKG_VERSION:=v16.18.0
 PKG_RELEASE:=1
-PKG_HASH:=6721feb4152d56d2c6b358ce397abd5a7f1daf09ee2e25c5021b9b4d3f86a330
+PKG_HASH:=fcfe6ad2340f229061d3e81a94df167fe3f77e01712dedc0144a0e7d58e2c69b
 PATCH_DIR:=./patches/v16.x
 else
+ifeq ($(CONFIG_NODEJS_14),y)
 PKG_VERSION:=v14.20.1
 PKG_RELEASE:=1
 PKG_HASH:=365057ea661923cbfa71bdd7a8d0ace9ddff8d22d431ad92355f8433cecff14d
 PATCH_DIR:=./patches/v14.x
+else
+PKG_VERSION:=v18.11.0
+PKG_RELEASE:=1
+PKG_HASH:=8b9643dc6fce79c1e99379db0ce64e43601e2e2d7389015fe8985cc4ccd0ce17
+PATCH_DIR:=./patches/v18.x
 endif
 endif
 
@@ -84,13 +84,13 @@ endef
 
 define Package/node/config
 	menu "Configuration"
-		depends on PACKAGE_node
 
 	choice
 		prompt "Version Selection"
 		default NODEJS_16
 		help
 		 Select node.js version.
+		 The host package version is also the same.
 
 		config NODEJS_14
 			bool "14.x Maintenance LTS"
@@ -102,22 +102,24 @@ define Package/node/config
 			bool "18.x Current"
 	endchoice
 
-	choice
-		prompt "i18n features"
-		default NODEJS_ICU_SMALL
-		help
-		 Select i18n features
+	if PACKAGE_node
+		choice
+			prompt "i18n features"
+			default NODEJS_ICU_SMALL
+			help
+			 Select i18n features
 
-		config NODEJS_ICU_NONE
-			bool "Disable"
+			config NODEJS_ICU_NONE
+				bool "Disable"
 
-		config NODEJS_ICU_SMALL
-			bool "small-icu"
+			config NODEJS_ICU_SMALL
+				bool "small-icu"
 
-		config NODEJS_ICU_SYSTEM
-			depends on ARCH_64BIT
-			bool "system-icu"
-	endchoice
+			config NODEJS_ICU_SYSTEM
+				depends on ARCH_64BIT
+				bool "system-icu"
+		endchoice
+	endif
 
 	endmenu
 endef
