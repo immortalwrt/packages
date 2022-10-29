@@ -1,0 +1,11 @@
+--- a/src/btop.cpp
++++ b/src/btop.cpp
+@@ -94,7 +94,7 @@ progress_next () {
+     bool debuginit{};   // defaults to false
+     bool debug{};       // defaults to false
+-    bool utf_force{};   // defaults to false
++    bool utf_force =true;   // defaults to true
+ 
+ 	uint64_t start_time;
+ 
+ 	atomic<bool> resized (false);
