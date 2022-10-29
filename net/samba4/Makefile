@@ -2,7 +2,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=samba
-PKG_VERSION:=4.17.0
+PKG_VERSION:=4.17.1
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -13,7 +13,7 @@ PKG_SOURCE_URL:= \
 		http://www.nic.funet.fi/index/samba/pub/samba/stable/ \
 		http://samba.mirror.bit.nl/samba/ftp/stable/ \
 		https://download.samba.org/pub/samba/stable/
-PKG_HASH:=04868ecda82fcbeda7b8bf519a2461a64d55c6e70efc6f6053b2fbba55f1823a
+PKG_HASH:=1b939d03f8ca57194c413ed863014a3850c9ce9f9e31c2a7df706806fba77c01
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=COPYING
@@ -21,7 +21,7 @@ PKG_CPE_ID:=cpe:/a:samba:samba
 
 # samba4=(asn1_compile,compile_et) rpcsvc-proto=(rpcgen)
 HOST_BUILD_DEPENDS:=python3/host rpcsvc-proto/host perl/host perl-parse-yapp/host
-PKG_BUILD_DEPENDS:=samba4/host libtasn1/host
+PKG_BUILD_DEPENDS:=samba4/host libtasn1/host perl/host
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_SAMBA4_SERVER_NETBIOS \
@@ -61,7 +61,7 @@ endef
 define Package/samba4-libs
   $(call Package/samba4/Default)
   TITLE+= libs
-  DEPENDS:= +libtirpc +libreadline +libpopt +libcap +zlib +libgnutls +perlbase-json-pp +libtasn1 +libuuid +libopenssl +libpthread +KERNEL_IO_URING:liburing \
+  DEPENDS:= +libtirpc +libreadline +libpopt +libcap +zlib +libgnutls +libtasn1 +libuuid +libopenssl +libpthread +KERNEL_IO_URING:liburing \
 	+PACKAGE_libpam:libpam \
 	+SAMBA4_SERVER_VFS:attr \
 	+SAMBA4_SERVER_AVAHI:libavahi-client \
