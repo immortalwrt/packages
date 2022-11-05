@@ -1,6 +1,4 @@
-#
-# This is free software, licensed under the GNU General Public License v2.
-#
+# SPDX-Identifier-License: GPL-2.0-only
 
 include $(TOPDIR)/rules.mk
 
@@ -9,10 +7,10 @@ PKG_VERSION:=0.7.4
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.roland-riegel.de/nload/
-PKG_HASH:=c1c051e7155e26243d569be5d99c744d8620e65fa8a7e05efcf84d01d9d469e5
+PKG_SOURCE_URL:=https://codeload.github.com/rolandriegel/nload/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=a73b3a75356776860fc4c40daebce04c5022f73d39704a12fb0aeb88a751216a
 
-PKG_MAINTAINER:=Jacky Guo <leickwell@Hotmail.com>
+PKG_MAINTAINER:=Jacky Guo <leickwell@hotmail.com>
 PKG_LICENSE:=GPL-2.0-only
 PKG_LICENSE_FILES:=COPYING
 
@@ -25,13 +23,13 @@ include $(INCLUDE_DIR)/package.mk
 define Package/nload
   SECTION:=admin
   CATEGORY:=Administration
-  TITLE:=Real time network traffic monitor for the text console
+  TITLE:=A network traffic monitor
   DEPENDS:=+libncurses +libstdcpp
   URL:=https://github.com/rolandriegel/nload
 endef
 
 define Package/nload/description
-  monitors network traffic and bandwidth usage
+  Monitors network traffic and bandwidth usage.
 endef
 
 define Package/nload/install
