@@ -4,15 +4,15 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=azure-iot-device-http
+PKG_NPM_NAME:=zwave-js
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.14.1
+PKG_VERSION:=10.3.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=e605d5916267a7ef44ba9d7447804abba1adac4cffbf3c6c38364f5bc9719678
+PKG_HASH:=4bf0d5f1cb130ad36c4126bf9979c44e50ffc4e9b45bd16ee35aba24427cf2ce
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -24,17 +24,17 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-azure-iot-device-http
+define Package/node-zwave-js
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=HTTP transport for Azure IoT device SDK
-  URL:=https://www.npmjs.org/package/azure-iot-device-http
-  DEPENDS:=+node
+  TITLE:=Z-Wave driver written entirely in JavaScript/TypeScript
+  URL:=https://www.npmjs.org/package/zwave-js
+  DEPENDS:=+node +node-serialport
 endef
 
-define Package/node-azure-iot-device-http/description
- Communicate with Azure IoT Hub from any device over HTTP 1.1
+define Package/node-zwave-js/description
+ Z-Wave driver written entirely in JavaScript/TypeScript
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -54,26 +54,27 @@ define Build/Compile
 	npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM) \
 	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
 	npm install --production --global-style --no-save --omit=dev --no-package-lock
+	rm -rf $(PKG_BUILD_DIR)/node_modules/serialport
 	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-azure-iot-device-http/install
+define Package/node-zwave-js/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md,*.js} \
+	$(CP) $(PKG_BUILD_DIR)/package.json \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist} \
+	$(CP) $(PKG_BUILD_DIR)/{build,node_modules} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-azure-iot-device-http/postrm
+define Package/node-zwave-js/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/azure-iot-device-http || true
-rm -rf /usr/lib/node/azure-iot-device-http || true
+rm /usr/lib/node_modules/zwave-js || true
+rm -rf /usr/lib/node/zwave-js || true
 endef
 
-$(eval $(call BuildPackage,node-azure-iot-device-http))
+$(eval $(call BuildPackage,node-zwave-js))
