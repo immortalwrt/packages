@@ -14,12 +14,11 @@ config SQLITE3_DYNAMIC_EXTENSIONS
 	  Enable loadable extensions.
 
 config SQLITE3_ENABLE_COLUMN_METADATA
-	bool "Enable convenient access to meta-data about tables and queries"
+	bool "Enable column metadata"
 	default y
 	help
-	  When this option is defined there are some additional APIs
-	  enabled to acces meta-data about tables and queries (see
-	  https://sqlite.org/compile.html).
+	  Includes some additional APIs that provide convenient access to
+	  meta-data about tables and queries.
 
 config SQLITE3_FTS3
 	bool "FTS3 support"
