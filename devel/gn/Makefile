@@ -37,8 +37,7 @@ endef
 define Host/Configure
 	$(PYTHON) $(HOST_BUILD_DIR)/build/gen.py \
 		--no-last-commit-position \
-		--no-static-libstdc++ \
-		--use-lto
+		--no-static-libstdc++
 endef
 
 define Host/Compile
@@ -46,7 +45,8 @@ define Host/Compile
 endef
 
 define Host/Install
-	$(CP) $(HOST_BUILD_DIR)/out/gn $(STAGING_DIR_HOSTPKG)/bin/
+	$(INSTALL_DIR) $(STAGING_DIR_HOSTPKG)/bin/
+	$(INSTALL_BIN) $(HOST_BUILD_DIR)/out/gn $(STAGING_DIR_HOSTPKG)/bin/
 endef
 
 define Host/Clean
