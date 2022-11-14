@@ -7,18 +7,18 @@ config SQLITE3_BATCH_ATOMIC_WRITE
 	help
 	  Enable batch-atomic write optimization (supported only on F2FS).
 
+config SQLITE3_COLUMN_METADATA
+	bool "Build with column metadata API"
+	default y
+	help
+	  Includes some additional APIs that provide convenient access to
+	  meta-data about tables and queries.
+
 config SQLITE3_DYNAMIC_EXTENSIONS
 	bool "Dynamic extensions"
 	default y
 	help
 	  Enable loadable extensions.
-
-config SQLITE3_ENABLE_COLUMN_METADATA
-	bool "Enable column metadata"
-	default y
-	help
-	  Includes some additional APIs that provide convenient access to
-	  meta-data about tables and queries.
 
 config SQLITE3_FTS3
 	bool "FTS3 support"
