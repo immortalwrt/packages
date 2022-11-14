@@ -48,7 +48,7 @@ MAKE_FLAGS += \
 	ZT_EMBEDDED=1 \
 	ZT_SSO_SUPPORTED=0 \
 	DEFS="" \
-	OS_TYPE="LINUX" \
+	OSTYPE="LINUX" \
 
 define Build/Compile
 	$(call Build/Compile/Default,one)
