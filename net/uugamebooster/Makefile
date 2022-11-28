@@ -18,6 +18,8 @@ else ifeq ($(ARCH),mipsel)
   PKG_HASH:=8d26267bce01a85dca43c91b9e71ab5ddc3447cb13789eaea233da7ed6f7d961
 else ifeq ($(ARCH),x86_64)
   PKG_HASH:=02ba778fb59565213752de4383a7ad00301a091ecda4f9383337c222f7fb20fe
+else
+  PKG_HASH:=b9dd588617f9a839a84d19236d623a50a6b1b3850097b7d69bf3eafa32785979
 endif
 
 PKG_LICENSE:=Proprietary
@@ -45,7 +47,7 @@ define Build/Compile
 endef
 
 define Package/uugamebooster/conffiles
-/.uuplugin_uuid
+/usr/share/uugamebooster/.uuplugin_uuid
 /usr/share/uugamebooster/uu.conf
 endef
 
@@ -59,6 +61,9 @@ define Package/uugamebooster/install
 	$(INSTALL_DIR) $(1)/etc/config $(1)/etc/init.d
 	$(INSTALL_CONF) ./files/uugamebooster.config $(1)/etc/config/uugamebooster
 	$(INSTALL_BIN) ./files/uugamebooster.init $(1)/etc/init.d/uugamebooster
+
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(CP) ./files/uugamebooster.uci $(1)/etc/uci-defaults/90-uugamebooster-cfg-migration
 endef
 
 $(eval $(call BuildPackage,uugamebooster))
