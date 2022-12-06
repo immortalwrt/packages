@@ -3,7 +3,7 @@
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
-# 
+#
 
 include $(TOPDIR)/rules.mk
 
@@ -39,6 +39,7 @@ define Package/qt6tools
   SUBMENU:=Qt6
   TITLE:=Qt6 Tools
   URL:=http://qt-project.org
+  BUILDONLY:=1
   HIDDEN:=1
 endef
 
