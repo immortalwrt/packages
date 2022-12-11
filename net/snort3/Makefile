@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=snort3
-PKG_VERSION:=3.1.47.0
-PKG_RELEASE:=1
+PKG_VERSION:=3.1.48.0
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/snort3/snort3/archive/refs/tags/
-PKG_HASH:=7565411db11b453a98f8bd88eeef0fa9f2e85416a8f595e710aa19c430228b8c
+PKG_HASH:=65df088a8cac11e59f0b71a7f98fc9d21eeb0e31d35280c470c985172947ebfe
 
 PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
 PKG_LICENSE:=GPL-2.0-only
@@ -90,7 +90,8 @@ define Package/snort3/install
 		$(PKG_INSTALL_DIR)/usr/include/snort/lua/snort_plugin.lua \
 		$(1)/usr/share/lua/
 
-	$(INSTALL_DIR) $(1)/etc/snort
+	$(INSTALL_DIR) $(1)/etc/snort/{rules,lists,builtin_rules,so_rules}
+
 	$(INSTALL_CONF) \
 		$(PKG_INSTALL_DIR)/usr/etc/snort/*.lua \
 		$(1)/etc/snort
@@ -107,6 +108,25 @@ define Package/snort3/install
 	$(INSTALL_CONF) \
 		./files/snort.config \
 		$(1)/etc/config/snort
+	$(INSTALL_CONF) \
+		./files/local.lua \
+		$(1)/etc/snort
+	$(INSTALL_CONF) \
+		./files/homenet.lua \
+		$(1)/etc/snort
+	sed \
+		-i -e "/^EXTERNAL_NET\\s\\+=/ a include 'homenet.lua'" \
+		-e "/^HOME_NET\\s\\+=/ i -- we set HOME_NET and EXTERNAL_NET here or via an included file" \
+		-e 's/^\(HOME_NET\s\+=\)/--\1/g' \
+		-e 's/^\(EXTERNAL_NET\s\+=\)/--\1/g' \
+		$(1)/etc/snort/snort.lua
+	sed \
+		-i -e "s/^\\(RULE_PATH\\s\\+=\\).*/\\1 'rules'/g" \
+		-e "s/^\\(BUILTIN_RULE_PATH\\s\\+=\\).*/\\1 'builtin_rules'/g" \
+		-e "s/^\\(PLUGIN_RULE_PATH\\s\\+=\\).*/\\1 'so_rules'/g" \
+		-e "s/^\\(WHITE_LIST_PATH\\s\\+=\\).*/\\1 'lists'/g" \
+		-e "s/^\\(BLACK_LIST_PATH\\s\\+=\\).*/\\1 'lists'/g" \
+		$(1)/etc/snort/snort_defaults.lua
 endef
 
 $(eval $(call BuildPackage,snort3))
