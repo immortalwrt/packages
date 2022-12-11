@@ -51,18 +51,15 @@ start_instance() {
 	[ "$drop_slow_clients" = "1" ] && drop_slow_clients="yes" || drop_slow_clients="no"
 
 	mkdir -p "$CONFDIR"
-	sed -e "/<bind><address>0.0.0.0:7088/d" \
-	    -e "/<congestionControl>htcp/d" \
-	    -e "s,<file>/root/msd_lite/msd_lite.log</file>,<file>/dev/null</file>,g" \
-	    -e "s,<threadsCountMax>1,<threadsCountMax>$threads,g" \
-	    -e "s,<fBindToCPU>yes,<fBindToCPU>$bind_to_cpu,g" \
-	    -e "s,<bind><address>\[::\]:7088</address></bind>,$bindlist,g" \
-	    -e "s,<ifName>vlan777,<ifName>$interface,g" \
-	    -e "s,<fDropSlowClients>no,<fDropSlowClients>$drop_slow_clients,g" \
-	    -e "s,<precache>4096,<precache>$precache_size,g" \
-	    -e "s,<ringBufSize>1024,<ringBufSize>$ring_buffer_size,g" \
-	    -e "s,<rcvBuf>512,<rcvBuf>$multicast_recv_buffer_size,g" \
-	    -e "s,<rcvTimeout>2,<rcvTimeout>$multicast_recv_timeout,g" \
+	sed -e "s,@threadsCountMax@,$threads,g" \
+	    -e "s,@fBindToCPU@,$bind_to_cpu,g" \
+	    -e "s,@bindList@,$bindlist,g" \
+	    -e "s,@ifName@,$interface,g" \
+	    -e "s,@fDropSlowClients@,$drop_slow_clients,g" \
+	    -e "s,@precache@,$precache_size,g" \
+	    -e "s,@ringBufSize@,$ring_buffer_size,g" \
+	    -e "s,@rcvBuf@,$multicast_recv_buffer_size,g" \
+	    -e "s,@rcvTimeout@,$multicast_recv_timeout,g" \
 		"$CONF" > "$CONFDIR/$section.conf"
 
 	procd_open_instance "$section"

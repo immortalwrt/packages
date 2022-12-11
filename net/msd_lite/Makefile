@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=msd_lite
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/rozhuk-im/msd_lite.git
@@ -24,7 +24,7 @@ define Package/msd_lite
   SECTION:=net
   CATEGORY:=Network
   TITLE:=Program for IP TV streaming on the network via HTTP
-  URL:=http://www.netlab.linkpc.net/wiki/en:software:msd:lite
+  URL:=http://www.netlab.linkpc.net/wiki/ru:software:msd:lite
 endef
 
 define Package/msd_lite/description
@@ -44,7 +44,7 @@ define Package/msd_lite/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/msd_lite $(1)/usr/bin/
 
 	$(INSTALL_DIR) $(1)/etc/msd_lite
-	$(CP) $(PKG_INSTALL_DIR)/etc/msd_lite/msd_lite.conf.sample $(1)/etc/msd_lite/
+	$(CP) $(CURDIR)/files/msd_lite.sample $(1)/etc/msd_lite/msd_lite.conf.sample
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) $(CURDIR)/files/msd_lite.config $(1)/etc/config/msd_lite
 	$(INSTALL_DIR) $(1)/etc/init.d
