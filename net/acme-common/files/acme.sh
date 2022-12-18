@@ -8,10 +8,9 @@
 #
 # Authors: Toke Høiland-Jørgensen <toke@toke.dk>
 
-export state_dir=/etc/acme
-export account_email=
-export debug=0
-export run_dir=/var/run/acme
+run_dir=/var/run/acme
+export CHALLENGE_DIR=$run_dir/challenge
+export CERT_DIR=/etc/ssl/acme
 NFT_HANDLE=
 HOOK=/usr/lib/acme/hook
 LOG_TAG=acme
@@ -65,7 +64,7 @@ load_options() {
 	config_get webroot "$section" webroot
 	export webroot
 	if [ "$webroot" ]; then
-		log warn "Option \"webroot\" is deprecated, please remove it and change your web server's config so it serves ACME challenge requests from $run_dir/challenge."
+		log warn "Option \"webroot\" is deprecated, please remove it and change your web server's config so it serves ACME challenge requests from $CHALLENGE_DIR."
 	fi
 }
 
@@ -81,7 +80,7 @@ get_cert() {
 
 	load_options "$section"
 	if [ -z "$dns" ] && [ "$standalone" = 0 ]; then
-		mkdir -p "$challenge_dir"
+		mkdir -p "$CHALLENGE_DIR"
 	fi
 
 	if [ "$standalone" = 1 ] && [ -z "$NFT_HANDLE" ]; then
@@ -107,11 +106,19 @@ load_globals() {
 		log err "account_email option is required"
 		exit 1
 	fi
+	export account_email
 
-	config_get state_dir "$section" state_dir "$state_dir"
-	mkdir -p "$state_dir"
+	config_get state_dir "$section" state_dir
+	if [ "$state_dir" ]; then
+		log warn "Option \"state_dir\" is deprecated, please remove it. Certificates now exist in $CERT_DIR."
+		mkdir -p "$state_dir"
+	else
+		state_dir=/etc/acme
+	fi
+	export state_dir
 
-	config_get debug "$section" debug "$debug"
+	config_get debug "$section" debug 0
+	export debug
 
 	# only look for the first acme section
 	return 1
