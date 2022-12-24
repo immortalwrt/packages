@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=typescript
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.8.4
+PKG_VERSION:=4.9.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=8e0118a302a4930ef0799e9fb64ef0038dce546b7889603c744676afd9c93c20
+PKG_HASH:=6f760a52442ba148303b41229afc6c0db0066244345b4585a3b5d5934cc71e48
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
