@@ -1,0 +1,13 @@
+--- a/src/base/CMakeLists.txt
++++ b/src/base/CMakeLists.txt
+@@ -195,6 +195,10 @@ target_link_libraries(qbt_base
+         qbt_common_cfg
+ )
+ 
++if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
++	target_link_libraries(qbt_base PRIVATE stdc++fs)
++endif()
++
+ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+     find_library(IOKit_LIBRARY IOKit)
+     find_library(Carbon_LIBRARY Carbon)
