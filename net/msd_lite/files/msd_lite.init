@@ -41,7 +41,7 @@ start_instance() {
 	if [ -n "$address" ]; then
 		local addr bindlist
 		for addr in $address; do
-			bindlist="$bindlist<bind><address>$addr</address></bind>"
+			bindlist="${bindlist:+$bindlist\\n\\t\\t\\t}<bind><address>$addr</address></bind>"
 		done
 	else
 		return 1
