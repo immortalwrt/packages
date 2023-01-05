@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gowebdav
-PKG_VERSION:=0.0.4
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_VERSION:=0.0.5
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/1715173329/gowebdav/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=138dcb660ecc0b256700845fd5edb78fdefc60fe853578cc264cf31bab164d0d
+PKG_HASH:=ee0ac5a52a3b7a1e1c687b850c3f7b55e10bbdc88da0b6b1dd8b790fc53d10c6
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
