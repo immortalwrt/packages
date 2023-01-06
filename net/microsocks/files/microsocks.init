@@ -45,7 +45,6 @@ start_service() {
 			json_add_string type rule
 			json_add_string name "Allow-access-microsocks-at-$_port"
 			json_add_string src "*"
-			[ -z "$_bindaddr" ] || json_add_string dest_ip "$_bindaddr"
 			json_add_string dest_port "$_port"
 			json_add_string proto tcp
 			json_add_string target ACCEPT
