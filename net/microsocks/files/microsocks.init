@@ -33,6 +33,8 @@ start_service() {
 	[ -z "$_password" ] || procd_append_param command -P "${_password}"
 	[ "$_auth_once" -eq "0" ] || procd_append_param command -1
 
+	procd_set_param limits core="unlimited"
+	procd_set_param limits nofile="1000000 1000000"
 	procd_set_param respawn
 	procd_set_param stderr 1
 	# TODO: Make it dependable on some verbose/debug config setting?
