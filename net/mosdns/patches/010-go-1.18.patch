@@ -1,0 +1,134 @@
+--- a/go.mod
++++ b/go.mod
+@@ -17,6 +17,7 @@ require (
+ 	github.com/spf13/viper v1.14.0
+ 	github.com/stretchr/testify v1.8.1
+ 	github.com/vishvananda/netlink v1.2.1-beta.2.0.20221107222636-d3c0a2caa559
++	go.uber.org/atomic v1.10.0
+ 	go.uber.org/zap v1.24.0
+ 	go4.org/netipx v0.0.0-20230113150534-b98ae1862cde
+ 	golang.org/x/exp v0.0.0-20230113213754-f9f960f08ad4
+@@ -66,7 +67,6 @@ require (
+ 	github.com/spf13/pflag v1.0.5 // indirect
+ 	github.com/subosito/gotenv v1.4.2 // indirect
+ 	github.com/vishvananda/netns v0.0.1 // indirect
+-	go.uber.org/atomic v1.10.0 // indirect
+ 	go.uber.org/multierr v1.9.0 // indirect
+ 	golang.org/x/crypto v0.5.0 // indirect
+ 	golang.org/x/mod v0.7.0 // indirect
+--- a/pkg/cache/cache.go
++++ b/pkg/cache/cache.go
+@@ -23,7 +23,7 @@ import (
+ 	"github.com/IrineSistiana/mosdns/v5/pkg/concurrent_lru"
+ 	"github.com/IrineSistiana/mosdns/v5/pkg/concurrent_map"
+ 	"github.com/IrineSistiana/mosdns/v5/pkg/utils"
+-	"sync/atomic"
++	"go.uber.org/atomic"
+ 	"time"
+ )
+ 
+--- a/pkg/query_context/context.go
++++ b/pkg/query_context/context.go
+@@ -21,9 +21,9 @@ package query_context
+ 
+ import (
+ 	"github.com/miekg/dns"
++	"go.uber.org/atomic"
+ 	"go.uber.org/zap"
+ 	"go.uber.org/zap/zapcore"
+-	"sync/atomic"
+ 	"time"
+ )
+ 
+--- a/pkg/query_context/kv.go
++++ b/pkg/query_context/kv.go
+@@ -19,7 +19,7 @@
+ 
+ package query_context
+ 
+-import "sync/atomic"
++import "go.uber.org/atomic"
+ 
+ var kId atomic.Uint32
+ 
+--- a/pkg/upstream/event_stat.go
++++ b/pkg/upstream/event_stat.go
+@@ -21,7 +21,7 @@ package upstream
+ 
+ import (
+ 	"net"
+-	"sync/atomic"
++	"go.uber.org/atomic"
+ )
+ 
+ type Event int
+--- a/pkg/upstream/transport/dns_conn.go
++++ b/pkg/upstream/transport/dns_conn.go
+@@ -23,9 +23,9 @@ import (
+ 	"context"
+ 	"fmt"
+ 	"github.com/miekg/dns"
++	"go.uber.org/atomic"
+ 	"io"
+ 	"sync"
+-	"sync/atomic"
+ )
+ 
+ // dnsConn is a low-level connection for dns.
+--- a/pkg/upstream/transport/utils.go
++++ b/pkg/upstream/transport/utils.go
+@@ -21,8 +21,8 @@ package transport
+ 
+ import (
+ 	"github.com/miekg/dns"
++	"go.uber.org/atomic"
+ 	"math/rand"
+-	"sync/atomic"
+ 	"time"
+ )
+ 
+--- a/plugin/executable/cache/cache.go
++++ b/plugin/executable/cache/cache.go
+@@ -34,6 +34,7 @@ import (
+ 	"github.com/klauspost/compress/gzip"
+ 	"github.com/miekg/dns"
+ 	"github.com/prometheus/client_golang/prometheus"
++	"go.uber.org/atomic"
+ 	"go.uber.org/zap"
+ 	"golang.org/x/sync/singleflight"
+ 	"google.golang.org/protobuf/proto"
+@@ -42,7 +43,6 @@ import (
+ 	"os"
+ 	"strconv"
+ 	"sync"
+-	"sync/atomic"
+ 	"time"
+ )
+ 
+--- a/plugin/executable/cache/utils.go
++++ b/plugin/executable/cache/utils.go
+@@ -35,7 +35,10 @@ type key string
+ var seed = maphash.MakeSeed()
+ 
+ func (k key) Sum() uint64 {
+-	return maphash.String(seed, string(k))
++	var h maphash.Hash
++	h.SetSeed(seed)
++	h.WriteString(string(k))
++	return h.Sum64()
+ }
+ 
+ // getMsgKey returns a string key for the query msg, or an empty
+--- a/plugin/executable/reverse_lookup/utils.go
++++ b/plugin/executable/reverse_lookup/utils.go
+@@ -30,5 +30,9 @@ var seed = maphash.MakeSeed()
+ 
+ func (k key) Sum() uint64 {
+ 	b := netip.Addr(k).As16()
+-	return maphash.Bytes(seed, b[:])
++
++	var h maphash.Hash
++	h.SetSeed(seed)
++	h.Write(b[:])
++	return h.Sum64()
+ }
