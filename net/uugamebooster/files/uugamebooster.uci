@@ -1,5 +1,0 @@
-#!/bin/sh
-
-[ ! -f "/.uuplugin_uuid" ] || mv "/.uuplugin_uuid" "/usr/share/uugamebooster/.uuplugin_uuid"
-
-exit 0
