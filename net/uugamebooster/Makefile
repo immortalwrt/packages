@@ -45,7 +45,7 @@ define Build/Compile
 endef
 
 define Package/uugamebooster/conffiles
-/usr/share/uugamebooster/.uuplugin_uuid
+/.uuplugin_uuid
 /usr/share/uugamebooster/uu.conf
 endef
 
@@ -59,9 +59,6 @@ define Package/uugamebooster/install
 	$(INSTALL_DIR) $(1)/etc/config $(1)/etc/init.d
 	$(INSTALL_CONF) ./files/uugamebooster.config $(1)/etc/config/uugamebooster
 	$(INSTALL_BIN) ./files/uugamebooster.init $(1)/etc/init.d/uugamebooster
-
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(CP) ./files/uugamebooster.uci $(1)/etc/uci-defaults/90-uugamebooster-cfg-migration
 endef
 
 $(eval $(call BuildPackage,uugamebooster))
