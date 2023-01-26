@@ -1,22 +1,22 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021-2023 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libcryptopp
-PKG_VERSION:=8.6.0
+PKG_VERSION:=8.7.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=cryptopp$(subst .,,$(PKG_VERSION)).zip
-PKG_SOURCE_URL:=https://www.cryptopp.com/
-PKG_HASH:=20aa413957d9c8ae353ee2f7747bd7ac392f933c60a53e3fd1e41cadbc48d193
+PKG_SOURCE_URL:=https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_$(subst .,_,$(PKG_VERSION))/ \
+		https://www.cryptopp.com/
+PKG_HASH:=d0d3a28fcb5a1f6ed66b3adf57ecfaed234a7e194e42be465c2ba70c744538dd
 
-PKG_FIXUP:=autoreconf
+PKG_LICENSE:=BSL-1.0
+PKG_LICENSE_FILES:=License.txt
+PKG_CPE_ID:=cpe:/a:cryptopp:crypto++
+
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
@@ -38,21 +38,24 @@ define Package/libcryptopp/description
   use of templates and abstract base classes.
 endef
 
-define Build/Prepare
-	$(Build/Prepare/Default)
-	cd $(PKG_BUILD_DIR); rm -f GNUmakefile GNUmakefile-cross
-endef
+ifdef CONFIG_TARGET_x86
+TARGET_CFLAGS += -fPIC
+endif
+
+MAKE_FLAGS+= dynamic libcryptopp.pc
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/cryptopp
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/cryptopp/* $(1)/usr/include/cryptopp/
+	$(CP) $(PKG_INSTALL_DIR)/usr/local/include/cryptopp/* $(1)/usr/include/cryptopp/
+	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
+	$(CP) $(PKG_INSTALL_DIR)/usr/local/lib/pkgconfig/libcryptopp.pc $(1)/usr/lib/pkgconfig/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcryptopp.{a,so*} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/local/lib/libcryptopp.so* $(1)/usr/lib/
 endef
 
 define Package/libcryptopp/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcryptopp.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/local/lib/libcryptopp.so* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libcryptopp))
