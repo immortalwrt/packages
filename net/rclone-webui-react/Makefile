@@ -14,7 +14,7 @@ PKG_SOURCE_URL:=https://github.com/rclone/rclone-webui-react/releases/download/v
 PKG_HASH:=afd6836ecc5c5a1161e25cb0633c1167eb5933bb5069545680d69fcba635f011
 
 PKG_LICENSE:=MIT
-PKG_LICENSE_FILE:=LICENSE
+PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Elon Huang <elonhhuang@gmail.com> \
 		Tianling Shen <cnsztl@immortalwrt.org>
 

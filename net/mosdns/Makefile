@@ -13,7 +13,7 @@ PKG_SOURCE_URL:=https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$(PKG_V
 PKG_HASH:=036007a5e38f1853203c038f34c966a8cc3cb05d06624e73c4bf705938989b56
 
 PKG_LICENSE:=GPL-3.0
-PKG_LICENSE_FILE:=LICENSE
+PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=golang/host
