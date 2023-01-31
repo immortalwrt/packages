@@ -14,7 +14,7 @@ PKG_SOURCE_URL:=https://github.com/ElonH/RcloneNg/releases/download/v$(PKG_VERSI
 PKG_HASH:=0b4916ddd0bacb5b358dc8d36b64c30f4182c0ace3eb06cda94b6578c419dcd9
 
 PKG_LICENSE:=MIT
-PKG_LICENSE_FILE:=LICENSE
+PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Elon Huang <elonhhuang@gmail.com> \
 		Tianling Shen <cnsztl@immortalwrt.org>
 

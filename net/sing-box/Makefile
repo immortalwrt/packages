@@ -13,7 +13,7 @@ PKG_SOURCE_URL:=https://codeload.github.com/SagerNet/sing-box/tar.gz/v$(PKG_VERS
 PKG_HASH:=0f3d58ad946ef0283ad651630bbae35d86234f41fc783613007d5ccc33ceb38d
 
 PKG_LICENSE:=GPL-3.0-or-later
-PKG_LICENSE_FILE:=LICENSE
+PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_CONFIG_DEPENDS:= \

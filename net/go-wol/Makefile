@@ -13,7 +13,7 @@ PKG_SOURCE_URL:=https://codeload.github.com/sabhiram/go-wol/tar.gz/v$(PKG_VERSIO
 PKG_HASH:=f779ab06f79e13a04e9e00ed74227e53627e30953a0e660322f3b56102efdbda
 
 PKG_LICENSE:=MIT
-PKG_LICENSE_FILE:=LICENSE
+PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=golang/host
