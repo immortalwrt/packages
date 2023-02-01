@@ -39,7 +39,7 @@ define Package/libcryptopp/description
 endef
 
 ifdef CONFIG_TARGET_x86
-TARGET_CFLAGS += -fPIC
+TARGET_CFLAGS+= $(FPIC)
 endif
 
 MAKE_FLAGS+= dynamic libcryptopp.pc
