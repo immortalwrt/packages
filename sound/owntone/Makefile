@@ -66,8 +66,8 @@ define Package/owntone/install
 	$(INSTALL_CONF) ./files/owntone.conf $(1)/etc/owntone.conf
 	$(INSTALL_DIR) $(1)/usr/lib/owntone
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/owntone/* $(1)/usr/lib/owntone/
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/owntone.init $(1)/etc/init.d/owntone
+	# $(INSTALL_DIR) $(1)/etc/init.d
+	# $(INSTALL_BIN) ./files/owntone.init $(1)/etc/init.d/owntone
 	$(INSTALL_DIR) $(1)/usr/share/owntone
 	$(CP) $(PKG_INSTALL_DIR)/usr/share/owntone/htdocs $(1)/usr/share/owntone
 endef
