@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cloudreve
-PKG_VERSION:=3.7.0
+PKG_VERSION:=3.7.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/cloudreve/Cloudreve.git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_MIRROR_HASH:=ff65da63ac7f2bde5b9892bebd4c4b1a64bea564db74e46f887178d2e2e38d0e
+PKG_MIRROR_HASH:=b70601111e727d879a709884bc28237861216b99abac02b6f542f5984ddd8c0d
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
@@ -47,7 +47,7 @@ define Build/Compile
 	( \
 		pushd $(PKG_BUILD_DIR)/assets ; \
 		yarn install ; \
-		yarn run build ; \
+		NODE_OPTIONS=--openssl-legacy-provider yarn run build ; \
 		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
