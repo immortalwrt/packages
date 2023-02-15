@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
-PKG_VERSION:=1.1.5
+PKG_VERSION:=1.2-beta1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/SagerNet/sing-box/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=a1e642362f41bd0e362cd9c8d2f0d29d2eca6a55a948677f6f03cfb81c4f0657
+PKG_HASH:=dcf36bc8cacea19a2e47bcfc691059680d6691898327b2317085711e88ff45cb
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
@@ -19,6 +19,7 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_SING_BOX_BUILD_ACME \
 	CONFIG_SING_BOX_BUILD_CLASH_API \
+	CONFIG_SING_BOX_BUILD_DHCP \
 	CONFIG_SING_BOX_BUILD_ECH \
 	CONFIG_SING_BOX_BUILD_EMBEDDED_TOR \
 	CONFIG_SING_BOX_BUILD_GRPC \
@@ -63,6 +64,10 @@ define Package/sing-box/config
 
     config SING_BOX_BUILD_CLASH_API
     bool "Build with Clash API support"
+    default n
+
+    config SING_BOX_BUILD_DHCP
+    bool "Build with DHCP support"
     default n
 
     config SING_BOX_BUILD_ECH
@@ -115,6 +120,7 @@ endef
 GO_PKG_TAGS:=$(subst $(space),$(comma),$(strip \
 	$(if $(CONFIG_SING_BOX_BUILD_ACME),with_acme) \
 	$(if $(CONFIG_SING_BOX_BUILD_CLASH_API),with_clash_api) \
+	$(if $(CONFIG_SING_BOX_BUILD_DHCP),with_dhcp) \
 	$(if $(CONFIG_SING_BOX_BUILD_ECH),with_ech) \
 	$(if $(CONFIG_SING_BOX_BUILD_EMBEDDED_TOR),with_embedded_tor) \
 	$(if $(CONFIG_SING_BOX_BUILD_GRPC),with_grpc) \
