@@ -1,6 +1,6 @@
 --- a/src/base/CMakeLists.txt
 +++ b/src/base/CMakeLists.txt
-@@ -195,6 +195,10 @@ target_link_libraries(qbt_base
+@@ -197,6 +197,10 @@ target_link_libraries(qbt_base
          qbt_common_cfg
  )
  
