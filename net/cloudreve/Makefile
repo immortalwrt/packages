@@ -35,7 +35,7 @@ define Package/cloudreve
   SUBMENU:=Cloud Manager
   TITLE:=A project helps you build your own cloud in minutes
   URL:=https://cloudreve.org
-  DEPENDS:=$(GO_ARCH_DEPENDS) @!(mips||mipsel||mips64||mips64el) +ca-bundle
+  DEPENDS:=@(aarch64||arm||i386||i686||x86_64) +ca-bundle
 endef
 
 define Package/cloudreve/description
@@ -47,7 +47,7 @@ define Build/Compile
 	( \
 		pushd $(PKG_BUILD_DIR)/assets ; \
 		yarn install ; \
-		NODE_OPTIONS=--openssl-legacy-provider yarn run build ; \
+		yarn run build ; \
 		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
