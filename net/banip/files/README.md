@@ -7,52 +7,53 @@ IP address blocking is commonly used to protect against brute force attacks, pre
 
 ## Main Features
 * banIP supports the following fully pre-configured domain blocklist feeds (free for private usage, for commercial use please check their individual licenses).  
-  **Please note:** the columns "INP" and "FWD" show for which chains the feeds are suitable in common scenarios, e.g. the first entry should be limited to forward chain - see the config options 'ban\_blockforward' and 'ban\_blockinput' below.
+  **Please note:** the columns "WAN-INP", "WAN-FWD" and "LAN-FWD" show for which chains the feeds are suitable in common scenarios, e.g. the first entry should be limited to the LAN forward chain - see the config options 'ban\_blockinput', 'ban\_blockforwardwan' and 'ban\_blockforwardlan' below.  
 
-| Feed                | Focus                          | INP | FWD | Information                                                           |
-| :------------------ | :----------------------------: | :-: | :-: | :-------------------------------------------------------------------- |
-| adaway              | adaway IPs                     |     |  x  | [Link](https://github.com/dibdot/banIP-IP-blocklists)                 |
-| adguard             | adguard IPs                    |     |  x  | [Link](https://github.com/dibdot/banIP-IP-blocklists)                 |
-| adguardtrackers     | adguardtracker IPs             |     |  x  | [Link](https://github.com/dibdot/banIP-IP-blocklists)                 |
-| antipopads          | antipopads IPs                 |     |  x  | [Link](https://github.com/dibdot/banIP-IP-blocklists)                 |
-| asn                 | ASN IPs                        |     |  x  | [Link](https://asn.ipinfo.app)                                        |
-| backscatterer       | backscatterer IPs              |  x  |  x  | [Link](https://www.uceprotect.net/en/index.php)                       |
-| bogon               | bogon prefixes                 |  x  |  x  | [Link](https://team-cymru.com)                                        |
-| country             | country blocks                 |  x  |     | [Link](https://www.ipdeny.com/ipblocks)                               |
-| cinsscore           | suspicious attacker IPs        |  x  |  x  | [Link](https://cinsscore.com/#list)                                   |
-| darklist            | blocks suspicious attacker IPs |  x  |  x  | [Link](https://darklist.de)                                           |
-| debl                | fail2ban IP blacklist          |  x  |  x  | [Link](https://www.blocklist.de)                                      |
-| doh                 | public DoH-Provider            |     |  x  | [Link](https://github.com/dibdot/DoH-IP-blocklists)                   |
-| drop                | spamhaus drop compilation      |  x  |  x  | [Link](https://www.spamhaus.org)                                      |
-| dshield             | dshield IP blocklist           |  x  |  x  | [Link](https://www.dshield.org)                                       |
-| edrop               | spamhaus edrop compilation     |  x  |  x  | [Link](https://www.spamhaus.org)                                      |
-| feodo               | feodo tracker                  |  x  |  x  | [Link](https://feodotracker.abuse.ch)                                 |
-| firehol1            | firehol level 1 compilation    |  x  |  x  | [Link](https://iplists.firehol.org/?ipset=firehol_level1)             |
-| firehol2            | firehol level 2 compilation    |  x  |  x  | [Link](https://iplists.firehol.org/?ipset=firehol_level2)             |
-| firehol3            | firehol level 3 compilation    |  x  |  x  | [Link](https://iplists.firehol.org/?ipset=firehol_level3)             |
-| firehol4            | firehol level 4 compilation    |  x  |  x  | [Link](https://iplists.firehol.org/?ipset=firehol_level4)             |
-| greensnow           | suspicious server IPs          |  x  |  x  | [Link](https://greensnow.co)                                          |
-| iblockads           | Advertising IPs                |     |  x  | [Link](https://www.iblocklist.com)                                    |
-| iblockspy           | Malicious spyware IPs          |  x  |  x  | [Link](https://www.iblocklist.com)                                    |
-| myip                | real-time IP blocklist         |  x  |  x  | [Link](https://myip.ms)                                               |
-| nixspam             | iX spam protection             |  x  |  x  | [Link](http://www.nixspam.org)                                        |
-| oisdnsfw            | OISD-nsfw IPs                  |     |  x  | [Link](https://github.com/dibdot/banIP-IP-blocklists)                 |
-| oisdsmall           | OISD-small IPs                 |     |  x  | [Link](https://github.com/dibdot/banIP-IP-blocklists)                 |
-| proxy               | open proxies                   |  x  |     | [Link](https://iplists.firehol.org/?ipset=proxylists)                 |
-| ssbl                | SSL botnet IPs                 |  x  |  x  | [Link](https://sslbl.abuse.ch)                                        |
-| stevenblack         | stevenblack IPs                |     |  x  | [Link](https://github.com/dibdot/banIP-IP-blocklists)                 |
-| talos               | talos IPs                      |  x  |  x  | [Link](https://talosintelligence.com/reputation_center)               |
-| threat              | emerging threats               |  x  |  x  | [Link](https://rules.emergingthreats.net)                             |
-| threatview          | malicious IPs                  |  x  |  x  | [Link](https://threatview.io)                                         |
-| tor                 | tor exit nodes                 |  x  |     | [Link](https://github.com/SecOps-Institute/Tor-IP-Addresses)          |
-| uceprotect1         | spam protection level 1        |  x  |  x  | [Link](http://www.uceprotect.net/en/index.php)                        |
-| uceprotect2         | spam protection level 2        |  x  |  x  | [Link](http://www.uceprotect.net/en/index.php)                        |
-| uceprotect3         | spam protection level 3        |  x  |  x  | [Link](http://www.uceprotect.net/en/index.php)                        |
-| urlhaus             | urlhaus IDS IPs                |  x  |  x  | [Link](https://urlhaus.abuse.ch)                                      |
-| urlvir              | malware related IPs            |  x  |  x  | [Link](https://iplists.firehol.org/?ipset=urlvir)                     |
-| webclient           | malware related IPs            |  x  |  x  | [Link](https://iplists.firehol.org/?ipset=firehol_webclient)          |
-| voip                | VoIP fraud blocklist           |  x  |  x  | [Link](https://voipbl.org)                                            |
-| yoyo                | yoyo IPs                       |     |  x  | [Link](https://github.com/dibdot/banIP-IP-blocklists)                 |
+| Feed                | Focus                          | WAN-INP | WAN-FWD | LAN-FWD | Information                                                   |
+| :------------------ | :----------------------------- | :-----: | :-----: | :-----: | :-----------------------------------------------------------  |
+| adaway              | adaway IPs                     |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
+| adguard             | adguard IPs                    |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
+| adguardtrackers     | adguardtracker IPs             |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
+| antipopads          | antipopads IPs                 |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
+| asn                 | ASN IPs                        |         |         |    x    | [Link](https://asn.ipinfo.app)                                |
+| backscatterer       | backscatterer IPs              |    x    |    x    |         | [Link](https://www.uceprotect.net/en/index.php)               |
+| bogon               | bogon prefixes                 |    x    |    x    |         | [Link](https://team-cymru.com)                                |
+| country             | country blocks                 |    x    |    x    |         | [Link](https://www.ipdeny.com/ipblocks)                       |
+| cinsscore           | suspicious attacker IPs        |    x    |    x    |         | [Link](https://cinsscore.com/#list)                           |
+| darklist            | blocks suspicious attacker IPs |    x    |    x    |         | [Link](https://darklist.de)                                   |
+| debl                | fail2ban IP blacklist          |    x    |    x    |         | [Link](https://www.blocklist.de)                              |
+| doh                 | public DoH-Provider            |         |         |    x    | [Link](https://github.com/dibdot/DoH-IP-blocklists)           |
+| drop                | spamhaus drop compilation      |    x    |    x    |         | [Link](https://www.spamhaus.org)                              |
+| dshield             | dshield IP blocklist           |    x    |    x    |         | [Link](https://www.dshield.org)                               |
+| edrop               | spamhaus edrop compilation     |    x    |    x    |         | [Link](https://www.spamhaus.org)                              |
+| feodo               | feodo tracker                  |    x    |    x    |    x    | [Link](https://feodotracker.abuse.ch)                         |
+| firehol1            | firehol level 1 compilation    |    x    |    x    |         | [Link](https://iplists.firehol.org/?ipset=firehol_level1)     |
+| firehol2            | firehol level 2 compilation    |    x    |    x    |         | [Link](https://iplists.firehol.org/?ipset=firehol_level2)     |
+| firehol3            | firehol level 3 compilation    |    x    |    x    |         | [Link](https://iplists.firehol.org/?ipset=firehol_level3)     |
+| firehol4            | firehol level 4 compilation    |    x    |    x    |         | [Link](https://iplists.firehol.org/?ipset=firehol_level4)     |
+| greensnow           | suspicious server IPs          |    x    |    x    |    x    | [Link](https://greensnow.co)                                  |
+| iblockads           | Advertising IPs                |         |         |    x    | [Link](https://www.iblocklist.com)                            |
+| iblockspy           | Malicious spyware IPs          |    x    |    x    |    x    | [Link](https://www.iblocklist.com)                            |
+| myip                | real-time IP blocklist         |    x    |    x    |         | [Link](https://myip.ms)                                       |
+| nixspam             | iX spam protection             |    x    |    x    |         | [Link](http://www.nixspam.org)                                |
+| oisdbig             | OISD-big IPs                   |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
+| oisdnsfw            | OISD-nsfw IPs                  |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
+| oisdsmall           | OISD-small IPs                 |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
+| proxy               | open proxies                   |    x    |         |         | [Link](https://iplists.firehol.org/?ipset=proxylists)         |
+| ssbl                | SSL botnet IPs                 |    x    |    x    |    x    | [Link](https://sslbl.abuse.ch)                                |
+| stevenblack         | stevenblack IPs                |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
+| talos               | talos IPs                      |    x    |    x    |         | [Link](https://talosintelligence.com/reputation_center)       |
+| threat              | emerging threats               |    x    |    x    |    x    | [Link](https://rules.emergingthreats.net)                     |
+| threatview          | malicious IPs                  |    x    |    x    |    x    | [Link](https://threatview.io)                                 |
+| tor                 | tor exit nodes                 |    x    |    x    |    x    | [Link](https://github.com/SecOps-Institute/Tor-IP-Addresses)  |
+| uceprotect1         | spam protection level 1        |    x    |    x    |         | [Link](http://www.uceprotect.net/en/index.php)                |
+| uceprotect2         | spam protection level 2        |    x    |    x    |         | [Link](http://www.uceprotect.net/en/index.php)                |
+| uceprotect3         | spam protection level 3        |    x    |    x    |         | [Link](http://www.uceprotect.net/en/index.php)                |
+| urlhaus             | urlhaus IDS IPs                |    x    |    x    |         | [Link](https://urlhaus.abuse.ch)                              |
+| urlvir              | malware related IPs            |    x    |    x    |    x    | [Link](https://iplists.firehol.org/?ipset=urlvir)             |
+| webclient           | malware related IPs            |    x    |    x    |    x    | [Link](https://iplists.firehol.org/?ipset=firehol_webclient)  |
+| voip                | VoIP fraud blocklist           |    x    |    x    |         | [Link](https://voipbl.org)                                    |
+| yoyo                | yoyo IPs                       |         |         |    x    | [Link](https://github.com/dibdot/banIP-IP-blocklists)         |
 
 * zero-conf like automatic installation & setup, usually no manual changes needed
 * all sets are handled in a separate nft table/namespace 'banIP'
@@ -64,10 +65,11 @@ IP address blocking is commonly used to protect against brute force attacks, pre
 * provides a small background log monitor to ban unsuccessful login attempts in real-time
 * auto-add unsuccessful LuCI, nginx, Asterisk or ssh login attempts to the local blocklist
 * fast feed processing as they are handled in parallel as background jobs
-* per feed it can be defined whether the input chain or the forward chain should be blocked (default: both chains)
+* per feed it can be defined whether the wan-input chain, the wan-forward chain or the lan-forward chain should be blocked (default: all chains)
 * automatic blocklist backup & restore, the backups will be used in case of download errors or during startup
 * automatically selects one of the following download utilities with ssl support: aria2c, curl, uclient-fetch or wget
-* supports a 'allowlist only' mode, this option restricts internet access from/to a small number of secure websites/IPs
+* supports an 'allowlist only' mode, this option restricts internet access from/to a small number of secure websites/IPs
+* deduplicate IPs accross all sets (single IPs only, no intervals)
 * provides comprehensive runtime information
 * provides a detailed set report
 * provides a set search engine for certain IPs
@@ -85,13 +87,12 @@ IP address blocking is commonly used to protect against brute force attacks, pre
 
 **Please note the following:**
 * Devices with less than 256Mb of RAM are **_not_** supported
-* Any previous installation of banIP must be uninstalled, and the /etc/banip folder and the /etc/config/banip configuration file must be deleted (they are recreated when this version is installed)
-* There is no LuCI frontend at this time
+* Any previous installation of ancient banIP 0.7.x must be uninstalled, and the /etc/banip folder and the /etc/config/banip configuration file must be deleted (they are recreated when this version is installed)
 
 ## Installation & Usage
 * update your local opkg repository (_opkg update_)
 * install banIP (_opkg install banip_) - the banIP service is disabled by default
-* edit the config file '/etc/config/banip' and enable the service (set ban\_enabled to '1'), then add pre-configured feeds via 'ban\_feed' (see the config options below)
+* edit the config file '/etc/config/banip' and enable the service (set ban\_enabled to '1'), then add pre-configured feeds via 'ban\_feed' (see the feed list above) and add/change other options to your needs (see the options reference below)
 * start the service with '/etc/init.d/banip start' and check check everything is working by running '/etc/init.d/banip status'
 
 ## banIP CLI interface
@@ -128,8 +129,9 @@ Available commands:
 | ban_logterm             | list   | regex                         | various regex for logfile parsing (default: dropbear, sshd, luci, nginx, asterisk)    |
 | ban_autodetect          | option | 1                             | auto-detect wan interfaces, devices and subnets                                       |
 | ban_debug               | option | 0                             | enable banIP related debug logging                                                    |
-| ban_loginput            | option | 1                             | log drops in the input chain                                                          |
-| ban_logforward          | option | 0                             | log rejects in the forward chain                                                      |
+| ban_loginput            | option | 1                             | log drops in the wan-input chain                                                      |
+| ban_logforwardwan       | option | 1                             | log drops in the wan-forward chain                                                    |
+| ban_logforwardlan       | option | 0                             | log rejects in the lan-forward chain                                                  |
 | ban_autoallowlist       | option | 1                             | add wan IPs/subnets automatically to the local allowlist                              |
 | ban_autoblocklist       | option | 1                             | add suspicious attacker IPs automatically to the local blocklist                      |
 | ban_allowlistonly       | option | 0                             | restrict the internet access from/to a small number of secure websites/IPs            |
@@ -150,8 +152,9 @@ Available commands:
 | ban_feed                | list   | -                             | external download feeds, e.g. 'yoyo', 'doh', 'country' or 'talos' (see feed table)    |
 | ban_asn                 | list   | -                             | ASNs for the 'asn' feed, e.g.'32934'                                                  |
 | ban_country             | list   | -                             | country iso codes for the 'country' feed, e.g. 'ru'                                   |
-| ban_blockinput          | list   | -                             | limit a feed to the input chain, e.g. 'country'                                       |
-| ban_blockforward        | list   | -                             | limit a feed to the forward chain, e.g. 'doh'                                         |
+| ban_blockinput          | list   | -                             | limit a feed to the wan-input chain, e.g. 'country'                                   |
+| ban_blockforwardwan     | list   | -                             | limit a feed to the wan-forward chain, e.g. 'debl'                                    |
+| ban_blockforwardlan     | list   | -                             | limit a feed to the lan-forward chain, e.g. 'doh'                                     |
 | ban_fetchcmd            | option | - / autodetect                | 'uclient-fetch', 'wget', 'curl' or 'aria2c'                                           |
 | ban_fetchparm           | option | - / autodetect                | set the config options for the selected download utility                              |
 | ban_fetchinsecure       | option | 0                             | don't check SSL server certificates during download                                   |
@@ -160,7 +163,6 @@ Available commands:
 | ban_mailtopic           | option | banIP notification            | topic for banIP related notification E-Mails                                          |
 | ban_mailprofile         | option | ban_notify                    | mail profile used in 'msmtp' for banIP related notification E-Mails                   |
 | ban_resolver            | option | -                             | external resolver used for DNS lookups                                                |
-| ban_feedarchive         | option | /etc/banip/banip.feeds.gz     | full path to the compressed feed archive file used by banIP                           |
 
 ## Examples
 **banIP report information**  
@@ -169,44 +171,64 @@ Available commands:
 :::
 ::: banIP Set Statistics
 :::
-    Timestamp: 2023-02-08 22:12:40
+    Timestamp: 2023-02-25 08:35:37
     ------------------------------
-    auto-added to allowlist: 1
-    auto-added to blocklist: 0
+    auto-added to allowlist: 0
+    auto-added to blocklist: 4
 
-    Set                  | Set Elements  | Chain Input   | Chain Forward | Input Packets | Forward Packets
-    ---------------------+---------------+---------------+---------------+---------------+----------------
-    allowlistvMAC        | 0             | n/a           | OK            | n/a           | 0             
-    allowlistv4          | 1             | OK            | OK            | 0             | 0             
-    allowlistv6          | 0             | OK            | OK            | 0             | 0             
-    blocklistvMAC        | 0             | n/a           | OK            | n/a           | 0             
-    blocklistv4          | 0             | OK            | OK            | 0             | 0             
-    blocklistv6          | 0             | OK            | OK            | 0             | 0             
-    dohv4                | 542           | n/a           | OK            | n/a           | 22            
-    adguardv4            | 23007         | n/a           | OK            | n/a           | 18            
-    yoyov4               | 1936          | n/a           | OK            | n/a           | 1             
-    oisdbasicv4          | 26000         | n/a           | OK            | n/a           | 325           
-    ---------------------+---------------+---------------+---------------+---------------+----------------
-    10                   | 51486         | 4             | 10            | 0             | 366
+    Set                  | Elements     | WAN-Input (packets)   | WAN-Forward (packets) | LAN-Forward (packets)
+    ---------------------+--------------+-----------------------+-----------------------+------------------------
+    allowlistvMAC        | 0            | -                     | -                     | OK: 0                 
+    allowlistv4          | 15           | OK: 0                 | OK: 0                 | OK: 0                 
+    allowlistv6          | 1            | OK: 0                 | OK: 0                 | OK: 0                 
+    torv4                | 800          | OK: 0                 | OK: 0                 | OK: 0                 
+    torv6                | 432          | OK: 0                 | OK: 0                 | OK: 0                 
+    countryv6            | 34282        | OK: 0                 | OK: 1                 | -                     
+    countryv4            | 35508        | OK: 1872              | OK: 0                 | -                     
+    dohv6                | 343          | -                     | -                     | OK: 0                 
+    dohv4                | 540          | -                     | -                     | OK: 3                 
+    firehol1v4           | 1670         | OK: 296               | OK: 0                 | OK: 16                
+    deblv4               | 12402        | OK: 4                 | OK: 0                 | OK: 0                 
+    deblv6               | 41           | OK: 0                 | OK: 0                 | OK: 0                 
+    adguardv6            | 12742        | -                     | -                     | OK: 161               
+    adguardv4            | 23183        | -                     | -                     | OK: 212               
+    adguardtrackersv6    | 169          | -                     | -                     | OK: 0                 
+    adguardtrackersv4    | 633          | -                     | -                     | OK: 0                 
+    adawayv6             | 2737         | -                     | -                     | OK: 15                
+    adawayv4             | 6542         | -                     | -                     | OK: 137               
+    oisdsmallv6          | 10569        | -                     | -                     | OK: 0                 
+    oisdsmallv4          | 18800        | -                     | -                     | OK: 74                
+    stevenblackv6        | 11901        | -                     | -                     | OK: 4                 
+    stevenblackv4        | 16776        | -                     | -                     | OK: 139               
+    yoyov6               | 215          | -                     | -                     | OK: 0                 
+    yoyov4               | 309          | -                     | -                     | OK: 0                 
+    antipopadsv4         | 1872         | -                     | -                     | OK: 0                 
+    urlhausv4            | 7431         | OK: 0                 | OK: 0                 | OK: 0                 
+    antipopadsv6         | 2081         | -                     | -                     | OK: 2                 
+    blocklistvMAC        | 0            | -                     | -                     | OK: 0                 
+    blocklistv4          | 1174         | OK: 1                 | OK: 0                 | OK: 0                 
+    blocklistv6          | 40           | OK: 0                 | OK: 0                 | OK: 0                 
+    ---------------------+--------------+-----------------------+-----------------------+------------------------
+    30                   | 203208       | 12 (2173)             | 12 (1)                | 28 (763)
 ```
 
 **banIP runtime information**  
 ```
-~# etc/init.d/banip status
+~# /etc/init.d/banip status
 ::: banIP runtime information
   + status            : active
-  + version           : 0.8.0
-  + element_count     : 51486
-  + active_feeds      : allowlistvMAC, allowlistv4, allowlistv6, blocklistvMAC, blocklistv4, blocklistv6, dohv4, adguardv4
-                        , yoyov4, oisdbasicv4
+  + version           : 0.8.1-2
+  + element_count     : 206644
+  + active_feeds      : allowlistvMAC, allowlistv4, allowlistv6, torv4, torv6, countryv6, countryv4, dohv4, dohv6, firehol1v4, deblv4, deblv6,
+                         adguardv6, adguardv4, adguardtrackersv6, adguardtrackersv4, adawayv6, adawayv4, oisdsmallv6, oisdsmallv4, stevenblack
+                        v6, stevenblackv4, yoyov6, yoyov4, antipopadsv4, urlhausv4, antipopadsv6, blocklistvMAC, blocklistv4, blocklistv6
   + active_devices    : eth2
-  + active_interfaces : wan
-  + active_subnets    : 192.168.98.107/24
-  + run_info          : base_dir: /tmp, backup_dir: /tmp/banIP-backup, report_dir: /tmp/banIP-report, feed_archive: /etc/b
-                        anip/banip.feeds.gz
-  + run_flags         : protocol (4/6): ✔/✘, log (inp/fwd): ✔/✘, deduplicate: ✔, split: ✘, allowed only: ✘
-  + last_run          : action: start, duration: 0m 15s, date: 2023-02-08 22:12:46
-  + system_info       : cores: 2, memory: 3614, device: PC Engines apu1, OpenWrt SNAPSHOT r21997-b5193291bd
+  + active_interfaces : wan, wan6
+  + active_subnets    : 91.61.199.218/24, 2a02:910c:0:80:e542:4b0c:846d:1d33/128
+  + run_info          : base_dir: /tmp, backup_dir: /mnt/data/banIP-backup, report_dir: /mnt/data/banIP-report, feed_file: /etc/banip/banip.feeds
+  + run_flags         : proto (4/6): ✔/✔, log (wan-inp/wan-fwd/lan-fwd): ✔/✔/✔, deduplicate: ✔, split: ✘, allowed only: ✘
+  + last_run          : action: restart, duration: 1m 6s, date: 2023-02-25 08:55:55
+  + system_info       : cores: 2, memory: 1826, device: Turris Omnia, OpenWrt SNAPSHOT r22125-52ddb38469
 ```
 
 **banIP search information**  
@@ -270,9 +292,8 @@ password        <password>
 ```
 Finally add a valid E-Mail receiver address.
 
-**add new banIP feeds**  
-The banIP blocklist feeds are stored in an external, compressed JSON file '/etc/banip/banip.feeds.gz'.  
-To add a new or edit an existing feed extract the compressed JSON file _gunzip /etc/banip/banip.feeds.gz_.
+**change existing banIP feeds or add a new one**  
+The banIP blocklist feeds are stored in an external JSON file '/etc/banip/banip.feeds'.  
 A valid JSON source object contains the following required information, e.g.:
 ```
 	[...]
@@ -286,15 +307,15 @@ A valid JSON source object contains the following required information, e.g.:
 	},
 	[...]
 ```
-Add an unique object name, make the required changes and compress the changed JSON file finally with _gzip /etc/banip/banip.feeds_ to use the new feed file in banIP.  
-**Please note:** if you're going to add new feeds, **always** work with a copy of the default file; this file is always overwritten with every banIP update. To reference your own file set the option 'ban\_feedarchive' accordingly
+Add an unique object name (no spaces, no special chars) and make the required changes: adapt at least the URL the regex to the new feed.  
+**Please note:** if you're going to add new feeds, **always** make a backup of your work, cause this file is always overwritten with the maintainers version on every banIP update.  
 
 ## Support
 Please join the banIP discussion in this [forum thread](https://forum.openwrt.org/t/banip-support-thread/16985) or contact me by mail <dev@brenken.org>
 
 ## Removal
 * stop all banIP related services with _/etc/init.d/banip stop_
-* optional: remove the banip package (_opkg remove banip_)
+* remove the banip package (_opkg remove banip_)
 
 Have fun!  
 Dirk
