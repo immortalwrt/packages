@@ -1,21 +1,21 @@
 --- a/go.mod
 +++ b/go.mod
-@@ -17,6 +17,7 @@ require (
- 	github.com/spf13/viper v1.14.0
+@@ -16,6 +16,7 @@ require (
+ 	github.com/spf13/viper v1.15.0
  	github.com/stretchr/testify v1.8.1
  	github.com/vishvananda/netlink v1.2.1-beta.2.0.20221107222636-d3c0a2caa559
 +	go.uber.org/atomic v1.10.0
  	go.uber.org/zap v1.24.0
- 	go4.org/netipx v0.0.0-20230113150534-b98ae1862cde
- 	golang.org/x/exp v0.0.0-20230113213754-f9f960f08ad4
-@@ -66,7 +67,6 @@ require (
+ 	go4.org/netipx v0.0.0-20230303233057-f1b76eb4bb35
+ 	golang.org/x/exp v0.0.0-20230303215020-44a13b063f3e
+@@ -59,7 +60,6 @@ require (
  	github.com/spf13/pflag v1.0.5 // indirect
  	github.com/subosito/gotenv v1.4.2 // indirect
  	github.com/vishvananda/netns v0.0.1 // indirect
 -	go.uber.org/atomic v1.10.0 // indirect
  	go.uber.org/multierr v1.9.0 // indirect
- 	golang.org/x/crypto v0.5.0 // indirect
- 	golang.org/x/mod v0.7.0 // indirect
+ 	golang.org/x/crypto v0.6.0 // indirect
+ 	golang.org/x/mod v0.8.0 // indirect
 --- a/pkg/cache/cache.go
 +++ b/pkg/cache/cache.go
 @@ -23,7 +23,7 @@ import (
