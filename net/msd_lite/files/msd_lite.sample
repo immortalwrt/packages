@@ -81,6 +81,7 @@ available.
 			<multicast>
 				<!-- For: multicast-udp and multicast-udp-rtp. -->
 				<ifName>@ifName@</ifName>
+				<rejoinTime>@rejoinTime@</rejoinTime> <!-- Do IGMP/MLD leave+join every X seconds. -->
 				<!-- For multicast receive. -->
 			</multicast>
 		</sourceProfile>

@@ -29,7 +29,8 @@ validate_msd_lite_section() {
 		'precache_size:uinteger:4096' \
 		'ring_buffer_size:uinteger:1024' \
 		'multicast_recv_buffer_size:uinteger:512' \
-		'multicast_recv_timeout:uinteger:2'
+		'multicast_recv_timeout:uinteger:2' \
+		'rejoin_time:uinteger:0'
 }
 
 start_instance() {
@@ -60,6 +61,7 @@ start_instance() {
 	    -e "s,@ringBufSize@,$ring_buffer_size,g" \
 	    -e "s,@rcvBuf@,$multicast_recv_buffer_size,g" \
 	    -e "s,@rcvTimeout@,$multicast_recv_timeout,g" \
+	    -e "s,@rejoinTime@,$rejoin_time,g" \
 		"$CONF" > "$CONFDIR/$section.conf"
 
 	procd_open_instance "$section"
