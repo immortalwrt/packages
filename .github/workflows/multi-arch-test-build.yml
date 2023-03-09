@@ -30,7 +30,7 @@ jobs:
             target: apm821xx-nand
             runtime_test: false
 
-          - arch: powerpc_8540
+          - arch: powerpc_8548
             target: mpc85xx-p1010
             runtime_test: false
 
