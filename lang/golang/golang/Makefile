@@ -66,7 +66,7 @@ HOST_GO_VALID_OS_ARCH:= \
   \
   linux_ppc64 linux_ppc64le \
   linux_mips linux_mipsle linux_mips64 linux_mips64le \
-  linux_riscv64 linux_s390x \
+  linux_loong64 linux_riscv64 linux_s390x \
   \
   openbsd_mips64
 
@@ -296,10 +296,9 @@ PKG_GO_LDFLAGS= \
 	-extldflags '$(patsubst -z%,-Wl$(comma)-z$(comma)%,$(TARGET_LDFLAGS))' \
 	$(if $(CONFIG_NO_STRIP)$(CONFIG_DEBUG),,-s -w)
 
-# setting -trimpath is not necessary here because the paths inside the
-# compiler binary are relative to GOROOT_FINAL (PKG_GO_ROOT), which is
-# static / not dependent on the build environment
 PKG_GO_INSTALL_ARGS= \
+	-buildvcs=false \
+	-trimpath \
 	-ldflags "all=$(PKG_GO_LDFLAGS)" \
 	$(if $(PKG_GO_GCFLAGS),-gcflags "all=$(PKG_GO_GCFLAGS)") \
 	$(if $(PKG_GO_ASMFLAGS),-asmflags "all=$(PKG_GO_ASMFLAGS)") \
