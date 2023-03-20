@@ -8,7 +8,7 @@ PKG_NAME:=node
 
 ifeq ($(CONFIG_NODEJS_16),y)
 PKG_VERSION:=v16.19.1
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 PKG_HASH:=17fb716406198125b30c94dd3d1756207b297705626afe16d8dc479a65a1d8b5
 PATCH_DIR:=./patches/v16.x
 else
@@ -18,9 +18,9 @@ PKG_RELEASE:=1
 PKG_HASH:=458ec092e60ad700ddcf079cb63d435c15da4c7bb3d3f99b9a8e58a99e54075e
 PATCH_DIR:=./patches/v14.x
 else
-PKG_VERSION:=v18.14.1
-PKG_RELEASE:=1
-PKG_HASH:=eec353438266fd0aef53a9446be10b32ee6e74d08e32dd5454b382ff6793da04
+PKG_VERSION:=v18.15.0
+PKG_RELEASE:=3
+PKG_HASH:=8e44d65018ff973284195c23186469a0ea4082e97ec4200e5f5706d5584daa37
 PATCH_DIR:=./patches/v18.x
 endif
 endif
@@ -53,7 +53,7 @@ define Package/node
   TITLE:=Node.js is a platform built on Chrome's JavaScript runtime
   URL:=https://nodejs.org/
   DEPENDS:=@HAS_FPU @(i386||x86_64||arm||aarch64||mipsel) \
-	   +libstdcpp +libopenssl +zlib +libnghttp2 +libuv \
+	   +libstdcpp +NODEJS_18:libopenssl +zlib +libnghttp2 +libuv \
 	   +libcares +libatomic +NODEJS_ICU_SYSTEM:icu +NODEJS_ICU_SYSTEM:icu-full-data
 endef
 
@@ -121,6 +121,19 @@ define Package/node/config
 		endchoice
 	endif
 
+	config NODEJS_NPM_KEEP_CACHE
+		bool "keep npm cache (experimental)"
+		help
+		  Keep npm package cache.
+		  More space will be consumed by the cache.
+
+	config NODEJS_NPM_CACHE_DIR
+		string "Set npm cache directory" if NODEJS_NPM_KEEP_CACHE
+		default ""
+		help
+		  Store npm cache in this directory.
+		  If not set, uses './tmp'
+
 	endmenu
 endef
 
@@ -149,7 +162,7 @@ CONFIGURE_ARGS:= \
 	--dest-os=linux \
 	--cross-compiling \
 	--shared-zlib \
-	--shared-openssl \
+	$(if $(CONFIG_NODEJS_18),--shared-openssl) \
 	--shared-nghttp2 \
 	--shared-libuv \
 	--shared-cares \
