@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=shadowsocks-rust
 PKG_VERSION:=1.15.3
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/shadowsocks/shadowsocks-rust/tar.gz/v$(PKG_VERSION)?
@@ -18,6 +18,8 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=rust/host
+
+RUST_PKG_FEATURES:=local-redir
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/rust/rust-package.mk
@@ -45,10 +47,6 @@ define shadowsocks-rust/templates
   )
 endef
 $(eval $(call shadowsocks-rust/templates))
-
-define Build/Compile
-	$(call Build/Compile/Cargo,,--features local-redir)
-endef
 
 $(foreach component,$(SHADOWSOCKS_COMPONENTS), \
   $(eval $(call BuildPackage,shadowsocks-rust-$(component))) \
