@@ -9,14 +9,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dnsforwarder
-PKG_VERSION:=6.1.15
-PKG_RELEASE:=11
+PKG_VERSION:=6.5.1
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/1715173329/dnsforwarder.git
-PKG_SOURCE_DATE:=2018-06-26
-PKG_SOURCE_VERSION:=587e61ae4d75dc976f538088b715a3c8ee26c144
-PKG_MIRROR_HASH:=7c141040ae384d254d90b3c3ee502d87330c9fdcd201ff29a669336a27b176d4
+PKG_SOURCE_URL:=https://github.com/lifenjoiner/dnsforwarder.git
+PKG_SOURCE_DATE:=2023-03-22
+PKG_SOURCE_VERSION:=864d11410cd62512b8d663422aaeddf244cdb214
+PKG_MIRROR_HASH:=9c0746d0fc166c6cc931ec49877bc4d27da9654e4654057fbe6ebf595be7f3be
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
@@ -42,6 +42,9 @@ define Package/dnsforwarder/description
 endef
 
 CONFIGURE_ARGS+= --enable-downloader=wget
+
+TARGET_CFLAGS += -ffunction-sections -fdata-sections -flto
+TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed -flto
 
 define Package/dnsforwarder/install
 	$(INSTALL_DIR) $(1)/usr/bin
