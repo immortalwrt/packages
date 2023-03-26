@@ -23,21 +23,17 @@ PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Trojan-Plus-Group
 
+PKG_BUILD_FLAGS:=gc-sections lto
+
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 TARGET_CXXFLAGS += -Wall -Wextra
 TARGET_CXXFLAGS += $(FPIC)
 
-# LTO
-TARGET_CXXFLAGS += -flto
-TARGET_LDFLAGS += -flto
-
 # CXX standard
 TARGET_CXXFLAGS += -std=c++11
 TARGET_CXXFLAGS := $(filter-out -O%,$(TARGET_CXXFLAGS)) -O3
-TARGET_CXXFLAGS += -ffunction-sections -fdata-sections
-TARGET_LDFLAGS += -Wl,--gc-sections
 
 CMAKE_OPTIONS += \
 	-DENABLE_MYSQL=OFF \
