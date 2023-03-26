@@ -26,6 +26,8 @@ PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
+PKG_BUILD_FLAGS:=gc-sections lto
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/dnsforwarder
@@ -43,8 +45,7 @@ endef
 
 CONFIGURE_ARGS+= --enable-downloader=wget
 
-TARGET_CFLAGS += -ffunction-sections -fdata-sections -flto
-TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed -flto
+TARGET_LDFLAGS += -Wl,--as-needed
 
 define Package/dnsforwarder/install
 	$(INSTALL_DIR) $(1)/usr/bin
