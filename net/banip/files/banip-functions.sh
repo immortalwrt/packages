@@ -34,6 +34,7 @@ ban_mailsender="no-reply@banIP"
 ban_mailreceiver=""
 ban_mailtopic="banIP notification"
 ban_mailprofile="ban_notify"
+ban_mailnotifcation="0"
 ban_reportelements="1"
 ban_nftloglevel="warn"
 ban_nftpriority="-200"
@@ -167,8 +168,15 @@ f_log() {
 		fi
 	fi
 	if [ "${class}" = "err" ]; then
-		f_genstatus "error"
+		"${ban_nftcmd}" delete table inet banIP >/dev/null 2>&1
+		if [ "${ban_enabled}" = "1" ]; then
+			f_genstatus "error"
+			[ "${ban_mailnotification}" = "1" ] && [ -n "${ban_mailreceiver}" ] && [ -x "${ban_mailcmd}" ] && f_mail
+		else
+			f_genstatus "disabled"
+		fi
 		f_rmdir "${ban_tmpdir}"
+		f_rmpid
 		rm -rf "${ban_lock}"
 		exit 1
 	fi
@@ -351,10 +359,10 @@ f_getif() {
 # get wan devices
 #
 f_getdev() {
-	local dev iface update="0" cnt="0" cnt_max="10"
+	local dev iface update="0" cnt="0" cnt_max="30"
 
 	if [ "${ban_autodetect}" = "1" ]; then
-		while [ -z "${ban_dev}" ] && [ "${cnt}" -le "${cnt_max}" ]; do
+		while [ "${cnt}" -lt "${cnt_max}" ] && [ -z "${ban_dev}" ]; do
 			network_flush_cache
 			for iface in ${ban_ifv4} ${ban_ifv6}; do
 				network_get_device dev "${iface}"
@@ -857,7 +865,6 @@ f_genstatus() {
 		fi
 		runtime="action: ${ban_action:-"-"}, duration: ${duration:-"-"}, date: $(date "+%Y-%m-%d %H:%M:%S")"
 	fi
-	f_system
 	[ ${ban_splitsize:-"0"} -gt "0" ] && split="1"
 
 	: >"${ban_rtfile}"
@@ -1182,18 +1189,16 @@ f_report() {
 			[ -s "${report_jsn}" ] && cat "${report_jsn}"
 			;;
 		"mail")
-			[ -x "${ban_mailcmd}" ] && f_mail
+			[ -n "${ban_mailreceiver}" ] && [ -x "${ban_mailcmd}" ] && f_mail
 			;;
 	esac
+	rm -f "${report_txt}"
 }
 
 # set search
 #
 f_search() {
 	local table_sets ip proto run_search search="${1}"
-
-	f_system
-	run_search="/var/run/banIP.search"
 
 	if [ -n "${search}" ]; then
 		ip="$(printf "%s" "${search}" | "${ban_awkcmd}" 'BEGIN{RS="(([0-9]{1,3}\\.){3}[0-9]{1,3})+"}{printf "%s",RT}')"
@@ -1212,7 +1217,8 @@ f_search() {
 	printf "%s\n%s\n%s\n" ":::" "::: banIP Search" ":::"
 	printf "%s\n" "    Looking for IP '${ip}' on $(date "+%Y-%m-%d %H:%M:%S")"
 	printf "%s\n" "    ---"
-	cnt=1
+	cnt="1"
+	run_search="/var/run/banIP.search"
 	for set in ${table_sets}; do
 		(
 			if "${ban_nftcmd}" get element inet banIP "${set}" "{ ${ip} }" >/dev/null 2>&1; then
@@ -1237,7 +1243,6 @@ f_search() {
 f_survey() {
 	local set_elements set="${1}"
 
-	f_system
 	[ -n "${set}" ] && set_elements="$("${ban_nftcmd}" -j list set inet banIP "${set}" 2>/dev/null | jsonfilter -qe '@.nftables[*].set.elem[*]')"
 
 	if [ -z "${set}" ] || [ -z "${set_elements}" ]; then
@@ -1257,11 +1262,8 @@ f_mail() {
 
 	# load mail template
 	#
-	[ ! -r "${ban_mailtemplate}" ] && f_log "err" "the mail template is missing"
-	. "${ban_mailtemplate}"
-
-	[ -z "${ban_mailreceiver}" ] && f_log "err" "the option 'ban_mailreceiver' is missing"
-	[ -z "${mail_text}" ] && f_log "err" "the 'mail_text' is empty"
+	[ -r "${ban_mailtemplate}" ] && . "${ban_mailtemplate}" || f_log "info" "the mail template is missing"
+	[ -z "${mail_text}" ] && f_log "info" "the 'mail_text' template variable is empty"
 	[ "${ban_debug}" = "1" ] && msmtp_debug="--debug"
 
 	# send mail
@@ -1273,11 +1275,12 @@ f_mail() {
 		f_log "info" "failed to send status mail (${?})"
 	fi
 
-	f_log "debug" "f_mail    ::: template: ${ban_mailtemplate}, profile: ${ban_mailprofile}, receiver: ${ban_mailreceiver}, rc: ${?}"
+	f_log "debug" "f_mail    ::: notification: ${ban_mailnotification}, template: ${ban_mailtemplate}, profile: ${ban_mailprofile}, receiver: ${ban_mailreceiver}, rc: ${?}"
 }
 
 # check banIP availability and initial sourcing
 #
+f_system
 if [ "${ban_action}" != "stop" ]; then
 	if [ -r "/lib/functions.sh" ] && [ -r "/lib/functions/network.sh" ] && [ -r "/usr/share/libubox/jshn.sh" ]; then
 		. "/lib/functions.sh"
