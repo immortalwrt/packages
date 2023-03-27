@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
 PKG_VERSION:=1.2.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/SagerNet/sing-box/tar.gz/v$(PKG_VERSION)?
@@ -102,7 +102,7 @@ define Package/sing-box/config
 
     config SING_BOX_BUILD_REALITY_SERVER
     bool "Build with REALITY TLS server support"
-    default n
+    default y
 
     config SING_BOX_BUILD_SHADOWSOCKSR
     bool "Build with ShadowsockR support"
