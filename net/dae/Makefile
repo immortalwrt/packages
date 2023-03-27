@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dae
 PKG_VERSION:=0.1.4
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).zip
 PKG_SOURCE_URL:=https://github.com/daeuniverse/dae/releases/download/v$(PKG_VERSION)/dae-full-src.zip?
@@ -37,7 +37,8 @@ define Package/dae
   SUBMENU:=Web Servers/Proxies
   TITLE:=A lightweight and high-performance transparent proxy solution
   URL:=https://github.com/daeuniverse/dae
-  DEPENDS:=$(GO_ARCH_DEPENDS) $(BPF_DEPENDS) @KERNEL_DEBUG_INFO_BTF \
+  # You need enable KERNEL_DEBUG_INFO_BTF and KERNEL_BPF_EVENTS
+  DEPENDS:=$(GO_ARCH_DEPENDS) $(BPF_DEPENDS)  \
     +ca-bundle +kmod-sched-core +kmod-sched-bpf
 endef
 
@@ -83,6 +84,12 @@ define Package/dae/install
 
 	$(INSTALL_DIR) $(1)/etc/dae/
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/example.dae $(1)/etc/dae/
+
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) $(CURDIR)/files/dae.config $(1)/etc/config/dae
+
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) $(CURDIR)/files/dae.init $(1)/etc/init.d/dae
 endef
 
 $(eval $(call GoBinPackage,dae))
