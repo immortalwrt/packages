@@ -19,7 +19,7 @@ PKG_MAINTAINER:=Cezary Jackiewicz <cezary@eko.one.pl>
 PKG_LICENSE:=GPLv2
 PKG_CPE_ID:=cpe:/a:beasts:vsftpd
 
-PKG_BUILD_FLAGS:=gc-sections
+PKG_BUILD_FLAGS:=gc-sections lto
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -62,7 +62,6 @@ else
 endif
 
 TARGET_CFLAGS += -D_GNU_SOURCE -include fcntl.h
-TARGET_CFLAGS += -flto
 TARGET_LDFLAGS += -Wl,--as-needed,--no-undefined,--no-allow-shlib-undefined
 
 ifeq ($(BUILD_VARIANT),notls)

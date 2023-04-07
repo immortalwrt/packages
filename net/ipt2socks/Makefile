@@ -13,7 +13,7 @@ PKG_SOURCE_URL:=https://codeload.github.com/zfl9/ipt2socks/tar.gz/v$(PKG_VERSION
 PKG_HASH:=73a2498dc95934c225d358707e7f7d060b5ce81aa45260ada09cbd15207d27d1
 
 PKG_BUILD_PARALLEL:=1
-PKG_BUILD_FLAGS:=no-mips16
+PKG_BUILD_FLAGS:=no-mips16 lto
 
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=LICENSE
@@ -31,7 +31,7 @@ define Package/ipt2socks/description
   Utility for converting iptables (redirect/tproxy) to socks5.
 endef
 
-TARGET_CFLAGS+= $(FPIC) -flto
+TARGET_CFLAGS+= $(FPIC)
 MAKE_FLAGS+= \
 	CFLAGS="-std=c99 $(TARGET_CFLAGS)" \
 	EVCFLAGS="$(TARGET_CFLAGS)"
