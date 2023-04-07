@@ -19,7 +19,7 @@ PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/hacdias/webdav
 

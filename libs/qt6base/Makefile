@@ -29,7 +29,7 @@ PKG_CPE_ID:=cpe:/a:qt:qt
 
 PKG_BUILD_DEPENDS:=qt6base/host
 PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 CMAKE_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
