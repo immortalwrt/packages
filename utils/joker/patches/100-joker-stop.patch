@@ -9,9 +9,9 @@ Subject: [PATCH] joker stop
 
 --- a/main.c
 +++ b/main.c
-@@ -54,6 +54,26 @@ int main(int argc, char *argv[])
-         i = system("s=`ps -e -o command | grep joker | grep -v grep | grep -v \"joker list\"`; if [ -n \"$s\" ]; then ps -x | grep -F \"`echo \"$s\" | cut -d' ' -f2-`\" | grep -v joker | grep -v grep; fi;");
-         return i;
+@@ -158,6 +158,26 @@ int main(int argc, char **argv)
+         free(s);
+         return 0;
      }
 +    if(argc == 2 && strcmp(argv[1], "stop") == 0){
 +        int i;
