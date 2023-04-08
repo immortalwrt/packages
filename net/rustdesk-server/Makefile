@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rustdesk-server
-PKG_VERSION:=1.1.7-2
+PKG_VERSION:=1.1.7-4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/rustdesk/rustdesk-server/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=15aafef889743ac5096717f96ed836e29c06a7f0ece71b81b52e9d690e7cd2f6
+PKG_HASH:=619fb623d2eb62657dbc66a7a1fdac7144e216a0f89f751c1b8fff59e87d9d7a
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=AGPL-3.0-only
@@ -25,7 +25,7 @@ define Package/rustdesk-server
   SECTION:=net
   CATEGORY:=Network
   TITLE:=RustDesk Server Program
-  DEPENDS:=$(RUST_ARCH_DEPENDS)
+  DEPENDS:=$(RUST_ARCH_DEPENDS) @!(mips||mipsel)
   URL:=https://rustdesk.com/server
 endef
 
