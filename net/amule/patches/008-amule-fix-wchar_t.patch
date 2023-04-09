@@ -1,0 +1,74 @@
+--- a/src/LibSocketAsio.cpp
++++ b/src/LibSocketAsio.cpp
+@@ -25,6 +25,8 @@
+ 
+ #include "config.h"		// Needed for HAVE_BOOST_SOURCES
+ 
++#include <wx/thread.h>		// wxMutex
++#include <wx/intl.h>		// _()
+ 
+ #ifdef _MSC_VER
+ #define _WIN32_WINNT 0x0501	// Boost complains otherwise
+@@ -57,8 +59,6 @@
+ #endif
+ 
+ #include "LibSocket.h"
+-#include <wx/thread.h>		// wxMutex
+-#include <wx/intl.h>		// _()
+ #include <common/Format.h>	// Needed for CFormat
+ #include "Logger.h"
+ #include "GuiEvents.h"
+--- a/src/UPnPBase.cpp
++++ b/src/UPnPBase.cpp
+@@ -27,13 +27,13 @@
+ 
+ #ifdef ENABLE_UPNP
+ 
++#include "UPnPBase.h"
+ // check for broken Debian-hacked libUPnP
+ #include <upnp.h>
+ #ifdef STRING_H				// defined in UpnpString.h Yes, I would have liked UPNPSTRING_H much better.
+ #define BROKEN_DEBIAN_LIBUPNP
+ #endif
+ 
+-#include "UPnPBase.h"
+ 
+ #include <algorithm>		// For transform()
+ 
+--- a/src/UPnPBase.h
++++ b/src/UPnPBase.h
+@@ -29,11 +29,11 @@
+ #define AMULE_UPNP_H
+ 
+ 
++#include "UPnPCompatibility.h"
+ #include <map>
+ #include <string>
+ #include <sstream>
+ 
+-#include "UPnPCompatibility.h"
+ 
+ #include <common/SmartPtr.h>		// Needed for CSmartPtr
+ 
+--- a/src/UPnPCompatibility.h
++++ b/src/UPnPCompatibility.h
+@@ -27,6 +27,8 @@
+ #ifndef UPNPCOMPATIBILITY_H
+ #define UPNPCOMPATIBILITY_H
+ 
++#include <common/MuleDebug.h>		// for CMuleException::
++#include <common/StringFunctions.h>	// for char2unicode()
+ 
+ #include <upnp.h>
+ #include <upnptools.h>
+@@ -35,10 +37,6 @@
+ #include <sstream>
+ 
+ 
+-#include <common/MuleDebug.h>		// for CMuleException::
+-#include <common/StringFunctions.h>	// for char2unicode()
+-
+-
+ #include "Logger.h"				// for Add(Debug)LogLineM()
+ 
+ 
