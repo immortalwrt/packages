@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=wxbase
-PKG_VERSION:=2.8.12
-PKG_RELEASE:=2
+PKG_VERSION:=3.2.2.1
+PKG_RELEASE:=1
 
-PKG_SOURCE:=wxGTK-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=@SF/wxwindows
-PKG_HASH:=f4193c29fb0e790c9a5c8936f082377a7e51c76bccafe41f4f9da7ca15c0ef1a
+PKG_SOURCE:=wxWidgets-$(PKG_VERSION).tar.bz2
+PKG_SOURCE_URL:=https://github.com/wxWidgets/wxWidgets/releases/download/v$(PKG_VERSION)
+PKG_HASH:=dffcb6be71296fff4b7f8840eb1b510178f57aa2eb236b20da41182009242c02
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/wxGTK-$(PKG_VERSION)
+PKG_BUILD_DIR:=$(BUILD_DIR)/wxWidgets-$(PKG_VERSION)
 PKG_CHECK_FORMAT_SECURITY:=0
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
@@ -27,7 +27,7 @@ define Package/libwxbase
   CATEGORY:=Libraries
   TITLE:=Cross-platform C++ framework
   URL:=http://www.wxwidgets.org/
-  DEPENDS:=+libexpat +libstdcpp +zlib +libpthread
+  DEPENDS:=+libexpat +libstdcpp +zlib +libpthread +libcurl
 endef
 
 define Package/libwxbase/description
@@ -43,19 +43,17 @@ TARGET_CFLAGS += $(FPIC)
 CONFIGURE_ARGS+= \
 	--enable-shared \
 	--disable-rpath \
-	--with-gnu-ld \
 	--disable-gui \
 	--disable-monolithic \
 	--enable-plugins \
 	--disable-universal \
 	--disable-nanox \
-	--disable-gtk2 \
 	--disable-gpe \
-	--disable-optimise \
+	--enable-optimise \
 	--disable-debug \
 	--disable-stl \
-	--disable-omf \
 	--disable-debug_flag \
+	--disable-mediactrl \
 	--disable-debug_info \
 	--disable-debug_gdb \
 	--disable-debug_cntxt \
@@ -63,54 +61,61 @@ CONFIGURE_ARGS+= \
 	--disable-profile \
 	--disable-no_rtti \
 	--disable-no_exceptions \
-	--disable-compat22 \
-	--disable-compat24 \
+	--disable-compat28 \
+	--disable-compat30 \
 	--enable-intl \
+	--enable-ipv6 \
 	--disable-backtrace \
 	--enable-exceptions \
 	--disable-sound \
 	--enable-largefile \
-	--enable-unicode \
 	\
 	--without-gtk \
 	--without-motif \
 	--without-mac \
+	--without-msw \
 	--without-cocoa \
 	--without-wine \
-	--without-msw \
-	--without-pm \
-	--without-mgl \
-	--without-microwin \
 	--without-x11 \
 	--without-libpng \
 	--without-libjpeg \
 	--without-libtiff \
+	--without-libjbig \
 	--without-libxpm \
 	--without-libmspack \
 	--without-sdl \
-	--without-gnomeprint \
 	--without-opengl \
 	--without-dmalloc \
 	--with-regex="sys" \
 	--with-zlib="sys" \
-	--without-odbc \
 	--with-expat="sys" \
 	--without-gtk-prefix \
 	--without-x \
 	--without-libiconv-prefix \
 	--without-sdl-prefix \
-	--without-cppunit-prefix \
 	--disable-precomp-headers
+
+CONFIGURE_ARGS := $(filter-out --disable-nls, $(CONFIGURE_ARGS))
+
+UNICODE=yes
+
+ifeq ($(UNICODE),yes)
+  CONFIGURE_ARGS+= --enable-unicode
+  LIB_PFX:=u
+else
+  CONFIGURE_ARGS+= --disable-unicode
+  LIB_PFX:=
+endif
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/wx-config $(1)/usr/bin/
 	$(SED) "s,$(PKG_BUILD_DIR),$(STAGING_DIR)/usr,g" $(1)/usr/bin/wx-config
-	$(SED) 's,-I$$$${includedir}/wx-2.8,-I$(STAGING_DIR)/usr/include/wx-2.8,g' $(1)/usr/bin/wx-config
+	$(SED) 's,-I$$$${includedir}/wx-3.2,-I$(STAGING_DIR)/usr/include/wx-3.2,g' $(1)/usr/bin/wx-config
 	$(SED) 's,-I$$$${libdir}/wx/include,-I$(STAGING_DIR)/usr/lib/wx/include,g' $(1)/usr/bin/wx-config
 
 	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/wx-2.8 $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/wx-3.2 $(1)/usr/include/
 
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwx_*.so* $(1)/usr/lib/
