@@ -50,6 +50,8 @@ start_instance() {
 		[ -z "$second_supernode" -o -z "$second_port" ] || procd_append_param command -l "$second_supernode:$second_port"
 		[ "$route" = "0" ] || procd_append_param command -r
 
+		procd_set_param limits core="unlimited"
+		procd_set_param limits nofile="1000000 1000000"
 		procd_set_param stdout 1
 		procd_set_param stderr 1
 		procd_set_param respawn
@@ -73,6 +75,8 @@ start_instance() {
 		procd_append_param command -p "$port"
 		procd_append_param command -a "$subnet"
 
+		procd_set_param limits core="unlimited"
+		procd_set_param limits nofile="1000000 1000000"
 		procd_set_param stdout 1
 		procd_set_param stderr 1
 		procd_set_param respawn
