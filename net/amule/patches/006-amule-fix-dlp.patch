@@ -1,0 +1,62 @@
+--- a/src/BaseClient.cpp
++++ b/src/BaseClient.cpp
+@@ -23,9 +23,7 @@
+ //
+ 
+ //Dynamic Leech Protect - Bill Lee
+-#ifdef AMULE_DLP
+-#include "DLP.h"
+-#endif
++
+ 
+ #include <wx/wx.h>
+ #include <wx/mstream.h>
+@@ -87,6 +85,10 @@
+ #include "kademlia/kademlia/UDPFirewallTester.h"
+ #include "kademlia/routing/RoutingZone.h"
+ 
++#ifdef AMULE_DLP
++#include "DLP.h"
++#endif
++
+ //#define __PACKET_DEBUG__
+ 
+ // some client testing variables
+--- a/src/DLP.cpp
++++ b/src/DLP.cpp
+@@ -16,14 +16,15 @@
+ //
+ #include "Logger.h"
+ 
+-#include "DLP.h"
+-#include "antiLeech.h"
+ #include <wx/dynlib.h>                          /* Needed for wxDynamicLibrary */
+ 
+-#include "DLPPref.h"
+ #include "Preferences.h"	// Needed for CPreferences
+ #include "amule.h"		// Needed for theApp
+ 
++#include "DLP.h"
++#include "antiLeech.h"
++#include "DLPPref.h"
++
+ #include <wx/stdpaths.h>                        /* Needed for wxStandardPaths */
+ 
+ #define PRE_CHECK(tag)	if( (!c->IsBanned()) && antiLeech && (thePrefs::GetDLPCheckMask() & tagn) )
+--- a/src/antiLeech_wx.h
++++ b/src/antiLeech_wx.h
+@@ -23,10 +23,10 @@
+ #define _istpunct(var)		iswpunct(var)
+ #define _istspace(var)		iswspace(var)
+ #define _istxdigit(var)		iswxdigit(var)
+-inline float _tstof(const wchar_t* str){
+-	wchar_t** ptail = NULL;
+-	return wcstof(str, ptail);
+-}
++// inline float _tstof(const wchar_t* str){
++// 	wchar_t** ptail = NULL;
++// 	return wcstof(str, ptail);
++// }
+ //This function is not used. by Orzogc Lee
+ //But I think there is no need to removing, linker will remove it.
+ /*
