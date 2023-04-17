@@ -1,0 +1,20 @@
+From 5e6e7923e438efbbacfce1202950135711972b44 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E4=B8=96=E7=95=8C?= <i@sekai.icu>
+Date: Sun, 16 Apr 2023 22:43:30 +0800
+Subject: [PATCH] Fix shadowsocksr build
+
+---
+ outbound/shadowsocksr.go | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/outbound/shadowsocksr.go
++++ b/outbound/shadowsocksr.go
+@@ -127,7 +127,7 @@ func (h *ShadowsocksR) DialContext(ctx c
+ 		if err != nil {
+ 			return nil, err
+ 		}
+-		return &bufio.BindPacketConn{PacketConn: conn, Addr: destination}, nil
++		return bufio.NewBindPacketConn(conn, destination), nil
+ 	default:
+ 		return nil, E.Extend(N.ErrUnknownNetwork, network)
+ 	}

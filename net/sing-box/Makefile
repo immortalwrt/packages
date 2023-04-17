@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
-PKG_VERSION:=1.2.3
-PKG_RELEASE:=2
+PKG_VERSION:=1.2.4
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/SagerNet/sing-box/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=a12b81950deb181cf2c1783685e0dd66502376471db57e3787fad3f3e27fd48c
+PKG_HASH:=72dd2f358ce17605e17862be8cd34b84e150ce505f08d0d75af50c5cf5a23c29
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
@@ -61,37 +61,29 @@ define Package/sing-box/config
   if PACKAGE_sing-box
     config SING_BOX_BUILD_ACME
     bool "Build with ACME TLS certificate issuer support"
-    default n
 
     config SING_BOX_BUILD_CLASH_API
     bool "Build with Clash API support"
-    default n
 
     config SING_BOX_BUILD_DHCP
     bool "Build with DHCP support"
-    default n
 
     config SING_BOX_BUILD_ECH
     bool "Build with TLS ECH extension support"
-    default n
 
     config SING_BOX_BUILD_EMBEDDED_TOR
     bool "Build with embedded Tor support"
-    default n
 
     config SING_BOX_BUILD_GRPC
     bool "Build with standard gPRC support"
-    default n
     help
       Standard gRPC has good compatibility but poor performance.
 
     config SING_BOX_BUILD_GVISOR
     bool "Build with gVisor support"
-    default n
 
     config SING_BOX_BUILD_LWIP
     bool "Build with LWIP Tun stack support"
-    default n
 
     config SING_BOX_BUILD_QUIC
     bool "Build with QUIC support"
@@ -114,11 +106,9 @@ define Package/sing-box/config
 
     config SING_BOX_BUILD_V2RAY_API
     bool "Build with V2Ray API support"
-    default n
 
     config SING_BOX_BUILD_WIREGUARD
     bool "Build with WireGuard support"
-    default n
   endif
 endef
 
