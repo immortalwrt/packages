@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cloudflared
 PKG_VERSION:=2023.4.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/cloudflare/cloudflared/tar.gz/$(PKG_VERSION)?
@@ -48,6 +48,11 @@ endef
 define Package/cloudflared/conffiles
 /etc/config/cloudflared
 /etc/cloudflared/
+endef
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	$(RM) -r $(PKG_BUILD_DIR)/vendor
 endef
 
 define Package/cloudflared/install
