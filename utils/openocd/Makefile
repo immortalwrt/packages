@@ -78,6 +78,10 @@ ifeq ($(CONFIG_TARGET_bcm27xx),y)
 	CONFIGURE_ARGS += --enable-bcm2835gpio
 endif
 
+ifndef CONFIG_CCACHE
+	CONFIGURE_VARS += CCACHE=none
+endif
+
 TARGET_CFLAGS += -DRELSTR=\\\"-$(PKG_VERSION)-$(PKG_RELEASE)-OpenWrt\\\"
 
 define Build/Compile
