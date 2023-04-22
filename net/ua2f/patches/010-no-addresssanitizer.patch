@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,7 +4,7 @@ project(UA2F C)
+ include(CheckSymbolExists)
+ check_symbol_exists(__malloc_hook "malloc.h" IS_LIBC_GLIBC)
+ 
+-if(IS_LIBC_GLIBC)
++if(0)
+ 	add_compile_options(-fsanitize=address)
+ 	add_link_options(-fsanitize=address)
+ else()
