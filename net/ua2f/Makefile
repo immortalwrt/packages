@@ -29,7 +29,8 @@ define Package/ua2f
   URL:=https://github.com/Zxilly/UA2F
   DEPENDS:=+iptables +iptables-mod-conntrack-extra \
     +iptables-mod-filter +iptables-mod-nfqueue \
-    +libnetfilter-conntrack +libnetfilter-queue
+    +libnetfilter-conntrack +libnetfilter-queue \
+    +USE_GLIBC:libasan
 endef
 
 define Package/ua2f/description
