@@ -99,6 +99,9 @@ MAKE_FLAGS += \
 	DESTDIR="$(PKG_INSTALL_DIR)" \
 	SHELL="/bin/bash"
 
+HOST_MAKE_FLAGS += LD_LIBRARY_PATH=$(STAGING_DIR_HOSTPKG)/lib
+MAKE_FLAGS += LD_LIBRARY_PATH=$(STAGING_DIR_HOSTPKG)/lib
+
 define Build/InstallDev
 	( cd $(PKG_INSTALL_DIR); $(TAR) -cf - \
 		. \
