@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=you-get
 PKG_VERSION:=0.4.1650
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PYPI_NAME:=you-get
 PKG_HASH:=b3c944cf7a63cc468cccc8816dce7fc008c2e6b5ba52aefe5ce2081818a3ad47
