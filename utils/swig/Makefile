@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=swig
 PKG_VERSION:=4.1.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/$(PKG_NAME)
@@ -19,11 +19,11 @@ PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_HOST_ONLY:=1
-HOST_BUILD_PARALLEL:=1
 HOST_BUILD_DEPENDS:=pcre2/host
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/swig
   SECTION:=libs
@@ -33,8 +33,7 @@ define Package/swig
   BUILDONLY:=1
 endef
 
-HOST_CONFIGURE_ARGS += \
-	--with-pcre
+HOST_CMAKE_OPTIONS += WITH_PCRE=ON
 
 define Package/swig/description
   tool that generates bindings for various languages
