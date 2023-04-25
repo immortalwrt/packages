@@ -33,7 +33,7 @@ define Package/swig
   BUILDONLY:=1
 endef
 
-HOST_CMAKE_OPTIONS += WITH_PCRE=ON
+CMAKE_HOST_OPTIONS += -DWITH_PCRE=ON
 
 define Package/swig/description
   tool that generates bindings for various languages
