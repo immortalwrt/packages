@@ -5,11 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cloudflared
-<<<<<<< HEAD
-PKG_VERSION:=2023.4.1
-=======
 PKG_VERSION:=2023.4.2
->>>>>>> e62fc0d3b (cloudflared: Update to 2023.4.2)
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
