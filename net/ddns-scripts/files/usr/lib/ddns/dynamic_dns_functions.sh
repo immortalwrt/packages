@@ -959,10 +959,17 @@ get_current_ip () {
 					# 5: eth1    inet6 fd43:5368:6f6d:6500:a00:27ff:fed0:1032/64 scope global dynamic \       valid_lft 14352sec preferred_lft 14352sec
 					# 5: eth1    inet6 2002:b0c7:f326::a00:27ff:fed0:1032/64 scope global dynamic \       valid_lft 14352sec preferred_lft 14352sec
 
-					#    remove      remove     remove      replace     replace
-					#     link     inet6 fxxx    sec      forever=>-1   / => ' ' to separate subnet from ip
-					sed "/link/d; /inet6 f/d; s/sec//g; s/forever/-1/g; s/\// /g" $DATFILE | \
-						awk '{ print $3" "$4" "$NF }' > $ERRFILE	# temp reuse ERRFILE
+					if [ $upd_privateip -eq 0 ]; then
+						#    remove      remove     remove      replace     replace
+						#     link     inet6 fxxx    sec      forever=>-1   / => ' ' to separate subnet from ip
+						sed "/link/d; /inet6 f/d; s/sec//g; s/forever/-1/g; s/\// /g" $DATFILE | \
+							awk '{ print $3" "$4" "$NF }' > $ERRFILE	# temp reuse ERRFILE
+					else
+						#    remove                 remove      replace     replace
+						#     link                   sec      forever=>-1   / => ' ' to separate subnet from ip
+						sed "/link/d; s/sec//g; s/forever/-1/g; s/\// /g" $DATFILE | \
+							awk '{ print $3" "$4" "$NF }' > $ERRFILE	# temp reuse ERRFILE
+					fi
 					# we only need    inet?   IP  prefered time
 
 					local __TIME4=0;  local __TIME6=0
