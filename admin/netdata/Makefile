@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netdata
-PKG_VERSION:=1.35.1
+PKG_VERSION:=1.38.1
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Josef Schlehofer <pepe.schlehofer@gmail.com>, Daniel Engberg <daniel.engberg.lists@pyret.net>
@@ -18,7 +18,7 @@ PKG_CPE_ID:=cpe:/a:my-netdata:netdata
 
 PKG_SOURCE:=$(PKG_NAME)-v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/netdata/netdata/releases/download/v$(PKG_VERSION)
-PKG_HASH:=587f6cce421015f8e0a527e3964a4de8cc17085c354498150bc3ade21606bbf9
+PKG_HASH:=e32a5427f0c00550210dbbf0046c2621313955256edf836db686e2bc270b8d10
 PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-v$(PKG_VERSION)
 
 PKG_INSTALL:=1
@@ -59,7 +59,7 @@ CONFIGURE_ARGS += \
 	--disable-plugin-freeipmi \
 	--disable-plugin-cups \
 	--disable-plugin-xenstat \
-	--disable-backend-prometheus-remote-write \
+	--disable-exporting-prometheus-remote-write \
 	--disable-unit-tests \
 	--disable-ml
 
@@ -79,7 +79,6 @@ define Package/netdata/install
 	touch $(1)/etc/netdata/.opt-out-from-anonymous-statistics
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/netdata $(1)/usr/lib
-	$(CP) $(1)/usr/lib/netdata/conf.d/fping.conf $(1)/etc
 	$(CP) $(1)/usr/lib/netdata/conf.d/health_alarm_notify.conf $(1)/etc
 	$(CP) $(1)/usr/lib/netdata/plugins.d/tc-qos-helper.sh $(1)/etc
 	$(INSTALL_DIR) $(1)/usr/sbin
