@@ -8,18 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=miniupnpd
-PKG_VERSION:=2.2.1
-PKG_RELEASE:=3
+PKG_VERSION:=2.0.20170421
+PKG_RELEASE:=4
 
 PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=f158dc73b718ca72da69e25ef23c57c3a10a0d7e7d1b4b9b57d5690823040ec2
+PKG_HASH:=9677aeccadf73b4bf8bb9d832c32b5da8266b4d58eed888f3fd43d7656405643
 
 PKG_MAINTAINER:=
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:miniupnp_project:miniupnpd
 
+PKG_CONFIG_DEPENDS:=CONFIG_MINIUPNPD_IGDv2
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
@@ -29,10 +30,17 @@ include $(INCLUDE_DIR)/version.mk
 define Package/miniupnpd
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+iptables +libip4tc +IPV6:libip6tc +IPV6:ip6tables +libuuid +libcap-ng
+  DEPENDS:=+iptables +libip4tc +IPV6:libip6tc +IPV6:ip6tables +libuuid
   TITLE:=Lightweight UPnP IGD, NAT-PMP & PCP daemon
   SUBMENU:=Firewall
   URL:=https://miniupnp.tuxfamily.org/
+endef
+
+define Package/miniupnpd/config
+config MINIUPNPD_IGDv2
+	bool
+	default n
+	prompt "Enable IGDv2"
 endef
 
 define Package/miniupnpd/conffiles
@@ -44,13 +52,15 @@ define Build/Prepare
 	echo "$(VERSION_NUMBER)" | tr '() ' '_' >$(PKG_BUILD_DIR)/os.openwrt
 endef
 
-CONFIGURE_ARGS = \
-	$(if $(CONFIG_PACKAGE_libip6tc),--ipv6) \
-	--igd2 \
-	--leasefile \
-	--portinuse \
-	--firewall=iptables \
-	--disable-fork
+MAKE_FLAGS += \
+	TARGET_OPENWRT=1 TEST=0 \
+	LIBS="" \
+	CC="$(TARGET_CC) -DIPTABLES_143 -luuid \
+		-lip4tc $(if $(CONFIG_IPV6),-lip6tc)" \
+	CONFIG_OPTIONS="--portinuse --leasefile \
+		$(if $(CONFIG_MINIUPNPD_IGDv2),--igd2) \
+		$(if $(CONFIG_IPV6),--ipv6)" \
+	-f Makefile.linux miniupnpd
 
 TARGET_CFLAGS += $(FPIC) -flto
 TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
