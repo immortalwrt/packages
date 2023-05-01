@@ -17,9 +17,7 @@ start_service() {
 	local config_file
 	config_get config_file "config" "config_file" "/etc/dae/config.dae"
 
-        if ! "$PROG" validate -c "$config_file"; then
-                return 1
-        fi
+	"$PROG" validate -c "$config_file" || return 1
 
 	procd_open_instance "$CONF"
 	procd_set_param command "$PROG"
