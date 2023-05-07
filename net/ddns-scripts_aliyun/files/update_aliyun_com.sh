@@ -220,6 +220,10 @@ describe_domain() {
 			else
 				ret=0
 				json_get_var __RECID "RecordId"
+				 # 解决当__HOST应为多级时错误修改RR
+				json_get_var __HOST "RR"
+				json_get_var __DOMAIN "DomainName"
+
 				write_log 7 "获得解析记录ID: ${__RECID}, 类型: $value"
 				json_get_var value "Locked"
 				[ $value -ne 0 ] && write_log 14 "解析记录被锁定"
