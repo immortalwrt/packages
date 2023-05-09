@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zwave-js
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=10.15.0
+PKG_VERSION:=10.18.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=02c913823a389132fe9398ca9be41598af7e33cbfbf491b69a3c12fb473b86b4
+PKG_HASH:=5d3382cbfe026460e20a65a5a948c21458ddc023077b8aa4c438ed56695d71ef
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -30,7 +30,7 @@ define Package/node-zwave-js
   CATEGORY:=Languages
   TITLE:=Z-Wave driver written entirely in JavaScript/TypeScript
   URL:=https://www.npmjs.org/package/zwave-js
-  DEPENDS:=+node +node-serialport
+  DEPENDS:=+node +node-bufferutil +node-utf-8-validate
 endef
 
 define Package/node-zwave-js/description
@@ -53,13 +53,11 @@ define Build/Compile
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM)) \
-	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
-	npm install --prefer-offline --no-audit --production --global-style --no-save --omit=dev --no-package-lock
-	rm -rf $(PKG_BUILD_DIR)/node_modules/serialport
-	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --build-from-source --target_arch=$(NODEJS_CPU)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	rm -rf $(PKG_BUILD_DIR)/node_modules/serialport/node_modules/@serialport/bindings-cpp/prebuilds
 endef
 
 define Package/node-zwave-js/install

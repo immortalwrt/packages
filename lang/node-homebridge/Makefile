@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.6.0
+PKG_VERSION:=1.6.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=969b84ef86d62f6f9500466b6fc2ba2cda503bbe33e86fe357761f2ffee4ebfd
+PKG_HASH:=f6d25a51db50c252b3d3775bf9df26e510ec0a9e17215362a7f6c95dea15caff
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_FLAGS:=no-mips16
@@ -54,14 +54,12 @@ define Build/Compile
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM)) \
-	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
-	npm install --prefer-offline --no-audit --production --global-style --no-save --omit=dev --no-package-lock
-	rm -f $(PKG_BUILD_DIR)/node_modules/hap-nodejs/node_modules/@homebridge/put/test/c/ftoi
-	rm -f $(PKG_BUILD_DIR)/node_modules/hap-nodejs/node_modules/@homebridge/put/test/c/itof
-	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	rm -f $(PKG_BUILD_DIR)/node_modules/hap-nodejs/node_modules/@homebridge/put/test/c/ftoi
+	rm -f $(PKG_BUILD_DIR)/node_modules/hap-nodejs/node_modules/@homebridge/put/test/c/itof
 endef
 
 define Package/node-homebridge/install

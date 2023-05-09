@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zigbee2mqtt
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.30.3
+PKG_VERSION:=1.30.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=5a9c1e8870b1e972076a66de1fa52ed8f37d1220c468279fc8f2cd44980fb8f9
+PKG_HASH:=95f1b1a28729f649a1a265e95087bf9d57d95c2df642516e3d4c6a3bb04142a2
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=GPL-3.0
@@ -58,8 +58,11 @@ define Build/Compile
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM)) \
-	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
-	npm install --prefer-offline --no-audit --production --global-style --no-save --omit=dev --no-package-lock --build-from-source --target_arch=$(NODEJS_CPU) --prefer-dedupe
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --build-from-source --target_arch=$(NODEJS_CPU) --prefer-dedupe
+	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
+	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -delete || true
+	rm -rf $(PKG_BUILD_DIR)/node_modules/zigbee-herdsman/node_modules/@serialport/bindings-cpp/prebuilds
 	rm -rf $(PKG_BUILD_DIR)/node_modules/zigbee-herdsman-converters/node_modules/zigbee-herdsman
 	rm -rf $(PKG_BUILD_DIR)/node_modules/ajv/lib
 	rm -rf $(PKG_BUILD_DIR)/node_modules/moment/min
@@ -68,11 +71,6 @@ define Build/Compile
 	clean-modules -y -D $(PKG_BUILD_DIR)/node_modules --exclude "**/*.map.js" "**/*.png" \
 		"**/example/" "**/examples/" --include "**/npm-shrinkwrap.json" "**/.babelrc.js" \
 		"**/.prebuild-installrc" "**/obj.target/" "**/config.gypi" "**/binding.Makefile"
-	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
-	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
-	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -delete || true
-	rm -rf $(PKG_BUILD_DIR)/node_modules/zigbee-herdsman/node_modules/@serialport/bindings-cpp/prebuilds
 endef
 
 define Package/node-zigbee2mqtt/install
