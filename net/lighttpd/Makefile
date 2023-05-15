@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lighttpd
-PKG_VERSION:=1.4.69
-PKG_RELEASE:=3
+PKG_VERSION:=1.4.70
+PKG_RELEASE:=1
 # release candidate ~rcX testing; remove for release
 #PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://download.lighttpd.net/lighttpd/releases-1.4.x
-PKG_HASH:=16ac8db95e719629ba61949b99f8a26feba946a81d185215b28379bb4116b0b4
+PKG_HASH:=921ebe1cf4b6b9897e03779ab7a23a31f4ba40a1abe2067525c33cd3ce61fe85
 
 PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
 PKG_LICENSE:=BSD-3-Clause
@@ -60,7 +60,7 @@ PKG_BUILD_DEPENDS:= \
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/meson.mk
 
-# choose crypto lib for lighttpd to use for crypto algorithms (default: nettle)
+# choose crypto lib for lighttpd to use for crypto algorithms
 # (separate from lighttpd TLS modules, which are each standalone)
 cryptolibdep= \
   +LIGHTTPD_CRYPTOLIB_NETTLE:libnettle \
@@ -69,8 +69,6 @@ cryptolibdep= \
 ifdef CONFIG_LIGHTTPD_CRYPTOLIB_MBEDTLS
   TARGET_CPPFLAGS += -DFORCE_MBEDTLS_CRYPTO
 else ifdef CONFIG_LIGHTTPD_CRYPTOLIB_WOLFSSL
-  # (Note: if CONFIG_LIGHTTPD_CRYPTOLIB_WOLFSSL is set,
-  #  then lighttpd-mod-mbedtls should not be selected to also be built)
   TARGET_CPPFLAGS += -DFORCE_WOLFSSL_CRYPTO
 endif
 
@@ -123,7 +121,7 @@ config LIGHTTPD_PCRE2
 if PACKAGE_lighttpd
 	choice
 		prompt "crypto library"
-		default LIGHTTPD_CRYPTOLIB_NETTLE
+		default LIGHTTPD_CRYPTOLIB_MBEDTLS
 		help
 		  library to use for cryptographic algorithms
 
@@ -177,7 +175,7 @@ MESON_ARGS += \
 	-Dwith_zlib=$(if $(CONFIG_PACKAGE_lighttpd-mod-deflate),enabled,disabled) \
 	-Dwith_zstd=disabled
 
-BASE_MODULES:=dirlisting
+BASE_MODULES:=dirlisting h2
 
 define Package/lighttpd/conffiles
 /etc/lighttpd/lighttpd.conf
@@ -307,8 +305,9 @@ server.modules += ( \"mod_$(1)\" )" $$(1)/etc/lighttpd/conf.d/$(4)-$(1).conf ; \
   $$(eval $$(call BuildPackage,lighttpd-mod-$(1)))
 endef
 
-# included in BASE_MODULES:=dirlisting
+# included in BASE_MODULES:=dirlisting h2
 #$(eval $(call BuildPlugin,dirlisting,dirlisting,,30))
+#$(eval $(call BuildPlugin,h2,HTTP/2,,30))
 
 # included in base lighttpd executable;
 # no longer loaded as separate dynamic modules
