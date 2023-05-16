@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=acl
 PKG_VERSION:=2.3.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://git.savannah.nongnu.org/cgit/acl.git/snapshot
@@ -64,6 +64,10 @@ $(call Package/acl/Default/description)
 endef
 
 CONFIGURE_ARGS += --enable-static --enable-shared
+
+ifneq ($(CONFIG_USE_MUSL),)
+  TARGET_CFLAGS += -D_LARGEFILE64_SOURCE
+endif
 
 define Package/acl/install
 	$(INSTALL_DIR) $(1)/usr/bin
