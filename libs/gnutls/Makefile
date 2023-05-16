@@ -133,7 +133,7 @@ CONFIGURE_ARGS+= \
 	--enable-local-libopts \
 	--without-idn \
 	--with-default-trust-store-dir=/etc/ssl/certs/ \
-	--with-libunistring-prefix=$(STAGING_DIR) \
+	--with-libunistring-prefix=$(STAGING_DIR)/usr \
 	--with-librt-prefix="$(LIBRT_ROOT_DIR)/" \
 	--with-pic \
 	--with-system-priority-file="" \
