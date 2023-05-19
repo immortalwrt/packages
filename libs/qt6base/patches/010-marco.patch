@@ -10,3 +10,14 @@
  #ifdef EM_BLACKFIN
      case EM_BLACKFIN:   d << ", Blackfin"; break;
  #endif
+--- a/src/3rdparty/forkfd/forkfd.c
++++ b/src/3rdparty/forkfd/forkfd.c
+@@ -605,7 +605,7 @@ static int forkfd_fork_fallback(int flags, pid_t *ppid)
+     int death_pipe[2];
+     int sync_pipe[2];
+     int ret;
+-#ifdef __linux__
++#ifdef HAVE_EVENTFD
+     int efd;
+ #endif
+ 
