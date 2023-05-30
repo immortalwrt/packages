@@ -5,7 +5,7 @@ USE_PROCD=1
 
 SMB_CONF=""
 BIND_IF_PARM=""
-NB_PARM="$(cat /proc/sys/kernel/hostname)"
+NB_PARM="$(sed 's/\..*//' /proc/sys/kernel/hostname)"
 WG_PARM="WORKGROUP"
 BI_PARM=""
 
@@ -29,8 +29,8 @@ start_service() {
 	}
 
 	[ -z "$SMB_CONF" ] && {
-		logger -p daemon.error -t 'wsdd2' "samba36/4 or ksmbd is not running, can't start wsdd2!"
-		exit 1
+		logger -p daemon.info -t 'wsdd2' "samba36/4 or ksmbd is not running"
+		return
 	}
 	
 	# cleanup comments
@@ -59,12 +59,12 @@ start_service() {
 	local board_sku
 
 	[ -e /tmp/sysinfo/board_name ] && {
-		board_vendor="$(awk -F',' '{print $1}' /tmp/sysinfo/board_name | tr ' ' '_' | tr -d ' \n')"
-		board_sku="$(awk -F',' '{print $2}' /tmp/sysinfo/board_name | tr ' ' '_' | tr -d ' \n')"
+		board_vendor="$(awk -F',' '{print $1}' /tmp/sysinfo/board_name | tr ' ' '_' | tr ',' '-' | tr -d ' \n')"
+		board_sku="$(awk -F',' '{print $2}' /tmp/sysinfo/board_name | tr ' ' '_' | tr ',' '-' |  tr -d ' \n')"
 	}
 
 	[ -e /tmp/sysinfo/model ] && {
-		board_model="$(awk -F':' '{print $1}' /tmp/sysinfo/model | tr ' ' '_' | tr -d ' \n')"
+		board_model="$(awk -F':' '{print $1}' /tmp/sysinfo/model | tr ' ' '_' | tr ',' '-' |  tr -d ' \n')"
 	}
 
 	[ -n "$board_vendor" ] && [ -n "$board_model" ] && {
