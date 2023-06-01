@@ -56,15 +56,10 @@ start_service() {
 	json_add_boolean "skip_cert_verify" "$skip_cert_verify"
 	json_add_int "timeout" "$timeout"
 	[ -z "$interfaces" ] || json_add_string "interfaces" "$interfaces"
-	[ -z "$interfaces" ] || json_add_boolean "use_dhcp_ip" "$use_dhcp_ip"
 	json_close_object
 	json_add_object "guardian"
 	json_add_boolean "enable" 1
 	json_add_int "duration" "$duration"
-	json_close_object
-	json_add_object "daemon"
-	json_add_boolean "enable" 0
-	json_add_string "path" "$RUN_DIR/.BitSrun"
 	json_close_object
 	json_add_object "log"
 	json_add_boolean "debug_level" "$debug"
