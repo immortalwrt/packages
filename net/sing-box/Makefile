@@ -64,6 +64,7 @@ define Package/sing-box/config
 
     config SING_BOX_BUILD_CLASH_API
     bool "Build with Clash API support"
+    default y
 
     config SING_BOX_BUILD_DHCP
     bool "Build with DHCP support"
