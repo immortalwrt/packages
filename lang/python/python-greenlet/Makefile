@@ -17,6 +17,8 @@ PKG_HASH:=e7c8dc13af7db097bed64a051d2dd49e9f0af495c26995c00a9ee842690d34c0
 PKG_MAINTAINER:=Jan Pavlinec <jan.pavlinec1@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+# FIXME: remove when GCC10 is the oldest supported compiler, or the issue goes away
+PKG_BUILD_FLAGS:=no-mips16
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
@@ -38,6 +40,13 @@ define Package/python3-greenlet/description
   The greenlet package is a spin-off of Stackless
   a version of CPython that supports micro-threads called tasklets.
 endef
+
+# FIXME: remove when GCC10 is the oldest supported compiler, or the issue goes away
+# This is required in addition to PKG_BUILD_FLAGS:=no-mips16 because otherwise MIPS16
+# flags are inherited from the Python base package (via sysconfig module)
+ifdef CONFIG_USE_MIPS16
+TARGET_CFLAGS += -mno-mips16 -mno-interlink-mips16
+endif
 
 $(eval $(call Py3Package,python3-greenlet))
 $(eval $(call BuildPackage,python3-greenlet))
