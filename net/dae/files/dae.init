@@ -37,5 +37,5 @@ service_triggers() {
 }
 
 reload_service() {
-        "$PROG" reload "$(cat /var/run/dae.pid)"
+	"$PROG" reload "$(cat /var/run/dae.pid)"
 }

@@ -1,3 +1,7 @@
 #!/bin/sh
 
-dae --version | grep "$PKG_VERSION"
+case "$1" in
+	"dae")
+		dae --version | grep "$PKG_VERSION"
+		;;
+esac
