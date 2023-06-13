@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge-config-ui-x
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.50.2
-PKG_RELEASE:=2
+PKG_VERSION:=4.50.4
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=5025f1a55f4cf33580cb729c84fdc39150d3f449b023a403ad13e56981fdd240
+PKG_HASH:=3f9fea8d1a4df802b07de9197d60f4dd8a23abec11536f1e1f9a6f4121dcc87e
 
 PKG_BUILD_DEPENDS:=node/host node-clean-modules/host
 PKG_USE_MIPS16:=0
@@ -77,18 +77,16 @@ define Build/Compile
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM)) \
-	npm_config_tmp=$(TMP_DIR)/npm-tmp-$(TMPNPM) \
-	npm install --prefer-offline --no-audit --production --global-style --no-save --omit=dev --no-package-lock --prefer-dedupe
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --prefer-dedupe
+	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
+	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -delete || true
 	rm -rf $(PKG_BUILD_DIR)/node_modules/fastify/node_modules/light-my-request/node_modules/ajv/lib
 	rm -rf $(PKG_BUILD_DIR)/node_modules/@nestjs/platform-fastify/node_modules/light-my-request/node_modules/ajv/lib
 	rm -rf $(PKG_BUILD_DIR)/node_modules/node-schedule/node_modules/moment/min
 	rm -rf $(PKG_BUILD_DIR)/node_modules/node-schedule/node_modules/moment/src
 	rm -rf $(PKG_BUILD_DIR)/node_modules/node-schedule/node_modules/moment/locale
 	clean-modules -y -D $(PKG_BUILD_DIR)/node_modules --exclude "**/*.png" "**/example/" "**/examples/"
-	rm -rf $(TMP_DIR)/npm-tmp-$(TMPNPM)
-	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
-	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -delete || true
 endef
 
 define Package/node-homebridge-config-ui-x/install
