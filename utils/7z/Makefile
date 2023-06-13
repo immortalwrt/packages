@@ -36,14 +36,16 @@ define Host/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(HOST_BUILD_DIR)/$(MAKE_PATH) \
 		-f ../../cmpl_gcc.mak \
 		CC="$(HOSTCC) $(HOST_CFLAGS)" \
-		CXX="$(HOSTCXX) $(HOST_CXXFLAGS)"
+		CXX="$(HOSTCXX) $(HOST_CXXFLAGS)" \
+		CFLAGS_WARN=""
 endef
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)/$(MAKE_PATH) \
 		-f ../../cmpl_gcc.mak \
 		CC="$(TARGET_CC) $(TARGET_CFLAGS)" \
-		CXX="$(TARGET_CXX) $(TARGET_CXXFLAGS)"
+		CXX="$(TARGET_CXX) $(TARGET_CXXFLAGS)" \
+		CFLAGS_WARN=""
 endef
 
 define Host/Clean
