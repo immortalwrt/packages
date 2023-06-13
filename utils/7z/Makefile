@@ -2,15 +2,15 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=7z
 PKG_VERSION:=22.01
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)$(subst .,,$(PKG_VERSION))-src.tar.xz
 PKG_SOURCE_URL:=https://7-zip.org/a/
 PKG_HASH:=393098730c70042392af808917e765945dc2437dee7aae3cfcc4966eb920fbc5
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
-PKG_LICENSE:=LGPL-2.1-or-later BSD-3-Clause
-PKG_LICENSE_FILES:=DOC/License.txt DOC/copying.txt
+PKG_LICENSE:=LGPL-2.1-or-later BSD-3-Clause unRAR
+PKG_LICENSE_FILES:=DOC/License.txt DOC/copying.txt DOC/unRarLicense.txt
 PKG_CPE_ID:=cpe:/a:7-zip:7-zip
 
 HOST_BUILD_PARALLEL:=1
@@ -36,25 +36,24 @@ define Host/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(HOST_BUILD_DIR)/$(MAKE_PATH) \
 		-f ../../cmpl_gcc.mak \
 		CC="$(HOSTCC) $(HOST_CFLAGS)" \
-		CXX="$(HOSTCXX) $(HOST_CXXFLAGS)" \
-		DISABLE_RAR=1
+		CXX="$(HOSTCXX) $(HOST_CXXFLAGS)"
 endef
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)/$(MAKE_PATH) \
 		-f ../../cmpl_gcc.mak \
 		CC="$(TARGET_CC) $(TARGET_CFLAGS)" \
-		CXX="$(TARGET_CXX) $(TARGET_CXXFLAGS)" \
-		DISABLE_RAR=1
+		CXX="$(TARGET_CXX) $(TARGET_CXXFLAGS)"
 endef
 
 define Host/Clean
-	$(RM) $(STAGING_DIR_HOST)/bin/7zz
+	$(RM) $(STAGING_DIR_HOSTPKG)/bin/7z $(STAGING_DIR_HOSTPKG)/bin/7zz
 endef
 
 define Host/Install
-	$(INSTALL_DIR) $(STAGING_DIR_HOST)/bin
-	$(INSTALL_BIN) $(HOST_BUILD_DIR)/$(MAKE_PATH)/b/g/7zz $(STAGING_DIR_HOST)/bin/
+	$(INSTALL_DIR) $(STAGING_DIR_HOSTPKG)/bin
+	$(INSTALL_BIN) $(HOST_BUILD_DIR)/$(MAKE_PATH)/b/g/7zz $(STAGING_DIR_HOSTPKG)/bin/
+	$(LN) 7zz $(STAGING_DIR_HOSTPKG)/bin/7z
 endef
 
 define Package/7z/install
