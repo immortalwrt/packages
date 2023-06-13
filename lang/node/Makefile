@@ -11,17 +11,20 @@ PKG_VERSION:=v16.20.0
 PKG_RELEASE:=1
 PKG_HASH:=e0990f992234e40a51fe11f92c3816c93a77e1b081145d3dd762cd1026345349
 PATCH_DIR:=./patches/v16.x
+NODEJS_BIN_SUM:=dff21020b555cc165a1ac36da7d4f6c810b35409c94e00afc51d5d370aae47ae
 else
 ifeq ($(CONFIG_NODEJS_20),y)
-PKG_VERSION:=v20.1.0
+PKG_VERSION:=v20.3.0
 PKG_RELEASE:=1
-PKG_HASH:=600f9e11860995814b9122b1ac5318f6ad564274784deed98d8a9206649436b5
+PKG_HASH:=1ba8d49423ed3a75729066bb3ea26493ee9cb7d6568ef948597fc9ef454f7435
 PATCH_DIR:=./patches/v20.x
+NODEJS_BIN_SUM:=2dd1f5c0e01732024ba1f5de4517fa3976eb0976fa7976ff687ec09b62dd73fa
 else
 PKG_VERSION:=v18.16.0
 PKG_RELEASE:=1
 PKG_HASH:=33d81a233e235a509adda4a4f2209008d04591979de6b3f0f67c1c906093f118
 PATCH_DIR:=./patches/v18.x
+NODEJS_BIN_SUM:=44d93d9b4627fe5ae343012d855491d62c7381b236c347f7666a7ad070f26548
 endif
 endif
 
@@ -53,7 +56,7 @@ define Package/node
   TITLE:=Node.js is a platform built on Chrome's JavaScript runtime
   URL:=https://nodejs.org/
   DEPENDS:=@HAS_FPU @(i386||x86_64||arm||aarch64) \
-	   +libstdcpp +!NODEJS_16:libopenssl +zlib +libnghttp2 +libuv \
+	   +libstdcpp +!NODEJS_16:libopenssl +zlib +libnghttp2 \
 	   +libcares +libatomic +NODEJS_ICU_SYSTEM:icu +NODEJS_ICU_SYSTEM:icu-full-data
 endef
 
@@ -134,6 +137,12 @@ define Package/node/config
 		  Store npm cache in this directory.
 		  If not set, uses './tmp'
 
+	config NODEJS_HOST_BIN
+		bool "Install the official nodejs binary package as HOSTPKG (experimental)"
+		depends on HOST_OS_LINUX
+		help
+		  Reduce build time for the host package.
+
 	endmenu
 endef
 
@@ -164,7 +173,6 @@ CONFIGURE_ARGS:= \
 	--shared-zlib \
 	$(if $(CONFIG_NODEJS_16),,--shared-openssl) \
 	--shared-nghttp2 \
-	--shared-libuv \
 	--shared-cares \
 	--with-intl=$(if $(CONFIG_NODEJS_ICU_SMALL),small-icu,$(if $(CONFIG_NODEJS_ICU_SYSTEM),system-icu,none)) \
 	$(if $(findstring +neon",$(CONFIG_CPU_TYPE)),--with-arm-fpu=neon) \
@@ -209,10 +217,39 @@ define Package/node-npm/postrm
 rm -rf /usr/lib/node_modules/npm || true
 endef
 
+ifeq ($(CONFIG_NODEJS_HOST_BIN),y)
+
+NODEJS_BIN:=node-$(PKG_VERSION)-linux-x64.tar.xz
+
+define Download/nodebin
+	URL:=https://nodejs.org/download/release/$(PKG_VERSION)/
+	FILE:=$(NODEJS_BIN)
+	HASH:=$(NODEJS_BIN_SUM)
+endef
+
+define Host/Prepare
+	$(eval $(call Download,nodebin))
+endef
+
+define Host/Configure
+	# nothing to do
+endef
+
+define Host/Compile
+	# nothing to do
+endef
+
+define Host/Install
+	$(TAR) xvfJ $(DL_DIR)/$(NODEJS_BIN) -C $(1) --strip-components=1
+	$(RM) $(1)/{CHANGELOG.md,LICENSE,README.md}
+endef
+
+else
 define Host/Install
 	$(RM) -rf $(1)/lib/node_modules/npm
 	$(call Host/Install/Default)
 endef
+endif
 
 $(eval $(call HostBuild))
 $(eval $(call BuildPackage,node))
