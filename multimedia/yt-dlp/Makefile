@@ -27,6 +27,7 @@ define Package/yt-dlp
     +python3-codecs \
     +python3-ctypes \
     +python3-email \
+    +python3-logging \
     +python3-openssl \
     +python3-sqlite3 \
     +python3-urllib \
