@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=7z
 PKG_VERSION:=22.01
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)$(subst .,,$(PKG_VERSION))-src.tar.xz
 PKG_SOURCE_URL:=https://7-zip.org/a/
@@ -29,6 +29,12 @@ define Package/7z
   URL:=https://7-zip.org/
   DEPENDS:=+libstdcpp
 endef
+
+ifneq ($(findstring arm,$(CONFIG_ARCH)),)
+  ifneq ($(CONFIG_HAS_FPU),y)
+    TARGET_CFLAGS:=$(filter-out -mfloat-abi=soft,$(TARGET_CFLAGS)) -mfloat-abi=softfp
+  endif
+endif
 
 MAKE_PATH:=CPP/7zip/Bundles/Alone2
 
