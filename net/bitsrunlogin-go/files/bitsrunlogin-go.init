@@ -19,21 +19,21 @@ start_service() {
 	config_get_bool enabled "config" "enabled" "0"
 	[ "$enabled" -eq "1" ] || return 1
 
-	local domain usertype username password acid
+	local domain usertype username password auto_acid acid
 	local enable_https skip_cert_verify timeout duration
-	local interfaces use_dhcp_ip debug
+	local interfaces debug
 
 	config_get domain "config" "domain"
 	config_get usertype "config" "usertype"
 	config_get username "config" "username"
 	config_get password "config" "password"
+	config_get_bool auto_acid "config" "auto_acid" "1"
 	config_get acid "config" "acid" "5"
 	config_get_bool enable_https "config" "enable_https" "0"
 	config_get_bool skip_cert_verify "config" "skip_cert_verify" "0"
 	config_get timeout "config" "timeout" "5"
 	config_get duration "config" "duration" "3600"
 	config_get interfaces "config" "interfaces"
-	config_get_bool use_dhcp_ip "config" "use_dhcp_ip" "0"
 	config_get_bool debug "config" "debug" "0"
 
 	mkdir -p "$RUN_DIR"
@@ -73,6 +73,7 @@ start_service() {
 	procd_open_instance
 	procd_set_param command "$PROG"
 	procd_append_param command -config "$RUN_DIR/$CONF.json"
+	[ "$auto_acid" -eq "0" ] || procd_append_param command -auto-acid
 	procd_set_param respawn
 	procd_close_instance
 }
