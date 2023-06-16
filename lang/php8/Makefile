@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=php
-PKG_VERSION:=8.2.6
+PKG_VERSION:=8.2.7
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Michael Heimpold <mhei@heimpold.de>
@@ -16,7 +16,7 @@ PKG_CPE_ID:=cpe:/a:php:php
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://www.php.net/distributions/
-PKG_HASH:=10b796f0ed45574229851212b30a596a76e70ae365322bcaaaf9c00fa7d58cca
+PKG_HASH:=4b9fb3dcd7184fe7582d7e44544ec7c5153852a2528de3b6754791258ffbdfa0
 
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
@@ -94,7 +94,7 @@ endef
 
 define Package/php8-cli
   $(call Package/php8/Default)
-  DEPENDS+= +PACKAGE_php8-mod-intl:libstdcpp +riscv64:libatomic
+  DEPENDS+= +PACKAGE_php8-mod-intl:libstdcpp
   TITLE+= (CLI)
 endef
 
@@ -105,7 +105,7 @@ endef
 
 define Package/php8-cgi
   $(call Package/php8/Default)
-  DEPENDS+= +PACKAGE_php8-mod-intl:libstdcpp +riscv64:libatomic
+  DEPENDS+= +PACKAGE_php8-mod-intl:libstdcpp
   TITLE+= (CGI & FastCGI)
 endef
 
@@ -127,7 +127,7 @@ endef
 
 define Package/php8-fpm
   $(call Package/php8/Default)
-  DEPENDS+= +PACKAGE_php8-mod-intl:libstdcpp +riscv64:libatomic
+  DEPENDS+= +PACKAGE_php8-mod-intl:libstdcpp
   TITLE+= (FPM)
 endef
 
@@ -159,7 +159,6 @@ define Package/apache-mod-php8
   CATEGORY:=Network
   DEPENDS+=PACKAGE_apache-mod-php8:apache \
 	   +PACKAGE_php8-mod-intl:libstdcpp \
-	   +riscv64:libatomic \
 	   +libpcre2 +zlib
   TITLE:=PHP8 module for Apache Web Server
 endef
@@ -197,9 +196,6 @@ TARGET_LDFLAGS += -ldl
 endif
 ifeq ($(CONFIG_USE_MUSL),y)
 TARGET_CFLAGS += -D_LARGEFILE64_SOURCE
-endif
-ifneq ($(findstring riscv64,$(CONFIG_ARCH)),)
-TARGET_LDFLAGS += -latomic
 endif
 
 ifneq ($(SDK)$(CONFIG_PACKAGE_php8-mod-bcmath),)
@@ -606,8 +602,6 @@ define BuildModule
 
   define Package/php8-mod-$(1)
     $(call Package/php8/Default)
-
-    DEPENDS+=+riscv64:libatomic
 
     ifneq ($(3),)
       DEPENDS+=$(3)

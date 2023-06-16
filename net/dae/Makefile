@@ -49,13 +49,13 @@ endef
 define Package/dae-geoip
   $(call Package/dae/Default)
   TITLE:=geoip for dae
-  DEPENDS:=+v2ray-geoip
+  DEPENDS:=+dae +v2ray-geoip
 endef
 
 define Package/dae-geosite
   $(call Package/dae/Default)
   TITLE:=geosite for dae
-  DEPENDS:=+v2ray-geosite
+  DEPENDS:=+dae +v2ray-geosite
 endef
 
 define Package/dae/description
