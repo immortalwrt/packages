@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-go
-PKG_VERSION:=5.3.5
+PKG_VERSION:=5.3.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/jeessy2/ddns-go/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=caff2a52b7320ccf7fc95c5572acad8e31e73ecef8b8295d6c7785fbb43bef74
+PKG_HASH:=3480abf2907c0b991e85b42ebfbaf8ea86c445b4f90eafe3e8c91fb699cbd4bb
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
