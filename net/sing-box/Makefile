@@ -129,6 +129,8 @@ GO_PKG_TAGS:=$(subst $(space),$(comma),$(strip \
 	$(if $(CONFIG_SING_BOX_BUILD_WIREGUARD),with_wireguard) \
 ))
 
+GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) CGO_ENABLED=0
+
 define Package/sing-box/conffiles
 /etc/config/sing-box
 /etc/sing-box/
