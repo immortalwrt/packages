@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nginx
-PKG_VERSION:=1.25.0
+PKG_VERSION:=1.25.1
 PKG_RELEASE:=2
 
 PKG_SOURCE:=nginx-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nginx.org/download/
-PKG_HASH:=5ed44d45943272a4e8a5bcf4434237210f2de31b903fca5e381c1bbd7eee1e8c
+PKG_HASH:=f09071ac46e0ea3adc0008ef0baca229fc6b4be4533baef9bbbfba7de29a8602
 
 PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
 				Ansuel Smith <ansuelsmth@gmail.com>
@@ -27,6 +27,7 @@ PKG_BUILD_FLAGS:=gc-sections
 
 # 3rd-party modules
 PKG_MOD_EXTRA := \
+	geoip2 \
 	lua \
 	rtmp \
 	dav-ext \
@@ -75,6 +76,7 @@ PKG_CONFIG_DEPENDS := \
 	CONFIG_NGINX_HTTP_UPSTREAM_ZONE \
 	CONFIG_NGINX_HTTP_CACHE \
 	CONFIG_NGINX_HTTP_V2 \
+	CONFIG_NGINX_HTTP_QUIC \
 	CONFIG_NGINX_PCRE \
 	CONFIG_NGINX_HTTP_REAL_IP \
 	CONFIG_NGINX_HTTP_SECURE_LINK \
@@ -158,16 +160,15 @@ endef
 
 define Package/nginx-full
   $(Package/nginx/default)
-  TITLE += with ALL module selected
-  DEPENDS+=+libpcre +nginx-ssl-util +zlib +libxml2 \
-    $(foreach m,$(PKG_MOD_ALL),+nginx-mod-$(m))
+  TITLE += with ALL config selected
+  DEPENDS+=+libpcre +nginx-ssl-util +zlib +libxml2
   EXTRA_DEPENDS:=nginx-ssl-util (>=1.5-1) (<2)
   VARIANT:=full
   PROVIDES += nginx-ssl
 endef
 
 Package/nginx-full/description = $(Package/nginx/description) \
-  This variant is compiled with ALL module selected.
+  This variant is compiled with ALL config selected.
 
 Package/nginx-full/install = $(Package/nginx-ssl/install)
 
@@ -196,6 +197,13 @@ define Package/nginx-mod-luci/install
 	$(INSTALL_CONF) ./files-luci-support/luci.locations $(1)/etc/nginx/conf.d/
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files-luci-support/60_nginx-luci-support $(1)/etc/uci-defaults/60_nginx-luci-support
+endef
+
+define Download/nginx-mod-geoip2
+  VERSION:=1cabd8a1f68ea3998f94e9f3504431970f848fbf
+  URL:=https://github.com/leev/ngx_http_geoip2_module.git
+  MIRROR_HASH:=b4bd8517f6595f28e9cea5370045df476e0f7fa9ca3611d71ba85c518f1a7eda
+  PROTO:=git
 endef
 
 define Download/nginx-mod-headers-more
@@ -393,6 +401,7 @@ CONFIGURE_ARGS += \
 	$(if $(call IsEnabled,NGINX_FLV),--with-http_flv_module) \
 	$(if $(call IsEnabled,NGINX_DAV),--with-http_dav_module) \
 	$(if $(call IsEnabled,NGINX_HTTP_AUTH_REQUEST),--with-http_auth_request_module) \
+	$(if $(call IsEnabled,NGINX_HTTP_QUIC),--with-http_v3_module) \
 	$(if $(call IsEnabled,NGINX_HTTP_V2),--with-http_v2_module) \
 	$(if $(call IsEnabled,NGINX_HTTP_REAL_IP),--with-http_realip_module) \
 	$(if $(call IsEnabled,NGINX_HTTP_SECURE_LINK),--with-http_secure_link_module) \
@@ -423,6 +432,8 @@ $(eval $(call BuildModule,brotli,,ngx_http_brotli_filter ngx_http_brotli_static,
 	Add support for brotli compression module.))
 $(eval $(call BuildModule,naxsi,,ngx_http_naxsi, \
 	Enable NAXSI module.))
+$(eval $(call BuildModule,geoip2,+@NGINX_STREAM_CORE_MODULE +libmaxminddb,ngx_http_geoip2 ngx_stream_geoip2, \
+	Enable MaxMind GeoIP2 module.))
 
 # TODO: remove after a transition period (together with pkg nginx-util):
 # It is for smoothly substituting nginx and nginx-mod-luci-ssl (by nginx-ssl
