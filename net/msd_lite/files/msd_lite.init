@@ -45,6 +45,7 @@ start_instance() {
 
 	if [ -n "$network" ]; then
 		while [ "$seconds" -le 10 ]; do
+			network_flush_cache
 			network_get_device interface "$network"
 			if [ -n "$interface" ]; then
 				break
