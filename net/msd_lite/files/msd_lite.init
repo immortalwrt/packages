@@ -1,6 +1,8 @@
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2022 ImmortalWrt.org
 
+. /lib/functions/network.sh
+
 START=99
 USE_PROCD=1
 
@@ -10,11 +12,20 @@ PROG="/usr/bin/$NAME"
 CONF="/etc/$NAME/$NAME.conf.sample"
 CONFDIR="/var/run/$NAME"
 
+add_interface_tiggers() {
+	local enabled network
+	config_get_bool enabled "$1" "enabled" "1"
+	config_get network "$1" "network"
+
+	[ "$enabled" -eq "0" -o -z "$network" ] || procd_add_reload_interface_trigger "$network"
+}
+
 validate_msd_lite_section() {
 	uci_load_validate "$NAME" "instance" "$1" "$2" \
 		'enabled:bool:0' \
 		'address:string' \
 		'interface:string' \
+		'network:string' \
 		'threads:uinteger:0' \
 		'bind_to_cpu:bool:0' \
 		'drop_slow_clients:bool:0' \
@@ -27,9 +38,22 @@ validate_msd_lite_section() {
 
 start_instance() {
 	local section="$1"
+	local seconds="0"
 
 	[ "$2" -eq "0" ] || { logger -p daemon.err -t "$NAME" "$section Validation failed."; return 1; }
 	[ "$enabled" -eq "1" ] || return 1
+
+	if [ -n "$network" ]; then
+		while [ "$seconds" -le 10 ]; do
+			network_get_device interface "$network"
+			if [ -n "$interface" ]; then
+				break
+			else
+				let seconds+=2
+				sleep 2
+			fi
+		done
+	fi
 
 	if [ -n "$address" ]; then
 		local addr bindlist
@@ -85,5 +109,7 @@ reload_service() {
 
 service_triggers() {
 	procd_add_reload_trigger "$NAME"
-	procd_add_raw_trigger "interface.*.up" 3000 /etc/init.d/$NAME reload
+
+	config_load "$NAME"
+	config_foreach add_interface_tiggers "instance"
 }
