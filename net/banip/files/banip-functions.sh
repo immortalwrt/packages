@@ -515,7 +515,7 @@ f_etag() {
 		[ ! -f "${ban_backupdir}/banIP.etag" ] && : >"${ban_backupdir}/banIP.etag"
 		http_head="$("${ban_fetchcmd}" ${ban_etagparm} "${feed_url}" 2>&1)"
 		http_code="$(printf "%s" "${http_head}" | "${ban_awkcmd}" 'tolower($0)~/^http\/[0123\.]+ /{printf "%s",$2}')"
-		etag_id="$(printf "%s" "${http_head}" | "${ban_awkcmd}" '{FS="\""}tolower($0)~/^[[:space:]]*etag: /{printf "%s",$2}')"
+		etag_id="$(printf "%s" "${http_head}" | "${ban_awkcmd}" 'tolower($0)~/^[[:space:]]*etag: /{gsub("\"","");printf "%s",$2}')"
 		etag_rc="${?}"
 
 		if [ "${http_code}" = "404" ] || { [ "${etag_rc}" = "0" ] && [ -n "${etag_id}" ] && "${ban_grepcmd}" -q "^${feed}${feed_suffix}.*${etag_id}\$" "${ban_backupdir}/banIP.etag"; }; then
@@ -582,7 +582,7 @@ f_nftinit() {
 # handle downloads
 #
 f_down() {
-	local log_input log_forwardwan log_forwardlan start_ts end_ts tmp_raw tmp_load tmp_file split_file ruleset_raw handle rc etag_rc="0"
+	local log_input log_forwardwan log_forwardlan start_ts end_ts tmp_raw tmp_load tmp_file split_file ruleset_raw handle rc etag_rc
 	local cnt_set cnt_dl restore_rc feed_direction feed_rc feed_log feed="${1}" proto="${2}" feed_url="${3}" feed_rule="${4}" feed_flag="${5}"
 
 	start_ts="$(date +%s)"
@@ -648,7 +648,8 @@ f_down() {
 	# restore local backups
 	#
 	if { [ "${ban_action}" != "reload" ] || [ "${feed_url}" = "local" ] || [ -n "${ban_etagparm}" ]; } && [ "${feed%v*}" != "allowlist" ] && [ "${feed%v*}" != "blocklist" ]; then
-		if [ -n "${ban_etagparm}" ] && [ "${feed_url}" != "local" ]; then
+		if [ -n "${ban_etagparm}" ] && [ "${ban_action}" = "reload" ] && [ "${feed_url}" != "local" ]; then
+			etag_rc="0"
 			if [ "${feed%v*}" = "country" ]; then
 				for country in ${ban_country}; do
 					f_etag "${feed}" "${feed_url}${country}-aggregated.zone" ".${country}"
