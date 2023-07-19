@@ -6,6 +6,7 @@ START=99
 
 CONF="daed"
 PROG="/usr/bin/daed"
+RUN_DIR="/var/run/daed"
 
 start_service() {
 	config_load "$CONF"
@@ -22,6 +23,19 @@ start_service() {
 	procd_append_param command --config "/etc/daed/"
 	procd_append_param command --listen "$listen_addr"
 
+	local logfile_enabled
+	config_get_bool logfile_enabled "config" "logfile_enabled" "1"
+	if [ "$logfile_enabled" != "0"] ; then
+		local logfile_maxbackups
+		config_get logfile_maxbackups "config" "logfile_maxbackups" "1"
+		local logfile_maxsize
+		config_get logfile_maxsize "config" "logfile_maxsize" "1"
+		mkdir -p "$RUN_DIR"
+		procd_append_param command --logfile "$RUN_DIR/daed.log"
+		procd_append_param command --logfile-maxbackups "$logfile_maxbackups"
+		procd_append_param command --logfile-maxsize "$logfile_maxsize"
+	fi
+
 	procd_set_param limits core="unlimited"
 	procd_set_param limits nofile="1000000 1000000"
 	procd_set_param respawn
@@ -29,6 +43,10 @@ start_service() {
 	procd_set_param stderr 1
 
 	procd_close_instance
+}
+
+stop_service() {
+	rm -f "$RUN_DIR/daed.log"
 }
 
 service_triggers() {
