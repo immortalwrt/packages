@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tailscale
-PKG_VERSION:=1.44.0
+PKG_VERSION:=1.46.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=tailscale-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/tailscale/tailscale/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=dc230cf3ac290140e573268a6e8f17124752ef064c8d3a86765a9dbb6f1bd354
+PKG_HASH:=9b04eb41ac02c8a63c086b416a3daa6faf817a16f353043605010878ae565f66
 
 PKG_MAINTAINER:=Jan Pavlinec <jan.pavlinec1@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
@@ -66,25 +66,9 @@ define Package/tailscaled/conffiles
 /etc/tailscale/tailscaled.state
 endef
 
-GO_IPTABLES_VERSION:=0.6.0
-GO_IPTABLES_FILE:=$(PKG_NAME)-go-iptables-$(GO_IPTABLES_VERSION).tar.gz
-
-define Download/go-iptables
-  URL:=https://codeload.github.com/coreos/go-iptables/tar.gz/v$(GO_IPTABLES_VERSION)?
-  URL_FILE:=$(GO_IPTABLES_FILE)
-  FILE:=$(GO_IPTABLES_FILE)
-  HASH:=a784cc17fcb17879f073eae47bc4c2e899f59f6906dac5a0aa7a9cc9f95ea66d
-endef
-
 define Build/Prepare
 	$(PKG_UNPACK)
 	[ ! -d ./src/ ] || $(CP) ./src/. $(PKG_BUILD_DIR)
-	$(eval $(call Download,go-iptables))
-	( \
-		mkdir -p $(PKG_BUILD_DIR)/patched/ ; \
-		gzip -dc $(DL_DIR)/$(GO_IPTABLES_FILE) | $(HOST_TAR) -C $(PKG_BUILD_DIR)/patched $(TAR_OPTIONS) ; \
-		mv $(PKG_BUILD_DIR)/patched/go-iptables-$(GO_IPTABLES_VERSION) $(PKG_BUILD_DIR)/patched/go-iptables ; \
-	)
 	$(Build/Patch)
 endef
 
