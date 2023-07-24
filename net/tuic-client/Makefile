@@ -43,6 +43,8 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 include $(INCLUDE_DIR)/package.mk
 
+PKG_UNPACK:=true
+
 define Package/tuic-client
   SECTION:=net
   CATEGORY:=Network
