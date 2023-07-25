@@ -31,7 +31,6 @@ define Package/yt-dlp
     +python3-openssl \
     +python3-sqlite3 \
     +python3-urllib \
-    +python3-uuid \
     +python3-xml
 endef
 
