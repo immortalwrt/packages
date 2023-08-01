@@ -31,7 +31,7 @@ define Package/tuic-server
   SUBMENU:=Web Servers/Proxies
   TITLE:=Delicately-TUICed 0-RTT proxy protocol (server)
   URL:=https://github.com/EAimTY/tuic
-  DEPENDS:=@(aarch64||arm||x86_64||TARGET_x86_generic)
+  DEPENDS:=@(aarch64||arm||x86_64)
 endef
 
 $(eval $(call RustBinPackage,tuic-server))
