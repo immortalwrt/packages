@@ -43,21 +43,20 @@ define Package/dae
   TITLE:=A lightweight and high-performance transparent proxy solution
   # You need enable KERNEL_DEBUG_INFO_BTF and KERNEL_BPF_EVENTS
   DEPENDS:=$(GO_ARCH_DEPENDS) $(BPF_DEPENDS)  \
-    +ca-bundle +kmod-sched-core +kmod-sched-bpf +kmod-xdp-sockets-diag \
-    +dae-geoip +dae-geosite
+    +ca-bundle +kmod-sched-core +kmod-sched-bpf +kmod-xdp-sockets-diag
 endef
 
 define Package/dae-geoip
   $(call Package/dae/Default)
   TITLE:=geoip for dae
-  DEPENDS:=+v2ray-geoip
+  DEPENDS:=+dae +v2ray-geoip
   PKGARCH:=all
 endef
 
 define Package/dae-geosite
   $(call Package/dae/Default)
   TITLE:=geosite for dae
-  DEPENDS:=+v2ray-geosite
+  DEPENDS:=+dae +v2ray-geosite
   PKGARCH:=all
 endef
 

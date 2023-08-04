@@ -48,21 +48,20 @@ define Package/daed
   TITLE:=A Modern Dashboard For dae
   # You need enable KERNEL_DEBUG_INFO_BTF and KERNEL_BPF_EVENTS
   DEPENDS:=$(GO_ARCH_DEPENDS) $(BPF_DEPENDS) \
-    +ca-bundle +kmod-sched-core +kmod-sched-bpf +kmod-xdp-sockets-diag \
-    +daed-geoip +daed-geosite
+    +ca-bundle +kmod-sched-core +kmod-sched-bpf +kmod-xdp-sockets-diag
 endef
 
 define Package/daed-geoip
   $(call Package/daed/Default)
   TITLE:=geoip for daed
-  DEPENDS:=+v2ray-geoip
+  DEPENDS:=+daed +v2ray-geoip
   PKGARCH:=all
 endef
 
 define Package/daed-geosite
   $(call Package/daed/Default)
   TITLE:=geosite for daed
-  DEPENDS:=+v2ray-geosite
+  DEPENDS:=+daed +v2ray-geosite
   PKGARCH:=all
 endef
 
