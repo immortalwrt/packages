@@ -35,7 +35,7 @@ define Package/cloudreve
   SUBMENU:=Cloud Manager
   TITLE:=A project helps you build your own cloud in minutes
   URL:=https://cloudreve.org
-  DEPENDS:=@(aarch64||arm||i386||i686||x86_64) +ca-bundle
+  DEPENDS:=@(aarch64||arm||i386||i686||riscv64||x86_64) +ca-bundle
 endef
 
 define Package/cloudreve/description
