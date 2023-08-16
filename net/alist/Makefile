@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alist
 PKG_VERSION:=3.25.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/alist-org/alist/tar.gz/v$(PKG_VERSION)?
@@ -36,6 +36,11 @@ define Package/alist
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +fuse-utils
 endef
 
+define Package/alist/conffiles
+/etc/alist/
+/etc/config/alist
+endef
+
 WEB_VERSION:=3.25.1
 WEB_FILE:=$(PKG_NAME)-web-$(WEB_VERSION).tar.gz
 define Download/alist-web
@@ -63,6 +68,11 @@ define Package/alist/install
 
 	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/alist $(1)/usr/bin/
+
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) $(CURDIR)/files/alist.config $(1)/etc/config/alist
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) $(CURDIR)/files/alist.init $(1)/etc/init.d/alist
 endef
 
 $(eval $(call Download,alist-web))
