@@ -47,7 +47,7 @@ start_service() {
 	uci_json_add_string "site_url" "site_url"
 	uci_json_add_string "cdn" "site_cdn"
 	json_add_string "jwt_secret" "$jwt_secret"
-	uci_json_add_int "token_expires_in" "login_expire" "48"
+	uci_json_add_int "token_expires_in" "site_login_expire" "48"
 	json_add_object "database"
 		uci_json_add_string "type" "db_type" "sqlite3"
 		uci_json_add_string "host" "db_host"
@@ -64,8 +64,8 @@ start_service() {
 		uci_json_add_int "http_port" "listen_http_port" "5244"
 		uci_json_add_int "https_port" "listen_https_port" "-1"
 		uci_json_add_boolean "force_https" "listen_force_https"
-		uci_json_add_string "cert_file" "tls_cert_file"
-		uci_json_add_string "key_file" "tls_key_file"
+		uci_json_add_string "cert_file" "listen_cert_file"
+		uci_json_add_string "key_file" "listen_key_file"
 		uci_json_add_string "unix_file" "listen_unix_file"
 		uci_json_add_string "unix_file_perm" "listen_unix_file_perm"
 	json_close_object
@@ -80,8 +80,8 @@ start_service() {
 		json_add_boolean "compress" "0"
 	json_close_object
 	json_add_int "delayed_start" "0"
-	uci_json_add_int "max_connections" "max_connections"
-	uci_json_add_boolean "tls_insecure_skip_verify" "tls_insecure"
+	uci_json_add_int "max_connections" "site_max_connections"
+	uci_json_add_boolean "tls_insecure_skip_verify" "site_tls_insecure"
 	json_dump > "$CONF_DIR/config.json"
 
 	local db_type
