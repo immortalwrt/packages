@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
 PKG_VERSION:=1.3.6
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/SagerNet/sing-box/tar.gz/v$(PKG_VERSION)?
@@ -82,6 +82,7 @@ define Package/sing-box/config
 
     config SING_BOX_BUILD_GVISOR
     bool "Build with gVisor support"
+    default y
 
     config SING_BOX_BUILD_LWIP
     bool "Build with LWIP Tun stack support"
@@ -109,6 +110,7 @@ define Package/sing-box/config
 
     config SING_BOX_BUILD_WIREGUARD
     bool "Build with WireGuard support"
+    default y
   endif
 endef
 
