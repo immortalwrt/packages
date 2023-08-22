@@ -24,7 +24,6 @@ start_service() {
 	if [ -n "$cloud_claim_token" ] && [ -n "$cloud_claim_rooms" ]; then
 		procd_append_param command -W "claim -token=$cloud_claim_token -rooms=$cloud_claim_rooms"
 	fi
-
 	procd_set_param file $CONFIGFILE
 	procd_set_param respawn
 	procd_close_instance
