@@ -15,9 +15,9 @@ start_service() {
 	chown nobody /var/log/netdata
 	procd_open_instance
 
-        local cloud_claim_token cloud_claim_rooms
-        config_get cloud_claim_token "config" "cloud_claim_token" ""
-        config_get cloud_claim_rooms "config" "cloud_claim_rooms" ""
+	local cloud_claim_token cloud_claim_rooms
+	config_get cloud_claim_token "config" "cloud_claim_token"
+	config_get cloud_claim_rooms "config" "cloud_claim_rooms"
 
         if [ "$cloud_claim_token" != "" ] && [ "$cloud_claim_rooms" = "" ]; then
                 procd_set_param command $APPBINARY -D -c $CONFIGFILE -W "claim -token=$cloud_claim_token -rooms=$cloud_claim_rooms"
