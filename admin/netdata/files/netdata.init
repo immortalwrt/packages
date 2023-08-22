@@ -19,11 +19,10 @@ start_service() {
 	config_get cloud_claim_token "config" "cloud_claim_token"
 	config_get cloud_claim_rooms "config" "cloud_claim_rooms"
 
-        if [ "$cloud_claim_token" != "" ] && [ "$cloud_claim_rooms" = "" ]; then
-                procd_set_param command $APPBINARY -D -c $CONFIGFILE -W "claim -token=$cloud_claim_token -rooms=$cloud_claim_rooms"
-        else
-                procd_set_param command $APPBINARY -D -c $CONFIGFILE
-        fi
+	procd_set_param command $APPBINARY -D -c $CONFIGFILE
+	if [ -n "$cloud_claim_token" ] && [ -n "$cloud_claim_rooms" ]; then
+		procd_append_param command -W "claim -token=$cloud_claim_token -rooms=$cloud_claim_rooms"
+	fi
 
 	procd_set_param file $CONFIGFILE
 	procd_set_param respawn
