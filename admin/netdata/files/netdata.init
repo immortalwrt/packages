@@ -7,7 +7,6 @@ APPBINARY=/usr/sbin/netdata
 CONFIGFILE=/etc/netdata/netdata.conf
 
 start_service() {
-
 	local cloud_claim_token cloud_claim_rooms
 	config_get cloud_claim_token "config" "cloud_claim_token"
 	config_get cloud_claim_rooms "config" "cloud_claim_rooms"
