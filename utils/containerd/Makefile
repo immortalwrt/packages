@@ -1,14 +1,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=containerd
-PKG_VERSION:=1.6.13
+PKG_VERSION:=1.6.20
 PKG_RELEASE:=1
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/containerd/containerd/tar.gz/v${PKG_VERSION}?
-PKG_HASH:=d6d022385c4dadd81edf4fb5ad4b084dcfc3d6d921ed433bb3aa0d2e0bfbb19d
+PKG_HASH:=819086ccdca44cfc5f108e226c7a9294d8fad3eb32031a621623da80dedbfb11
 
 PKG_MAINTAINER:=Gerard Ryan <G.M0N3Y.2503@gmail.com>
 
