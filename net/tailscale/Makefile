@@ -63,7 +63,7 @@ Package/tailscaled/description:=$(Package/tailscale/description)
 
 define Package/tailscaled/conffiles
 /etc/config/tailscale
-/etc/tailscale/tailscaled.state
+/etc/tailscale/
 endef
 
 define Build/Prepare
