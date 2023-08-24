@@ -58,7 +58,7 @@ Subject: [PATCH 1/2] fix makefile
  
  # Non-executable stack
 -override ASFLAGS+=--noexecstack
-+override ASFLAGS+=
++#override ASFLAGS+=--noexecstack
  
  .PHONY: all
  all:	one
