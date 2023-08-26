@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=7z
 PKG_VERSION:=22.01
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_SOURCE:=$(PKG_NAME)$(subst .,,$(PKG_VERSION))-src.tar.xz
 PKG_SOURCE_URL:=https://7-zip.org/a/
@@ -27,7 +27,7 @@ define Package/7z
   SUBMENU:=Compression
   TITLE:=File archiver with a high compression ratio
   URL:=https://7-zip.org/
-  DEPENDS:=+libstdcpp @HAS_FPU
+  DEPENDS:=+libstdcpp
 endef
 
 MAKE_PATH:=CPP/7zip/Bundles/Alone2

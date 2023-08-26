@@ -1,0 +1,117 @@
+--- a/C/Aes.c
++++ b/C/Aes.c
+@@ -55,7 +55,7 @@ static Byte InvS[256];
+ 
+ #ifdef MY_CPU_X86_OR_AMD64
+   #define USE_HW_AES
+-#elif defined(MY_CPU_ARM_OR_ARM64) && defined(MY_CPU_LE)
++#elif (defined(MY_CPU_ARM64) || (defined(__ARM_ARCH) && defined(__ARM_NEON))) && defined(MY_CPU_LE)
+   #if defined(__clang__)
+     #if (__clang_major__ >= 8) // fix that check
+       #define USE_HW_AES
+--- a/C/AesOpt.c
++++ b/C/AesOpt.c
+@@ -506,7 +506,7 @@ VAES_COMPAT_STUB (AesCtr_Code_HW)
+ #endif // ! USE_INTEL_VAES
+ 
+ 
+-#elif defined(MY_CPU_ARM_OR_ARM64) && defined(MY_CPU_LE)
++#elif (defined(MY_CPU_ARM64) || (defined(__ARM_ARCH) && defined(__ARM_NEON))) && defined(MY_CPU_LE)
+ 
+   #if defined(__clang__)
+     #if (__clang_major__ >= 8) // fix that check
+@@ -529,10 +529,10 @@ VAES_COMPAT_STUB (AesCtr_Code_HW)
+ #if defined(__clang__) || defined(__GNUC__)
+   #ifdef MY_CPU_ARM64
+     #define ATTRIB_AES __attribute__((__target__("+crypto")))
+-  #else
++  #elif defined(__ARM_NEON)
+     #define ATTRIB_AES __attribute__((__target__("fpu=crypto-neon-fp-armv8")))
+   #endif
+-#else
++#elif defined(__ARM_NEON)
+   // _MSC_VER
+   // for arm32
+   #define _ARM_USE_NEW_NEON_INTRINSICS
+@@ -544,7 +544,7 @@ VAES_COMPAT_STUB (AesCtr_Code_HW)
+ 
+ #if defined(_MSC_VER) && defined(MY_CPU_ARM64)
+ #include <arm64_neon.h>
+-#else
++#elif defined(__ARM_NEON)
+ #include <arm_neon.h>
+ #endif
+ 
+--- a/C/Sha1Opt.c
++++ b/C/Sha1Opt.c
+@@ -212,7 +212,7 @@ void MY_FAST_CALL Sha1_UpdateBlocks_HW(U
+ 
+ #endif // USE_HW_SHA
+ 
+-#elif defined(MY_CPU_ARM_OR_ARM64)
++#elif defined(MY_CPU_ARM64) || (defined(__ARM_ARCH) && defined(__ARM_NEON))
+ 
+   #if defined(__clang__)
+     #if (__clang_major__ >= 8) // fix that check
+@@ -235,7 +235,7 @@ void MY_FAST_CALL Sha1_UpdateBlocks_HW(U
+ #if defined(__clang__) || defined(__GNUC__)
+   #ifdef MY_CPU_ARM64
+     #define ATTRIB_SHA __attribute__((__target__("+crypto")))
+-  #else
++  #elif defined(__ARM_NEON)
+     #define ATTRIB_SHA __attribute__((__target__("fpu=crypto-neon-fp-armv8")))
+   #endif
+ #else
+@@ -246,7 +246,7 @@ void MY_FAST_CALL Sha1_UpdateBlocks_HW(U
+ 
+ #if defined(_MSC_VER) && defined(MY_CPU_ARM64)
+ #include <arm64_neon.h>
+-#else
++#elif defined(__ARM_NEON)
+ #include <arm_neon.h>
+ #endif
+ 
+--- a/C/Sha256Opt.c
++++ b/C/Sha256Opt.c
+@@ -212,7 +212,7 @@ void MY_FAST_CALL Sha256_UpdateBlocks_HW
+ 
+ #endif // USE_HW_SHA
+ 
+-#elif defined(MY_CPU_ARM_OR_ARM64)
++#elif defined(MY_CPU_OR_ARM64) || (defined(__ARM_ARCH) && defined(__ARM_NEON))
+ 
+   #if defined(__clang__)
+     #if (__clang_major__ >= 8) // fix that check
+@@ -235,10 +235,10 @@ void MY_FAST_CALL Sha256_UpdateBlocks_HW
+ #if defined(__clang__) || defined(__GNUC__)
+   #ifdef MY_CPU_ARM64
+     #define ATTRIB_SHA __attribute__((__target__("+crypto")))
+-  #else
++  #elif defined(__ARM_NEON)
+     #define ATTRIB_SHA __attribute__((__target__("fpu=crypto-neon-fp-armv8")))
+   #endif
+-#else
++#elif defined(__ARM_NEON)
+   // _MSC_VER
+   // for arm32
+   #define _ARM_USE_NEW_NEON_INTRINSICS
+@@ -246,7 +246,7 @@ void MY_FAST_CALL Sha256_UpdateBlocks_HW
+ 
+ #if defined(_MSC_VER) && defined(MY_CPU_ARM64)
+ #include <arm64_neon.h>
+-#else
++#elif defined(__ARM_NEON)
+ #include <arm_neon.h>
+ #endif
+ 
+--- a/CPP/7zip/Crypto/MyAes.cpp
++++ b/CPP/7zip/Crypto/MyAes.cpp
+@@ -85,7 +85,7 @@ STDMETHODIMP CAesCoder::SetInitVector(co
+ 
+ #ifdef MY_CPU_X86_OR_AMD64
+   #define USE_HW_AES
+-#elif defined(MY_CPU_ARM_OR_ARM64) && defined(MY_CPU_LE)
++#elif (defined(MY_CPU_ARM64) || (defined(__ARM_ARCH) && defined(__ARM_NEON))) && defined(MY_CPU_LE)
+   #if defined(__clang__)
+     #if (__clang_major__ >= 8) // fix that check
+       #define USE_HW_AES
