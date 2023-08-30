@@ -39,34 +39,34 @@ start_service() {
 	mkdir -p "$RUN_DIR"
 	json_init
 	json_add_object "form"
-	json_add_string "domain" "$domain"
-	json_add_string "usertype" "$usertype"
-	json_add_string "username" "$username"
-	json_add_string "password" "$password"
+		json_add_string "domain" "$domain"
+		json_add_string "usertype" "$usertype"
+		json_add_string "username" "$username"
+		json_add_string "password" "$password"
 	json_close_object
 	json_add_object "meta"
-	json_add_string "n" "200"
-	json_add_string "type" "1"
-	json_add_string "acid" "$acid"
-	json_add_string "enc" "srun_bx1"
+		json_add_string "n" "200"
+		json_add_string "type" "1"
+		json_add_string "acid" "$acid"
+		json_add_string "enc" "srun_bx1"
 	json_close_object
 	json_add_object "settings"
-	json_add_object "basic"
-	json_add_boolean "https" "$enable_https"
-	json_add_boolean "skip_cert_verify" "$skip_cert_verify"
-	json_add_int "timeout" "$timeout"
-	[ -z "$interfaces" ] || json_add_string "interfaces" "$interfaces"
-	json_close_object
-	json_add_object "guardian"
-	json_add_boolean "enable" 1
-	json_add_int "duration" "$duration"
-	json_close_object
-	json_add_object "log"
-	json_add_boolean "debug_level" "$debug"
-	json_add_boolean "write_file" 1
-	json_add_string "log_path" "$RUN_DIR"
-	json_add_string "log_name" "$CONF.log"
-	json_close_object
+		json_add_object "basic"
+			json_add_boolean "https" "$enable_https"
+			json_add_boolean "skip_cert_verify" "$skip_cert_verify"
+			json_add_int "timeout" "$timeout"
+			[ -z "$interfaces" ] || json_add_string "interfaces" "$interfaces"
+		json_close_object
+		json_add_object "guardian"
+			json_add_boolean "enable" 1
+			json_add_int "duration" "$duration"
+		json_close_object
+		json_add_object "log"
+			json_add_boolean "debug_level" "$debug"
+			json_add_boolean "write_file" 1
+			json_add_string "log_path" "$RUN_DIR"
+			json_add_string "log_name" "$CONF.log"
+		json_close_object
 	json_close_object
 	json_dump > "$RUN_DIR/$CONF.json"
 
