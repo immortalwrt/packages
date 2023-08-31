@@ -23,13 +23,19 @@ define Package/gmediarender
   SECTION:=multimedia
   CATEGORY:=Multimedia
   TITLE:=Resource efficient UPnP/DLNA renderer
-  DEPENDS:=+glib2 +gstreamer1 +libgstreamer1 +gstreamer1-libs +libupnp
+  DEPENDS:=+glib2 +gstreamer1 +gstreamer1-utils +gst1-plugins-base \
+    +gst1-plugins-bad +gst1-plugins-good +libupnp
 endef
 
 define Package/gmediarender/description
   gmediarender implements the server component that provides UPnP
   controllers a means to render media content (audio, video and images)
   from a UPnP media server.
+endef
+
+define Package/gmediarender/config
+	select PACKAGE_gstreamer1-plugins-bad
+	select PACKAGE_gstreamer1-plugins-good
 endef
 
 define Package/gmediarender/install
