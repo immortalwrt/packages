@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=daed
-PKG_VERSION:=0.3.3.p1
+PKG_VERSION:=0.4.0rc1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/daeuniverse/daed.git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
-PKG_MIRROR_HASH:=262845372e1a1073759b515b6f31153b12898fa812b691fb4568188a9e2547ce
+PKG_MIRROR_HASH:=1d1bbdfdfe289616a877bf8b95e8791b6a58ba761d17f330a2e89b12aa011d02
 
 PKG_LICENSE:=AGPL-3.0-only MIT
 PKG_LICENSE_FILES:=LICENSE wing/LICENSE
@@ -80,7 +80,7 @@ define Download/daed-web
 	URL:=https://github.com/daeuniverse/daed/releases/download/v$(PKG_VERSION)
 	URL_FILE:=web.zip
 	FILE:=$(WEB_FILE)
-	HASH:=5790b86afaf20c11798cf2efcd81747de9fda00da98a504eedb5fde46433165b
+	HASH:=3fa3fa55d21379f82297e72f7ced9bb46c111fc6c481779a51584c232efb15bf
 endef
 
 define Build/Prepare
