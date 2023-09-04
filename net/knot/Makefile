@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=knot
-PKG_VERSION:=3.2.6
+PKG_VERSION:=3.3.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://secure.nic.cz/files/knot-dns/
-PKG_HASH:=ac124fb17dbc4ac5310a30a396245a6ba304b3c89abed0f8a47d727462c8da4d
+PKG_HASH:=cf12ab736c512eb719a221cd3f65bb94f93ff2b477803d9474d1334af73c1533
 
 PKG_MAINTAINER:=Daniel Salzman <daniel.salzman@nic.cz>
 PKG_LICENSE:=GPL-3.0 LGPL-2.0 0BSD BSD-3-Clause OLDAP-2.8
@@ -152,6 +152,7 @@ CONFIGURE_ARGS += 			\
 	--enable-cap-ng=no            	\
 	--enable-xdp=no                 \
 	--enable-maxminddb=no		\
+	--enable-quic			\
 	--disable-fastparser		\
 	--without-libidn		\
 	--with-libnghttp2=no		\

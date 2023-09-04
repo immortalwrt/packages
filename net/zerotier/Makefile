@@ -27,8 +27,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/zerotier
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libpthread +libstdcpp +kmod-tun +ip +libminiupnpc +libnatpmp \
-	+(mips||mips64||mipsel||mips64el||powerpc||powerpc64):libatomic
+  DEPENDS:=+libpthread +libstdcpp +kmod-tun +ip +libminiupnpc +libnatpmp +libatomic
   TITLE:=Create flat virtual Ethernet networks of almost unlimited size
   URL:=https://www.zerotier.com
   SUBMENU:=VPN
@@ -62,10 +61,6 @@ endef
 # Make binary smaller
 TARGET_CFLAGS += -Wl,-z,noexecstack
 TARGET_LDFLAGS += -Wl,--as-needed -Wl,-z,noexecstack
-
-ifneq ($(filter "mips%" "powerpc%", $(CONFIG_ARCH)),)
-  TARGET_CFLAGS += -latomic
-endif
 
 define Package/zerotier/conffiles
 /etc/config/zerotier
