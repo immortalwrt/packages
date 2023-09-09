@@ -100,6 +100,8 @@ define Package/sing-box/config
     config SING_BOX_BUILD_SHADOWSOCKSR
     bool "Build with ShadowsockR support"
     default y
+    help
+      It will be marked deprecated in 1.5.0 and removed entirely in 1.6.0.
 
     config SING_BOX_BUILD_UTLS
     bool "Build with uTLS support"
