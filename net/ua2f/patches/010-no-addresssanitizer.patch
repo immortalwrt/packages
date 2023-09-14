@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -4,7 +4,7 @@ project(UA2F C)
+@@ -45,7 +45,7 @@ add_compile_definitions(UA2F_VERSION="${
  include(CheckSymbolExists)
  check_symbol_exists(__malloc_hook "malloc.h" IS_LIBC_GLIBC)
  
@@ -9,3 +9,10 @@
      add_compile_options(-fsanitize=address)
      add_link_options(-fsanitize=address)
  else ()
+@@ -114,4 +114,4 @@ if (UA2F_BUILD_TESTS)
+     gtest_discover_tests(ua2f_test)
+ else ()
+     message(STATUS "Tests are disabled.")
+-endif ()
+\ No newline at end of file
++endif ()
