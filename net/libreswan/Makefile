@@ -7,12 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libreswan
-PKG_VERSION:=4.6
+PKG_VERSION:=4.9
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://download.libreswan.org/
-PKG_HASH:=26396f4826a682735772a4689a7ce9ae2d409d166a4b72836fc55d14bad356ff
+PKG_HASH:=f642dcb635e909564ca8fd99ea44ab43f60723b4d76c158ed812978c45b398b9
 
 PKG_MAINTAINER:=Lucian Cristian <lucian.cristian@gmail.com>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -85,6 +85,8 @@ MAKE_FLAGS+= \
     FINALRUNDIR="/var/run/pluto" \
     FINALNSSDIR="/etc/ipsec.d" \
     MODPROBEARGS="-q" \
+    OSDEP=linux \
+    BUILDENV=linux \
     ARCH="$(LINUX_KARCH)" \
 
 define Build/Prepare
