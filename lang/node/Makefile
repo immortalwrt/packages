@@ -14,17 +14,17 @@ PATCH_DIR:=./patches/v16.x
 NODEJS_BIN_SUM:=874463523f26ed528634580247f403d200ba17a31adf2de98a7b124c6eb33d87
 else
 ifeq ($(CONFIG_NODEJS_20),y)
-PKG_VERSION:=v20.5.1
+PKG_VERSION:=v20.7.0
 PKG_RELEASE:=1
-PKG_HASH:=439c71aa2f38c2861657bfa538e99191a571258066cbfd4548586049c8134190
+PKG_HASH:=3fcfdcd05c461517480596596674df85b35cfce597dd0ae33f5416fc4df12bea
 PATCH_DIR:=./patches/v20.x
-NODEJS_BIN_SUM:=a4a700bbca51ac26538eda2250e449955a9cc49638a45b38d5501e97f5b020b4
+NODEJS_BIN_SUM:=a4251c24c6bf6d3bdee4521ca294bc0897a6c466137e02caa2521af5d456f55e
 else
-PKG_VERSION:=v18.17.1
+PKG_VERSION:=v18.18.0
 PKG_RELEASE:=1
-PKG_HASH:=f215cf03d0f00f07ac0b674c6819f804c1542e16f152da04980022aeccf5e65a
+PKG_HASH:=e4d4dbac3634d99f892f00db47da78f98493c339582e8a95fb2dd59f5cfe0f90
 PATCH_DIR:=./patches/v18.x
-NODEJS_BIN_SUM:=07e76408ddb0300a6f46fcc9abc61f841acde49b45020ec4e86bb9b25df4dced
+NODEJS_BIN_SUM:=3008408e9098f2462f7b1a0f6a48b8a46079beb1c92b6ec43b04713265c96978
 endif
 endif
 
@@ -96,7 +96,7 @@ define Package/node/config
 		 The host package version is also the same.
 
 		config NODEJS_16
-			bool "16.x Maintenance"
+			bool "16.x End-of-Life"
 
 		config NODEJS_18
 			bool "18.x Active LTS"
@@ -240,13 +240,22 @@ define Host/Compile
 endef
 
 define Host/Install
+	rm -f $(1)/bin/npm
+	rm -f $(1)/bin/npx
+	rm -rf $(1)/lib/node_modules/npm
+	rm -f $(1)/bin/corepack
+	rm -rf $(1)/lib/node_modules/corepack
 	$(TAR) xvfJ $(DL_DIR)/$(NODEJS_BIN) -C $(1) --strip-components=1
-	$(RM) $(1)/{CHANGELOG.md,LICENSE,README.md}
+	rm -f $(1)/{CHANGELOG.md,LICENSE,README.md}
 endef
 
 else
 define Host/Install
-	$(RM) -rf $(1)/lib/node_modules/npm
+	rm -f $(1)/bin/npm
+	rm -f $(1)/bin/npx
+	rm -rf $(1)/lib/node_modules/npm
+	rm -f $(1)/bin/corepack
+	rm -rf $(1)/lib/node_modules/corepack
 	$(call Host/Install/Default)
 endef
 endif
