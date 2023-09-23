@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alist
-PKG_VERSION:=3.27.0
+PKG_VERSION:=3.28.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/alist-org/alist/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=16951897713db635d7cd5707e2851032f5f6f74fa6dd2de59d7f1520098b35ab
+PKG_HASH:=7944c1ac07c5cad71e84f6087fba1bc28dd552b220f479bc38369455e38d93d4
 
 PKG_LICENSE:=AGPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
@@ -41,13 +41,13 @@ define Package/alist/conffiles
 /etc/config/alist
 endef
 
-WEB_VERSION:=3.27.0
+WEB_VERSION:=$(PKG_VERSION)
 WEB_FILE:=$(PKG_NAME)-web-$(WEB_VERSION).tar.gz
 define Download/alist-web
 	URL:=https://github.com/alist-org/alist-web/releases/download/$(WEB_VERSION)/
 	URL_FILE:=dist.tar.gz
 	FILE:=$(WEB_FILE)
-	HASH:=3bd34d984f850a55770c6a104e6f3333fa74ff1bc2dfbaea0c2a4cdbb624bb07
+	HASH:=62f7163f4651762d92da84d4eec51f4246cdb4841c1e7082ad0da1cacb0c2a00
 endef
 
 define Build/Prepare
