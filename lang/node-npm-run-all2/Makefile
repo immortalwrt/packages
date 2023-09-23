@@ -4,15 +4,15 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=mocha
+PKG_NPM_NAME:=npm-run-all2
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=10.2.0
-PKG_RELEASE:=2
+PKG_VERSION:=6.0.6
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=534f9d51a22ea484f6454c9c53b3b54c99a22a76664177e98f371f82aab00e23
+PKG_HASH:=2fa564a2e01c98c4187595113dc30498feefaa7d7baa3d30a34ab2affea978d9
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -23,22 +23,22 @@ HOST_BUILD_PARALLEL:=1
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-mocha
+define Package/node-npm-run-all2
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=simple, flexible, fun test framework
-  URL:=https://www.npmjs.org/package/mocha
+  TITLE:=A CLI tool to run multiple npm-scripts in parallel or sequential.
+  URL:=https://www.npmjs.com/package/npm-run-all2
   DEPENDS:=+node
 endef
 
-define Package/node-mocha/description
- Mocha is a simple, flexible, fun JavaScript test framework for node.js and the browser
+define Package/node-npm-run-all2/description
+ A CLI tool to run multiple npm-scripts in parallel or sequential. (Maintainence fork)
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -58,32 +58,33 @@ define Build/Compile
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM)) \
-	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --legacy-peer-deps
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-mocha/install
+define Package/node-npm-run-all2/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE,*.md} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{*.css,*.md,*.js} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,bin,lib} \
+	$(CP) $(PKG_BUILD_DIR)/{bin,lib,node_modules,docs} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/mocha.js $(1)/usr/bin/mocha
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/_mocha $(1)/usr/bin/_mocha
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/run-p/index.js $(1)/usr/bin/run-p
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/run-s/index.js $(1)/usr/bin/run-s
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/npm-run-all/index.js $(1)/usr/bin/npm-run-all
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
-	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/bin/mocha.js
+	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/bin/run-p/index.js
+	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/bin/run-s/index.js
+	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/bin/npm-run-all/index.js
 endef
 
-define Package/node-mocha/postrm
+define Package/node-npm-run-all2/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/mocha || true
-rm -rf /usr/lib/node/mocha || true
+rm /usr/lib/node_modules/npm-run-all2 || true
+rm -rf /usr/lib/node/npm-run-all2 || true
 endef
 
 define Host/Compile
@@ -91,7 +92,7 @@ define Host/Compile
 	$(HOST_MAKE_VARS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/host-npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(HOSTTMPNPM)) \
-	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --legacy-peer-deps
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
 	rm -rf $(TMP_DIR)/npm-cache-$(HOSTTMPNPM)
 	rm -f $(HOST_BUILD_DIR)/node_modules/.package-lock.json
 	find $(HOST_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
@@ -99,17 +100,18 @@ endef
 
 define Host/Install
 	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)
-	$(CP) $(HOST_BUILD_DIR)/{package.json,LICENSE} \
+	$(CP) $(HOST_BUILD_DIR)/{package.json,LICENSE,*.md} \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/{*.css,*.md,*.js} \
-		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/{node_modules,bin,lib} \
+	$(CP) $(HOST_BUILD_DIR)/{bin,lib,node_modules,docs} \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/bin
-	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/mocha.js $(1)/bin/mocha
-	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/_mocha $(1)/bin/_mocha
-	chmod +x $(1)/lib/node_modules/$(PKG_NPM_NAME)/bin/mocha.js
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/run-p/index.js $(1)/bin/run-p
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/run-s/index.js $(1)/bin/run-s
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/npm-run-all/index.js $(1)/bin/npm-run-all
+	chmod +x $(1)/lib/node_modules/$(PKG_NPM_NAME)/bin/run-p/index.js
+	chmod +x $(1)/lib/node_modules/$(PKG_NPM_NAME)/bin/run-s/index.js
+	chmod +x $(1)/lib/node_modules/$(PKG_NPM_NAME)/bin/npm-run-all/index.js
 endef
 
 $(eval $(call HostBuild))
-$(eval $(call BuildPackage,node-mocha))
+$(eval $(call BuildPackage,node-npm-run-all2))

@@ -9,13 +9,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=ws
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=8.13.0
+PKG_VERSION:=8.14.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=d80be0fd521feecd43908a487645fd2f69af7a7a82e9ee0661b0bf15a67eca4f
+PKG_HASH:=271cacc731d6062b969aab40360c82c621ad7a238f49aba93aebd6429dbfc625
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT

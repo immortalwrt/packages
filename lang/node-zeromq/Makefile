@@ -4,38 +4,38 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=aws-crt
+PKG_NPM_NAME:=zeromq
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.18.0
-PKG_RELEASE:=2
+PKG_VERSION:=6.0.0-beta.17
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=ae4c12e918f9f548222c92e293aa04e173134c2d39c36d5f3d3b9ccaba9946b6
+PKG_HASH:=529b41f79596fc8a7165f57a2cff9ccb00fd53308807a10c6766c309d6702691
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=Apache-2.0
+PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_BUILD_DEPENDS:=node/host
+PKG_BUILD_DEPENDS:=node/host node-shx/host node-npm-run-all2/host node-gyp-build/host
 PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-define Package/node-aws-crt
+define Package/node-zeromq
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=NodeJS bindings for the AWS Common Runtime
-  URL:=https://www.npmjs.com/package/aws-crt
-  DEPENDS:=+node @(x86_64||aarch64||arm||i386)
+  TITLE:=Next-generation ZeroMQ bindings for Node.js
+  URL:=https://www.npmjs.org/package/zeromq
+  DEPENDS:=+node
 endef
 
-define Package/node-aws-crt/description
- NodeJS/Browser bindings for the AWS Common Runtime
+define Package/node-zeromq/description
+ Next-generation ZeroMQ bindings for Node.js
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -45,7 +45,7 @@ NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 NPM_CACHE_DIR:=$(if $(call qstrip,$(CONFIG_NODEJS_NPM_CACHE_DIR)),$(call qstrip,$(CONFIG_NODEJS_NPM_CACHE_DIR)),$(TMP_DIR))
 
-TARGET_CFLAGS+=$(FPIC) -D_GNU_SOURCE $(if $(CONFIG_USE_MUSL),-Dpthread_attr_setaffinity_np=pthread_setaffinity_np)
+TARGET_CFLAGS+=$(FPIC)
 TARGET_CPPFLAGS+=$(FPIC)
 
 define Build/Configure
@@ -55,7 +55,6 @@ define Build/Install
 endef
 
 define Build/Compile
-	rm -rf $(PKG_BUILD_DIR)/dist/bin
 	cd $(PKG_BUILD_DIR); \
 	$(MAKE_VARS) \
 	$(MAKE_FLAGS) \
@@ -103,7 +102,7 @@ define Build/Compile
 	CMAKE_SYSROOT="$(STAGING_DIR_ROOT)" \
 	CROSS_COMPILE="$(OPTIMIZE_FOR_CPU)-openwrt-linux$(if $(TARGET_SUFFIX),-$(TARGET_SUFFIX))-" \
 	TARGET_CROSS="$(TOOLCHAIN_DIR)/bin/$(TARGET_CROSS)" \
-	npm run install --no-save --no-package-lock
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --build-from-source --target_arch=$(NODEJS_CPU)
 	rm -rf $(PKG_BUILD_DIR)/node_modules
 	cd $(PKG_BUILD_DIR); \
 	$(MAKE_VARS) \
@@ -116,25 +115,25 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -delete || true
 endef
 
-define Package/node-aws-crt/install
+define Package/node-zeromq/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/package.json \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{LICENSE,NOTICE} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.js} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist,dist.browser} \
+	$(CP) $(PKG_BUILD_DIR)/{lib,node_modules} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)/dist/bin/linux-$(NODEJS_CPU)-$(TARGET_SUFFIX)
-	$(CP) $(PKG_BUILD_DIR)/build/linux-x64-glibc/Release/aws-crt-nodejs.node \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/dist/bin/linux-$(NODEJS_CPU)-$(TARGET_SUFFIX)/
+	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)/build/Release
+	$(CP) $(PKG_BUILD_DIR)/build/Release/zeromq.node \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/build/Release/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-aws-crt/postrm
+define Package/node-zeromq/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/aws-crt || true
-rm -rf /usr/lib/node/aws-crt || true
+rm /usr/lib/node_modules/zeromq || true
+rm -rf /usr/lib/node/zeromq || true
 endef
 
-$(eval $(call BuildPackage,node-aws-crt))
+$(eval $(call BuildPackage,node-zeromq))
