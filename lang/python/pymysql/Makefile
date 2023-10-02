@@ -30,7 +30,7 @@ define Package/python3-pymysql
   CATEGORY:=Languages
   TITLE:=Pure Python MySQL Client
   URL:=https://pymysql.readthedocs.io/
-  DEPENDS:=+python3 +PYTHON3_PYMYSQL_SHA_PASSWORD_SUPPORT:python3-cryptography
+  DEPENDS:=+python3
 endef
 
 define Package/python3-pymysql/config
