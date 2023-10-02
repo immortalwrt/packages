@@ -3,6 +3,7 @@ menu "Configuration"
 
 config PYTHON3_PYMYSQL_SHA_PASSWORD_SUPPORT
 	bool "Enable support for SHA password authentication"
+	select PACKAGE_python3-cryptography
 	help
 	  To use “sha256_password” or “caching_sha2_password” for authentication
 	  this symbol needs to be enabled, to also install python3-cryptography.
