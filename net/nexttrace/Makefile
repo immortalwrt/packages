@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nexttrace
-PKG_VERSION:=1.1.7-1
+PKG_VERSION:=1.2.1.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/sjlleo/nexttrace-core/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=1c937a9f7c2f1d4a3e71e63db2929a5b24d438c63efd9715b00277f1b3add4cb
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-core-$(PKG_VERSION)
+PKG_SOURCE_URL:=https://codeload.github.com/nxtrace/NTrace-core/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=56fe2986067ed8f84bb30d533309a79f901d9a182f25afb71a8354e5bfad6b5d
+PKG_BUILD_DIR:=$(BUILD_DIR)/NTrace-core-$(PKG_VERSION)
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
@@ -27,8 +27,8 @@ define Package/nexttrace
   SECTION:=net
   CATEGORY:=Network
   TITLE:=An open source visual route tracking CLI tool
-  URL:=https://github.com/sjlleo/nexttrace-core
-  DEPENDS:=$(GO_ARCH_DEPENDS)
+  URL:=https://github.com/nxtrace/NTrace-core
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
 define Package/nexttrace/description
