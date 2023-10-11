@@ -16,7 +16,7 @@ function update_geodata() {
 	ver="$(awk -F "${type}_VER:=" '{print $2}' "$CURDIR/Makefile" | xargs)"
 	[ "$tag" != "$ver" ] || return 2
 
-	sha="$(curl -fsSL "https://github.com/$repo/releases/download/$tag/$res.dat.sha256sum" | awk '{print $1}')"
+	sha="$(curl -fsSL "https://github.com/$repo/releases/download/$tag/$res" | awk '{print $1}')"
 	[ -n "$sha" ] || return 1
 
 	line="$(awk "/FILE:=\\$\(${type}_FILE\)/ {print NR}" "$CURDIR/Makefile")"
@@ -25,5 +25,6 @@ function update_geodata() {
 		"$CURDIR/Makefile"
 }
 
-update_geodata "GEOIP" "v2fly/geoip" "geoip"
-update_geodata "GEOSITE" "v2fly/domain-list-community" "dlc"
+update_geodata "GEOIP" "v2fly/geoip" "geoip.dat.sha256sum"
+update_geodata "GEOSITE" "v2fly/domain-list-community" "dlc.dat.sha256sum"
+update_geodata "GEOSITE_IRAN" "bootmortis/iran-hosted-domains" "iran.dat.sha256"
