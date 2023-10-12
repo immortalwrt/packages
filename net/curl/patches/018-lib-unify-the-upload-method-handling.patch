@@ -1,0 +1,392 @@
+From 7815647d6582c0a4900be2e1de6c5e61272c496b Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Tue, 25 Apr 2023 08:28:01 +0200
+Subject: [PATCH] lib: unify the upload/method handling
+
+By making sure we set state.upload based on the set.method value and not
+independently as set.upload, we reduce confusion and mixup risks, both
+internally and externally.
+
+Closes #11017
+---
+ lib/curl_rtmp.c    | 4 ++--
+ lib/file.c         | 4 ++--
+ lib/ftp.c          | 8 ++++----
+ lib/http.c         | 4 ++--
+ lib/imap.c         | 6 +++---
+ lib/rtsp.c         | 4 ++--
+ lib/setopt.c       | 6 ++----
+ lib/smb.c          | 6 +++---
+ lib/smtp.c         | 4 ++--
+ lib/tftp.c         | 8 ++++----
+ lib/transfer.c     | 4 ++--
+ lib/urldata.h      | 2 +-
+ lib/vssh/libssh.c  | 6 +++---
+ lib/vssh/libssh2.c | 6 +++---
+ lib/vssh/wolfssh.c | 2 +-
+ 15 files changed, 36 insertions(+), 38 deletions(-)
+
+--- a/lib/curl_rtmp.c
++++ b/lib/curl_rtmp.c
+@@ -229,7 +229,7 @@ static CURLcode rtmp_connect(struct Curl
+   /* We have to know if it's a write before we send the
+    * connect request packet
+    */
+-  if(data->set.upload)
++  if(data->state.upload)
+     r->Link.protocol |= RTMP_FEATURE_WRITE;
+ 
+   /* For plain streams, use the buffer toggle trick to keep data flowing */
+@@ -261,7 +261,7 @@ static CURLcode rtmp_do(struct Curl_easy
+   if(!RTMP_ConnectStream(r, 0))
+     return CURLE_FAILED_INIT;
+ 
+-  if(data->set.upload) {
++  if(data->state.upload) {
+     Curl_pgrsSetUploadSize(data, data->state.infilesize);
+     Curl_setup_transfer(data, -1, -1, FALSE, FIRSTSOCKET);
+   }
+--- a/lib/file.c
++++ b/lib/file.c
+@@ -200,7 +200,7 @@ static CURLcode file_connect(struct Curl
+   file->freepath = real_path; /* free this when done */
+ 
+   file->fd = fd;
+-  if(!data->set.upload && (fd == -1)) {
++  if(!data->state.upload && (fd == -1)) {
+     failf(data, "Couldn't open file %s", data->state.up.path);
+     file_done(data, CURLE_FILE_COULDNT_READ_FILE, FALSE);
+     return CURLE_FILE_COULDNT_READ_FILE;
+@@ -382,7 +382,7 @@ static CURLcode file_do(struct Curl_easy
+ 
+   Curl_pgrsStartNow(data);
+ 
+-  if(data->set.upload)
++  if(data->state.upload)
+     return file_upload(data);
+ 
+   file = data->req.p.file;
+--- a/lib/ftp.c
++++ b/lib/ftp.c
+@@ -1378,7 +1378,7 @@ static CURLcode ftp_state_prepare_transf
+                                data->set.str[STRING_CUSTOMREQUEST]?
+                                data->set.str[STRING_CUSTOMREQUEST]:
+                                (data->state.list_only?"NLST":"LIST"));
+-      else if(data->set.upload)
++      else if(data->state.upload)
+         result = Curl_pp_sendf(data, &ftpc->pp, "PRET STOR %s",
+                                conn->proto.ftpc.file);
+       else
+@@ -3374,7 +3374,7 @@ static CURLcode ftp_done(struct Curl_eas
+     /* the response code from the transfer showed an error already so no
+        use checking further */
+     ;
+-  else if(data->set.upload) {
++  else if(data->state.upload) {
+     if((-1 != data->state.infilesize) &&
+        (data->state.infilesize != data->req.writebytecount) &&
+        !data->set.crlf &&
+@@ -3646,7 +3646,7 @@ static CURLcode ftp_do_more(struct Curl_
+                            connected back to us */
+       }
+     }
+-    else if(data->set.upload) {
++    else if(data->state.upload) {
+       result = ftp_nb_type(data, conn, data->state.prefer_ascii,
+                            FTP_STOR_TYPE);
+       if(result)
+@@ -4235,7 +4235,7 @@ CURLcode ftp_parse_url_path(struct Curl_
+     ftpc->file = NULL; /* instead of point to a zero byte,
+                             we make it a NULL pointer */
+ 
+-  if(data->set.upload && !ftpc->file && (ftp->transfer == PPTRANSFER_BODY)) {
++  if(data->state.upload && !ftpc->file && (ftp->transfer == PPTRANSFER_BODY)) {
+     /* We need a file name when uploading. Return error! */
+     failf(data, "Uploading to a URL without a file name");
+     free(rawPath);
+--- a/lib/http.c
++++ b/lib/http.c
+@@ -2033,7 +2033,7 @@ void Curl_http_method(struct Curl_easy *
+   Curl_HttpReq httpreq = data->state.httpreq;
+   const char *request;
+   if((conn->handler->protocol&(PROTO_FAMILY_HTTP|CURLPROTO_FTP)) &&
+-     data->set.upload)
++     data->state.upload)
+     httpreq = HTTPREQ_PUT;
+ 
+   /* Now set the 'request' pointer to the proper request string */
+@@ -2350,7 +2350,7 @@ CURLcode Curl_http_body(struct Curl_easy
+     if((conn->handler->protocol & PROTO_FAMILY_HTTP) &&
+        (((httpreq == HTTPREQ_POST_MIME || httpreq == HTTPREQ_POST_FORM) &&
+          http->postsize < 0) ||
+-        ((data->set.upload || httpreq == HTTPREQ_POST) &&
++        ((data->state.upload || httpreq == HTTPREQ_POST) &&
+          data->state.infilesize == -1))) {
+       if(conn->bits.authneg)
+         /* don't enable chunked during auth neg */
+--- a/lib/imap.c
++++ b/lib/imap.c
+@@ -1504,11 +1504,11 @@ static CURLcode imap_done(struct Curl_ea
+     result = status;         /* use the already set error code */
+   }
+   else if(!data->set.connect_only && !imap->custom &&
+-          (imap->uid || imap->mindex || data->set.upload ||
++          (imap->uid || imap->mindex || data->state.upload ||
+           data->set.mimepost.kind != MIMEKIND_NONE)) {
+     /* Handle responses after FETCH or APPEND transfer has finished */
+ 
+-    if(!data->set.upload && data->set.mimepost.kind == MIMEKIND_NONE)
++    if(!data->state.upload && data->set.mimepost.kind == MIMEKIND_NONE)
+       state(data, IMAP_FETCH_FINAL);
+     else {
+       /* End the APPEND command first by sending an empty line */
+@@ -1574,7 +1574,7 @@ static CURLcode imap_perform(struct Curl
+     selected = TRUE;
+ 
+   /* Start the first command in the DO phase */
+-  if(data->set.upload || data->set.mimepost.kind != MIMEKIND_NONE)
++  if(data->state.upload || data->set.mimepost.kind != MIMEKIND_NONE)
+     /* APPEND can be executed directly */
+     result = imap_perform_append(data);
+   else if(imap->custom && (selected || !imap->mailbox))
+--- a/lib/rtsp.c
++++ b/lib/rtsp.c
+@@ -509,7 +509,7 @@ static CURLcode rtsp_do(struct Curl_easy
+      rtspreq == RTSPREQ_SET_PARAMETER ||
+      rtspreq == RTSPREQ_GET_PARAMETER) {
+ 
+-    if(data->set.upload) {
++    if(data->state.upload) {
+       putsize = data->state.infilesize;
+       data->state.httpreq = HTTPREQ_PUT;
+ 
+@@ -528,7 +528,7 @@ static CURLcode rtsp_do(struct Curl_easy
+         result =
+           Curl_dyn_addf(&req_buffer,
+                         "Content-Length: %" CURL_FORMAT_CURL_OFF_T"\r\n",
+-                        (data->set.upload ? putsize : postsize));
++                        (data->state.upload ? putsize : postsize));
+         if(result)
+           return result;
+       }
+--- a/lib/setopt.c
++++ b/lib/setopt.c
+@@ -294,8 +294,8 @@ CURLcode Curl_vsetopt(struct Curl_easy *
+      * We want to sent data to the remote host. If this is HTTP, that equals
+      * using the PUT request.
+      */
+-    data->set.upload = (0 != va_arg(param, long)) ? TRUE : FALSE;
+-    if(data->set.upload) {
++    arg = va_arg(param, long);
++    if(arg) {
+       /* If this is HTTP, PUT is what's needed to "upload" */
+       data->set.method = HTTPREQ_PUT;
+       data->set.opt_no_body = FALSE; /* this is implied */
+@@ -625,7 +625,6 @@ CURLcode Curl_vsetopt(struct Curl_easy *
+     }
+     else
+       data->set.method = HTTPREQ_GET;
+-    data->set.upload = FALSE;
+     break;
+ 
+   case CURLOPT_HTTPPOST:
+@@ -873,7 +872,6 @@ CURLcode Curl_vsetopt(struct Curl_easy *
+      */
+     if(va_arg(param, long)) {
+       data->set.method = HTTPREQ_GET;
+-      data->set.upload = FALSE; /* switch off upload */
+       data->set.opt_no_body = FALSE; /* this is implied */
+     }
+     break;
+--- a/lib/smb.c
++++ b/lib/smb.c
+@@ -533,7 +533,7 @@ static CURLcode smb_send_open(struct Cur
+   byte_count = strlen(req->path);
+   msg.name_length = smb_swap16((unsigned short)byte_count);
+   msg.share_access = smb_swap32(SMB_FILE_SHARE_ALL);
+-  if(data->set.upload) {
++  if(data->state.upload) {
+     msg.access = smb_swap32(SMB_GENERIC_READ | SMB_GENERIC_WRITE);
+     msg.create_disposition = smb_swap32(SMB_FILE_OVERWRITE_IF);
+   }
+@@ -812,7 +812,7 @@ static CURLcode smb_request_state(struct
+     smb_m = (const struct smb_nt_create_response*) msg;
+     req->fid = smb_swap16(smb_m->fid);
+     data->req.offset = 0;
+-    if(data->set.upload) {
++    if(data->state.upload) {
+       data->req.size = data->state.infilesize;
+       Curl_pgrsSetUploadSize(data, data->req.size);
+       next_state = SMB_UPLOAD;
+--- a/lib/smtp.c
++++ b/lib/smtp.c
+@@ -1411,7 +1411,7 @@ static CURLcode smtp_done(struct Curl_ea
+     result = status;         /* use the already set error code */
+   }
+   else if(!data->set.connect_only && data->set.mail_rcpt &&
+-          (data->set.upload || data->set.mimepost.kind)) {
++          (data->state.upload || data->set.mimepost.kind)) {
+     /* Calculate the EOB taking into account any terminating CRLF from the
+        previous line of the email or the CRLF of the DATA command when there
+        is "no mail data". RFC-5321, sect. 4.1.1.4.
+@@ -1504,7 +1504,7 @@ static CURLcode smtp_perform(struct Curl
+   smtp->eob = 2;
+ 
+   /* Start the first command in the DO phase */
+-  if((data->set.upload || data->set.mimepost.kind) && data->set.mail_rcpt)
++  if((data->state.upload || data->set.mimepost.kind) && data->set.mail_rcpt)
+     /* MAIL transfer */
+     result = smtp_perform_mail(data);
+   else
+--- a/lib/tftp.c
++++ b/lib/tftp.c
+@@ -367,7 +367,7 @@ static CURLcode tftp_parse_option_ack(st
+ 
+       /* tsize should be ignored on upload: Who cares about the size of the
+          remote file? */
+-      if(!data->set.upload) {
++      if(!data->state.upload) {
+         if(!tsize) {
+           failf(data, "invalid tsize -:%s:- value in OACK packet", value);
+           return CURLE_TFTP_ILLEGAL;
+@@ -448,7 +448,7 @@ static CURLcode tftp_send_first(struct t
+       return result;
+     }
+ 
+-    if(data->set.upload) {
++    if(data->state.upload) {
+       /* If we are uploading, send an WRQ */
+       setpacketevent(&state->spacket, TFTP_EVENT_WRQ);
+       state->data->req.upload_fromhere =
+@@ -483,7 +483,7 @@ static CURLcode tftp_send_first(struct t
+     if(!data->set.tftp_no_options) {
+       char buf[64];
+       /* add tsize option */
+-      if(data->set.upload && (data->state.infilesize != -1))
++      if(data->state.upload && (data->state.infilesize != -1))
+         msnprintf(buf, sizeof(buf), "%" CURL_FORMAT_CURL_OFF_T,
+                   data->state.infilesize);
+       else
+@@ -537,7 +537,7 @@ static CURLcode tftp_send_first(struct t
+     break;
+ 
+   case TFTP_EVENT_OACK:
+-    if(data->set.upload) {
++    if(data->state.upload) {
+       result = tftp_connect_for_tx(state, event);
+     }
+     else {
+--- a/lib/transfer.c
++++ b/lib/transfer.c
+@@ -1347,6 +1347,7 @@ void Curl_init_CONNECT(struct Curl_easy
+ {
+   data->state.fread_func = data->set.fread_func_set;
+   data->state.in = data->set.in_set;
++  data->state.upload = (data->state.httpreq == HTTPREQ_PUT);
+ }
+ 
+ /*
+@@ -1770,7 +1771,6 @@ CURLcode Curl_follow(struct Curl_easy *d
+          data->state.httpreq != HTTPREQ_POST_MIME) ||
+         !(data->set.keep_post & CURL_REDIR_POST_303))) {
+       data->state.httpreq = HTTPREQ_GET;
+-      data->set.upload = false;
+       infof(data, "Switch to %s",
+             data->set.opt_no_body?"HEAD":"GET");
+     }
+@@ -1808,7 +1808,7 @@ CURLcode Curl_retry_request(struct Curl_
+ 
+   /* if we're talking upload, we can't do the checks below, unless the protocol
+      is HTTP as when uploading over HTTP we will still get a response */
+-  if(data->set.upload &&
++  if(data->state.upload &&
+      !(conn->handler->protocol&(PROTO_FAMILY_HTTP|CURLPROTO_RTSP)))
+     return CURLE_OK;
+ 
+--- a/lib/urldata.h
++++ b/lib/urldata.h
+@@ -1488,6 +1488,7 @@ struct UrlState {
+   BIT(stream_depends_e); /* set or don't set the Exclusive bit */
+   BIT(previouslypending); /* this transfer WAS in the multi->pending queue */
+   BIT(cookie_engine);
++  BIT(upload);         /* upload request */
+   BIT(prefer_ascii);   /* ASCII rather than binary */
+   BIT(list_only);      /* list directory contents */
+   BIT(url_alloc);   /* URL string is malloc()'ed */
+@@ -1836,7 +1837,6 @@ struct UserDefined {
+   BIT(http_auto_referer); /* set "correct" referer when following
+                              location: */
+   BIT(opt_no_body);    /* as set with CURLOPT_NOBODY */
+-  BIT(upload);         /* upload request */
+   BIT(verbose);        /* output verbosity */
+   BIT(krb);            /* Kerberos connection requested */
+   BIT(reuse_forbid);   /* forbidden to be reused, close after use */
+--- a/lib/vssh/libssh.c
++++ b/lib/vssh/libssh.c
+@@ -1206,7 +1206,7 @@ static CURLcode myssh_statemach_act(stru
+     }
+ 
+     case SSH_SFTP_TRANS_INIT:
+-      if(data->set.upload)
++      if(data->state.upload)
+         state(data, SSH_SFTP_UPLOAD_INIT);
+       else {
+         if(protop->path[strlen(protop->path)-1] == '/')
+@@ -1819,7 +1819,7 @@ static CURLcode myssh_statemach_act(stru
+       /* Functions from the SCP subsystem cannot handle/return SSH_AGAIN */
+       ssh_set_blocking(sshc->ssh_session, 1);
+ 
+-      if(data->set.upload) {
++      if(data->state.upload) {
+         if(data->state.infilesize < 0) {
+           failf(data, "SCP requires a known file size for upload");
+           sshc->actualcode = CURLE_UPLOAD_FAILED;
+@@ -1924,7 +1924,7 @@ static CURLcode myssh_statemach_act(stru
+         break;
+       }
+     case SSH_SCP_DONE:
+-      if(data->set.upload)
++      if(data->state.upload)
+         state(data, SSH_SCP_SEND_EOF);
+       else
+         state(data, SSH_SCP_CHANNEL_FREE);
+--- a/lib/vssh/libssh2.c
++++ b/lib/vssh/libssh2.c
+@@ -1944,7 +1944,7 @@ static CURLcode ssh_statemach_act(struct
+     }
+ 
+     case SSH_SFTP_TRANS_INIT:
+-      if(data->set.upload)
++      if(data->state.upload)
+         state(data, SSH_SFTP_UPLOAD_INIT);
+       else {
+         if(sshp->path[strlen(sshp->path)-1] == '/')
+@@ -2616,7 +2616,7 @@ static CURLcode ssh_statemach_act(struct
+         break;
+       }
+ 
+-      if(data->set.upload) {
++      if(data->state.upload) {
+         if(data->state.infilesize < 0) {
+           failf(data, "SCP requires a known file size for upload");
+           sshc->actualcode = CURLE_UPLOAD_FAILED;
+@@ -2756,7 +2756,7 @@ static CURLcode ssh_statemach_act(struct
+     break;
+ 
+     case SSH_SCP_DONE:
+-      if(data->set.upload)
++      if(data->state.upload)
+         state(data, SSH_SCP_SEND_EOF);
+       else
+         state(data, SSH_SCP_CHANNEL_FREE);
+--- a/lib/vssh/wolfssh.c
++++ b/lib/vssh/wolfssh.c
+@@ -554,7 +554,7 @@ static CURLcode wssh_statemach_act(struc
+       }
+       break;
+     case SSH_SFTP_TRANS_INIT:
+-      if(data->set.upload)
++      if(data->state.upload)
+         state(data, SSH_SFTP_UPLOAD_INIT);
+       else {
+         if(sftp_scp->path[strlen(sftp_scp->path)-1] == '/')

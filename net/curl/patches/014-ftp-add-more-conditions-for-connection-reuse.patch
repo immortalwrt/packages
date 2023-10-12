@@ -1,0 +1,151 @@
+From 8f4608468b890dce2dad9f91d5607ee7e9c1aba1 Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Thu, 9 Mar 2023 17:47:06 +0100
+Subject: [PATCH] ftp: add more conditions for connection reuse
+
+Reported-by: Harry Sintonen
+Closes #10730
+
+Backported to Debian by Samuel Henrique <samueloph@debian.org>
+---
+ lib/ftp.c     | 28 ++++++++++++++++++++++++++--
+ lib/ftp.h     |  5 +++++
+ lib/setopt.c  |  2 +-
+ lib/url.c     | 17 +++++++++++++++--
+ lib/urldata.h |  4 ++--
+ 5 files changed, 49 insertions(+), 7 deletions(-)
+
+--- a/lib/ftp.c
++++ b/lib/ftp.c
+@@ -4097,6 +4097,8 @@ static CURLcode ftp_disconnect(struct Cu
+   }
+ 
+   freedirs(ftpc);
++  Curl_safefree(ftpc->account);
++  Curl_safefree(ftpc->alternative_to_user);
+   Curl_safefree(ftpc->prevpath);
+   Curl_safefree(ftpc->server_os);
+   Curl_pp_disconnect(pp);
+@@ -4364,11 +4366,31 @@ static CURLcode ftp_setup_connection(str
+ {
+   char *type;
+   struct FTP *ftp;
++  struct ftp_conn *ftpc = &conn->proto.ftpc;
+ 
+   data->req.p.ftp = ftp = calloc(sizeof(struct FTP), 1);
+   if(!ftp)
+     return CURLE_OUT_OF_MEMORY;
+ 
++  /* clone connection related data that is FTP specific */
++  if(data->set.str[STRING_FTP_ACCOUNT]) {
++    ftpc->account = strdup(data->set.str[STRING_FTP_ACCOUNT]);
++    if(!ftpc->account) {
++      free(ftp);
++      return CURLE_OUT_OF_MEMORY;
++    }
++  }
++  if(data->set.str[STRING_FTP_ALTERNATIVE_TO_USER]) {
++    ftpc->alternative_to_user =
++      strdup(data->set.str[STRING_FTP_ALTERNATIVE_TO_USER]);
++    if(!ftpc->alternative_to_user) {
++      Curl_safefree(ftpc->account);
++      free(ftp);
++      return CURLE_OUT_OF_MEMORY;
++    }
++  }
++  data->req.p.ftp = ftp;
++
+   ftp->path = &data->state.up.path[1]; /* don't include the initial slash */
+ 
+   /* FTP URLs support an extension like ";type=<typecode>" that
+@@ -4403,7 +4425,9 @@ static CURLcode ftp_setup_connection(str
+   /* get some initial data into the ftp struct */
+   ftp->transfer = PPTRANSFER_BODY;
+   ftp->downloadsize = 0;
+-  conn->proto.ftpc.known_filesize = -1; /* unknown size for now */
++  ftpc->known_filesize = -1; /* unknown size for now */
++  ftpc->use_ssl = data->set.use_ssl;
++  ftpc->ccc = data->set.ftp_ccc;
+ 
+   return CURLE_OK;
+ }
+--- a/lib/ftp.h
++++ b/lib/ftp.h
+@@ -115,6 +115,8 @@ struct FTP {
+    struct */
+ struct ftp_conn {
+   struct pingpong pp;
++  char *account;
++  char *alternative_to_user;
+   char *entrypath; /* the PWD reply when we logged on */
+   char *file;    /* url-decoded file name (or path) */
+   char **dirs;   /* realloc()ed array for path components */
+@@ -144,6 +146,9 @@ struct ftp_conn {
+   ftpstate state; /* always use ftp.c:state() to change state! */
+   ftpstate state_saved; /* transfer type saved to be reloaded after
+                            data connection is established */
++  unsigned char use_ssl;   /* if AUTH TLS is to be attempted etc, for FTP or
++                              IMAP or POP3 or others! (type: curl_usessl)*/
++  unsigned char ccc;       /* ccc level for this connection */
+   curl_off_t retr_size_saved; /* Size of retrieved file saved */
+   char *server_os;     /* The target server operating system. */
+   curl_off_t known_filesize; /* file size is different from -1, if wildcard
+--- a/lib/setopt.c
++++ b/lib/setopt.c
+@@ -2290,7 +2290,7 @@ CURLcode Curl_vsetopt(struct Curl_easy *
+     arg = va_arg(param, long);
+     if((arg < CURLUSESSL_NONE) || (arg >= CURLUSESSL_LAST))
+       return CURLE_BAD_FUNCTION_ARGUMENT;
+-    data->set.use_ssl = (curl_usessl)arg;
++    data->set.use_ssl = (unsigned char)arg;
+     break;
+ 
+   case CURLOPT_SSL_OPTIONS:
+--- a/lib/url.c
++++ b/lib/url.c
+@@ -1362,10 +1362,24 @@ ConnectionExists(struct Curl_easy *data,
+          (data->state.httpwant < CURL_HTTP_VERSION_2_0))
+         continue;
+ 
+-      if(get_protocol_family(needle->handler) & PROTO_FAMILY_SSH) {
++#ifdef USE_SSH
++      else if(get_protocol_family(needle->handler) & PROTO_FAMILY_SSH) {
+         if(!ssh_config_matches(needle, check))
+           continue;
+       }
++#endif
++#ifndef CURL_DISABLE_FTP
++      else if(get_protocol_family(needle->handler) & PROTO_FAMILY_FTP) {
++        /* Also match ACCOUNT, ALTERNATIVE-TO-USER, USE_SSL and CCC options */
++        if(Curl_timestrcmp(needle->proto.ftpc.account,
++                           check->proto.ftpc.account) ||
++           Curl_timestrcmp(needle->proto.ftpc.alternative_to_user,
++                           check->proto.ftpc.alternative_to_user) ||
++           (needle->proto.ftpc.use_ssl != check->proto.ftpc.use_ssl) ||
++           (needle->proto.ftpc.ccc != check->proto.ftpc.ccc))
++          continue;
++      }
++#endif
+ 
+       if((needle->handler->flags&PROTOPT_SSL)
+ #ifndef CURL_DISABLE_PROXY
+--- a/lib/urldata.h
++++ b/lib/urldata.h
+@@ -1749,8 +1749,6 @@ struct UserDefined {
+   enum CURL_NETRC_OPTION
+        use_netrc;        /* defined in include/curl.h */
+ #endif
+-  curl_usessl use_ssl;   /* if AUTH TLS is to be attempted etc, for FTP or
+-                            IMAP or POP3 or others! */
+   long new_file_perms;    /* Permissions to use when creating remote files */
+   long new_directory_perms; /* Permissions to use when creating remote dirs */
+   long ssh_auth_types;   /* allowed SSH auth types */
+@@ -1796,6 +1794,8 @@ struct UserDefined {
+   CURLU *uh; /* URL handle for the current parsed URL */
+   void *trailer_data; /* pointer to pass to trailer data callback */
+   curl_trailer_callback trailer_callback; /* trailing data callback */
++  unsigned char use_ssl;   /* if AUTH TLS is to be attempted etc, for FTP or
++                              IMAP or POP3 or others! (type: curl_usessl)*/
+   BIT(is_fread_set); /* has read callback been set to non-NULL? */
+   BIT(is_fwrite_set); /* has write callback been set to non-NULL? */
+   BIT(free_referer); /* set TRUE if 'referer' points to a string we

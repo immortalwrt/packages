@@ -1,0 +1,22 @@
+From af369db4d3833272b8ed443f7fcc2e757a0872eb Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Fri, 10 Mar 2023 08:22:51 +0100
+Subject: [PATCH] url: fix the SSH connection reuse check
+
+Reported-by: Harry Sintonen
+Closes #10735
+---
+ lib/url.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/lib/url.c
++++ b/lib/url.c
+@@ -1362,7 +1362,7 @@ ConnectionExists(struct Curl_easy *data,
+          (data->state.httpwant < CURL_HTTP_VERSION_2_0))
+         continue;
+ 
+-      if(get_protocol_family(needle->handler) == PROTO_FAMILY_SSH) {
++      if(get_protocol_family(needle->handler) & PROTO_FAMILY_SSH) {
+         if(!ssh_config_matches(needle, check))
+           continue;
+       }

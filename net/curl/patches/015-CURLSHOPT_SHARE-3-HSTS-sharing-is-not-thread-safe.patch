@@ -1,0 +1,23 @@
+From dca4cdf071be095bcdc7126eaa77a8946ea4790b Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Thu, 9 Mar 2023 18:01:34 +0100
+Subject: [PATCH] CURLSHOPT_SHARE.3: HSTS sharing is not thread-safe
+
+Reported-by: Hiroki Kurosawa
+Closes #10732
+---
+ docs/libcurl/opts/CURLSHOPT_SHARE.3 | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- a/docs/libcurl/opts/CURLSHOPT_SHARE.3
++++ b/docs/libcurl/opts/CURLSHOPT_SHARE.3
+@@ -55,8 +55,7 @@ implemented until 7.23.0.
+ Put the connection cache in the share object and make all easy handles using
+ this share object share the connection cache.
+ 
+-Note that due to a known bug, it is not safe to share connections this way
+-between multiple concurrent threads.
++It is not supported to share connections between multiple concurrent threads.
+ 
+ Connections that are used for HTTP/1.1 Pipelining or HTTP/2 multiplexing only
+ get additional transfers added to them if the existing connection is held by

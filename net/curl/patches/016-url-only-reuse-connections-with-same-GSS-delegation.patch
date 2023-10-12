@@ -1,0 +1,45 @@
+From cb49e67303dbafbab1cebf4086e3ec15b7d56ee5 Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Fri, 10 Mar 2023 09:22:43 +0100
+Subject: [PATCH] url: only reuse connections with same GSS delegation
+
+Reported-by: Harry Sintonen
+Closes #10731
+---
+ lib/url.c     | 6 ++++++
+ lib/urldata.h | 1 +
+ 2 files changed, 7 insertions(+)
+
+--- a/lib/url.c
++++ b/lib/url.c
+@@ -1355,6 +1355,11 @@ ConnectionExists(struct Curl_easy *data,
+         }
+       }
+ 
++      /* GSS delegation differences do not actually affect every connection
++         and auth method, but this check takes precaution before efficiency */
++      if(needle->gssapi_delegation != check->gssapi_delegation)
++        continue;
++
+       /* If multiplexing isn't enabled on the h2 connection and h1 is
+          explicitly requested, handle it: */
+       if((needle->handler->protocol & PROTO_FAMILY_HTTP) &&
+@@ -1826,6 +1831,7 @@ static struct connectdata *allocate_conn
+   conn->fclosesocket = data->set.fclosesocket;
+   conn->closesocket_client = data->set.closesocket_client;
+   conn->lastused = Curl_now(); /* used now */
++  conn->gssapi_delegation = data->set.gssapi_delegation;
+ 
+   return conn;
+   error:
+--- a/lib/urldata.h
++++ b/lib/urldata.h
+@@ -1030,6 +1030,8 @@ struct connectdata {
+   const struct Curl_handler *handler; /* Connection's protocol handler */
+   const struct Curl_handler *given;   /* The protocol first given */
+ 
++  unsigned char gssapi_delegation; /* inherited from set.gssapi_delegation */
++
+   /* Protocols can use a custom keepalive mechanism to keep connections alive.
+      This allows those protocols to track the last time the keepalive mechanism
+      was used on this connection. */
