@@ -17,7 +17,7 @@ config GNUTLS_OCSP
 
 config GNUTLS_CRYPTODEV
 	bool "enable /dev/crypto support"
-	default y
+	default n
 
 config GNUTLS_HEARTBEAT
 	bool "enable DTLS heartbeat support"
