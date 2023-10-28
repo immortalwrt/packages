@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nexttrace
-PKG_VERSION:=1.2.1.1
+PKG_VERSION:=1.2.3.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/nxtrace/NTrace-core/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=56fe2986067ed8f84bb30d533309a79f901d9a182f25afb71a8354e5bfad6b5d
+PKG_HASH:=1492418da1504c0ecc9a6c6ebb61a9bd062d3d62c504c4ecd07fc190ae0ac38a
 PKG_BUILD_DIR:=$(BUILD_DIR)/NTrace-core-$(PKG_VERSION)
 
 PKG_LICENSE:=GPL-3.0-only
@@ -17,7 +17,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
-GO_PKG:=github.com/xgadget-lab/nexttrace
+GO_PKG:=github.com/nxtrace/NTrace-core
 GO_PKG_LDFLAGS_X:=$(GO_PKG)/config.Version=v$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -33,6 +33,12 @@ endef
 
 define Package/nexttrace/description
   An open source visual route tracking CLI tool
+endef
+
+define Package/nexttrace/install
+	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
+	$(INSTALL_DIR) $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/NTrace-core $(1)/usr/bin/nexttrace
 endef
 
 $(eval $(call GoBinPackage,nexttrace))
