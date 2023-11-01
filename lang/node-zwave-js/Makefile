@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zwave-js
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=12.1.1
+PKG_VERSION:=12.2.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=b7ce1ad97febe0d4d0a8914a39976d9a9dd309b45fbb9d02b09b4d6ee769b5d2
+PKG_HASH:=8a7a4241906b5a73f33b624f5a4cd347ec58b77813910e49019af88e236bf3e4
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT

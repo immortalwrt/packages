@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge-config-ui-x
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.50.6
+PKG_VERSION:=4.51.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=9d73c071de5eeb7617bd0c63d1d57621c60b37b38cade3afc7561cd98dd50682
+PKG_HASH:=c333ef0cdf2943ab8a2e07527d1954f8e34949f216e62eefd524bff807d752d4
 
 PKG_BUILD_DEPENDS:=node/host node-clean-modules/host
 PKG_BUILD_FLAGS:=no-mips16
@@ -29,7 +29,7 @@ define Package/node-homebridge-config-ui-x
   CATEGORY:=Languages
   TITLE:=Homebridge Config UI X
   URL:=https://www.npmjs.org/package/homebridge-config-ui-x
-  DEPENDS:=+node +node-homebridge +sudo +node-pty-prebuilt-multiarch +node-bufferutil +node-utf-8-validate
+  DEPENDS:=+node +node-homebridge +sudo +node-homebridge-node-pty-prebuilt-multiarch +node-bufferutil +node-utf-8-validate
 endef
 
 define Package/node-homebridge-config-ui-x/description

@@ -4,19 +4,20 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=aws-iot-device-sdk-v2
-PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.16.2
+PKG_NPM_SCOPE:=vonage
+PKG_NPM_NAME:=server-sdk
+PKG_NAME:=node-$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)
+PKG_VERSION:=3.10.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
-PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
-                https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=62fa64aa348d1ee9089af7b8766408571355ea6f0bab16768915c77308afd995
+PKG_SOURCE:=$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
+PKG_SOURCE_URL_FILE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
+PKG_SOURCE_URL:=https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
+PKG_HASH:=4bfe557cdb7599bc224eef18b5b7346d41182aec118f313879c0b3fd2bbaf8ae
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE_FILES:=LICENSE.txt
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
@@ -24,17 +25,17 @@ PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-aws-iot-device-sdk-v2
+define Package/node-vonage-server-sdk
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=AWS IoT Device SDK for JavaScript v2
-  URL:=https://www.npmjs.com/package/aws-iot-device-sdk-v2
-  DEPENDS:=+node +node-aws-crt
+  TITLE:=Node.js Client for the Vonage API Platform
+  URL:=https://www.npmjs.org/package/@vonage/server-sdk
+  DEPENDS:=+node
 endef
 
-define Package/node-aws-iot-device-sdk-v2/description
- This SDK is built on the AWS Common Runtime, a collection of libraries (aws-c-common, aws-c-io, aws-c-mqtt, aws-c-http, aws-c-cal ...) written in C to be cross-platform, high-performance, secure, and reliable. The libraries are bound to JS by the awscrt package.
+define Package/node-vonage-server-sdk/description
+ This is the Node.JS Server SDK for Vonage APIs. To use it you will need a Vonage account.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -59,20 +60,23 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-aws-iot-device-sdk-v2/install
-	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
+define Package/node-vonage-server-sdk/install
+	$(INSTALL_DIR) $(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist,lib,documents} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/usr/lib/node_modules
-	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+		$(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/
+	$(CP) $(PKG_BUILD_DIR)/{dist,node_modules} \
+		$(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules/@$(PKG_NPM_SCOPE)
+	$(LN) ../../node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME) \
+		$(1)/usr/lib/node_modules/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
 endef
 
-define Package/node-aws-iot-device-sdk-v2/postrm
+define Package/node-vonage-server-sdk/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/aws-iot-device-sdk-v2 || true
-rm -rf /usr/lib/node/aws-iot-device-sdk-v2 || true
+rm /usr/lib/node_modules/@vonage/server-sdk || true
+rm -rf /usr/lib/node/@vonage/server-sdk || true
+rmdir /usr/lib/node_modules/@vonage || true
+rmdir /usr/lib/node/@vonage || true
 endef
 
-$(eval $(call BuildPackage,node-aws-iot-device-sdk-v2))
+$(eval $(call BuildPackage,node-vonage-server-sdk))
