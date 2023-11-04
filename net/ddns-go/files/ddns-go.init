@@ -36,12 +36,16 @@ start_service() {
 	procd_set_param respawn
 	procd_set_param stderr 1
 	procd_set_param user ddns-go
+	procd_set_param env PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 	procd_add_jail "$CONF" log
 	procd_add_jail_mount_rw "$YAML"
 	procd_add_jail_mount "/etc/localtime"
 	procd_add_jail_mount "/etc/TZ"
 	procd_add_jail_mount "/etc/ssl/"
+	procd_add_jail_mount "/bin/"
+    procd_add_jail_mount "/sbin/"
+    procd_add_jail_mount "/usr/"
 
 	procd_close_instance
 }
