@@ -44,8 +44,8 @@ start_service() {
 	procd_add_jail_mount "/etc/TZ"
 	procd_add_jail_mount "/etc/ssl/"
 	procd_add_jail_mount "/bin/"
-    procd_add_jail_mount "/sbin/"
-    procd_add_jail_mount "/usr/"
+	procd_add_jail_mount "/sbin/"
+	procd_add_jail_mount "/usr/"
 
 	procd_close_instance
 }
