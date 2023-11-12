@@ -38,6 +38,10 @@ endef
 
 GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) CGO_ENABLED=0
 
+define Package/mosdns/conffiles
+/etc/mosdns/
+endef
+
 define Package/mosdns/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 
