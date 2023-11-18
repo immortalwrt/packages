@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libcryptopp
-PKG_VERSION:=8.8.0
+PKG_VERSION:=8.9.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=cryptopp$(subst .,,$(PKG_VERSION)).zip
 PKG_SOURCE_URL:=https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_$(subst .,_,$(PKG_VERSION))/ \
 		https://www.cryptopp.com/
-PKG_HASH:=ace1c7b010a409eba5e86c4fd5a8845c43a6ac39bb6110e64ca5d7fea08583f4
+PKG_HASH:=4cc0ccc324625b80b695fcd3dee63a66f1a460d3e51b71640cdbfc4cd1a3779c
 
 PKG_LICENSE:=BSL-1.0
 PKG_LICENSE_FILES:=License.txt
