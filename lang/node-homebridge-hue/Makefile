@@ -4,19 +4,19 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=mqtt
+PKG_NPM_NAME:=homebridge-hue
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=5.2.2
+PKG_VERSION:=0.13.68
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=e7c309d7d23f2af6a1d93e8adeae2402b7ef9ce85f35d803c92758a12ea63a38
+PKG_HASH:=5a0d07c387fbea849c003fbf9840a81624a6f33e54d5165d0d7c79444f723306
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE.md
+PKG_LICENSE:=Apache-2.0
+PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
@@ -24,17 +24,17 @@ PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-mqtt
+define Package/node-homebridge-hue
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=A library for the MQTT protocol
-  URL:=https://www.npmjs.org/package/mqtt
-  DEPENDS:=+node +node-ws
+  TITLE:=Homebridge plugin for Hue
+  URL:=https://www.npmjs.com/package/homebridge-hue
+  DEPENDS:=+node +node-homebridge
 endef
 
-define Package/node-mqtt/description
- MQTT.js is a client library for the MQTT protocol, written in JavaScript for node.js and the browser
+define Package/node-homebridge-hue/description
+ This Homebridge plugin exposes to Apple's HomeKit ZigBee devices (lights, plugs, sensors, switches, ...) connected to a Hue bridge by Signify.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -56,32 +56,25 @@ define Build/Compile
 	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -delete || true
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-mqtt/install
+define Package/node-homebridge-hue/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,build} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.js,*.png,config.schema.json} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{build,dist,help} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,cli,lib} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/build/bin/mqtt.js $(1)/usr/bin/mqtt
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/build/bin/pub.js $(1)/usr/bin/mqtt_pub
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/build/bin/sub.js $(1)/usr/bin/mqtt_sub
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
-	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/build/bin/mqtt.js
-	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/build/bin/pub.js
-	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/build/bin/sub.js
 endef
 
-define Package/node-mqtt/postrm
+define Package/node-homebridge-hue/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/mqtt || true
-rm -rf /usr/lib/node/mqtt || true
+rm /usr/lib/node_modules/homebridge-hue || true
+rm -rf /usr/lib/node/homebridge-hue || true
 endef
 
-$(eval $(call BuildPackage,node-mqtt))
+$(eval $(call BuildPackage,node-homebridge-hue))
