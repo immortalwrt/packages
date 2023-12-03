@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nexttrace
-PKG_VERSION:=1.2.6
+PKG_VERSION:=1.2.7
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/nxtrace/NTrace-core/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=3a81106d73ef5d2d85f717339088a2c9bb62aec5e7a0eef491d8a24d7640772b
+PKG_HASH:=68cffa061b6ca67359f45d797ba0c604d8ea728d98bc9cf13be8dc487de86907
 PKG_BUILD_DIR:=$(BUILD_DIR)/NTrace-core-$(PKG_VERSION)
 
 PKG_LICENSE:=GPL-3.0-only
