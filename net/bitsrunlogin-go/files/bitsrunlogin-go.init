@@ -49,6 +49,10 @@ start_service() {
 		json_add_string "type" "1"
 		json_add_string "acid" "$acid"
 		json_add_string "enc" "srun_bx1"
+		json_add_string "os" "Windows 10"
+		json_add_string "name" "windows"
+		json_add_string "info_prefix" "SRBX1"
+		json_add_boolean "double_stack" 0
 	json_close_object
 	json_add_object "settings"
 		json_add_object "basic"
@@ -66,6 +70,9 @@ start_service() {
 			json_add_boolean "write_file" 1
 			json_add_string "log_path" "$RUN_DIR"
 			json_add_string "log_name" "$CONF.log"
+		json_close_object
+		json_add_object "custom_header"
+		  json_add_string "User-Agent" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0"
 		json_close_object
 	json_close_object
 	json_dump > "$RUN_DIR/$CONF.json"
