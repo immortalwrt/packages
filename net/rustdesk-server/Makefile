@@ -10,7 +10,7 @@ PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/rustdesk/rustdesk-server/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=a5fa1c5b4ca29a6b23dd036681907f1828f2d14c04043a283ad0e9c5a8e43d96
+PKG_HASH:=8435d39978151560d14972247981be01ba605b02405ee0aea2747e60f891466e
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=AGPL-3.0-only
