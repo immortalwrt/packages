@@ -242,8 +242,6 @@ define Package/ddns-scripts/postinst
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	/etc/init.d/ddns enabled
 	/etc/init.d/ddns start
-
-	grep -q "/etc/init.d/ddns" "/etc/rc.local" || sed -i "2 a /etc/init.d/ddns restart" "/etc/rc.local"
 fi
 exit 0
 endef
@@ -253,8 +251,6 @@ define Package/ddns-scripts/prerm
 if [ -n "$${IPKG_INSTROOT}" ]; then
 	/etc/init.d/ddns stop
 	/etc/init.d/ddns disable
-
-	sed -i "/ddns restart/d" "/etc/rc.local"
 fi
 exit 0
 endef
