@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zwave-js-ui
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=9.4.1
-PKG_RELEASE:=4
+PKG_VERSION:=9.5.1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=ea45b51074f5f25bdfe00542fdc49e3b482f62fc0e7608be6a2d07235121d802
+PKG_HASH:=489769de78ad0f494eac4fb2c0ff66d52857f095437932078e3997fd1b20baaa
 
 PKG_MAINTAINER:=David Woodhouse <dwmw2@infradead.org>
 PKG_LICENSE:=MIT
@@ -74,7 +74,8 @@ define Build/Compile
 	clean-modules -y -D $(PKG_BUILD_DIR)/node_modules "!**/*.png" "!**/@zwave-js/core/build/test/" \
 		"**/*.d.ts" "**/@types/**" "**/obj.target/" "**/config.gypi" \
 		"**/.nvmrc" "**/.devcontainer/" "**/.bowerrc" "**/.airtap.yml" "**/.test/" \
-		"**/.notags" "**/.releaserc" "**/.dprint.jsonc" "**/.eslintrc" \
+		"**/.notags" "**/.releaserc" "**/.dprint.jsonc" "**/.eslintrc" "**/locales/" \
+		"**/esm/" "**/esm-debug/" "**/esm-browser/" "**/esm-node/" "**/*.esm.*" "**/esm.*" \
 		"**/binding.Makefile" "**/.deps/" "**/Makefile" "**/binding.gyp"
 endef
 

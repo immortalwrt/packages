@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=mqtt
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=5.2.2
+PKG_VERSION:=5.3.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=e7c309d7d23f2af6a1d93e8adeae2402b7ef9ce85f35d803c92758a12ea63a38
+PKG_HASH:=d3db78ef7cabde3e81a9618834fa1cbcb8d53dd7406bd50012b7c6fc891cb910
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT

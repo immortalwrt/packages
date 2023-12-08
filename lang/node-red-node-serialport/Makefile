@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=node-red-node-serialport
 PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=1.0.4
+PKG_VERSION:=2.0.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=12685d761e94a8051f2f8b64c0e3e74eb034543701a0218e1a9883375b791ed9
+PKG_HASH:=f1f33c2d49c8959848777c1044a3cfa7d152b759a3b07ce49866ec8fbaf3ddc2
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
