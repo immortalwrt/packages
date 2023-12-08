@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=node-red
 PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=3.1.0
+PKG_VERSION:=3.1.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=3b981ef1f3c65f54a58ecac0cbe37468f032f959e5aa3fb164c6a535ccf4e31c
+PKG_HASH:=98f0468fe78d98564473591f36f99b66ea4d67a519865e4ede6ec07f2cc293f4
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
