@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
 PKG_VERSION:=1.7.5
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/SagerNet/sing-box/tar.gz/v$(PKG_VERSION)?
@@ -79,6 +79,7 @@ define Package/sing-box/config
 
     config SING_BOX_BUILD_EMBEDDED_TOR
     bool "Build with embedded Tor support"
+    depends on BROKEN
 
     config SING_BOX_BUILD_GRPC
     bool "Build with standard gPRC support"
