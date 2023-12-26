@@ -1,3 +1,3 @@
 #!/bin/sh
 
-alist version
+alist version | grep "$PKG_VERSION"
