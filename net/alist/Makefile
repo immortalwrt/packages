@@ -36,6 +36,11 @@ define Package/alist
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +fuse-utils
 endef
 
+define Package/alist/description
+  A file list program that supports multiple storage, and supports
+  web browsing and webdav, powered by gin and Solidjs.
+endef
+
 define Package/alist/conffiles
 /etc/alist/
 /etc/config/alist
