@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge-config-ui-x
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.54.0
-PKG_RELEASE:=1
+PKG_VERSION:=4.54.1
+PKG_RELEASE:=7
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=fb823874572f6abd710b2d12ebe33f6c3f642d81eaf3c24787c7a05942195b17
+PKG_HASH:=56e457bb2498805026042f65311d30004cbbcf6811ab61bc7591fbcdbf379eed
 
 PKG_BUILD_DEPENDS:=node/host node-clean-modules/host
 PKG_BUILD_FLAGS:=no-mips16
@@ -55,7 +55,7 @@ define Package/node-homebridge-config-ui-x/description
               "sudo": true,
               "log": {
                 "method": "custom",
-                "command": "sudo logread -f -l 300 -e homebridge"
+                "command": "sudo logread -f -l 100 -e homebridge"
               }
             }
         ]
@@ -81,39 +81,42 @@ define Build/Compile
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -delete || true
-	rm -rf $(PKG_BUILD_DIR)/node_modules/fastify/node_modules/light-my-request/node_modules/ajv/lib
-	rm -rf $(PKG_BUILD_DIR)/node_modules/@nestjs/platform-fastify/node_modules/light-my-request/node_modules/ajv/lib
-	rm -rf $(PKG_BUILD_DIR)/node_modules/node-schedule/node_modules/moment/min
-	rm -rf $(PKG_BUILD_DIR)/node_modules/node-schedule/node_modules/moment/src
-	rm -rf $(PKG_BUILD_DIR)/node_modules/node-schedule/node_modules/moment/locale
-	clean-modules -y -D $(PKG_BUILD_DIR)/node_modules "!**/*.png" "!**/example/" "!**/examples/"
+	rm -rf $(PKG_BUILD_DIR)/node_modules/./fastify/node_modules/ajv/lib
+	clean-modules -y -D $(PKG_BUILD_DIR)/node_modules "!**/*.png" "**/*.d.ts" "**/@types/**" \
+		"**/.nvmrc" "**/.c8rc.json" "**/.taprc" "**/.airtap.yml" "**/.husky/" \
+		"**/.runkit_example.js" "**/.gitkeep" "**/.nojekyll" \
+		"**/esm/" "**/esm-debug/" "**/esm2015/" "**/esm5/" "**/*.esm.*" "**/esm.*" \
+		"**/.hidden" "**/.nojekyll" "**/.??*.json" "**/.??*.yaml" "**/*.esm5.*" "**/esm5.*"
 endef
 
 define Package/node-homebridge-config-ui-x/install
-	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
+	$(INSTALL_DIR) $(1)/opt/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{*.json,*.md} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+		$(1)/opt/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist,public} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+		$(1)/opt/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{LICENSE,*.js} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+		$(1)/opt/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/dist/bin/hb-service.js $(1)/usr/bin/hb-service
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/dist/bin/standalone.js $(1)/usr/bin/homebridge-config-ui-x
-	$(CP) ./files/openwrt.js $(1)/usr/lib/node/$(PKG_NPM_NAME)/dist/bin/platforms/
+	$(LN) /opt/$(PKG_NPM_NAME)/dist/bin/hb-service.js $(1)/usr/bin/hb-service
+	$(LN) /opt/$(PKG_NPM_NAME)/dist/bin/standalone.js $(1)/usr/bin/homebridge-config-ui-x
+	$(CP) ./files/openwrt.js $(1)/opt/$(PKG_NPM_NAME)/dist/bin/platforms/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
-	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
-	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/dist/bin/hb-service.js
-	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/dist/bin/standalone.js
+	$(LN) /opt/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+	chmod +x $(1)/opt/$(PKG_NPM_NAME)/dist/bin/hb-service.js
+	chmod +x $(1)/opt/$(PKG_NPM_NAME)/dist/bin/standalone.js
 
 	$(INSTALL_DIR) $(1)/usr/share/dbus-1/interfaces
 	$(CP) ./files/org.freedesktop.Avahi.Server.xml $(1)/usr/share/dbus-1/interfaces/
+	$(INSTALL_DIR) $(1)/etc/sudoers.d
+	$(CP) ./files/010_homebridge $(1)/etc/sudoers.d
+	chmod 0440 $(1)/etc/sudoers.d/010_homebridge
 endef
 
 define Package/node-homebridge-config-ui-x/postrm
 #!/bin/sh
 rm /usr/lib/node_modules/homebridge-config-ui-x || true
-rm -rf /usr/lib/node/homebridge-config-ui-x || true
+rm -rf /opt/homebridge-config-ui-x || true
 endef
 
 $(eval $(call BuildPackage,node-homebridge-config-ui-x))

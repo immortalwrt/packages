@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zwave-js-ui
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=9.5.1
-PKG_RELEASE:=2
+PKG_VERSION:=9.6.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=489769de78ad0f494eac4fb2c0ff66d52857f095437932078e3997fd1b20baaa
+PKG_HASH:=c98ca0403b14c605950f7931496f37dcc34f53ea455e8cb270730cda6db39da8
 
 PKG_MAINTAINER:=David Woodhouse <dwmw2@infradead.org>
 PKG_LICENSE:=MIT
@@ -80,25 +80,25 @@ define Build/Compile
 endef
 
 define Package/node-zwave-js-ui/install
-	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
+	$(INSTALL_DIR) $(1)/opt/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE,*.md} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+		$(1)/opt/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{server,dist,snippets,node_modules,public} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+		$(1)/opt/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/server/bin/www.js $(1)/usr/bin/zwave-js-ui
+	$(LN) /opt/$(PKG_NPM_NAME)/server/bin/www.js $(1)/usr/bin/zwave-js-ui
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
-	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+	$(LN) /opt/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/zwave-js-ui.init $(1)/etc/init.d/zwave-js-ui
 	$(INSTALL_DIR) $(1)/etc/zwave-js-ui
-	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/server/bin/www.js
+	chmod +x $(1)/opt/$(PKG_NPM_NAME)/server/bin/www.js
 endef
 
 define Package/node-zwave-js-ui/postrm
 #!/bin/sh
 rm /usr/lib/node_modules/zwave-js-ui || true
-rm -rf /usr/lib/node/zwave-js-ui || true
+rm -rf /opt/zwave-js-ui || true
 endef
 
 $(eval $(call BuildPackage,node-zwave-js-ui))

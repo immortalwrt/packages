@@ -4,15 +4,15 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=aws-iot-device-sdk-v2
+PKG_NPM_NAME:=homebridge-mqttthing
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.18.0
+PKG_VERSION:=1.1.47
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=5c386564509a71d08b64984eb78f3f7b71995be941311c53d2bf8af2412cdbec
+PKG_HASH:=6ba9f3be2bec6c1e875c59a1c1d87c8bd3aa0bea989a0f0f7e98f0e91741f841
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
@@ -24,17 +24,17 @@ PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-aws-iot-device-sdk-v2
+define Package/node-homebridge-mqttthing
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=AWS IoT Device SDK for JavaScript v2
-  URL:=https://www.npmjs.com/package/aws-iot-device-sdk-v2
-  DEPENDS:=+node +node-aws-crt
+  TITLE:=Homebridge plugin supporting various services over MQTT
+  URL:=https://www.npmjs.com/package/homebridge-mqttthing
+  DEPENDS:=+node +node-homebridge +node-mqtt
 endef
 
-define Package/node-aws-iot-device-sdk-v2/description
- This SDK is built on the AWS Common Runtime, a collection of libraries (aws-c-common, aws-c-io, aws-c-mqtt, aws-c-http, aws-c-cal ...) written in C to be cross-platform, high-performance, secure, and reliable. The libraries are bound to JS by the awscrt package.
+define Package/node-homebridge-mqttthing/description
+ Homebridge MQTT-Thing is a plugin for Homebridge allowing the integration of many different accessory types using MQTT.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -59,20 +59,22 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-aws-iot-device-sdk-v2/install
+define Package/node-homebridge-mqttthing/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist,lib,documents} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.js,config.schema.json} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,codecs,libs,wip} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-aws-iot-device-sdk-v2/postrm
+define Package/node-homebridge-mqttthing/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/aws-iot-device-sdk-v2 || true
-rm -rf /usr/lib/node/aws-iot-device-sdk-v2 || true
+rm /usr/lib/node_modules/homebridge-mqttthing || true
+rm -rf /usr/lib/node/homebridge-mqttthing || true
 endef
 
-$(eval $(call BuildPackage,node-aws-iot-device-sdk-v2))
+$(eval $(call BuildPackage,node-homebridge-mqttthing))
