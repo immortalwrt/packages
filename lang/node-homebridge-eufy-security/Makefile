@@ -4,18 +4,18 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=node-inspect
-PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=2.0.0
-PKG_RELEASE:=4
+PKG_NPM_NAME:=homebridge-eufy-security
+PKG_NAME:=node-$(PKG_NPM_NAME)
+PKG_VERSION:=2.2.21
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=b080997d49739257e783dbc7a0604ab8c075a55f4c6eada2a2197b4761d7566c
+PKG_HASH:=5c42299edd3f022afd6501bcd8d02310724226dfb8a72406f1b1a830c328b41f
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=MIT
+PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=node/host
@@ -24,17 +24,17 @@ PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-inspect
+define Package/node-homebridge-eufy-security
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Node Inspect
-  URL:=https://www.npmjs.org/package/node-inspect
-  DEPENDS:=+node
+  TITLE:=Control Eufy Security from homebridge
+  URL:=https://www.npmjs.com/package/homebridge-eufy-security
+  DEPENDS:=+node +node-homebridge +node-ffmpeg-for-homebridge
 endef
 
-define Package/node-inspect/description
- node-inspect re-implementing node debug against the new V8 debugger protocol.
+define Package/node-homebridge-eufy-security/description
+ Homebridge plugin to control certain Eufy Security devices.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -53,28 +53,29 @@ define Build/Compile
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM)) \
-	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	rm -rf $(PKG_BUILD_DIR)/node_modules/@homebridge/camera-utils/node_modules/ffmpeg-for-homebridge
 endef
 
-define Package/node-inspect/install
+define Package/node-homebridge-eufy-security/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{LICENSE,*.js,lib} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.json} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/cli.js $(1)/usr/bin/node-inspect
+	$(CP) $(PKG_BUILD_DIR)/{dist,homebridge-ui,media,node_modules} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-inspect/postrm
+define Package/node-homebridge-eufy-security/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/node-inspect || true
-rm -rf /usr/lib/node/node-inspect || true
+rm /usr/lib/node_modules/homebridge-eufy-security || true
+rm -rf /usr/lib/node/homebridge-eufy-security || true
 endef
 
-$(eval $(call BuildPackage,node-inspect))
+$(eval $(call BuildPackage,node-homebridge-eufy-security))
