@@ -89,6 +89,7 @@ IP address blocking is commonly used to protect against brute force attacks, pre
 * Add new or edit existing banIP feeds on your own with the LuCI integrated custom feed editor
 * Supports external allowlist URLs to reference additional IPv4/IPv6 feeds
 * Supports allowing / blocking of certain VLAN forwards
+* Provides an option to transfer logging events on remote servers via cgi interface
 
 ## Prerequisites
 * **[OpenWrt](https://openwrt.org)**, latest stable release or a snapshot with nft/firewall 4 support
@@ -105,8 +106,9 @@ IP address blocking is commonly used to protect against brute force attacks, pre
 * Install banIP (_opkg install banip_) - the banIP service is disabled by default
 * Install the LuCI companion package 'luci-app-banip' (opkg install luci-app-banip)
 * It's strongly recommended to use the LuCI frontend to easily configure all aspects of banIP, the application is located in LuCI under the 'Services' menu
+* If you're using a complex network setup, e.g. special tunnel interfaces, than untick the 'Auto Detection' option under the 'General Settings' tab and set the required options manually
+* Start the service with '/etc/init.d/banip start' and check everything is working by running '/etc/init.d/banip status' and also check the 'Firewall Log' and 'Processing Log' tabs
 * If you're going to configure banIP via CLI, edit the config file '/etc/config/banip' and enable the service (set ban\_enabled to '1'), then add pre-configured feeds via 'ban\_feed' (see the feed list above) and add/change other options to your needs (see the options reference below)
-* Start the service with '/etc/init.d/banip start' and check everything is working by running '/etc/init.d/banip status'
 
 ## banIP CLI interface
 * All important banIP functions are accessible via CLI.
@@ -141,7 +143,7 @@ Available commands:
 | ban_filelimit           | option | 1024                          | ulimit max open/number of files (range 1024-4096)                                                                 |
 | ban_loglimit            | option | 100                           | scan only the last n log entries permanently. A value of '0' disables the monitor                                 |
 | ban_logcount            | option | 1                             | how many times the IP must appear in the log to be considered as suspicious                                       |
-| ban_logterm             | list   | regex                         | various regex for logfile parsing (default: dropbear, sshd, luci, nginx, asterisk)                                |
+| ban_logterm             | list   | regex                         | various regex for logfile parsing (default: dropbear, sshd, luci, nginx, asterisk and cgi-remote events)          |
 | ban_logreadfile         | option | /var/log/messages             | alternative location for parsing the log file, e.g. via syslog-ng, to deactivate the standard parsing via logread |
 | ban_autodetect          | option | 1                             | auto-detect wan interfaces, devices and subnets                                                                   |
 | ban_debug               | option | 0                             | enable banIP related debug logging                                                                                |
@@ -191,6 +193,8 @@ Available commands:
 | ban_mailnotification    | option | 0                             | receive E-Mail notifications with every banIP run                                                                 |
 | ban_reportelements      | option | 1                             | count Set elements in the report, disable this option to speed up the report significantly                        |
 | ban_resolver            | option | -                             | external resolver used for DNS lookups                                                                            |
+| ban_remotelog           | option | 0                             | enable the cgi interface to receive remote logging events                                                         |
+| ban_remotetoken         | option | -                             | unique token to communicate with the cgi interface                                                                |
 
 ## Examples
 **banIP report information**  
@@ -292,6 +296,7 @@ list ban_logterm 'luci: failed login'
 list ban_logterm 'error: maximum authentication attempts exceeded'
 list ban_logterm 'sshd.*Connection closed by.*\[preauth\]'
 list ban_logterm 'SecurityEvent=\"InvalidAccountID\".*RemoteAddress='
+list ban_logterm 'received a suspicious remote IP '\''.*'\'''
 ```
 
 **allow-/blocklist handling**  
@@ -324,6 +329,18 @@ MAC-address with IPv4 and IPv6 wildcard concatenation:
 C8:C2:9B:F7:80:12 192.168.1.10                     => this will be populated to v4MAC-Set with the certain IP
 C8:C2:9B:F7:80:12                                  => this will be populated to v6MAC-Set with the IP-wildcard ::/0
 ```
+**enable the cgi interface to receive remote logging events**  
+banIP ships a basic cgi interface in '/www/cgi-bin/banip' to receive remote logging events (disabled by default). The cgi interface evaluates logging events via GET or POST request (see examples below). To enable the cgi interface set the following options:  
+
+    * set 'ban_remotelog' to '1' to enbale the cgi interface
+    * set 'ban_remotetoken' to a secret transfer token, allowed token characters consist of '[A-Za-z]', '[0-9]', '.' and ':'
+
+  Examples to transfer remote logging events from an internal server to banIP via cgi interface:  
+
+    * POST request: curl --insecure --data "<ban_remotetoken>=<suspicious IP>" https://192.168.1.1/cgi-bin/banip
+    * GET request: wget --no-check-certificate https://192.168.1.1/cgi-bin/banip?<ban_remotetoken>=<suspicious IP>
+
+Please note: for security reasons use this cgi interface only internally and only encrypted via https transfer protocol.
 
 **redirect Asterisk security logs to lodg/logread**  
 banIP only supports logfile scanning via logread, so to monitor attacks on Asterisk, its security log must be available via logread. To do this, edit '/etc/asterisk/logger.conf' and add the line 'syslog.local0 = security', then run 'asterisk -rx reload logger' to update the running Asterisk configuration.
