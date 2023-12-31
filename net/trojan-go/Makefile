@@ -30,7 +30,7 @@ GO_PKG_TAGS:=full
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
 
-define Package/trojan-go
+define Package/trojan-go/Default
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=Web Servers/Proxies
@@ -39,9 +39,29 @@ define Package/trojan-go
   URL:=https://p4gefau1t.github.io/trojan-go/
 endef
 
+define Package/trojan-go
+  $(call Package/trojan-go/Default)
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
+endef
+
 define Package/trojan-go/description
   Trojan features multiple protocols over TLS to avoid both
   active/passive detections and ISP QoS limitations.
+endef
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+endef
+
+define Build/UpdateDependencies
+	cd $(PKG_BUILD_DIR) && \
+		go get -u && \
+		go mod tidy
+endef
+
+define Build/Compile
+	$(call Build/UpdateDependencies)
+	$(call GoPackage/Build/Compile)
 endef
 
 $(eval $(call GoBinPackage,trojan-go))
