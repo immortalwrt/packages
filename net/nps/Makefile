@@ -51,7 +51,17 @@ define nps/templates
   endef
 endef
 
+define Build/UpdateDependencies
+	cd $(PKG_BUILD_DIR) && \
+		go mod tidy
+endef
+
 NPS_COMPONENTS:=npc nps
+
+define Build/Compile
+	$(call Build/UpdateDependencies)
+	$(call GoPackage/Build/Compile)
+endef
 
 $(foreach component,$(NPS_COMPONENTS), \
   $(eval $(call nps/templates,$(component))) \
