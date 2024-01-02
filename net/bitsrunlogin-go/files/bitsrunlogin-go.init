@@ -91,9 +91,11 @@ start_service() {
 	procd_set_param command "$PROG"
 	procd_append_param command -config "$RUN_DIR/$CONF.json"
 
-	local auto_acid
+	local auto_acid auto_enc
 	config_get_bool auto_acid "config" "auto_acid" "1"
+	config_get_bool auto_enc "config" "auto_enc" "1"
 	[ "$auto_acid" -eq "0" ] || procd_append_param command -auto-acid
+	[ "$auto_enc" -eq "0" ] || procd_append_param command -auto-enc
 
 	procd_set_param respawn
 	procd_close_instance
