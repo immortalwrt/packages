@@ -98,7 +98,8 @@ TARGET_CFLAGS += -Wno-error=implicit-function-declaration \
 		 -Wno-error=incompatible-pointer-types \
 		 -Wno-error=format-security \
 		 -Wno-error=undef \
-		 -Wno-error=missing-include-dirs
+		 -Wno-error=missing-include-dirs \
+                 -Wno-error=format-nonliteral
 
 TARGET_LDFLAGS += -Wl,-rpath-link=$(STAGING_DIR)/usr/lib \
 		  -L$(STAGING_DIR)/usr/lib/libevent
