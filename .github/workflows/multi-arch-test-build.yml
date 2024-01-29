@@ -55,7 +55,7 @@ jobs:
             runtime_test: true
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -102,18 +102,21 @@ jobs:
           echo "$EOF" >> $GITHUB_ENV
 
       - name: Build
-        uses: immortalwrt/gh-action-sdk@v4
+        uses: immortalwrt/gh-action-sdk@v5
         env:
           ARCH: ${{ matrix.arch }}-${{ env.BRANCH }}
           FEEDNAME: packages_ci
           INDEX: 1
           KEY_BUILD: ${{ env.KEY_BUILD }}
+          V: s
 
       - name: Move created packages to project dir
+        if: always()
         run: cp bin/packages/${{ matrix.arch }}/packages_ci/* . || true
 
       - name: Store packages
-        uses: actions/upload-artifact@v3
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.arch}}-${{ github.sha}}-packages
           path: |
@@ -122,12 +125,14 @@ jobs:
             *.ipk
 
       - name: Store logs
-        uses: actions/upload-artifact@v3
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.arch}}-${{ github.sha}}-logs
           path: logs/
 
       - name: Remove logs
+        if: always()
         run: sudo rm -rf logs/ || true
 
       - name: Check if any packages were built
