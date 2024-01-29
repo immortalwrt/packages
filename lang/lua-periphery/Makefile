@@ -13,10 +13,12 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
+CMAKE_SOURCE_SUBDIR:=c-periphery
+CMAKE_BINARY_SUBDIR:=c-periphery
 PKG_BUILD_FLAGS:=gc-sections
-PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/lua-periphery
   SUBMENU:=Lua
@@ -30,6 +32,14 @@ endef
 define Package/lua-periphery/description
   lua-periphery is a library for GPIO, LED, PWM, SPI, I2C, MMIO, and
   Serial peripheral I/O interface access in userspace Linux.
+endef
+
+CMAKE_OPTIONS += -DBUILD_TESTS=OFF
+
+define Build/Compile
+	+$(NINJA) -C $(CMAKE_BINARY_DIR)
+	$(CP) $(CMAKE_BINARY_DIR)/libperiphery.a $(CMAKE_BINARY_DIR)/periphery.a
+	+$(MAKE_VARS) $(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) $(MAKE_FLAGS)
 endef
 
 define Package/lua-periphery/install
