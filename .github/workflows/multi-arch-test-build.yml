@@ -55,7 +55,7 @@ jobs:
             runtime_test: true
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -116,7 +116,7 @@ jobs:
 
       - name: Store packages
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.arch}}-${{ github.sha}}-packages
           path: |
@@ -126,7 +126,7 @@ jobs:
 
       - name: Store logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.arch}}-${{ github.sha}}-logs
           path: logs/
