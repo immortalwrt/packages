@@ -1,21 +1,18 @@
-#
-# Copyright (C) 2014 Arduino LLC
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=socket.io
+PKG_NPM_NAME:=homebridge-tuya
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.7.4
+PKG_VERSION:=2.0.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=4ea6db4b14cd9eb2121b62b828b3423ca38dbbf9dd161dd56b70d9d41d57c7ec
+PKG_HASH:=e8f809088ed824402f007a9b087e49116028fec6aefd0f678f3d1f0323c1e59d
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -27,17 +24,17 @@ PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-socket.io
+define Package/node-homebridge-tuya
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Realtime application framework
-  URL:=https://www.npmjs.org/package/socket.io
-  DEPENDS:=+node
+  TITLE:=Offical Homebridge plugin for TuyAPI
+  URL:=https://www.npmjs.com/package/homebridge-tuya
+  DEPENDS:=+node +node-homebridge
 endef
 
-define Package/node-socket.io/description
- Real-time apps made cross-browser & easy with a WebSocket-like API
+define Package/node-homebridge-tuya/description
+ Homebridge-tuya is a homebridge plugin that lets you control your Tuya based devices with Homekit.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -56,28 +53,28 @@ define Build/Compile
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM)) \
-	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-socket.io/install
+define Package/node-homebridge-tuya/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{LICENSE,*.mjs} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.MD,*.js,config.schema.json} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,client-dist,dist} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,bin,lib} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-socket.io/postrm
+define Package/node-homebridge-tuya/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/socket.io || true
-rm -rf /usr/lib/node/socket.io || true
+rm /usr/lib/node_modules/homebridge-tuya || true
+rm -rf /usr/lib/node/homebridge-tuya || true
 endef
 
-$(eval $(call BuildPackage,node-socket.io))
+$(eval $(call BuildPackage,node-homebridge-tuya))
