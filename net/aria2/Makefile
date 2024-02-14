@@ -71,7 +71,7 @@ CONFIGURE_ARGS += \
 	$(if $(CONFIG_ARIA2_BITTORRENT),--enable,--disable)-bittorrent \
 	$(if $(CONFIG_ARIA2_METALINK),--enable,--disable)-metalink \
 	$(if $(CONFIG_ARIA2_WEBSOCKET),--enable,--disable)-websocket \
-	$(if $(CONFIG_ARIA2_OPENSSL),--with,--without)-libopenssl-legacy \
+	$(if $(CONFIG_ARIA2_OPENSSL),--with,--without)-openssl \
 	$(if $(CONFIG_ARIA2_GNUTLS),--with,--without)-gnutls \
 	$(if $(CONFIG_ARIA2_NETTLE),--with,--without)-libnettle \
 	$(if $(CONFIG_ARIA2_LIBGCRYPT),--with,--without)-libgcrypt \
