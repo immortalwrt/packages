@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=glib2
-PKG_VERSION:=2.74.0
-PKG_RELEASE:=5
+PKG_VERSION:=2.78.4
+PKG_RELEASE:=2
 
 PKG_SOURCE:=glib-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNOME/glib/$(basename $(PKG_VERSION))
-PKG_HASH:=3652c7f072d7b031a6b5edd623f77ebc5dcd2ae698598abcc89ff39ca75add30
+PKG_HASH:=24b8e0672dca120cc32d394bccb85844e732e04fe75d18bb0573b2dbc7548f63
 
 PKG_MAINTAINER:=Peter Wagner <tripolar@gmx.at>
 PKG_LICENSE:=LGPL-2.1-or-later
@@ -38,7 +38,7 @@ define Package/glib2
   CATEGORY:=Libraries
   DEPENDS:=$(ICONV_DEPENDS) $(INTL_DEPENDS) +zlib +libpthread +libffi +libattr +libpcre2
   TITLE:=glib 2.0
-  URL:=http://www.gtk.org/
+  URL:=https://www.gtk.org/
 endef
 
 define Package/glib2/description
@@ -48,22 +48,14 @@ endef
 COMP_ARGS= \
 	-Dselinux=disabled \
 	-Dlibmount=disabled \
-	-Dman=false \
-	-Ddtrace=false \
-	-Dsystemtap=false \
-	-Dsysprof=disabled \
-	-Dgtk_doc=false \
-	-Dbsymbolic_functions=true \
 	-Dforce_posix_threads=true \
 	-Dtests=false \
-	-Dinstalled_tests=false \
-	-Doss_fuzz=disabled \
 	-Dglib_debug=disabled \
 	-Dglib_assert=false \
 	-Dglib_checks=true \
 	-Dlibelf=disabled
 
-MESON_HOST_ARGS += $(COMP_ARGS) -Dxattr=false -Ddefault_library=static -Dnls=disabled
+MESON_HOST_ARGS += $(COMP_ARGS) -Dxattr=false -Ddefault_library=static -Dnls=disabled -Dforce_fallback_for=libpcre2-8
 MESON_ARGS += $(COMP_ARGS) -Dxattr=true -Db_lto=true -Ddefault_library=both -Dnls=$(if $(CONFIG_BUILD_NLS),en,dis)abled
 
 define Build/InstallDev
