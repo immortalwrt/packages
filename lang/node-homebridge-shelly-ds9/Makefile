@@ -4,18 +4,18 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=twilio
+PKG_NPM_NAME:=homebridge-shelly-ds9
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.22.0
+PKG_VERSION:=1.1.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=30fd6b39df5af486cac02b4b5e3663637fac96c5298882684fdb41f4f6bf94bb
+PKG_HASH:=5f1fb8b3c004cf603ac47e10fbd799172f3c0384727ee6939dca433f90e197ff
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=MIT
+PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=node/host
@@ -24,17 +24,17 @@ PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-twilio
+define Package/node-homebridge-shelly-ds9
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=A Twilio helper library
-  URL:=https://www.npmjs.org/package/twilio
-  DEPENDS:=+node
+  TITLE:=Homebridge plugin for Shelly
+  URL:=https://www.npmjs.com/package/homebridge-shelly-ds9
+  DEPENDS:=+node +node-homebridge
 endef
 
-define Package/node-twilio/description
- A Twilio helper library
+define Package/node-homebridge-shelly-ds9/description
+ Homebridge plugin for Shelly, enabling HomeKit support for the next generation of Shelly devices.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -59,20 +59,22 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-twilio/install
+define Package/node-homebridge-shelly-ds9/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,lib,index.js} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.js,config.schema.json} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-twilio/postrm
+define Package/node-homebridge-shelly-ds9/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/twilio || true
-rm -rf /usr/lib/node/twilio || true
+rm /usr/lib/node_modules/homebridge-shelly-ds9 || true
+rm -rf /usr/lib/node/homebridge-shelly-ds9 || true
 endef
 
-$(eval $(call BuildPackage,node-twilio))
+$(eval $(call BuildPackage,node-homebridge-shelly-ds9))
