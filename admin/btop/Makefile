@@ -17,10 +17,10 @@ PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_FLAGS:=no-lto
-CMAKE_BINARY_SUBDIR:=openwrt-build
+PKG_BUILD_PARALLEL:=1
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
 
 define Package/btop
   SECTION:=admin
@@ -37,13 +37,17 @@ define Package/btop/description
   C++ version and continuation of bashtop and bpytop.
 endef
 
-CMAKE_OPTIONS+= -DBTOP_GPU=OFF -DBTOP_LTO=OFF
+PROG_LDFLAGS:=-pthread -DFMT_HEADER_ONLY -D_FILE_OFFSET_BITS=64
+MAKE_FLAGS+= \
+	PLATFORM=Linux \
+	OPTFLAGS="$(TARGET_CXXFLAGS)" \
+	LDCXXFLAGS="$(TARGET_LDFLAGS) $(PROG_LDFLAGS)"
 
 define Package/btop/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/btop $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/local/bin/btop $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/usr/share
-	$(CP) $(PKG_INSTALL_DIR)/usr/share/btop $(1)/usr/share/
+	$(CP) $(PKG_INSTALL_DIR)/usr/local/share/btop $(1)/usr/share/
 
 	$(INSTALL_DIR) $(1)/etc/profile.d
 	$(CP) $(CURDIR)/files/btop.sh $(1)/etc/profile.d/
