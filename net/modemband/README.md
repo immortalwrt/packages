@@ -21,7 +21,9 @@ Supported devices:
 - Quectel RG500Q-EA
 - Quectel RG502Q-EA
 - Quectel RM500Q-GL
+- Quectel RM500U-CNV
 - Quectel RM502Q-AE
+- Quectel RM505Q-AE
 - Quectel RM520N-GL
 - Sierra Wireless EM7455/MC7455/DW5811e
 - SIMCOM SIM8200EA-M2
