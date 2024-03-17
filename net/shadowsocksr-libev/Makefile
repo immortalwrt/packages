@@ -20,7 +20,7 @@ PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_FIXUP:=autoreconf
-PKG_BUILD_FLAGS:=no-mips16
+PKG_BUILD_FLAGS:=no-mips16 gc-sections lto
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
@@ -56,8 +56,7 @@ CONFIGURE_ARGS += \
 	--disable-assert \
 	--enable-system-shared-lib
 
-TARGET_CFLAGS += -flto
-TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
+TARGET_LDFLAGS += -Wl,--as-needed
 
 $(foreach component,$(SHADOWSOCKSR_COMPONENTS), \
   $(eval $(call BuildPackage,shadowsocksr-libev-ssr-$(component))) \
