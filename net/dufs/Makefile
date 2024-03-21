@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dufs
 PKG_VERSION:=0.40.0
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/sigoden/dufs/tar.gz/v$(PKG_VERSION)?
@@ -28,7 +28,7 @@ define Package/dufs
   SUBMENU:=Web Servers/Proxies
   TITLE:=A distinctive utility file server
   URL:=https://github.com/sigoden/dufs
-  DEPENDS:=$(RUST_ARCH_DEPENDS) +liblzma
+  DEPENDS:=$(RUST_ARCH_DEPENDS) @!(i386||mips64) +liblzma
 endef
 
 define Package/dufs/description
