@@ -458,6 +458,25 @@ proto_modemmanager_setup() {
 	modemmanager_check_state "$device" "${modemstatus}" "$pincode"
 	[ "$?" -ne "0" ] && return 1
 
+	# always cleanup before attempting a new connection, just in case
+	modemmanager_cleanup_connection "${modemstatus}"
+
+	mmcli --modem="${device}" --timeout 120 --enable || {
+		proto_notify_error "${interface}" MM_MODEM_DISABLED
+		return 1
+	}
+
+	[ -z "${plmn}" ] || {
+		echo "starting network registraion with plmn '${plmn}'..."
+		mmcli --modem="${device}" \
+			--timeout 120 \
+			--3gpp-register-in-operator="${plmn}" || {
+			proto_notify_error "${interface}" MM_3GPP_OPERATOR_REGISTRATION_FAILED
+			proto_block_restart "${interface}"
+			return 1
+		}
+	}
+
 	if [ -z "${allowedmode}" ]; then
 		modemmanager_set_allowed_mode "$device" "$interface" "any"
 	else
@@ -486,14 +505,6 @@ proto_modemmanager_setup() {
 		# check error for allowed_mode and preferred_mode function call
 		[ "$?" -ne "0" ] && return 1
 	fi
-
-	# always cleanup before attempting a new connection, just in case
-	modemmanager_cleanup_connection "${modemstatus}"
-
-	mmcli --modem="${device}" --timeout 120 --enable || {
-		proto_notify_error "${interface}" MM_MODEM_DISABLED
-		return 1
-	}
 
 	# set initial eps bearer settings
 	[ -z "${init_epsbearer}" ] || {
