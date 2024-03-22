@@ -99,6 +99,6 @@ endif
 comma := ,
 MESON_ARGS += \
 	-Ddefault_programmer_name=$(DEFAULT_PROGRAMMER_NAME) \
-	-Dprogrammer=$(subst $() $(),$(comma),$(PROGRAMMER_ARGS)) \
+	-Dprogrammer=$(subst $() $(),$(comma),$(strip $(PROGRAMMER_ARGS))) \
 	-Dwerror=false \
 	-Dtests=disabled
