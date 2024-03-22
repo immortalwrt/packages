@@ -36,8 +36,6 @@ define Package/mosdns
   PROVIDES:=mosdns-neo
 endef
 
-GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) CGO_ENABLED=0
-
 define Package/mosdns/conffiles
 /etc/mosdns/
 endef
