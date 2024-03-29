@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=BitSrunLoginGo
-PKG_VERSION:=1.5.1
+PKG_VERSION:=1.5.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/Mmx233/BitSrunLoginGo/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=d22f253a6b9c5c5d1a3548aeafcc1ab7eff4ea32a976838b793bfcc3103d4492
+PKG_HASH:=2da93db0dba0a4d323363410d9e0937b69221d9b77f1d9ebb4ec3dfc03db9b8c
 
 PKG_LICENSE:=AGPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
