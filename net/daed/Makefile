@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=daed
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/daeuniverse/daed.git
@@ -48,7 +48,8 @@ define Package/daed
   TITLE:=A Modern Dashboard For dae
   # You need enable KERNEL_DEBUG_INFO_BTF and KERNEL_BPF_EVENTS
   DEPENDS:=$(GO_ARCH_DEPENDS) $(BPF_DEPENDS) \
-    +ca-bundle +kmod-sched-core +kmod-sched-bpf +kmod-xdp-sockets-diag
+    +ca-bundle +kmod-sched-core +kmod-sched-bpf +kmod-xdp-sockets-diag \
+    +kmod-veth
 endef
 
 define Package/daed-geoip
