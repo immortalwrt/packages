@@ -4,6 +4,8 @@
 USE_PROCD=1
 START=99
 
+extra_command "hot_reload" "Hot-reload service"
+
 CONF="dae"
 PROG="/usr/bin/dae"
 LOG_DIR="/var/log/dae"
@@ -49,6 +51,6 @@ service_triggers() {
 	procd_add_reload_trigger "$CONF"
 }
 
-reload_service() {
+hot_reload() {
 	"$PROG" reload "$(cat /var/run/dae.pid)"
 }
