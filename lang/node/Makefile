@@ -7,31 +7,31 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=node
 
 ifeq ($(CONFIG_NODEJS_21),y)
-PKG_VERSION:=v21.6.2
+PKG_VERSION:=v21.7.2
 PKG_RELEASE:=1
-PKG_HASH:=191294d445d1e6800359acc8174529b1e18e102147dc5f596030d3dce96931e5
+PKG_HASH:=dc1b18771e7ed3da051fc2242806bfde5ae02b63fe7205e80156e92de8f8fa3d
 PATCH_DIR:=./patches/v21.x
-NODEJS_BIN_SUM:=593dd28f5c78d797e76b730937b95fcdfc594f053a8756b1d0860a4555bed58e
+NODEJS_BIN_SUM:=06b891c82c9b19b8d8553222de5de8afd43a38c1b898f9ca323e1d2e22da9075
 NODE_MODULE_VERSION:=120
 else
 ifeq ($(CONFIG_NODEJS_18),y)
-PKG_VERSION:=v18.19.1
+PKG_VERSION:=v18.20.1
 PKG_RELEASE:=1
-PKG_HASH:=090f96a2ecde080b6b382c6d642bca5d0be4702a78cb555be7bf02b20bd16ded
+PKG_HASH:=7fb430d0b1256c22f26dd321070182ab943005bdb7b738facc6d9a82b1e04ed7
 PATCH_DIR:=./patches/v18.x
-NODEJS_BIN_SUM:=f35f24edd4415cd609a2ebc03be03ed2cfe211d7333d55c752d831754fb849f0
+NODEJS_BIN_SUM:=d226c39c5546dca97567db8f8ca7f92fca6572d44f181b1f85af83eee5d6f9e1
 NODE_MODULE_VERSION:=108
 else
-PKG_VERSION:=v20.11.1
+PKG_VERSION:=v20.12.1
 PKG_RELEASE:=1
-PKG_HASH:=77813edbf3f7f16d2d35d3353443dee4e61d5ee84d9e3138c7538a3c0ca5209e
+PKG_HASH:=b9bef0314e12773ef004368ee56a2db509a948d4170b9efb07441bac1f1407a0
 PATCH_DIR:=./patches/v20.x
-NODEJS_BIN_SUM:=d8dab549b09672b03356aa2257699f3de3b58c96e74eb26a8b495fbdc9cf6fbe
+NODEJS_BIN_SUM:=da2f590a39717792dcf8c4bf6b9e4b269601e6ce3a3f150a3c4b379f7eea6d83
 NODE_MODULE_VERSION:=115
 endif
 endif
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/nodejs-release/$(PKG_VERSION) \
                 https://nodejs.org/dist/$(PKG_VERSION)
 
@@ -222,7 +222,7 @@ endef
 
 ifeq ($(CONFIG_NODEJS_HOST_BIN),y)
 
-NODEJS_BIN:=node-$(PKG_VERSION)-linux-x64.tar.xz
+NODEJS_BIN:=node-$(PKG_VERSION)-linux-x64.tar.gz
 
 define Download/nodebin
 	URL:=https://nodejs.org/download/release/$(PKG_VERSION)/
@@ -248,7 +248,7 @@ define Host/Install
 	rm -rf $(1)/lib/node_modules/npm
 	rm -f $(1)/bin/corepack
 	rm -rf $(1)/lib/node_modules/corepack
-	$(TAR) xvfJ $(DL_DIR)/$(NODEJS_BIN) -C $(1) --strip-components=1
+	$(TAR) xvf $(DL_DIR)/$(NODEJS_BIN) -C $(1) --strip-components=1
 	rm -f $(1)/{CHANGELOG.md,LICENSE,README.md}
 endef
 
