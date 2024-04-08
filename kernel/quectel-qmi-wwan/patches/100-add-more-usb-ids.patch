@@ -1,6 +1,6 @@
 --- a/qmi_wwan_q.c
 +++ b/qmi_wwan_q.c
-@@ -2526,6 +2526,13 @@ static const struct usb_device_id produc
+@@ -2533,6 +2533,13 @@ static const struct usb_device_id produc
  	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0800, 4, sdx55) },  /* Quectel RG500 */
  	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0801, 4, sdx55) },  /* Quectel RG520 */
  	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0122, 4, sdx55) },  /* Quectel RG650 */
