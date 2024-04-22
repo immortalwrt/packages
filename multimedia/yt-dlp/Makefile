@@ -4,7 +4,7 @@ PKG_NAME:=yt-dlp
 PKG_VERSION:=2024.4.9
 PKG_RELEASE:=1
 
-PYPI_NAME:=yt-dlp
+PYPI_NAME:=yt_dlp
 PKG_HASH:=7ee90572b4d313b582b99c89e4eccf779b57ff54edc331873c6b3fba77faa8b0
 
 PKG_MAINTAINER:=Michal Vasilek <michal.vasilek@nic.cz>
