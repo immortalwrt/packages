@@ -4,15 +4,15 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=twilio
+PKG_NPM_NAME:=homebridge-xiaomi-roborock-vacuum
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=5.0.3
+PKG_VERSION:=0.31.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=29762528fe79616c72b9d1f102c7a179bd5401a4a3f1b30997a31b03d7130de2
+PKG_HASH:=c5e86e46de15ef653124115058e4c9157f31438ee83eca973baa6a7fa8134673
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -24,17 +24,17 @@ PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-twilio
+define Package/node-homebridge-xiaomi-roborock-vacuum
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=A Twilio helper library
-  URL:=https://www.npmjs.org/package/twilio
-  DEPENDS:=+node
+  TITLE:=Xiaomi Vacuum Cleaner plugin for Homebridge
+  URL:=https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum
+  DEPENDS:=+node +node-homebridge
 endef
 
-define Package/node-twilio/description
- A Twilio helper library
+define Package/node-homebridge-xiaomi-roborock-vacuum/description
+ Xiaomi Vacuum Cleaner - 1st (Mi Robot), 2nd (Roborock S50 + S55), 3rd Generation (Roborock S6) and S5 Max - plugin for Homebridge.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -59,20 +59,22 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
 endef
 
-define Package/node-twilio/install
+define Package/node-homebridge-xiaomi-roborock-vacuum/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,lib,index.js} \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.json} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-twilio/postrm
+define Package/node-homebridge-xiaomi-roborock-vacuum/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/twilio || true
-rm -rf /usr/lib/node/twilio || true
+rm /usr/lib/node_modules/homebridge-xiaomi-roborock-vacuum || true
+rm -rf /usr/lib/node/homebridge-xiaomi-roborock-vacuum || true
 endef
 
-$(eval $(call BuildPackage,node-twilio))
+$(eval $(call BuildPackage,node-homebridge-xiaomi-roborock-vacuum))
