@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=miniupnpc
-PKG_VERSION:=2.2.3
+PKG_VERSION:=2.2.7
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
-PKG_HASH:=dce41b4a4f08521c53a0ab163ad2007d18b5e1aa173ea5803bd47a1be3159c24
+PKG_HASH:=b0c3a27056840fd0ec9328a5a9bac3dc5e0ec6d2e8733349cf577b0aa1e70ac1
 
 PKG_MAINTAINER:=
 PKG_LICENSE:=BSD-3-Clause
@@ -58,8 +58,8 @@ endef
 
 define Package/miniupnpc/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/upnpc-shared $(1)/usr/bin/upnpc
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/listdevices $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/upnpc-shared $(1)/usr/bin/upnpc
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/upnp-listdevices-shared $(1)/usr/bin/upnp-listdevices
 endef
 
 define Package/libminiupnpc/install
