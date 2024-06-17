@@ -11,7 +11,7 @@
  #define QBT__STRINGIFY(x) #x
 --- a/src/base/bittorrent/sessionimpl.cpp
 +++ b/src/base/bittorrent/sessionimpl.cpp
-@@ -141,7 +141,7 @@ namespace libtorrent
+@@ -142,7 +142,7 @@ namespace libtorrent
  namespace
  {
      const char PEER_ID[] = "qB";
