@@ -58,7 +58,7 @@ endef
 TARGET_CFLAGS+= -I$(STAGING_DIR)/usr/include/libdrm
 ifdef CONFIG_USE_GLIBC
   ifeq ($(ARCH),x86_64)
-    TARGET_LDFLAGS+= -Wl,--sysroot=$(TOOLCHAIN_DIR)
+    TARGET_LDFLAGS+= -Wl,--sysroot=$(TOOLCHAIN_ROOT_DIR)
   endif
 endif
 
