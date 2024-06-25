@@ -14,7 +14,7 @@ PKG_VERSION="$(awk -F "PKG_VERSION:=" '{print $2}' "$CURDIR/Makefile" | xargs)"
 for i in $(jq -r '.assets[].browser_download_url | select(contains("chinadns-ng%40"))' <<< "$TAG_INFO"); do
 	i="$(urldecode "$i")"
 
-	arch="$(awk -F '@' '{printf "%s@%s\n", $2, $3}' <<< "$i")"
+	arch="$(awk -F '@' '{printf "%s@%s", $2, $3}' <<< "$i")"
 	line="$(sed -n "/PKG_SOURCE:=.*$arch@/=" "$CURDIR/Makefile")"
 	[ -n "$line" ] || continue
 
