@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=chinadns-ng
 PKG_VERSION:=2024.05.12
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 ifeq ($(ARCH),aarch64)
   PKG_SOURCE:=$(PKG_NAME)@aarch64-linux-musl@generic+v8a@fast+lto
@@ -33,16 +33,24 @@ else ifeq ($(ARCH),i386)
     PKG_HASH:=2ce5915489e2639a67e9ad786a998755fa2cd6ff8d75fac8e82a7471299e7e4a
   endif
 else ifeq ($(ARCH),mips)
-  ifneq ($(CONFIG_HAS_FPU),)
-    PKG_SOURCE:=$(PKG_NAME)@mips-linux-musl@mips32r2@fast+lto
-    PKG_HASH:=ef906ee162b552b1baa8a57f549b18400c01018869cf07b193a841b754bb0edb
+  ifeq ($(CPU_TYPE),mips32)
+    PKG_SOURCE:=$(PKG_NAME)@mips-linux-musl@mips32+soft_float@fast+lto
+    PKG_HASH:=8f13c199ca9b91106de2b1739dcc4decf0078f32e1c141deb02fe009659bd78e
   else
     PKG_SOURCE:=$(PKG_NAME)@mips-linux-musl@mips32r2+soft_float@fast+lto
     PKG_HASH:=de904ee3b5eacc7367d714f90ce385d22000078004c3827f05d5f2d4ff3c80b8
   endif
 else ifeq ($(ARCH),mipsel)
-  PKG_SOURCE:=$(PKG_NAME)@mipsel-linux-musl@mips32r2+soft_float@fast+lto
-  PKG_HASH:=2149587515744223deec2355913a963136f4999e87b7baea49a3ff266f0f46d0
+  ifeq ($(CPU_TYPE),)
+    PKG_SOURCE:=$(PKG_NAME)@mipsel-linux-musl@mips32+soft_float@fast+lto
+    PKG_HASH:=f43940ee1691ca1edc7cb0e142e74087dc99ed260c79556a96e98846c66b63b7
+  else ifeq ($(CONFIG_HAS_FPU),)
+    PKG_SOURCE:=$(PKG_NAME)@mipsel-linux-musl@mips32r2+soft_float@fast+lto
+    PKG_HASH:=2149587515744223deec2355913a963136f4999e87b7baea49a3ff266f0f46d0
+  else
+    PKG_SOURCE:=$(PKG_NAME)@mipsel-linux-musl@mips32r2@fast+lto
+    PKG_HASH:=035e0b4ea9c93cd3770a23305579a6087247e52600bb2c854a399e401732e844
+  endif
 else ifeq ($(ARCH),x86_64)
   PKG_SOURCE:=$(PKG_NAME)@x86_64-linux-musl@x86_64@fast+lto
   PKG_HASH:=323e5aebba9d894e9f4f9adecad078092a4a54b8bb91f5468216386430f6c120
