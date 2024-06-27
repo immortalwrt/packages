@@ -8,9 +8,9 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=opensc
-PKG_VERSION:=0.24.0
+PKG_VERSION:=0.25.1
 PKG_RELEASE:=1
-PKG_HASH:=24d03c69287291da32a30c4c38a304ad827f56cb85d83619e1f5403ab6480ef8
+PKG_HASH:=23cbaae8bd7c8eb589b68c0a961dfb0d02007bea3165a3fc5efe2621d549b37b
 
 PKG_LICENSE:=LGPL-2.1-or-later
 PKG_LICENSE_FILES:=COPYING
@@ -109,6 +109,7 @@ TOOLS:= \
 	cardos-tool \
 	cryptoflex-tool \
 	dnie-tool \
+	dtrust-tool \
 	egk-tool \
 	eidenv \
 	gids-tool \
@@ -116,8 +117,9 @@ TOOLS:= \
 	iasecc-tool \
 	netkey-tool \
 	openpgp-tool \
-	opensc-tool \
+	opensc-asn1 \
 	opensc-explorer:+libncurses:+libreadline \
+	opensc-tool \
 	piv-tool \
 	pkcs11-register \
 	pkcs11-tool \
@@ -136,7 +138,6 @@ PROFILES:= \
 	epass2003 \
 	flex \
 	gids \
-	gpk \
 	ias_adele_admin1 \
 	ias_adele_admin2 \
 	ias_adele_common \
@@ -144,7 +145,6 @@ PROFILES:= \
 	iasecc_generic_oberthur \
 	iasecc_generic_pki \
 	iasecc \
-	incrypto34 \
 	isoApplet \
 	muscle \
 	myeid \
@@ -156,8 +156,7 @@ PROFILES:= \
 	rutoken \
 	sc-hsm \
 	setcos \
-	starcos \
-	westcos
+	starcos
 
 $(foreach file,$(TOOLS),$(eval $(call ToolGen,$(file))))
 $(foreach file,$(PROFILES),$(eval $(call ProfileGen,$(file))))
