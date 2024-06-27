@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=twilio
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=5.1.0
+PKG_VERSION:=5.2.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=e1bff4b59dd4ab745503b640c46735088ca4e4135ce533e0bbfcce93d033fdd3
+PKG_HASH:=b30772423b0c54a24469af9da2f65152849a347117847d6e078e8379cc512240
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -56,7 +56,7 @@ define Build/Compile
 	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 endef
 
 define Package/node-twilio/install

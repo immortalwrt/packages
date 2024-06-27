@@ -7,13 +7,13 @@ include $(TOPDIR)/rules.mk
 PKG_NPM_SCOPE:=vonage
 PKG_NPM_NAME:=client-sdk
 PKG_NAME:=node-$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)
-PKG_VERSION:=1.6.0
+PKG_VERSION:=1.6.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL_FILE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
-PKG_HASH:=c3a8f4846b4049c75b2bc10712e61f599918bf799ab1dc721081eaeec4ed401e
+PKG_HASH:=2cf72cbfeb5935354fc71033130081811400a58ebe34a00ae01385db3b8f38bb
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=SEE LICENSE IN LICENSE
@@ -57,7 +57,7 @@ define Build/Compile
 	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 endef
 
 define Package/node-vonage-client-sdk/install

@@ -7,13 +7,13 @@ include $(TOPDIR)/rules.mk
 PKG_NPM_SCOPE:=homebridge
 PKG_NPM_NAME:=node-pty-prebuilt-multiarch
 PKG_NAME:=node-$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)
-PKG_VERSION:=0.11.13
+PKG_VERSION:=0.11.14
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL_FILE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
-PKG_HASH:=1f6fd38989c0f834049d8ce6c8ec0070bf4283128922220bb5f2c125dbfc9069
+PKG_HASH:=7ab9b659458326bc14b1f2aae9a47b4d96cb3b0cf6bd6d99120f453b269f6e46
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
@@ -64,7 +64,7 @@ define Build/Compile
 	npm run install --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --build-from-source --target_arch=$(NODEJS_CPU)
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 endef
 
 define Package/node-homebridge-node-pty-prebuilt-multiarch/install

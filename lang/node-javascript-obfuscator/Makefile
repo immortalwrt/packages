@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=javascript-obfuscator
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.1.0
+PKG_VERSION:=4.1.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=5335ccc1e7923593167150b25bd89d8ea60317fb3553a580d5a4200835d2f010
+PKG_HASH:=75bc04c051ae21ed620c4b85807eae2448ab2b1bbd2d674dbc5e6a8721255f1c
 
 PKG_MAINTAINER:=Zbynek Kocur <zbynek.kocur@fel.cvut.cz>
 PKG_LICENSE:=BSD-2-Clause
@@ -61,7 +61,7 @@ define Build/Compile
 	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts --legacy-peer-deps
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 endef
 
 define Package/node-javascript-obfuscator/install
@@ -92,7 +92,7 @@ define Host/Compile
 	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts --legacy-peer-deps
 	rm -rf $(TMP_DIR)/npm-cache-$(HOSTTMPNPM)
 	rm -f $(HOST_BUILD_DIR)/node_modules/.package-lock.json
-	find $(HOST_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	find $(HOST_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 endef
 
 define Host/Install

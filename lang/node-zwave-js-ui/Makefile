@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zwave-js-ui
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=9.13.2
+PKG_VERSION:=9.14.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=11ffbb5d688ad8579849c67e2e599fe9fa8c78a9ea550719237052c554c2c803
+PKG_HASH:=fa37d81613e7c70bc5186b43a4b94b012abf60c171d4c9735efe500f15fdcb71
 
 PKG_MAINTAINER:=David Woodhouse <dwmw2@infradead.org>
 PKG_LICENSE:=MIT
@@ -60,7 +60,7 @@ define Build/Compile
 	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --build-from-source --target_arch=$(NODEJS_CPU) --omit=optional --no-optional --prefer-dedupe
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 rmdir || true
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 	rm -rf $(PKG_BUILD_DIR)/node_modules/zwave-js/node_modules/@serialport/bindings-cpp/prebuilds
 	rm -rf $(PKG_BUILD_DIR)/node_modules/zwave-js/node_modules/@serialport/bindings-cpp/src
 	rm -rf $(PKG_BUILD_DIR)/node_modules/zwave-js/node_modules/moment/min
