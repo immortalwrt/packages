@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UA2F
 PKG_VERSION:=4.6.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/Zxilly/UA2F/tar.gz/v$(PKG_VERSION)?
@@ -52,6 +52,10 @@ define Package/ua2f/config
 	help
 	  Specify the custom User-Agent string to use when UA2F_CUSTOM_USER_AGENT is enabled.
    endif
+endef
+
+define Package/ua2f/conffiles
+/etc/config/ua2f
 endef
 
 CMAKE_OPTIONS += \
