@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -50,12 +50,6 @@ if (APPLE)
+@@ -51,12 +51,6 @@ if (APPLE)
    target_compile_definitions(miniupnpc-private INTERFACE _DARWIN_C_SOURCE)
  endif ()
  
