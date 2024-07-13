@@ -3,9 +3,11 @@ Setting LTE/5G NSA/5G SA bands for selected modems.
 Supported devices:
 - BroadMobi BM806U
 - Dell DW5821e Snapdragon X20 LTE (Foxconn T77W968)
+- Fibocom FM350-GL
 - Fibocom L850-GL
 - Fibocom L850-GL in mbim mode
 - Fibocom L860-GL
+- Fibocom L860-GL-16
 - HP lt4112 (Huawei ME906E)
 - HP lt4132 LTE/HSPA+ 4G Module (Huawei ME906s-158)
 - HP lt4220 (Foxconn T77W676)
@@ -23,6 +25,7 @@ Supported devices:
 - Quectel RM500Q-GL
 - Quectel RM500U-CNV
 - Quectel RM502Q-AE
+- Quectel RM502Q-GL
 - Quectel RM505Q-AE
 - Quectel RM520N-GL
 - Sierra Wireless EM7455/MC7455/DW5811e
@@ -32,6 +35,7 @@ Supported devices:
 - Telit LN940 (Foxconn T77W676) in mbim mode
 - Telit LN960 (Foxconn T77W968)
 - Telit LN960
+- Yuge CLM920 NC_5
 - ZTE MF286 (router)
 - ZTE MF286A (router)
 - ZTE MF286D (router)
