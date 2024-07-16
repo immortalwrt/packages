@@ -5,11 +5,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=you-get
-PKG_VERSION:=0.4.1650
+PKG_VERSION:=0.4.1718
 PKG_RELEASE:=1
 
 PYPI_NAME:=you-get
-PKG_HASH:=b3c944cf7a63cc468cccc8816dce7fc008c2e6b5ba52aefe5ce2081818a3ad47
+PKG_HASH:=78560236a4d54ad6be200d172a828e39f49c0f07c867dcf1df670c66b5b7f096
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=MIT
