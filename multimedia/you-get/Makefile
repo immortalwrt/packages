@@ -9,6 +9,7 @@ PKG_VERSION:=0.4.1718
 PKG_RELEASE:=1
 
 PYPI_NAME:=you-get
+PYPI_SOURCE_NAME:=you_get
 PKG_HASH:=78560236a4d54ad6be200d172a828e39f49c0f07c867dcf1df670c66b5b7f096
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
