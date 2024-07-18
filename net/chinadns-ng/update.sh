@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 export CURDIR="$(cd "$(dirname $0)"; pwd)"
@@ -11,7 +13,7 @@ VERSION="$(jq -r ".tag_name" <<< "$TAG_INFO")"
 PKG_VERSION="$(awk -F "PKG_VERSION:=" '{print $2}' "$CURDIR/Makefile" | xargs)"
 [ "$PKG_VERSION" != "$VERSION" ] || exit 0
 
-for i in $(jq -r '.assets[].browser_download_url | select(contains("chinadns-ng%40"))' <<< "$TAG_INFO"); do
+for i in $(jq -r '.assets[].browser_download_url | select(contains("chinadns-ng%2B"))' <<< "$TAG_INFO"); do
 	i="$(urldecode "$i")"
 
 	arch="$(awk -F '@' '{printf "%s@%s", $2, $3}' <<< "$i")"
