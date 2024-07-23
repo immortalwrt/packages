@@ -30,7 +30,7 @@ define Package/7z
   DEPENDS:=+libstdcpp
 endef
 
-HOST_MAKE_PATH:=CPP/7zip/Bundles/Alone7z
+HOST_MAKE_PATH:=CPP/7zip/Bundles/Alone2
 HOST_MAKE_FLAGS+= \
 	-f ../../cmpl_gcc.mak \
 	CC="$(HOSTCC) $(HOST_CFLAGS)" \
