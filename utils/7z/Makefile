@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=7z
-PKG_VERSION:=23.01
+PKG_VERSION:=24.05
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)$(subst .,,$(PKG_VERSION))-src.tar.xz
 PKG_SOURCE_URL:=https://7-zip.org/a/
-PKG_HASH:=356071007360e5a1824d9904993e8b2480b51b570e8c9faf7c0f58ebe4bf9f74
+PKG_HASH:=63f341cf80b8d287c6e945519b3da0fa75553c85572a471b7fa6e68f9a90b790
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=LGPL-2.1-or-later BSD-3-Clause unRAR
@@ -27,7 +27,7 @@ define Package/7z
   SUBMENU:=Compression
   TITLE:=File archiver with a high compression ratio
   URL:=https://7-zip.org/
-  DEPENDS:=+libstdcpp @!powerpc
+  DEPENDS:=+libstdcpp
 endef
 
 MAKE_PATH:=CPP/7zip/Bundles/Alone2
