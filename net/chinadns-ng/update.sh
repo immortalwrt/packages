@@ -17,7 +17,7 @@ for i in $(jq -r '.assets[].browser_download_url | select(contains("chinadns-ng%
 	i="$(urldecode "$i")"
 
 	arch="$(awk -F '@' '{printf "%s@%s", $2, $3}' <<< "$i")"
-	line="$(sed -n "/PKG_SOURCE:=.*$arch@/=" "$CURDIR/Makefile")"
+	line="$(sed -n "/PKG_SOURCE_URL_FILE:=.*$arch@/=" "$CURDIR/Makefile")"
 	[ -n "$line" ] || continue
 
 	sha256="$(curl -fsSL "$i" | sha256sum | awk '{print $1}')" || exit 1
