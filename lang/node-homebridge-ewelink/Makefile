@@ -4,41 +4,37 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=rimraf
+PKG_NPM_NAME:=homebridge-ewelink
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=6.0.1
+PKG_VERSION:=12.3.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=b25facf7f802651ed3865a96732471327f7017f59c71861d1aa85fa89ba3160c
+PKG_HASH:=17530555f6bbd58a05caeba02fbf1d101c29226cfcd61cff919c6938187c3a96
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=ISC
+PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
-
-HOST_BUILD_DEPENDS:=node/host
-HOST_BUILD_PARALLEL:=1
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
-include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-rimraf
+define Package/node-homebridge-ewelink
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=A deep deletion module for node (like rm -rf)
-  URL:=https://www.npmjs.org/package/rimraf
-  DEPENDS:=+node
+  TITLE:=Homebridge plugin to integrate eWeLink devices
+  URL:=https://www.npmjs.com/package/homebridge-ewelink
+  DEPENDS:=+node +node-homebridge
 endef
 
-define Package/node-rimraf/description
- The UNIX command rm -rf for node
+define Package/node-homebridge-ewelink/description
+ Homebridge plugin to integrate eWeLink devices into HomeKit.
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -46,7 +42,6 @@ TAR_CMD=$(HOST_TAR) -C $(1) $(TAR_OPTIONS)
 
 NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH)))))
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
-HOSTTMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 NPM_CACHE_DIR:=$(if $(call qstrip,$(CONFIG_NODEJS_NPM_CACHE_DIR)),$(call qstrip,$(CONFIG_NODEJS_NPM_CACHE_DIR)),$(TMP_DIR))
 
 TARGET_CFLAGS+=$(FPIC)
@@ -64,48 +59,22 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 endef
 
-define Package/node-rimraf/install
+define Package/node-homebridge-ewelink/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/*.md \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.js,config.schema.json} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,lib} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/dist/esm/bin.mjs $(1)/usr/bin/rimraf
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-rimraf/postrm
+define Package/node-homebridge-ewelink/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/rimraf || true
-rm -rf /usr/lib/node/rimraf || true
+rm /usr/lib/node_modules/homebridge-ewelink || true
+rm -rf /usr/lib/node/homebridge-ewelink || true
 endef
 
-define Host/Compile
-	cd $(HOST_BUILD_DIR); \
-	$(HOST_MAKE_VARS) \
-	npm_config_nodedir=$(STAGING_DIR)/usr/ \
-	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/host-npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(HOSTTMPNPM)) \
-	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
-	rm -rf $(TMP_DIR)/npm-cache-$(HOSTTMPNPM)
-	rm -f $(HOST_BUILD_DIR)/node_modules/.package-lock.json
-	find $(HOST_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
-endef
-
-define Host/Install
-	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)
-	$(CP) $(HOST_BUILD_DIR)/{package.json,LICENSE} \
-		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/*.md \
-		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/{node_modules,dist} \
-		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/bin
-	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/dist/cjs/src/bin.js $(1)/bin/rimraf
-endef
-
-$(eval $(call HostBuild))
-$(eval $(call BuildPackage,node-rimraf))
+$(eval $(call BuildPackage,node-homebridge-ewelink))
