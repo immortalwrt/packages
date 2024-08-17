@@ -33,23 +33,15 @@ else ifeq ($(ARCH),i386)
     PKG_HASH:=15983518255abc1849b13352763112442388519109625a9fcd92f50e05831b1c
   endif
 else ifeq ($(ARCH),mips)
-  ifeq ($(CPU_TYPE),mips32)
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mips-linux-musl@mips32+soft_float@fast+lto
     PKG_HASH:=1b804d4c450d10cb6f91ac0656121bf9fd3e499f15ea569770b8d5523d5290c2
-  else
-    PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mips-linux-musl@mips32r2+soft_float@fast+lto
-    PKG_HASH:=a8c0644d5c9715dadafa7890cd24a911718a71f58a4328b426cb9a239c1a2cde
-  endif
 else ifeq ($(ARCH),mipsel)
-  ifeq ($(CPU_TYPE),)
+  ifeq ($(CONFIG_HAS_FPU),)
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mipsel-linux-musl@mips32+soft_float@fast+lto
     PKG_HASH:=82d07d148e2c20d4247df7baa0421f1c365954c0953e0e0fbe76e1cd78d1f1b2
-  else ifeq ($(CONFIG_HAS_FPU),)
-    PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mipsel-linux-musl@mips32r2+soft_float@fast+lto
-    PKG_HASH:=375453bc696e3cd11dda7476c99aaca0933f6f282a909a2220d459e4624ba550
   else
-    PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mipsel-linux-musl@mips32r2@fast+lto
-    PKG_HASH:=fadbf0d08e154922431a29a1d5f63b0347e0728886a23f2fed836c0b908f07f8
+    PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mipsel-linux-musl@mips32@fast+lto
+    PKG_HASH:=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   endif
 else ifeq ($(ARCH),x86_64)
   PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@x86_64-linux-musl@x86_64@fast+lto
