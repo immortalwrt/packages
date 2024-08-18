@@ -41,7 +41,7 @@ else ifeq ($(ARCH),mipsel)
     PKG_HASH:=82d07d148e2c20d4247df7baa0421f1c365954c0953e0e0fbe76e1cd78d1f1b2
   else
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mipsel-linux-musl@mips32@fast+lto
-    PKG_HASH:=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    PKG_HASH:=4a0f66796fbde9c276345ca5e5d4995ce28fef9d54c9538cd931fc2e03de78dd
   endif
 else ifeq ($(ARCH),x86_64)
   PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@x86_64-linux-musl@x86_64@fast+lto
