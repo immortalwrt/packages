@@ -81,7 +81,7 @@ define Build/Prepare
 		mkdir -p "chrome/build/pgo_profiles" ; \
 		$(CP) "$(DL_DIR)/$(PGO_FILE)" "chrome/build/pgo_profiles" ; \
 		mkdir -p "third_party/llvm-build/Release+Asserts" ; \
-		$(TAR) -xzf "$(DL_DIR)/$(CLANG_FILE)" -C "third_party/llvm-build/Release+Asserts" ; \
+		$(TAR) -xJf "$(DL_DIR)/$(CLANG_FILE)" -C "third_party/llvm-build/Release+Asserts" ; \
 		echo -e "llvmorg-$(CLANG_VER)" > "third_party/llvm-build/Release+Asserts/cr_build_revision" ; \
 		popd ; \
 	)
