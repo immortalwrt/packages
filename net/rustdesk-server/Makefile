@@ -26,7 +26,7 @@ define Package/rustdesk-server
   SECTION:=net
   CATEGORY:=Network
   TITLE:=RustDesk Server Program
-  DEPENDS:=@(aarch64||arm||i386||i686||x86_64)
+  DEPENDS:=@(aarch64||arm||x86_64) @(!arm||TARGET_bcm53xx||HAS_FPU)
   URL:=https://rustdesk.com/server
 endef
 
