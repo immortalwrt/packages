@@ -15,9 +15,10 @@ start_service() {
 	config_get_bool enabled "config" "enabled" "0"
 	[ "$enabled" -eq "1" ] || return 1
 
-	local listen ttl noweb insecure
+	local listen ttl dns noweb insecure
 	config_get listen "config" "listen" "[::]:9876"
 	config_get ttl "config" "ttl" "300"
+	config_get dns "config" "dns"
 	config_get_bool noweb "config" "noweb" "0"
 	config_get_bool insecure "config" "insecure" "0"
 
@@ -30,6 +31,7 @@ start_service() {
 	procd_append_param command -c "$YAML"
 	procd_append_param command -l "$listen"
 	procd_append_param command -f "$ttl"
+	[ -z "$dns" ] || procd_append_param command -dns "$dns"
 	[ "$noweb" -eq "0" ] || procd_append_param command -noweb
 	[ "$insecure" -eq "0" ] || procd_append_param command -skipVerify
 
