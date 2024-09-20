@@ -8,16 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qt6base
-PKG_BASE:=6.2
-PKG_BUGFIX:=9
+PKG_BASE:=6.5
+PKG_BUGFIX:=3
 PKG_VERSION:=$(PKG_BASE).$(PKG_BUGFIX)
 PKG_RELEASE:=1
 
-PKG_SOURCE:=qtbase-everywhere-opensource-src-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=https://download.qt-project.org/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
-		https://mirrors.tencent.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
-		https://mirrors.aliyun.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/
-PKG_HASH:=494154ebbb00d26ef556b4389466354aa2fa5a0e145841fd915b5f3005fe719c
+PKG_SOURCE:=qtbase-everywhere-src-$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:=https://mirrors.tencent.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
+		  https://mirrors.aliyun.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
+		  http://download.qt-project.org/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/
+PKG_HASH:=df2f4a230be4ea04f9798f2c19ab1413a3b8ec6a80bef359f50284235307b546
 
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/qtbase-everywhere-src-$(PKG_VERSION)
 PKG_BUILD_DIR:=$(BUILD_DIR)/qtbase-everywhere-src-$(PKG_VERSION)
