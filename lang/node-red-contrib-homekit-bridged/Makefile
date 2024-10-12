@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=node-red-contrib-homekit-bridged
 PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=1.6.1
+PKG_VERSION:=1.7.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=9eb4a9c3e5e708b7bdb19a800cab96f5f58b63517edfd03b39957160861c6546
+PKG_HASH:=a99d01df20fe1a379d091fd962c5c7932c99d9e077301e781c405b1f9d4536e7
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
