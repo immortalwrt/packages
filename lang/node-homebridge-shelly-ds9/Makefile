@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge-shelly-ds9
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.4.2
+PKG_VERSION:=1.5.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=18793c430ea9d6b92c47cdd39436e51049d5e11c195ea6127868dfda2c4c58ed
+PKG_HASH:=6a66b124434a595d23484308a2c7ee221092a053c42a4c9724a46952066cc1fc
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=GPL-3.0
