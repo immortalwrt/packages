@@ -11,7 +11,6 @@
 export LC_ALL=C
 export PATH="/usr/sbin:/usr/bin:/sbin:/bin"
 
-adb_ver="4.2.2-r5"
 adb_enabled="0"
 adb_debug="0"
 adb_forcedns="0"
@@ -84,8 +83,10 @@ f_cmd() {
 f_load() {
 	local bg_pid iface port ports cpu core
 
-	adb_sysver="$("${adb_ubuscmd}" -S call system board 2>/dev/null | "${adb_jsoncmd}" -q -e '@.model' -e '@.release.description' |
-		"${adb_awkcmd}" 'BEGIN{RS="";FS="\n"}{printf "%s, %s",$1,$2}')"
+	adb_packages="$("${adb_ubuscmd}" -S call rpc-sys packagelist '{ "all": true }' 2>/dev/null)"
+	adb_ver="$(printf "%s" "${adb_packages}" | "${adb_jsoncmd}" -ql1 -e '@.packages.adblock')"
+	adb_sysver="$("${adb_ubuscmd}" -S call system board 2>/dev/null | "${adb_jsoncmd}" -ql1  -e '@.model' -e '@.release.target' -e '@.release.distribution' -e '@.release.version' -e '@.release.revision' |
+		"${adb_awkcmd}" 'BEGIN{RS="";FS="\n"}{printf "%s, %s, %s %s %s %s",$1,$2,$3,$4,$5,$6}')"
 	adb_memory="$("${adb_awkcmd}" '/^MemAvailable/{printf "%s",int($2/1000)}' "/proc/meminfo" 2>/dev/null)"
 	f_conf
 
@@ -152,6 +153,7 @@ f_load() {
 			f_log "info" "Please set the name of the reporting network device 'adb_repiface' manually"
 		fi
 	fi
+	f_log "info" "DEBUG ::: $(ubus call rpc-sys packagelist '{ "all": true }' | wc -l) packages"
 }
 
 # check & set environment
@@ -186,8 +188,6 @@ f_env() {
 # load adblock config
 #
 f_conf() {
-	local cnt="0" cnt_max="10"
-
 	[ ! -r "/etc/config/adblock" ] && f_log "err" "no valid adblock config found, please re-install the adblock package"
 
 	config_cb() {
@@ -223,15 +223,6 @@ f_conf() {
 		}
 	}
 	config_load adblock
-
-	if [ -z "${adb_fetchutil}" ] || [ -z "${adb_dns}" ]; then
-		while [ -z "${adb_packages}" ] && [ "${cnt}" -le "${cnt_max}" ]; do
-			adb_packages="$(opkg list-installed 2>/dev/null)"
-			cnt="$((cnt + 1))"
-			sleep 1
-		done
-		[ -z "${adb_packages}" ] && f_log "err" "local opkg package repository is not available, please set 'adb_fetchutil' and 'adb_dns' manually"
-	fi
 }
 
 # status helper function
@@ -253,13 +244,15 @@ f_dns() {
 	local util utils dns_up cnt="0"
 
 	if [ -z "${adb_dns}" ]; then
-		utils="knot-resolver bind unbound dnsmasq raw"
+		utils="knot-resolver bind-server unbound-daemon dnsmasq raw"
 		for util in ${utils}; do
-			if [ "${util}" = "raw" ] || printf "%s" "${adb_packages}" | grep -q "^${util}"; then
+			if [ "${util}" = "raw" ] || printf "%s" "${adb_packages}" | "${adb_grepcmd}" -q "${util}"; then
 				if [ "${util}" = "knot-resolver" ]; then
 					util="kresd"
-				elif [ "${util}" = "bind" ]; then
+				elif [ "${util}" = "bind-server" ]; then
 					util="named"
+				elif [ "${util}" = "unbound-daemon" ]; then
+					util="unbound"
 				fi
 				if [ "${util}" = "raw" ] || [ -x "$(command -v "${util}")" ]; then
 					adb_dns="${util}"
@@ -349,7 +342,7 @@ f_dns() {
 
 	if [ "${adb_dns}" != "raw" ] && [ "${adb_action}" != "stop" ]; then
 		while [ "${cnt}" -le 30 ]; do
-			dns_up="$("${adb_ubuscmd}" -S call service list "{\"name\":\"${adb_dns}\"}" 2>/dev/null | "${adb_jsoncmd}" -l1 -e "@[\"${adb_dns}\"].instances.*.running" 2>/dev/null)"
+			dns_up="$("${adb_ubuscmd}" -S call service list "{\"name\":\"${adb_dns}\"}" 2>/dev/null | "${adb_jsoncmd}" -ql1 -e "@[\"${adb_dns}\"].instances.*.running" 2>/dev/null)"
 			if [ "${dns_up}" = "true" ]; then
 				break
 			fi
@@ -401,8 +394,8 @@ f_fetch() {
 	if [ -z "${adb_fetchutil}" ]; then
 		utils="aria2c curl wget uclient-fetch"
 		for util in ${utils}; do
-			if { [ "${util}" = "uclient-fetch" ] && printf "%s" "${adb_packages}" | grep -q "^libustream-"; } ||
-				{ [ "${util}" = "wget" ] && printf "%s" "${adb_packages}" | grep -q "^wget -"; } ||
+			if { [ "${util}" = "uclient-fetch" ] && printf "%s" "${adb_packages}" | "${adb_grepcmd}" -q "libustream-"; } ||
+				{ [ "${util}" = "wget" ] && printf "%s" "${adb_packages}" | "${adb_grepcmd}" -q "wget-ssl"; } ||
 				[ "${util}" = "curl" ] || [ "${util}" = "aria2c" ]; then
 				if [ -x "$(command -v "${util}")" ]; then
 					adb_fetchutil="${util}"
@@ -542,7 +535,7 @@ f_count() {
 						adb_cnt="$((adb_cnt - $(wc -l 2>/dev/null <"${file}")))"
 					fi
 				done
-				[ -n "${adb_dnsheader}" ] && adb_cnt="$(((adb_cnt - $(printf "%b" "${adb_dnsheader}" | grep -c "^")) / 2))"
+				[ -n "${adb_dnsheader}" ] && adb_cnt="$(((adb_cnt - $(printf "%b" "${adb_dnsheader}" | "${adb_grepcmd}" -c "^")) / 2))"
 			fi
 			;;
 	esac
@@ -556,14 +549,14 @@ f_extconf() {
 	case "${adb_dns}" in
 		"dnsmasq")
 			config="dhcp"
-			config_dir="$(uci_get dhcp "@dnsmasq[${adb_dnsinstance}]" confdir | grep -Fo "${adb_dnsdir}")"
+			config_dir="$(uci_get dhcp "@dnsmasq[${adb_dnsinstance}]" confdir | "${adb_grepcmd}" -Fo "${adb_dnsdir}")"
 			if [ "${adb_enabled}" = "1" ] && [ -z "${config_dir}" ]; then
 				uci_set dhcp "@dnsmasq[${adb_dnsinstance}]" confdir "${adb_dnsdir}" 2>/dev/null
 			fi
 			;;
 		"kresd")
 			config="resolver"
-			config_file="$(uci_get resolver kresd rpz_file | grep -Fo "${adb_dnsdir}/${adb_dnsfile}")"
+			config_file="$(uci_get resolver kresd rpz_file | "${adb_grepcmd}" -Fo "${adb_dnsdir}/${adb_dnsfile}")"
 			if [ "${adb_enabled}" = "1" ] && [ -z "${config_file}" ]; then
 				uci -q add_list resolver.kresd.rpz_file="${adb_dnsdir}/${adb_dnsfile}"
 			elif [ "${adb_enabled}" = "0" ] && [ -n "${config_file}" ]; then
@@ -579,7 +572,7 @@ f_extconf() {
 		/etc/init.d/firewall enabled; then
 		for zone in ${adb_zonelist}; do
 			for port in ${adb_portlist}; do
-				if ! printf "%s" "${fwcfg}" | grep -q "adblock_${zone}${port}[ |\$]"; then
+				if ! printf "%s" "${fwcfg}" | "${adb_grepcmd}" -q "adblock_${zone}${port}[ |\$]"; then
 					uci -q batch <<-EOC
 						set firewall."adblock_${zone}${port}"="redirect"
 						set firewall."adblock_${zone}${port}".name="Adblock DNS (${zone}, ${port})"
@@ -1026,7 +1019,7 @@ f_query() {
 # update runtime information
 #
 f_jsnup() {
-	local entry sources runtime utils bg_pid status="${1:-"enabled"}"
+	local object sources runtime utils bg_pid status="${1:-"enabled"}"
 
 	adb_memory="$("${adb_awkcmd}" '/^MemTotal|^MemFree|^MemAvailable/{ORS="/"; print int($2/1000)}' "/proc/meminfo" 2>/dev/null |
 		"${adb_awkcmd}" '{print substr($0,1,length($0)-1)}')"
@@ -1064,15 +1057,12 @@ f_jsnup() {
 	: >"${adb_rtfile}"
 	json_init
 	json_load_file "${adb_rtfile}" >/dev/null 2>&1
-	json_init
 	json_add_string "adblock_status" "${status:-"enabled"}"
 	json_add_string "adblock_version" "${adb_ver}"
 	json_add_string "blocked_domains" "${adb_cnt:-0}"
 	json_add_array "active_sources"
-	for entry in ${sources}; do
-		json_add_object
-		json_add_string "source" "${entry}"
-		json_close_object
+	for object in ${sources:-"-"}; do
+		json_add_string "${object}" "${object}"
 	done
 	json_close_array
 	json_add_string "dns_backend" "${adb_dns:-"-"} (${adb_dnscachecmd##*/}), ${adb_dnsdir:-"-"}"
@@ -1085,9 +1075,8 @@ f_jsnup() {
 	json_dump >"${adb_rtfile}"
 
 	if [ "${adb_mail}" = "1" ] && [ -x "${adb_mailservice}" ] &&
-		{ [ "${status}" = "error" ] || { [ "${status}" = "enabled" ] && [ "${adb_cnt}" -le "${adb_mailcnt}" ]; }; }; then
-		("${adb_mailservice}" "${adb_ver}" >/dev/null 2>&1) &
-		bg_pid="${!}"
+		[ "${status}" = "enabled" ] && [ "${adb_cnt}" -le "${adb_mailcnt}" ]; then
+		"${adb_mailservice}" >/dev/null 2>&1
 	fi
 	f_log "debug" "f_jsnup  ::: status: ${status:-"-"}, cnt: ${adb_cnt}, mail: ${adb_mail}, mail_service: ${adb_mailservice}, mail_cnt: ${adb_mailcnt}, mail_pid: ${bg_pid:-"-"}"
 }
@@ -1101,7 +1090,7 @@ f_log() {
 		[ -x "${adb_loggercmd}" ] && "${adb_loggercmd}" -p "${class}" -t "adblock-${adb_ver}[${$}]" "${log_msg}" || \
 			printf "%s %s %s\n" "${class}" "adblock-${adb_ver}[${$}]" "${log_msg}"
 		if [ "${class}" = "err" ] || [ "${class}" = "emerg" ]; then
-			f_rmdns
+			[ "${adb_action}" != "mail" ] && f_rmdns
 			f_jsnup "error"
 			exit 1
 		fi
@@ -1199,7 +1188,7 @@ f_main() {
 						src_suffix="$(eval printf "%s" \"\$\{adb_src_suffix_${src_name}:-\"domains\"\}\")"
 						src_list="$(tar -tzf "${src_arc}" 2>/dev/null)"
 						for src_item in ${src_cat}; do
-							src_entries="${src_entries} $(printf "%s" "${src_list}" | grep -E "${src_item}/${src_suffix}$")"
+							src_entries="${src_entries} $(printf "%s" "${src_list}" | "${adb_grepcmd}" -E "${src_item}/${src_suffix}$")"
 						done
 						if [ -n "${src_entries}" ]; then
 							tar -xOzf "${src_arc}" ${src_entries} 2>/dev/null >"${src_tmpload}"
@@ -1330,8 +1319,8 @@ f_report() {
 							{domain=substr($(NF-1),1,length($(NF-1))-1);type="RQ"}
 						else
 							{if($(NF-2)~/NXDomain/||$(NF-1)=="0.0.0.0"){type="NX"}else{type="OK"};domain=""};
-						if(int($9)>0)
-							printf "%08d\t%s\t%s\t%s\t%-25s\t%s\n",$9,type,$1,substr($2,1,8),$6,domain}' >>"${report_raw}"
+							if(int($9)>0)
+								printf "%08d\t%s\t%s\t%s\t%-25s\t%s\n",$9,type,$1,substr($2,1,8),$6,domain}' >>"${report_raw}"
 				else
 					"${adb_dumpcmd}" "${resolve}" --immediate-mode -T domain -tttt -r "${file}" 2>/dev/null |
 					"${adb_awkcmd}" -v cnt="${cnt}" '!/\.lan\. |PTR\? | SOA\? | Flags /&&/ A[A]*\? |NXDomain|0\.0\.0\.0|[0-9]\/[0-9]\/[0-9]/{sub(/\.[0-9]+$/,"",$4);
@@ -1340,8 +1329,8 @@ f_report() {
 							{domain=substr($(NF-1),1,length($(NF-1))-1);type="RQ"}
 						else
 							{if($(NF-2)~/NXDomain/||$(NF-1)=="0.0.0.0"){type="NX"}else{type="OK"};domain=""};
-						if(int($7)>0)
-							printf "%08d\t%s\t%s\t%s\t%-25s\t%s\n",$7,type,$1,substr($2,1,8),$4,domain}' >>"${report_raw}"
+							if(int($7)>0)
+								printf "%08d\t%s\t%s\t%s\t%-25s\t%s\n",$7,type,$1,substr($2,1,8),$4,domain}' >>"${report_raw}"
 				fi
 			) &
 			hold="$((cnt % adb_cores))"
@@ -1352,7 +1341,7 @@ f_report() {
 		if [ -s "${report_raw}" ]; then
 			"${adb_sortcmd}" ${adb_srtopts} -k3,3 -k4,4 -k1,1 -k2,2 -u -r "${report_raw}" |
 				"${adb_awkcmd}" '{currA=($1+0);currB=$1;currC=$2;if(reqA==currB){reqA=0;printf "%-90s\t%s\n",d,$2}else if(currC=="RQ"){reqA=currA;d=$3"\t"$4"\t"$5"\t"$6}}' |
-				"${adb_sortcmd}" ${adb_srtopts} -u -r >"${report_srt}"
+				"${adb_grepcmd}" -v "RQ" | "${adb_sortcmd}" ${adb_srtopts} -u -r >"${report_srt}"
 			: >"${report_raw}"
 		fi
 
@@ -1462,8 +1451,7 @@ f_report() {
 	elif [ "${action}" = "json" ]; then
 		cat "${report_jsn}"
 	elif [ "${action}" = "mail" ] && [ "${adb_mail}" = "1" ] && [ -x "${adb_mailservice}" ]; then
-		("${adb_mailservice}" "${adb_ver}" "${content}" >/dev/null 2>&1) &
-		bg_pid="${!}"
+		"${adb_mailservice}" "${content}" >/dev/null 2>&1
 	fi
 	f_log "debug" "f_report ::: action: ${action}, top_count: ${top_count}, res_count: ${res_count}, search: ${search}, dump_util: ${adb_dumpcmd}, rep_dir: ${adb_reportdir}, rep_iface: ${adb_repiface:-"-"}, rep_listen: ${adb_replisten}, rep_chunksize: ${adb_repchunksize}, rep_chunkcnt: ${adb_repchunkcnt}, rep_resolve: ${adb_represolve}"
 }
@@ -1490,6 +1478,9 @@ adb_ubuscmd="$(f_cmd ubus)"
 adb_loggercmd="$(f_cmd logger)"
 adb_dumpcmd="$(f_cmd tcpdump optional)"
 adb_lookupcmd="$(f_cmd nslookup)"
+adb_mailcmd="$(f_cmd msmtp optional)"
+adb_stringscmd="$(f_cmd strings optional)"
+adb_logreadcmd="$(f_cmd logread optional)"
 
 # handle different adblock actions
 #

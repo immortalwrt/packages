@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gst1-plugins-bad
 PKG_VERSION:=1.24.8
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=gst-plugins-bad-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://gstreamer.freedesktop.org/src/gst-plugins-bad/
@@ -228,7 +228,7 @@ MESON_ARGS += \
 	$(call GST_COND_SELECT,sndfile) \
 	-Dsoundtouch=disabled \
 	-Dspandsp=disabled \
-	-Dsrt=disabled \
+	$(call GST_COND_SELECT,srt) \
 	-Dsrtp=disabled \
 	-Dteletext=disabled \
 	-Dtinyalsa=disabled \
@@ -263,6 +263,32 @@ MESON_ARGS += \
 	-Dglib-checks=disabled \
 	-Dextra-checks=disabled \
 	-Ddoc=disabled
+
+define Build/InstallDev
+	$(INSTALL_DIR) $(1)/usr/include/gstreamer-$(GST_VERSION)
+	( cd $(PKG_INSTALL_DIR); $(CP) \
+		./usr/include/gstreamer-$(GST_VERSION)/* \
+		$(1)/usr/include/gstreamer-$(GST_VERSION)/ \
+	)
+	$(INSTALL_DIR) $(1)/usr/lib
+	( cd $(PKG_INSTALL_DIR); $(CP) \
+		./usr/lib/libgst*-$(GST_VERSION).so* \
+		$(1)/usr/lib/ \
+	)
+	if [ -d $(PKG_INSTALL_DIR)/usr/lib/gstreamer-$(GST_VERSION)/ ]; then \
+		$(INSTALL_DIR) $(1)/usr/lib/gstreamer-$(GST_VERSION); \
+		( cd $(PKG_INSTALL_DIR); $(FIND) \
+			./usr/lib/gstreamer-$(GST_VERSION)/ -name libgst*.so -print0 | \
+			xargs --null --no-run-if-empty $(CP) \
+			--target-directory=$(1)/usr/lib/gstreamer-$(GST_VERSION)/ \
+		) \
+	fi
+	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
+	( cd $(PKG_INSTALL_DIR); $(CP) \
+		./usr/lib/pkgconfig/gstreamer*-$(GST_VERSION).pc \
+		$(1)/usr/lib/pkgconfig/ \
+	)
+endef
 
 define Package/gst1-plugins-bad/install
 	/bin/true
@@ -303,10 +329,13 @@ endef
 
 $(eval $(call GstBuildLibrary,adaptivedemux,adaptivedemux,app uridownloader,))
 $(eval $(call GstBuildLibrary,photography,photography,,))
+$(eval $(call GstBuildLibrary,play,play,,))
+$(eval $(call GstBuildLibrary,player,player,play,))
 $(eval $(call GstBuildLibrary,basecamerabinsrc,basecamerabinsrc,app,))
 $(eval $(call GstBuildLibrary,uridownloader,uridownloader,,))
 $(eval $(call GstBuildLibrary,codecparsers,codecparsers,,))
 $(eval $(call GstBuildLibrary,mpegts,mpegts,,))
+$(eval $(call GstBuildLibrary,transcoder,transcoder,,))
 
 # 1: short name
 # 2: description
@@ -415,6 +444,7 @@ $(eval $(call GstBuildPlugin,opusparse,OPUS streams library,pbutils,,+libopus))
 $(eval $(call GstBuildPlugin,sbc,sbc support,audio,,+sbc))
 $(eval $(call GstBuildPlugin,shm,POSIX shared memory source and sink,,,+librt))
 $(eval $(call GstBuildPlugin,sndfile,sndfile support,audio,,+libsndfile))
+$(eval $(call GstBuildPlugin,srt,srt support,,,+srt))
 #$(eval $(call GstBuildPlugin,srtp,srtp support,rtp,,+libsrtp))
 $(eval $(call GstBuildPlugin,webp,webp support,,,+libwebp))
 #$(eval $(call GstBuildPlugin,yadif,yadif support,,,))
