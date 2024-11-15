@@ -123,6 +123,8 @@ jobs:
             Packages
             Packages.*
             *.ipk
+            packages.adb
+            *.apk
 
       - name: Store logs
         if: always()
