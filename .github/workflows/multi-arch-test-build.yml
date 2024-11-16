@@ -3,7 +3,7 @@ name: Test Build
 on:
   push:
     branches:
-      - master
+      - openwrt-24.10
   pull_request:
 
 jobs:
