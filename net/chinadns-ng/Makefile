@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=chinadns-ng
-PKG_VERSION:=2024.10.14
+PKG_VERSION:=2024.11.17
 PKG_RELEASE:=1
 
 ifeq ($(ARCH),aarch64)
   PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl_noasm@aarch64-linux-musl@generic+v8a@fast+lto
-  PKG_HASH:=914e8b66805b1804f6688dfcda3b67c7c45e5fc5e05afff4837450f8b67a8372
+  PKG_HASH:=b2e53d1fdc5d65b5f2a1dc26428bf15b86d84f51748ff1970d58bf301f69d2c0
 else ifeq ($(ARCH),arm)
   # Referred to golang/golang-values.mk
   ARM_CPU_FEATURES:=$(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE))))
@@ -19,33 +19,33 @@ else ifeq ($(ARCH),arm)
     PKG_HASH:=9adfe309a41f21156cc5597333c42c36bc9e4e42eb1a71d18b92c39aed0340b2
   else ifneq ($(filter $(ARM_CPU_FEATURES),vfp vfpv2),)
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@arm-linux-musleabi@generic+v6+soft_float@fast+lto
-    PKG_HASH:=4881e4dc20a1a4b21bc0cc3c378da8d8004274929e5900d5246aece230eea4f8
+    PKG_HASH:=511f9700e38b1f4ba65fefccd7c4f4a77773a8ebad0600c89e315286561e9288
   else
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@arm-linux-musleabihf@generic+v7a@fast+lto
-    PKG_HASH:=5a47e56ef6fac90d22eabc766ffb817cb15fa3875b03ea2a4cd8a684b25b401a
+    PKG_HASH:=13244ea7b722ad117ad7aaf32187a7ac11361ddda1201c632e9b9650fb24a824
   endif
 else ifeq ($(ARCH),i386)
   ifneq ($(CONFIG_TARGET_x86_geode)$(CONFIG_TARGET_x86_legacy),)
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@i386-linux-musl@i686@fast+lto
-    PKG_HASH:=f29853387f51bdb4a993504a31933ece538f99365f3f3b46794caa75a3b653ba
+    PKG_HASH:=35c21309fd334d43e3f5b5e7194d6acc49ceeb358e76b6074ecc3b9e370c2bd7
   else
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@i386-linux-musl@pentium4@fast+lto
-    PKG_HASH:=279415d9fab1e49bb4bf819270da0d57a9dcdc078cbd4b725b0b7cf3c52d2aba
+    PKG_HASH:=aedfa24bee4759cf982623def4346d5dd8da84027a87f91c33571ec7aeb4ad69
   endif
 else ifeq ($(ARCH),mips)
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mips-linux-musl@mips32+soft_float@fast+lto
-    PKG_HASH:=b57f9ba76ff4a7c52d1cfbe75de47f6f0e8a1bf8f2a293a39c10b5d94c99cc0f
+    PKG_HASH:=aca11ed4c513db6970c46f54f0449c9a49722eb4f80be11a915d4d550d2726e9
 else ifeq ($(ARCH),mipsel)
   ifeq ($(CONFIG_HAS_FPU),)
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mipsel-linux-musl@mips32+soft_float@fast+lto
-    PKG_HASH:=f0ca46e7ca83711ae24a6c0d7c71400d994dc7289cae599412fd8e654b198f3e
+    PKG_HASH:=82eed3511c11f1cb5c2e611a97d42f9264640bea1e029c04337d073788f65d19
   else
     PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@mipsel-linux-musl@mips32@fast+lto
-    PKG_HASH:=48eecd536e1f4cb7d3fa44cdc23d996acfbc75004d8e16b405a7ee148523696e
+    PKG_HASH:=98b8cbbde8473a51c3f24979664bfffb54ec5665f851437100e4859e3f674f5b
   endif
 else ifeq ($(ARCH),x86_64)
   PKG_SOURCE_URL_FILE:=$(PKG_NAME)+wolfssl@x86_64-linux-musl@x86_64@fast+lto
-  PKG_HASH:=6928e28f1c6c41099b6ce8ab1ce38a98cc9da75ff9533f8644f67be455463d0e
+  PKG_HASH:=30b02f9a6451f2a473d23210ea652b13c4ce6a1c01aadfabf34e5f47203b2628
 else
   PKG_SOURCE_URL_FILE:=dummy
   PKG_HASH:=dummy
