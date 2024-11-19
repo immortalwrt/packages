@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=phicomm-k3screenctrl
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/lwz322/k3screenctrl.git
@@ -17,6 +17,7 @@ PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Hamster Tian <haotia@gmail.com>
 
+PKG_FLAGS:=nonshared
 PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
@@ -28,8 +29,8 @@ TARGET_CFLAGS+= -D_GNU_SOURCE
 define Package/phicomm-k3screenctrl
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=@(TARGET_bcm53xx_DEVICE_phicomm-k3||TARGET_bcm53xx_generic_DEVICE_phicomm_k3) \
-    +@KERNEL_DEVMEM +@BUSYBOX_CONFIG_ARPING +bc +bash +curl +coreutils +coreutils-od +jq
+  DEPENDS:=@TARGET_bcm53xx_generic +@KERNEL_DEVMEM +@BUSYBOX_CONFIG_ARPING \
+    +bc +bash +curl +coreutils +coreutils-od +jq
   TITLE:=LCD screen controller on PHICOMM K3
   URL:=https://github.com/lwz322/k3screenctrl.git
 endef
