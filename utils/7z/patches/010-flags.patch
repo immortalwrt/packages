@@ -33,7 +33,7 @@
  
  
  ifdef IS_MINGW
-@@ -1340,7 +1340,7 @@ predef_cc:
+@@ -1343,7 +1343,7 @@ predef_cc:
  	$(CC) $(CFLAGS) -E $(SHOW_PREDEF)  ../../../../C/CpuArch.c > predef_cc_log
  #	$(CC) $(CFLAGS) -E -dM -  < /dev/null
  predef_cxx:
