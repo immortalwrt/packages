@@ -24,20 +24,14 @@ include ../../lang/golang/golang-package.mk
 define Package/geoview
   SECTION:=net
   CATEGORY:=Network
-  SUBMENU:=Web Servers/Proxies
+  SUBMENU:=IP Addresses and Names
   TITLE:=A geofile toolkit
   URL:=https://github.com/snowie2000/geoview
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
 define Package/geoview/description
-geoview is a handy tool to extract useful information from geo* files.
-endef
-
-define Package/geoview/install
-	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/geoview $(1)/usr/bin/
+  geoview is a handy tool to extract useful information from geo* files.
 endef
 
 $(eval $(call GoBinPackage,geoview))
