@@ -11,7 +11,7 @@ PKG_NAME:=qt6base
 PKG_BASE:=6.7
 PKG_BUGFIX:=3
 PKG_VERSION:=$(PKG_BASE).$(PKG_BUGFIX)
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=qtbase-everywhere-src-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
@@ -103,6 +103,7 @@ CMAKE_OPTIONS+= \
 	-DFEATURE_gui=$(if $(CONFIG_PACKAGE_libQt6Gui),ON,OFF) \
 	-DFEATURE_fontconfig=OFF \
 	-DFEATURE_system_freetype=ON \
+	-DFEATURE_xkbcommon=OFF \
 	-DFEATURE_accessibility=OFF \
 	-DFEATURE_harfbuzz=OFF \
 	-DFEATURE_gif=OFF \
