@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=geoview
-PKG_VERSION:=0.0.7
+PKG_VERSION:=0.0.9
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/snowie2000/geoview/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=1099149d24b74ba6f4d4bca18aba4ffa0e29f8b3debb7f09b5972729ed11ca9c
+PKG_HASH:=ba0af14cd7a6ce457584ab4754331848ed78240ae39abdf65fef646df0130c2e
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
