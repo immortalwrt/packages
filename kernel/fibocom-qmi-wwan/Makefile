@@ -4,13 +4,6 @@ PKG_NAME:=fibocom-qmi-wwan
 PKG_VERSION:=1.0.5
 PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=@IMMORTALWRT
-PKG_HASH:=107a82e4e81bcac0425368965432dd988e8e07c123a57f6ae63329cbf2ba39db
-
-PKG_LICENSE:=GPL-2.0-only
-PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
-
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
