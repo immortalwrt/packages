@@ -3,7 +3,7 @@
 @@ -31,7 +31,7 @@
  #define QBT_VERSION_MAJOR 5
  #define QBT_VERSION_MINOR 0
- #define QBT_VERSION_BUGFIX 2
+ #define QBT_VERSION_BUGFIX 3
 -#define QBT_VERSION_BUILD 10
 +#define QBT_VERSION_BUILD 0
  #define QBT_VERSION_STATUS ""  // Should be empty for stable releases!
@@ -11,7 +11,7 @@
  #define QBT__STRINGIFY(x) #x
 --- a/src/base/bittorrent/sessionimpl.cpp
 +++ b/src/base/bittorrent/sessionimpl.cpp
-@@ -121,7 +121,7 @@ const int STATISTICS_SAVE_INTERVAL = std
+@@ -122,7 +122,7 @@ const int STATISTICS_SAVE_INTERVAL = std
  namespace
  {
      const char PEER_ID[] = "qB";
