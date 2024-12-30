@@ -50,10 +50,7 @@ define Package/Cloak/template
   endef
 endef
 
-CLOAK_COMPONENTS:=ck-client ck-server
-
-$(foreach component,$(CLOAK_COMPONENTS), \
-  $(eval $(call Package/Cloak/template,$(component))) \
-  $(eval $(call GoBinPackage,$(component))) \
-  $(eval $(call BuildPackage,$(component))) \
-)
+$(eval $(call Package/Cloak/template,ck-client,client))
+$(eval $(call Package/Cloak/template,ck-server,server))
+$(eval $(call BuildPackage,ck-client))
+$(eval $(call BuildPackage,ck-server))
