@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libtorrent-rasterbar
-PKG_VERSION:=2.0.10
+PKG_VERSION:=1.2.19
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/arvidn/libtorrent/releases/download/v$(PKG_VERSION)/
-PKG_HASH:=fc935b8c1daca5c0a4d304bff59e64e532be16bb877c012aea4bda73d9ca885d
+PKG_HASH:=eee8e99548dc5eb5e643e49db9202f4f97112c032dba883dfdc8144af5b6e40e
 
 PKG_MAINTAINER:=David Yang <mmyangfl@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
