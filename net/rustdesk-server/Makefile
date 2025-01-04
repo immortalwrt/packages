@@ -30,6 +30,11 @@ define Package/rustdesk-server
   URL:=https://rustdesk.com/server
 endef
 
+define Package/rustdesk-server/install
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/rustdesk.init $(1)/etc/init.d/rustdesk
+endef
+
 define Package/rustdesk-server/description
   Self-host your own RustDesk server, it is free and open source.
 endef
