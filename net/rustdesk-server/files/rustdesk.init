@@ -10,8 +10,8 @@ WORKDIR="/etc/rustdesk"
 
 start_service() {
     if ! mkdir -p "$WORKDIR"; then
-            logger -p daemon.err -t "$NAME" "Failed to create working directory: $WORKDIR"
-            return 1
+        logger -p daemon.err -t "$NAME" "Failed to create working directory: $WORKDIR"
+        return 1
     fi
 
     procd_open_instance "$NAME.server"

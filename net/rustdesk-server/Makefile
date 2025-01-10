@@ -31,10 +31,10 @@ define Package/rustdesk-server
 endef
 
 define Package/rustdesk-server/install
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/rustdesk.init $(1)/etc/init.d/rustdesk
+  $(INSTALL_DIR) $(1)/etc/init.d
+  $(INSTALL_BIN) ./files/rustdesk.init $(1)/etc/init.d/rustdesk
   $(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/hbbr $(1)/usr/bin
+  $(INSTALL_BIN) $(PKG_BUILD_DIR)/hbbr $(1)/usr/bin
   $(INSTALL_BIN) $(PKG_BUILD_DIR)/hbbs $(1)/usr/bin
   $(INSTALL_BIN) $(PKG_BUILD_DIR)/rustdesk-utils $(1)/usr/bin
 endef
