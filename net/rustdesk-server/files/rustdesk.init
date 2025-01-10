@@ -2,42 +2,25 @@
 
 START=99
 STOP=10
+
 USE_PROCD=1
 NAME="rustdesk"
+
 WORKDIR="/etc/rustdesk"
 
 start_service() {
-    if [ ! -d "$WORKDIR" ]; then
-        mkdir -p "$WORKDIR"
-        if [ $? -ne 0 ]; then
+    if ! mkdir -p "$WORKDIR"; then
             logger -p daemon.err -t "$NAME" "Failed to create working directory: $WORKDIR"
             return 1
-        fi
     fi
 
     procd_open_instance "$NAME.server"
-    procd_set_param cwd "$WORKDIR"
     procd_set_param command sh -c "cd $WORKDIR && /usr/bin/hbbs"
     procd_set_param respawn
-    procd_set_param stdout 1
-    procd_set_param stderr 1
     procd_close_instance
 
     procd_open_instance "$NAME.relay"
-    procd_set_param cwd "$WORKDIR"
     procd_set_param command sh -c "cd $WORKDIR && /usr/bin/hbbr"
     procd_set_param respawn
-    procd_set_param stdout 1
-    procd_set_param stderr 1
     procd_close_instance
-}
-
-stop_service() {
-    killall hbbs
-    killall hbbr
-}
-
-reload_service() {
-    stop_service
-    start_service
 }
