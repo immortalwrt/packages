@@ -24,6 +24,7 @@ start_service() {
 
 	[ -d "${YAML%/*}" ] || mkdir -p "${YAML%/*}"
 	touch "$YAML"
+	chown ddns-go "${YAML%/*}"
 	chown ddns-go "$YAML"
 
 	procd_open_instance "$CONF"
