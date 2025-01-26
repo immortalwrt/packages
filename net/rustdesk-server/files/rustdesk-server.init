@@ -3,13 +3,13 @@
 USE_PROCD=1
 START=99
 
-CONF="rustdesk"
-WORKDIR="/etc/rustdesk"
+CONF="rustdesk-server"
+WORKDIR="/etc/rustdesk-server"
 
 start_service() {
-	local HBBS_TCP_PORTS=""
-	local HBBS_UDP_PORTS=""
-	local HBBR_TCP_PORTS=""
+	local auto_fw web_client
+	local hbbr_enabled hbbr_port hbbs_enabled hbbs_port
+	local hbbr_tcp_ports hbbs_tcp_ports hbbs_udp_ports
 
 	config_load "$CONF"
 	config_get_bool auto_fw "firewall" "auto_fw" "0"
@@ -22,21 +22,22 @@ start_service() {
 	[ "$hbbr_enabled" -eq "1" ] || [ "$hbbs_enabled" -eq "1" ] || return 1
 
 	mkdir -p "$WORKDIR" || {
-		logger -p daemon.error -t "rustdesk" "Failed to create working directory: $WORKDIR"
+		logger -p daemon.error -t "rustdesk-server" "Failed to create working directory: $WORKDIR"
 		return 1
 	}
 
 	if [ "$hbbr_enabled" -eq "1" ]; then
-		if [ "$web_client" -eq "0" ]; then
-			HBBR_TCP_PORTS="$hbbr_port"
-		else
-			HBBR_TCP_PORTS="$hbbr_port $(( hbbr_port + 2 ))"
-		fi
-
-		procd_open_instance "hbbr.relay"
+		procd_open_instance "hbbr"
 		procd_set_param command sh -c "cd $WORKDIR && /usr/bin/hbbr -p ${hbbr_port}"
 		procd_set_param respawn
+
 		if [ "$auto_fw" -eq "1" ]; then
+			if [ "$web_client" -eq "0" ]; then
+				hbbr_tcp_ports="$hbbr_port"
+			else
+				hbbr_tcp_ports="$hbbr_port $(( hbbr_port + 2 ))"
+			fi
+
 			procd_open_data
 			json_add_array firewall
 				json_add_object ""
@@ -44,7 +45,7 @@ start_service() {
 				json_add_string name "Allow-rustdesk-relay-tcp"
 				json_add_string proto "tcp"
 				json_add_string src "wan"
-				json_add_string dest_port "$HBBR_TCP_PORTS"
+				json_add_string dest_port "$hbbr_tcp_ports"
 				json_add_string target "ACCEPT"
 				json_close_object
 			json_close_array
@@ -54,17 +55,18 @@ start_service() {
 	fi
 
 	if [ "$hbbs_enabled" -eq "1" ]; then
-		if [ "$web_client" -eq "0" ]; then
-			HBBS_TCP_PORTS="$(( hbbs_port - 1 )) $hbbs_port"
-		else
-			HBBS_TCP_PORTS="$(( hbbs_port - 1 )) $hbbs_port $(( hbbs_port + 2 ))"
-		fi
-		HBBS_UDP_PORTS="$hbbs_port"
-
-		procd_open_instance "hbbs.server"
+		procd_open_instance "hbbs"
 		procd_set_param command sh -c "cd $WORKDIR && /usr/bin/hbbs -p ${hbbs_port}"
 		procd_set_param respawn
+
 		if [ "$auto_fw" -eq "1" ]; then
+			if [ "$web_client" -eq "0" ]; then
+				hbbs_tcp_ports="$(( hbbs_port - 1 )) $hbbs_port"
+			else
+				hbbs_tcp_ports="$(( hbbs_port - 1 )) $hbbs_port $(( hbbs_port + 2 ))"
+			fi
+			hbbs_udp_ports="$hbbs_port"
+
 			procd_open_data
 			json_add_array firewall
 				json_add_object ""
@@ -72,7 +74,7 @@ start_service() {
 				json_add_string name "Allow-rustdesk-server-tcp"
 				json_add_string proto "tcp"
 				json_add_string src "wan"
-				json_add_string dest_port "$HBBS_TCP_PORTS"
+				json_add_string dest_port "$hbbs_tcp_ports"
 				json_add_string target "ACCEPT"
 				json_close_object
 
@@ -81,7 +83,7 @@ start_service() {
 				json_add_string name "Allow-rustdesk-server-udp"
 				json_add_string proto "udp"
 				json_add_string src "wan"
-				json_add_string dest_port "$HBBS_UDP_PORTS"
+				json_add_string dest_port "$hbbs_udp_ports"
 				json_add_string target "ACCEPT"
 				json_close_object
 			json_close_array
