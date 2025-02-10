@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rustdesk-server
 PKG_VERSION:=1.1.14
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/rustdesk/rustdesk-server.git
@@ -29,7 +29,6 @@ define Package/rustdesk-server
   TITLE:=RustDesk Server Program
   DEPENDS:=@(aarch64||arm||x86_64) @(!arm||TARGET_bcm53xx||HAS_FPU)
   URL:=https://rustdesk.com/server
-  USERID:=rustdesk-server:rustdesk-server
 endef
 
 define Package/rustdesk-server/description
