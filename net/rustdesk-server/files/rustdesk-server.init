@@ -31,6 +31,7 @@ start_service() {
 		procd_open_instance "hbbr"
 		procd_set_param command sh -c "cd $WORKDIR && /usr/bin/hbbr -p ${hbbr_port}"
 		procd_set_param respawn
+		procd_set_param env HOME="$WORKDIR"
 		procd_set_param user rustdesk-server
 		procd_set_param group rustdesk-server
 
@@ -61,6 +62,7 @@ start_service() {
 		procd_open_instance "hbbs"
 		procd_set_param command sh -c "cd $WORKDIR && /usr/bin/hbbs -p ${hbbs_port}"
 		procd_set_param respawn
+		procd_set_param env HOME="$WORKDIR"
 		procd_set_param user rustdesk-server
 		procd_set_param group rustdesk-server
 
