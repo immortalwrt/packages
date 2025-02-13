@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=vlmcsd
 PKG_VERSION:=svn1113
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/Wind4/vlmcsd/tar.gz/$(PKG_VERSION)?
@@ -35,6 +35,11 @@ endef
 define Package/vlmcsd/description
   KMS Emulator in C (currently runs on Linux including Android, FreeBSD,
   Solaris, Minix, Mac OS, iOS, Windows with or without Cygwin)
+endef
+
+define Package/vlmcsd/conffiles
+/etc/config/vlmcsd
+/etc/vlmcsd.ini
 endef
 
 define Package/vlmcsd/install
