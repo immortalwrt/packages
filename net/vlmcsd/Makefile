@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=vlmcsd
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/Wind4/vlmcsd.git
@@ -27,6 +27,7 @@ define Package/vlmcsd
   TITLE:=A KMS Emulator in C
   URL:=https://github.com/Wind4/vlmcsd
   DEPENDS:=+libpthread
+  USERID:=vlmcsd:vlmcsd
 endef
 
 define Package/vlmcsd/description
