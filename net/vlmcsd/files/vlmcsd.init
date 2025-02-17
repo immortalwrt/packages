@@ -32,10 +32,15 @@ start_service() {
 	procd_append_param command -i "/etc/vlmcsd.ini"
 	procd_append_param command -L "[::]:1688"
 
-	procd_set_param file /etc/vlmcsd.ini
+	procd_set_param file "/etc/vlmcsd.ini"
 	procd_set_param stdout 1
 	procd_set_param stderr 1
 	procd_set_param respawn
+
+	procd_set_param user vlmcsd
+	procd_set_param group vlmcsd
+	procd_add_jail vlmcsd ronly log
+	procd_add_jail_mount "/etc/vlmcsd.ini"
 
 	if [ "$internet_access" -eq "1" ];then
 		procd_open_data
