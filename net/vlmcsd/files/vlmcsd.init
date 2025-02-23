@@ -49,7 +49,7 @@ start_service() {
 			json_add_string type rule
 			json_add_string name "Allow-vlmcsd-tcp"
 			json_add_string proto "tcp"
-			json_add_string src "wan"
+			json_add_string src "*"
 			json_add_string dest_port "1688"
 			json_add_string target "ACCEPT"
 			json_close_object
