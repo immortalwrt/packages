@@ -1,6 +1,6 @@
 --- a/qmi_wwan_q.c
 +++ b/qmi_wwan_q.c
-@@ -59,9 +59,8 @@ struct rmnet_nss_cb {
+@@ -62,9 +62,8 @@ struct rmnet_nss_cb {
          int (*nss_tx)(struct sk_buff *skb);
  };
  static struct rmnet_nss_cb __read_mostly *nss_cb = NULL;
