@@ -1,14 +1,3 @@
---- a/src/base/version.h.in
-+++ b/src/base/version.h.in
-@@ -31,7 +31,7 @@
- #define QBT_VERSION_MAJOR 5
- #define QBT_VERSION_MINOR 0
- #define QBT_VERSION_BUGFIX 3
--#define QBT_VERSION_BUILD 10
-+#define QBT_VERSION_BUILD 0
- #define QBT_VERSION_STATUS ""  // Should be empty for stable releases!
- 
- #define QBT__STRINGIFY(x) #x
 --- a/src/base/bittorrent/sessionimpl.cpp
 +++ b/src/base/bittorrent/sessionimpl.cpp
 @@ -122,7 +122,7 @@ const int STATISTICS_SAVE_INTERVAL = std
@@ -20,3 +9,54 @@
      const QString DEFAULT_DHT_BOOTSTRAP_NODES = u"dht.libtorrent.org:25401, dht.transmissionbt.com:6881, router.bittorrent.com:6881, router.utorrent.com:6881, dht.aelitis.com:6881"_s;
  
      void torrentQueuePositionUp(const lt::torrent_handle &handle)
+@@ -846,7 +846,7 @@ void SessionImpl::setPublicTrackers(cons
+ void SessionImpl::updatePublicTracker()
+ {
+     Preferences *const pref = Preferences::instance();
+-    Net::DownloadManager::instance()->download(Net::DownloadRequest(pref->customizeTrackersListUrl()).userAgent(QStringLiteral("qBittorrent Enhanced/" QBT_VERSION_2)), Preferences::instance()->useProxyForGeneralPurposes(), this, &SessionImpl::handlePublicTrackerTxtDownloadFinished);
++    Net::DownloadManager::instance()->download(Net::DownloadRequest(pref->customizeTrackersListUrl()).userAgent(QStringLiteral("qBittorrent/" QBT_VERSION_2)), Preferences::instance()->useProxyForGeneralPurposes(), this, &SessionImpl::handlePublicTrackerTxtDownloadFinished);
+ }
+ 
+ void SessionImpl::handlePublicTrackerTxtDownloadFinished(const Net::DownloadResult &result)
+--- a/src/base/net/dnsupdater.cpp
++++ b/src/base/net/dnsupdater.cpp
+@@ -78,7 +78,7 @@ void DNSUpdater::checkPublicIP()
+     Q_ASSERT(m_state == OK);
+ 
+     DownloadManager::instance()->download(
+-            DownloadRequest(u"http://checkip.dyndns.org"_s).userAgent(QStringLiteral("qBittorrent Enhanced/" QBT_VERSION_2))
++            DownloadRequest(u"http://checkip.dyndns.org"_s).userAgent(QStringLiteral("qBittorrent/" QBT_VERSION_2))
+             , Preferences::instance()->useProxyForGeneralPurposes(), this, &DNSUpdater::ipRequestFinished);
+ 
+     m_lastIPCheckTime = QDateTime::currentDateTime();
+@@ -126,7 +126,7 @@ void DNSUpdater::updateDNSService()
+ 
+     m_lastIPCheckTime = QDateTime::currentDateTime();
+     DownloadManager::instance()->download(
+-            DownloadRequest(getUpdateUrl()).userAgent(QStringLiteral("qBittorrent Enhanced/" QBT_VERSION_2))
++            DownloadRequest(getUpdateUrl()).userAgent(QStringLiteral("qBittorrent/" QBT_VERSION_2))
+             , Preferences::instance()->useProxyForGeneralPurposes(), this, &DNSUpdater::ipUpdateFinished);
+ }
+ 
+--- a/src/base/version.h.in
++++ b/src/base/version.h.in
+@@ -31,7 +31,7 @@
+ #define QBT_VERSION_MAJOR 5
+ #define QBT_VERSION_MINOR 0
+ #define QBT_VERSION_BUGFIX 4
+-#define QBT_VERSION_BUILD 10
++#define QBT_VERSION_BUILD 0
+ #define QBT_VERSION_STATUS ""  // Should be empty for stable releases!
+ 
+ #define QBT__STRINGIFY(x) #x
+--- a/src/gui/programupdater.cpp
++++ b/src/gui/programupdater.cpp
+@@ -72,7 +72,7 @@ void ProgramUpdater::checkForUpdates() c
+     // Don't change this User-Agent. In case our updater goes haywire,
+     // the filehost can identify it and contact us.
+     Net::DownloadManager::instance()->download(
+-            Net::DownloadRequest(RSS_URL).userAgent(QStringLiteral("qBittorrent Enhanced/" QBT_VERSION_2 " ProgramUpdater (git.io/qbit)"))
++            Net::DownloadRequest(RSS_URL).userAgent(QStringLiteral("qBittorrent/" QBT_VERSION_2 " ProgramUpdater (git.io/qbit)"))
+             , Preferences::instance()->useProxyForGeneralPurposes(), this, &ProgramUpdater::rssDownloadFinished);
+ }
+ 
