@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lxc
 PKG_VERSION:=6.0.3
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://linuxcontainers.org/downloads/lxc/
@@ -50,7 +50,7 @@ LXC_SCRIPTS += \
 
 DEPENDS_APPLETS = +libpthread +libcap +liblxc
 
-DEPENDS_create = +lxc-configs +lxc-hooks +lxc-templates +flock +getopt
+DEPENDS_create = +lxc-configs +lxc-hooks +lxc-templates +flock +getopt +tar
 
 define Package/lxc/Default
   SECTION:=utils
