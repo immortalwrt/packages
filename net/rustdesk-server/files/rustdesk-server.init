@@ -4,6 +4,7 @@ USE_PROCD=1
 START=99
 
 CONF="rustdesk-server"
+RUNDIR="/var/run/rustdesk-server"
 WORKDIR="/etc/rustdesk-server"
 
 start_service() {
@@ -21,17 +22,26 @@ start_service() {
 
 	[ "$hbbr_enabled" -eq "1" ] || [ "$hbbs_enabled" -eq "1" ] || return 1
 
-	if [ ! -d "$WORKDIR" ] && ! mkdir -p "$WORKDIR"; then
-		logger -p daemon.error -t "rustdesk-server" "Failed to create working directory: $WORKDIR"
-		return 1
-	fi
-	chown -R rustdesk-server:rustdesk-server "$WORKDIR"
+	for dir in "$RUNDIR" "$WORKDIR"; do
+		if [ ! -d "$dir" ] && ! mkdir -p "$dir"; then
+			logger -p daemon.error -t "rustdesk-server" "Failed to create working directory: $dir"
+			return 1
+		fi
+		chown -R rustdesk-server:rustdesk-server "$dir"
+	done
 
 	if [ "$hbbr_enabled" -eq "1" ]; then
 		procd_open_instance "hbbr"
-		procd_set_param command sh -c "cd $WORKDIR && /usr/bin/hbbr -p ${hbbr_port}"
+		procd_set_param command /usr/bin/hbbr
+
+		procd_set_param env PORT="${hbbr_port}"
+
+		procd_add_jail hbbr log procfs sysfs
+		procd_add_jail_mount "/etc/ssl/"
+		procd_add_jail_mount_rw "/etc/rustdesk-server/"
+		procd_add_jail_mount_rw "/var/run/rustdesk-server/"
+
 		procd_set_param respawn
-		procd_set_param env HOME="$WORKDIR"
 		procd_set_param user rustdesk-server
 		procd_set_param group rustdesk-server
 
@@ -60,9 +70,16 @@ start_service() {
 
 	if [ "$hbbs_enabled" -eq "1" ]; then
 		procd_open_instance "hbbs"
-		procd_set_param command sh -c "cd $WORKDIR && /usr/bin/hbbs -p ${hbbs_port}"
+		procd_set_param command /usr/bin/hbbs
+
+		procd_set_param env PORT="${hbbs_port}"
+
+		procd_add_jail hbbs log procfs sysfs
+		procd_add_jail_mount "/etc/ssl/"
+		procd_add_jail_mount_rw "/etc/rustdesk-server/"
+		procd_add_jail_mount_rw "/var/run/rustdesk-server/"
+
 		procd_set_param respawn
-		procd_set_param env HOME="$WORKDIR"
 		procd_set_param user rustdesk-server
 		procd_set_param group rustdesk-server
 
@@ -102,6 +119,10 @@ start_service() {
 
 service_started() {
 	procd_set_config_changed firewall
+}
+
+stop_service() {
+	rm -f "$RUNDIR"/hbbr*.log "$RUNDIR"/hbbs*.log
 }
 
 service_stopped() {
