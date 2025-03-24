@@ -1,0 +1,37 @@
+From 78fbd18000e0533bd0f7c3bda4e54d0cc52312e5 Mon Sep 17 00:00:00 2001
+From: BERNARD Thomas <miniupnp@free.fr>
+Date: Fri, 10 Jan 2025 19:01:44 +0100
+Subject: [PATCH] netfilter_nft: properly delete the filter_rule
+
+also add a few logs
+
+fixes #791
+---
+ netfilter_nft/nftnlrdr.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+--- a/netfilter_nft/nftnlrdr.c
++++ b/netfilter_nft/nftnlrdr.c
+@@ -308,7 +308,7 @@ delete_redirect_and_filter_rules(unsigne
+ 	d_printf(("delete_redirect_and_filter_rules(%d %d)\n", eport, proto));
+ 	refresh_nft_cache_redirect();
+ 
+-	// Delete Redirect Rule
++	// Delete Redirect Rule  eport => iaddr:iport
+ 	LIST_FOREACH(p, &head_redirect, entry) {
+ 		if (p->eport == eport && p->proto == proto &&
+ 		    (p->type == RULE_NAT && p->nat_type == NFT_NAT_DNAT)) {
+@@ -324,10 +324,10 @@ delete_redirect_and_filter_rules(unsigne
+ 
+ 	if (iaddr != 0 && iport != 0) {
+ 		refresh_nft_cache_filter();
+-		// Delete Forward Rule
++		// Delete Forward Rule  on iaddr:iport
+ 		LIST_FOREACH(p, &head_filter, entry) {
+-			if (p->eport == iport &&
+-				p->iaddr == iaddr && p->type == RULE_FILTER) {
++			if (p->eport == iport && p->iaddr == iaddr && p->proto == proto
++			    && p->type == RULE_FILTER) {
+ 				r = rule_del_handle(p);
+ 				/* Todo: send bulk request */
+ 				nft_send_rule(r, NFT_MSG_DELRULE, RULE_CHAIN_FILTER);
