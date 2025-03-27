@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rustdesk-server
 PKG_VERSION:=1.1.14
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/rustdesk/rustdesk-server.git
@@ -39,6 +39,10 @@ endef
 define Package/rustdesk-server/conffiles
 /etc/config/rustdesk-server
 /etc/rustdesk-server
+endef
+
+define Build/Compile
+	$(call Build/Compile/Cargo,,--locked)
 endef
 
 define Package/rustdesk-server/install
