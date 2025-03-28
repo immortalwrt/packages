@@ -73,6 +73,7 @@ use_nss_certs=false
 
 enable_backup_ref_ptr_support=false
 enable_dangling_raw_ptr_checks=false
+enable_shadow_metadata=false
 
 target_os=\"openwrt\"
 target_cpu=\"${naive_arch}\"
