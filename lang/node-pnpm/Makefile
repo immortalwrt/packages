@@ -4,17 +4,17 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=node-gyp
-PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=11.2.0
+PKG_NPM_NAME:=pnpm
+PKG_NAME:=node-$(PKG_NPM_NAME)
+PKG_VERSION:=10.7.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=1d371b0558b1ba877a7ca52a21983d6d4d1051c73489d211d50ad8fc3ff487e2
+PKG_HASH:=dc514890ea719003cb7a57d6b21af24fdafadd9f171e7567eca1665d7cfcef76
 
-PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
@@ -25,20 +25,20 @@ PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
-include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
 
-define Package/node-gyp
+define Package/node-pnpm
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Node.js native addon build tool
-  URL:=https://www.npmjs.org/package/node-gyp
+  TITLE:=Fast, disk space efficient package manager
+  URL:=https://pnpm.io/
   DEPENDS:=+node
 endef
 
-define Package/node-gyp/description
- node-gyp is a cross-platform command-line tool written in Node.js for compiling native addon modules for Node.js. It contains a vendored copy of the gyp-next project that was previously used by the Chromium team, extended to support the development of Node.js native addons.
+define Package/node-pnpm/description
+ Fast, disk space efficient package manager
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -64,24 +64,28 @@ define Build/Compile
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 endef
 
-define Package/node-gyp/install
+define Package/node-pnpm/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{*.md,*.gypi,gyp} \
+	$(CP) $(PKG_BUILD_DIR)/README.md \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,bin,lib} \
+	$(CP) $(PKG_BUILD_DIR)/bin \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)/dist
+	$(CP) $(PKG_BUILD_DIR)/dist/{pnpm.cjs,worker.js} \
+		$(1)/usr/lib/node/$(PKG_NPM_NAME)/dist/
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/node-gyp.js $(1)/usr/bin/node-gyp
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/pnpm.cjs $(1)/usr/bin/pnpm
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/pnpx.cjs $(1)/usr/bin/pnpx
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
 endef
 
-define Package/node-gyp/postrm
+define Package/node-pnpm/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/node-gyp || true
-rm -rf /usr/lib/node/node-gyp || true
+rm /usr/lib/node_modules/pnpm || true
+rm -rf /usr/lib/node/pnpm || true
 endef
 
 define Host/Compile
@@ -99,13 +103,17 @@ define Host/Install
 	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)
 	$(CP) $(HOST_BUILD_DIR)/{package.json,LICENSE} \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/{*.md,*.gypi,gyp} \
+	$(CP) $(HOST_BUILD_DIR)/README.md \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/{node_modules,bin,lib} \
+	$(CP) $(HOST_BUILD_DIR)/bin \
 		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
+	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)/dist
+	$(CP) $(HOST_BUILD_DIR)/dist/{pnpm.cjs,worker.js} \
+		$(1)/lib/node_modules/$(PKG_NPM_NAME)/dist/
 	$(INSTALL_DIR) $(1)/bin
-	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/node-gyp.js $(1)/bin/node-gyp
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/pnpm.cjs $(1)/bin/pnpm
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/pnpx.cjs $(1)/bin/pnpx
 endef
 
 $(eval $(call HostBuild))
-$(eval $(call BuildPackage,node-gyp))
+$(eval $(call BuildPackage,node-pnpm))
