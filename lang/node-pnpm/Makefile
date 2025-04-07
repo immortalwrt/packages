@@ -14,7 +14,7 @@ PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=dc514890ea719003cb7a57d6b21af24fdafadd9f171e7567eca1665d7cfcef76
 
-PKG_MAINTAINER:=Tianling Shen <cnsztl@immrotalwrt.org>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
@@ -52,17 +52,6 @@ NPM_CACHE_DIR:=$(if $(call qstrip,$(CONFIG_NODEJS_NPM_CACHE_DIR)),$(call qstrip,
 TARGET_CFLAGS+=$(FPIC)
 TARGET_CPPFLAGS+=$(FPIC)
 
-define Host/Compile
-	cd $(HOST_BUILD_DIR); \
-	$(HOST_MAKE_VARS) \
-	npm_config_nodedir=$(STAGING_DIR)/usr/ \
-	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/host-npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(HOSTTMPNPM)) \
-	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock
-	rm -rf $(TMP_DIR)/npm-cache-$(HOSTTMPNPM)
-	rm -f $(HOST_BUILD_DIR)/node_modules/.package-lock.json
-	find $(HOST_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
-endef
-
 define Build/Compile
 	cd $(PKG_BUILD_DIR); \
 	$(MAKE_VARS) \
@@ -73,22 +62,6 @@ define Build/Compile
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
 	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
-endef
-
-define Host/Install
-	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)
-	$(CP) $(HOST_BUILD_DIR)/{package.json,LICENSE} \
-		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/README.md \
-		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(CP) $(HOST_BUILD_DIR)/bin \
-		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)/dist
-	$(CP) $(HOST_BUILD_DIR)/dist/{pnpm.cjs,worker.js} \
-		$(1)/lib/node_modules/$(PKG_NPM_NAME)/dist/
-	$(INSTALL_DIR) $(1)/bin
-	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/pnpm.cjs $(1)/bin/pnpm
-	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/pnpx.cjs $(1)/bin/pnpx
 endef
 
 define Package/node-pnpm/install
@@ -113,6 +86,33 @@ define Package/node-pnpm/postrm
 #!/bin/sh
 rm /usr/lib/node_modules/pnpm || true
 rm -rf /usr/lib/node/pnpm || true
+endef
+
+define Host/Compile
+	cd $(HOST_BUILD_DIR); \
+	$(HOST_MAKE_VARS) \
+	npm_config_nodedir=$(STAGING_DIR)/usr/ \
+	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/host-npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(HOSTTMPNPM)) \
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock
+	rm -rf $(TMP_DIR)/npm-cache-$(HOSTTMPNPM)
+	rm -f $(HOST_BUILD_DIR)/node_modules/.package-lock.json
+	find $(HOST_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
+endef
+
+define Host/Install
+	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)
+	$(CP) $(HOST_BUILD_DIR)/{package.json,LICENSE} \
+		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
+	$(CP) $(HOST_BUILD_DIR)/README.md \
+		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
+	$(CP) $(HOST_BUILD_DIR)/bin \
+		$(1)/lib/node_modules/$(PKG_NPM_NAME)/
+	$(INSTALL_DIR) $(1)/lib/node_modules/$(PKG_NPM_NAME)/dist
+	$(CP) $(HOST_BUILD_DIR)/dist/{pnpm.cjs,worker.js} \
+		$(1)/lib/node_modules/$(PKG_NPM_NAME)/dist/
+	$(INSTALL_DIR) $(1)/bin
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/pnpm.cjs $(1)/bin/pnpm
+	$(LN) ../lib/node_modules/$(PKG_NPM_NAME)/bin/pnpx.cjs $(1)/bin/pnpx
 endef
 
 $(eval $(call HostBuild))
