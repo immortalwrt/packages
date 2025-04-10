@@ -8,8 +8,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qt6base
-PKG_BASE:=6.8
-PKG_BUGFIX:=2
+PKG_BASE:=6.9
+PKG_BUGFIX:=0
 PKG_VERSION:=$(PKG_BASE).$(PKG_BUGFIX)
 PKG_RELEASE:=1
 
@@ -17,7 +17,7 @@ PKG_SOURCE:=qtbase-everywhere-src-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
 		  https://mirrors.aliyun.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
 		  http://download.qt-project.org/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/
-PKG_HASH:=012043ce6d411e6e8a91fdc4e05e6bedcfa10fcb1347d3c33908f7fdd10dfe05
+PKG_HASH:=c1800c2ea835801af04a05d4a32321d79a93954ee3ae2172bbeacf13d1f0598c
 
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/qtbase-everywhere-src-$(PKG_VERSION)
 PKG_BUILD_DIR:=$(BUILD_DIR)/qtbase-everywhere-src-$(PKG_VERSION)
