@@ -1,0 +1,23 @@
+From 13fcd3d6351ff56b4714e89b3a62b40c476a9eca Mon Sep 17 00:00:00 2001
+From: Vladimir Golovnev <glassez@yandex.ru>
+Date: Wed, 5 Mar 2025 09:03:00 +0300
+Subject: [PATCH] Add missing includes
+
+PR #22362.
+---
+ src/base/http/types.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/src/base/http/types.h
++++ b/src/base/http/types.h
+@@ -29,7 +29,10 @@
+ 
+ #pragma once
+ 
++#include <QByteArray>
++#include <QHash>
+ #include <QHostAddress>
++#include <QMap>
+ #include <QString>
+ #include <QVector>
+ 
