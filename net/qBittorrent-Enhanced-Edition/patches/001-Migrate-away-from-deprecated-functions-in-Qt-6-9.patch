@@ -77,7 +77,7 @@ Closes #21412.
  #include <QHeaderView>
  #include <QHostAddress>
  #include <QLabel>
-@@ -992,7 +993,13 @@ void AdvancedSettings::addRow(const int
+@@ -997,7 +998,13 @@ void AdvancedSettings::addRow(const int
      setCellWidget(row, VALUE, widget);
  
      if constexpr (std::is_same_v<T, QCheckBox>)
