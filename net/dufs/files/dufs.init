@@ -46,11 +46,12 @@ start_service() {
 	append_param_arg "config" "tls_key"
 	append_param_bool "config" "enable_cors"
 
-	local auth_roles
+	local auth_roles hidden
 	config_get auth_roles "config" "auth"
+	config_get hidden "config" "hidden"
 	[ -z "$auth_roles" ] || config_list_foreach "config" "auth" "append_param '--auth'"
+	[ -z "$hidden" ] || config_list_foreach "config" "hidden" "append_param '--hidden'"
 
-	append_param_arg "config" "hidden"
 	append_param_bool "config" "allow_all"
 	append_param_bool "config" "allow_upload"
 	append_param_bool "config" "allow_delete"
@@ -71,9 +72,7 @@ start_service() {
 	procd_set_param respawn
 	procd_set_param stderr 1
 
-	local internet
-	config_get_bool internet "config" "internet" "0"
-	if [ "$internet" -eq "1" ]; then
+	if is_enabled "config" "internet"; then
 		local listen_port
 		config_get listen_port "config" "port" "5000"
 		procd_open_data
