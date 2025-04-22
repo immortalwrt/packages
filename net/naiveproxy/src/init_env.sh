@@ -56,7 +56,6 @@ use_udev=false
 use_aura=false
 use_ozone=false
 use_gio=false
-use_gtk=false
 use_platform_icu_alternatives=true
 use_glib=false
 
@@ -69,6 +68,9 @@ enable_mdns=false
 enable_reporting=false
 include_transport_security_state_preload_list=false
 enable_device_bound_sessions=false
+enable_bracketed_proxy_uris=true
+enable_quic_proxy_support=true
+
 use_nss_certs=false
 
 enable_backup_ref_ptr_support=false
