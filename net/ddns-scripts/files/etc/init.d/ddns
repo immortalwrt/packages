@@ -2,9 +2,13 @@
 START=95
 STOP=10
 
-reload() {
-	/usr/lib/ddns/dynamic_dns_updater.sh -- reload
+kill() {
+	/usr/lib/ddns/dynamic_dns_updater.sh -- kill
 	return 0
+}
+
+reload() {
+	restart
 }
 
 restart() {
