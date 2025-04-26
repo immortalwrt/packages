@@ -1,7 +1,7 @@
 
 config zerotier 'global'
 	# Sets whether ZeroTier is enabled or not
-	option enabled 0
+	option enabled '0'
 	# Sets the ZeroTier listening port (default 9993; set to 0 for random)
 	#option port '9993'
 	# Client secret (leave blank to generate a secret on first run)
@@ -15,10 +15,14 @@ config zerotier 'global'
 	# Copy the contents of the persistent configuration directory to memory
 	# instead of linking it, this avoids writing to flash
 	#option copy_config_path '1'
+	# Add firewall rules
+	option fw_allow_input '1'
 
 # Network configuration, you can have as many configurations as networks you
 # want to join (the network name is optional)
 config network 'earth'
+	# Sets whether this network is enabled or not
+	option enabled '0'
 	# Identifier of the network you wish to join
 	option id '8056c2e21c000001'
 	# Network configuration parameters (all are optional, if not indicated the
@@ -28,12 +32,20 @@ config network 'earth'
 	option allow_global '0'
 	option allow_default '0'
 	option allow_dns '0'
+	# Add firewall rules
+	option fw_allow_input '0'
+	option fw_allow_forward '0'
+	option fw_allow_masq '0'
 
 # Example of a second network (unnamed as it is optional)
 #config network
+#	option enabled '1'
 #	option id '1234567890123456'
 #	option allow_managed '1'
 #	option allow_global '0'
 #	option allow_default '0'
 #	option allow_dns '0'
+#	option fw_allow_input '1'
+#	option fw_allow_output '1'
+#	option fw_allow_forward '1'
 
