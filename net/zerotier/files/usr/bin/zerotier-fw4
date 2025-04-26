@@ -21,9 +21,7 @@ while getopts "i:s" arg; do
 		if [ "$(uci -q get zerotier."$network_cfg".fw_allow_input)" = "1" ]; then
 			grep -q "$iface" "$FW_PATH/input.nft" 2>"/dev/null" && continue
 			echo "iifname $iface counter accept comment \"!fw4: Accept ZeroTier input $iface\"" >> "$FW_PATH/input.nft"
-			echo "oifname $iface counter accept comment \"!fw4: Accept ZeroTier output $iface\"" >> "$FW_PATH/input.nft"
 			nft insert rule inet fw4 "input iifname $iface counter accept comment \"!fw4: Accept ZeroTier input $iface\""
-			nft insert rule inet fw4 "input oifname $iface counter accept comment \"!fw4: Accept ZeroTier output $iface\""
 		fi
 
 		if [ "$(uci -q get zerotier."$network_cfg".fw_allow_forward)" = "1" ]; then
