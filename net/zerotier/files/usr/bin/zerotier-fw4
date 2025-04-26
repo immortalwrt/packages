@@ -36,10 +36,6 @@ while getopts "i:s" arg; do
 			grep -q "$iface" "$FW_PATH/srcnat.nft" 2>"/dev/null" && continue
 			echo "oifname $iface counter masquerade comment \"!fw4: Masquerade ZeroTier traffic $iface\"" >> "$FW_PATH/srcnat.nft"
 			nft insert rule inet fw4 "srcnat oifname $iface counter masquerade comment \"!fw4: Masquerade ZeroTier traffic $iface\""
-			ip route | grep "dev $iface proto kernel" | awk '{print $1}' | while read -r ip; do
-				echo "ip saddr $ip oifname $iface counter masquerade comment \"!fw4: Masquerade ZeroTier traffic $ip ($iface)\"" >> "$FW_PATH/srcnat.nft"
-				nft insert rule inet fw4 "srcnat ip saddr $ip oifname $iface counter masquerade comment \"!fw4: Masquerade ZeroTier traffic $ip ($iface)\""
-			done
 		fi
 		;;
 	s)
