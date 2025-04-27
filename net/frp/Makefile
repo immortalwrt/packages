@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=frp
-PKG_VERSION:=0.51.3
+PKG_VERSION:=v0.61.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v${PKG_VERSION}?
-PKG_HASH:=83032399773901348c660d41c967530e794ab58172ccd070db89d5e50d915fef
+PKG_HASH:=b4eb89a501a0681f782b828c691e7e4b80c8df385a5e6eb706d258d44c39431c
 
 PKG_MAINTAINER:=Richard Yu <yurichard3839@gmail.com>
 PKG_LICENSE:=Apache-2.0
