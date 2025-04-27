@@ -1,7 +1,5 @@
 #!/bin/sh
 
-. /lib/functions.sh
-
 FW_PATH="/var/run/zerotier-one/_fw4"
 [ -d "$FW_PATH" ] || mkdir -p "$FW_PATH"
 
@@ -11,8 +9,7 @@ while getopts "i:s" arg; do
 		iface="$OPTARG"
 		[ -n "$iface" ] || continue
 
-		network_info="$(zerotier-cli -j listnetworks)"
-		network_id="$(echo "$network_info" | jsonfilter -qe "@[@.portDeviceName=\"$iface\"].nwid")"
+		network_id="$(zerotier-cli -j listnetworks | jsonfilter -qe "@[@.portDeviceName=\"$iface\"].nwid")"
 		[ -n "$network_id" ] || continue
 
 		network_cfg="$(uci show "zerotier" | awk "/$network_id/ NR==1 {split(\$0, conf, /[.=]/); print conf[2]}")"
@@ -41,7 +38,13 @@ while getopts "i:s" arg; do
 	s)
 		[ "$(uci -q get zerotier.global.fw_allow_input)" = "1" ] || return 2
 
-		zerotier_info="$(zerotier-cli -j info)"
+		wait=0
+		until [ "$wait" -ge "10" ]; do
+			zerotier_info="$(zerotier-cli -j info)"
+			[ -n "$zerotier_info" ] && break
+			sleep 2s
+			let wait+=2
+		done
 		[ -n "$zerotier_info" ] || return 1
 
 		for pp in "primaryPort" "secondaryPort"; do
