@@ -41,7 +41,7 @@ while getopts "i:s" arg; do
 		wait=0
 		until [ "$wait" -ge "10" ]; do
 			zerotier_info="$(zerotier-cli -j info)"
-			[ -n "$zerotier_info" ] && break
+			[ "$?" -eq "0" ] && break
 			sleep 2s
 			let wait+=2
 		done
