@@ -40,7 +40,7 @@ while getopts "i:s" arg; do
 
 		wait=0
 		until [ "$wait" -ge "10" ]; do
-			zerotier_info="$(zerotier-cli -j info)"
+			zerotier_info="$(zerotier-cli -j info | jsonfilter -qe "@.config.settings")"
 			[ -n "$zerotier_info" ] && break
 			sleep 2s
 			let wait+=2
@@ -48,7 +48,7 @@ while getopts "i:s" arg; do
 		[ -n "$zerotier_info" ] || return 1
 
 		for pp in "primaryPort" "secondaryPort"; do
-			pport="$(echo "$zerotier_info" | jsonfilter -qe "@.config.settings.$pp")"
+			pport="$(echo "$zerotier_info" | jsonfilter -qe "@.$pp")"
 			[ -z "$pport" ] && continue
 			grep -q "$pport" "$FW_PATH/input.nft" 2>"/dev/null" && continue
 			network="udp"
