@@ -14,6 +14,8 @@ if [ $PKG_MANAGER = "opkg" ]; then
 	cp /ci/packages_ci.pub "/etc/opkg/keys/$FINGERPRINT"
 
 	opkg update
+elif [ $PKG_MANAGER = "apk" ]; then
+	cp /ci/packages-ci-public.pem "/etc/apk/keys/"
 fi
 
 export CI_HELPER="/ci/.github/workflows/ci_helpers.sh"
@@ -73,7 +75,7 @@ for PKG in /ci/*.[ai]pk; do
 	if [ $PKG_MANAGER = "opkg" ]; then
 		opkg install "$PKG"
 	elif [ $PKG_MANAGER = "apk" ]; then
-		apk add --allow-untrusted "$PKG"
+		apk add "$PKG"
 	fi
 
 	echo "Use package specific test.sh"

@@ -91,7 +91,7 @@ jobs:
           echo "Building $PACKAGES"
           echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
 
-      - name: Generate build keys
+      - name: Generate OPKG build keys
         run: |
           sudo apt-get update
           sudo apt-get install -y signify-openbsd
@@ -101,13 +101,23 @@ jobs:
           cat packages_ci.sec >> $GITHUB_ENV
           echo "$EOF" >> $GITHUB_ENV
 
+      - name: Generate APK build keys
+        run: |
+          openssl ecparam -name prime256v1 -genkey -noout -out packages-ci-private.pem
+          openssl ec -in packages-ci-private.pem -pubout > packages-ci-public.pem
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "PRIVATE_KEY<<$EOF" >> $GITHUB_ENV
+          cat packages-ci-private.pem >> $GITHUB_ENV
+          echo "$EOF" >> $GITHUB_ENV
+
       - name: Build
-        uses: immortalwrt/gh-action-sdk@v5
+        uses: immortalwrt/gh-action-sdk@v7
         env:
           ARCH: ${{ matrix.arch }}-${{ env.BRANCH }}
           FEEDNAME: packages_ci
           INDEX: 1
           KEY_BUILD: ${{ env.KEY_BUILD }}
+          PRIVATE_KEY: ${{ env.PRIVATE_KEY }}
           V: s
 
       - name: Move created packages to project dir
