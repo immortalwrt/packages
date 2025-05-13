@@ -12,7 +12,7 @@ while getopts "i:s" arg; do
 		network_id="$(zerotier-cli -j listnetworks | jsonfilter -qe "@[@.portDeviceName=\"$iface\"].nwid")"
 		[ -n "$network_id" ] || continue
 
-		network_cfg="$(uci show "zerotier" | awk "/$network_id/ && !found {split(\$0, conf, /[.=]/); print conf[2]}")"
+		network_cfg="$(uci show "zerotier" | awk "/$network_id/ && !found {split(\$0, conf, /[.=]/); print conf[2]; found=1}")"
 		[ -n "$network_cfg" ] || continue
 
 		if [ "$(uci -q get zerotier."$network_cfg".fw_allow_input)" = "1" ]; then
