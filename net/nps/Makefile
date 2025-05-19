@@ -5,14 +5,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nps
-PKG_VERSION:=0.26.22
+PKG_VERSION:=0.26.24
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/yisier/nps/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=a0fded7ab32ec722370cd61a3456263b6a90a10a9fac31ddf757d813854ad1f6
+PKG_HASH:=825d5391ba789da36b326c0d4f294cadd2f65391ed76e723d1e40a348a8956d2
 
-PKG_LICENSE:=Apache-2.0
+PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINTER:=Tianling Shen <cnsztl@immortalwrt.org>
 
