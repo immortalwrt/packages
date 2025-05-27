@@ -21,7 +21,7 @@ validate_pptpd_section() {
 		'enabled:bool:1' \
 		'localip:string' \
 		'remoteip:string' \
-		'mppe:list(string):required no40 no56 stateless' \
+		'mppe:list(string):nomppe-40 nomppe-stateful require-mppe-128' \
 		'logwtmp:bool:0'
 }
 
@@ -54,7 +54,7 @@ setup_config() {
 	[ -n "$remoteip" ] && echo "remoteip  $remoteip" >> $CONFIG
 	[ "$logwtmp" -eq 1 ] && echo "logwtmp" >> $CONFIG
 
-	echo "mppe $(echo $mppe | sed -e 's/\s/,/g')" >> $OPTIONS_PPTP
+	echo -e "$(echo "$mppe" | tr ' ' '\n')" >> $OPTIONS_PPTP
 
 	return 0
 }
