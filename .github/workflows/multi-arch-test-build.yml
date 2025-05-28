@@ -46,7 +46,7 @@ jobs:
             target: mpc85xx-p1010
             runtime_test: false
 
-          - arch: riscv64_riscv64
+          - arch: riscv64_generic
             target: sifiveu-generic
             runtime_test: false
 
