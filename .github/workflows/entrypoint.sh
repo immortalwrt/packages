@@ -18,7 +18,7 @@ elif [ $PKG_MANAGER = "apk" ]; then
 	cp /ci/packages-ci-public.pem "/etc/apk/keys/"
 fi
 
-export CI_HELPER="/ci/.github/workflows/ci_helpers.sh"
+export CI_HELPER="/ci/.github/workflows/scripts/ci_helpers.sh"
 
 for PKG in /ci/*.[ai]pk; do
 	if [ $PKG_MANAGER = "opkg" ]; then
