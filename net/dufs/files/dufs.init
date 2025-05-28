@@ -52,6 +52,9 @@ start_service() {
 	[ -z "$auth_roles" ] || config_list_foreach "config" "auth" "append_param '--auth'"
 	[ -z "$hidden" ] || config_list_foreach "config" "hidden" "append_param '--hidden'"
 
+	append_param_bool "config" "render_index"
+	append_param_bool "config" "render_try_index" "1"
+
 	append_param_bool "config" "allow_all"
 	append_param_bool "config" "allow_upload"
 	append_param_bool "config" "allow_delete"
@@ -59,9 +62,6 @@ start_service() {
 	append_param_bool "config" "allow_symlink"
 	append_param_bool "config" "allow_archive"
 	append_param_arg "config" "compress"
-
-	append_param "--render-index"
-	append_param "--render-try-index"
 
 	local serve_path
 	config_get serve_path "config" "serve_path" "/mnt"
