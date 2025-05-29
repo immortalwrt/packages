@@ -47,7 +47,7 @@ start_service() {
 	config_get config_path 'global' 'config_path'
 	config_get_bool copy_config_path 'global' 'copy_config_path' 0
 
-	if [ ${enabled} -eq 0 ]; then
+	if [ "${enabled}" -eq 0 ]; then
 		echo "disabled in /etc/config/zerotier"
 		return
 	fi
@@ -57,12 +57,9 @@ start_service() {
 
 	# Create link or copy files from config_path to CONFIG_PATH
 	if [ -n "${config_path}" ] && [ "${config_path}" != "${CONFIG_PATH}" ]; then
-		if [ ! -d "${config_path}" ]; then
-			echo "ZeroTier config_path does not exist: ${config_path}" 1>&2
-			return
-		fi
+		[ -d "${config_path}" ] || mkdir -p "${config_path}"
 
-		if [ ${copy_config_path} -eq 1 ]; then
+		if [ "${copy_config_path}" -eq 1 ]; then
 			cp -r "${config_path}" "${CONFIG_PATH}"
 		else
 			ln -s "${config_path}" "${CONFIG_PATH}"
@@ -89,7 +86,7 @@ start_service() {
 		echo -n "Generating secret - please wait... "
 		[ -e "${CONFIG_PATH}/identity.secret" ] && secret="$(cat "${CONFIG_PATH}/identity.secret")"
 		[ -n "$secret" ] || secret="$(zerotier-idtool generate)"
-		[ ${?} -ne 0 ] && return 1
+		[ "${?}" -ne 0 ] && return 1
 		uci set zerotier.global.secret="${secret}"
 		uci commit zerotier
 		echo "done."
