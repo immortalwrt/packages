@@ -1,8 +1,8 @@
 --- a/qmi_wwan_q.c
 +++ b/qmi_wwan_q.c
 @@ -1472,7 +1472,7 @@ typedef struct {
- } BRMAC_SETTING;
- #endif
+} BRMAC_SETTING;
+#endif
 
 -int qma_setting_store(struct device *dev, QMAP_SETTING *qmap_settings, size_t size) {
 +static int qma_setting_store(struct device *dev, QMAP_SETTING *qmap_settings, size_t size) {
