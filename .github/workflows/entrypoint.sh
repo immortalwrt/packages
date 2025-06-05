@@ -15,7 +15,11 @@ if [ $PKG_MANAGER = "opkg" ]; then
 
 	opkg update
 elif [ $PKG_MANAGER = "apk" ]; then
+	echo "/ci/packages.adb" >> /etc/apk/repositories.d/distfeeds.list
+
 	cp /ci/packages-ci-public.pem "/etc/apk/keys/"
+
+	apk update
 fi
 
 export CI_HELPER="/ci/.github/workflows/scripts/ci_helpers.sh"
@@ -75,7 +79,7 @@ for PKG in /ci/*.[ai]pk; do
 	if [ $PKG_MANAGER = "opkg" ]; then
 		opkg install "$PKG"
 	elif [ $PKG_MANAGER = "apk" ]; then
-		apk add "$PKG"
+		apk add --allow-untrusted "$PKG"
 	fi
 
 	echo "Use package specific test.sh"
