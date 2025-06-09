@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024 ImmortalWrt.org
+# Copyright (C) 2024-2025 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
