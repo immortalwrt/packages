@@ -10,9 +10,9 @@
 
 ## 🧪 Run Testing Details
 
-- **OpenWrt Version:**
-- **OpenWrt Target/Subtarget:**
-- **OpenWrt Device:**
+- **ImmortalWrt Version:**
+- **ImmortalWrt Target/Subtarget:**
+- **ImmortalWrt Device:**
 
 ---
 

@@ -12,25 +12,14 @@ body:
     id: package-name
     attributes:
       label: Package Name
-      placeholder: e.g. iptables, curl, netdata
+      placeholder: e.g. curl, dufs, tmate
     validations:
       required: true
 
   - type: input
-    id: maintainer
+    id: immortalwrt-version
     attributes:
-      label: Maintainer
-      description: |
-        Check the latest package commits and/or search the repo with the example below.\
-        ```<package-name>/makefile maintainer```
-      placeholder: (@username)
-    validations:
-      required: true
-
-  - type: input
-    id: openwrt-version
-    attributes:
-      label: OpenWrt Version
+      label: ImmortalWrt Version
       description: |
         If you are unsure, use the command below.\
         ```ubus call system board | jsonfilter -e '@.release.version'```
@@ -41,7 +30,7 @@ body:
   - type: input
     id: target-subtarget
     attributes:
-      label: OpenWrt Target/Subtarget
+      label: ImmortalWrt Target/Subtarget
       description: |
         If you are unsure, use the command below.\
         ```ubus call system board | jsonfilter -e '@.release.target'```
@@ -86,7 +75,7 @@ body:
       options:
         - label: The package is maintained in this repository.
           required: true
-        - label: I understand that issues related to [the base OpenWrt repository](https://github.com/openwrt/openwrt/issues) or [LuCI repository](https://github.com/openwrt/luci/issues) will be closed.
+        - label: I understand that issues related to [the core repository](https://github.com/immortalwrt/immortalwrt/issues) or [LuCI repository](https://github.com/immortalwrt/luci/issues) will be closed.
           required: true
-        - label: I am reporting an issue for OpenWrt, not an unsupported fork.
+        - label: I am reporting an issue for ImmortalWrt, not an unsupported fork.
           required: true
