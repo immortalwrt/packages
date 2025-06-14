@@ -88,7 +88,7 @@ $(eval $(call 3proxyLibrary,pam,pamauth,+libpam,))
 $(eval $(call 3proxyLibrary,pcre,PCREPlugin,+libpcre2,This filtering plugin can be used to create matching and replace rules with regular expressions for client's request, client and servers header and client and server data.))
 $(eval $(call 3proxyLibrary,ssl,SSLPlugin,+libopenssl,This plugin can be used to decrypt and manupulate SSL/TLS traffic.))
 $(eval $(call 3proxyLibrary,strings,StringsPlugin,,Allows to change replies of HTTP proxy server.))
-$(eval $(call 3proxyLibrary,traffic,TrafficPlugin,,))
+$(eval $(call 3proxyLibrary,traffic,TrafficPlugin,,This plugin attempts to correct 3proxy computations to approximate network or link level traffic by using either fixed coefficients by port number or attempting to predict number and sizes of network packets.))
 $(eval $(call 3proxyLibrary,transparent,TransparentPlugin,,This plugin can be used to implement 3proxy transparently for client for any TCP-based protocols.))
 
 # 1: module name
