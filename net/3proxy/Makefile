@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=3proxy
 PKG_VERSION:=0.9.5
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/3proxy/3proxy/tar.gz/$(PKG_VERSION)?
@@ -85,7 +85,7 @@ define 3proxyLibrary
   endef
 endef
 $(eval $(call 3proxyLibrary,pam,pamauth,+libpam,))
-$(eval $(call 3proxyLibrary,pcre,PCREPlugin,+libpcre2,This filtering plugin can be used to create matching and replace rules with regular expressions for client's request, client and servers header and client and server data.))
+$(eval $(call 3proxyLibrary,pcre,PCREPlugin,,This filtering plugin can be used to create matching and replace rules with regular expressions for client's request, client and servers header and client and server data.))
 $(eval $(call 3proxyLibrary,ssl,SSLPlugin,+libopenssl,This plugin can be used to decrypt and manupulate SSL/TLS traffic.))
 $(eval $(call 3proxyLibrary,strings,StringsPlugin,,Allows to change replies of HTTP proxy server.))
 $(eval $(call 3proxyLibrary,traffic,TrafficPlugin,,This plugin attempts to correct 3proxy computations to approximate network or link level traffic by using either fixed coefficients by port number or attempting to predict number and sizes of network packets.))
@@ -131,7 +131,6 @@ MAKE_FLAGS += \
 		$(if $(CONFIG_PACKAGE_3proxy-lib-strings),StringsPlugin) \
 		$(if $(CONFIG_PACKAGE_3proxy-lib-traffic),TrafficPlugin) \
 		$(if $(CONFIG_PACKAGE_3proxy-lib-transparent),TransparentPlugin))" \
-	SYSTEM_PCRE=1 \
 	-f Makefile.Linux
 
 $(foreach lib,$(3proxyLibs),$(eval $(call BuildPackage,3proxy-lib-$(lib))))
