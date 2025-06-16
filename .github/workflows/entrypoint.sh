@@ -13,7 +13,7 @@ mkdir -p /var/lock/
 
 opkg update
 
-export CI_HELPER="/ci/.github/workflows/ci_helpers.sh"
+export CI_HELPER="/ci/.github/workflows/scripts/ci_helpers.sh"
 
 for PKG in /ci/*.ipk; do
 	tar -xzOf "$PKG" ./control.tar.gz | tar xzf - ./control
