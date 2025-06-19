@@ -35,7 +35,9 @@ config network 'earth'
 	# Add firewall rules
 	option fw_allow_input '0'
 	option fw_allow_forward '0'
+	# list fw_forward_ifaces ''
 	option fw_allow_masq '0'
+	# list fw_masq_ifaces ''
 
 # Example of a second network (unnamed as it is optional)
 #config network
@@ -46,6 +48,8 @@ config network 'earth'
 #	option allow_default '0'
 #	option allow_dns '0'
 #	option fw_allow_input '1'
-#	option fw_allow_output '1'
 #	option fw_allow_forward '1'
+#	list fw_forward_ifaces 'br-lan'
+#	option fw_allow_masq '1'
+#	list fw_masq_ifaces 'br-lan'
 
