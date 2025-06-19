@@ -127,16 +127,8 @@ start_service() {
 	fi
 }
 
-service_started() {
-	procd_set_config_changed firewall
-}
-
 stop_service() {
 	rm -f "$RUNDIR"/hbbr*.log "$RUNDIR"/hbbs*.log
-}
-
-service_stopped() {
-	procd_set_config_changed firewall
 }
 
 service_triggers() {
