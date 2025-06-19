@@ -61,14 +61,6 @@ start_service() {
 	procd_close_instance
 }
 
-service_started() {
-	procd_set_config_changed firewall
-}
-
-service_stopped() {
-	procd_set_config_changed firewall
-}
-
 service_triggers() {
 	procd_add_reload_trigger "$CONF"
 }
