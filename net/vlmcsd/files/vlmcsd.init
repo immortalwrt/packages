@@ -60,17 +60,9 @@ start_service() {
 	procd_close_instance
 }
 
-service_started() {
-	procd_set_config_changed firewall
-}
-
 stop_service() {
 	rm -f "$DNSMASQ_VLMCSD"
 	/etc/init.d/dnsmasq restart 2>"/dev/null"
-}
-
-service_stopped() {
-	procd_set_config_changed firewall
 }
 
 reload_service() {
