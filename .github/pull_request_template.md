@@ -1,8 +1,5 @@
 ## 📦 Package Details
 
-**Maintainer:** @<github-user>
-<sub>(You can find this by checking the history of the package `Makefile`.)</sub>
-
 **Description:**
 <!-- Briefly describe what this package does or what changes are introduced -->
 
