@@ -28,6 +28,7 @@ define Package/shadow-tls
   SUBMENU:=Web Servers/Proxies
   TITLE:=A proxy to expose real tls handshake to the firewall
   URL:=https://github.com/ihciah/shadow-tls
+  DEPENDS:=@(aarch64||arm||x86_64)
 endef
 
 define Package/shadow-tls/description
