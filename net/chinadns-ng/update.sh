@@ -6,7 +6,7 @@ function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 export CURDIR="$(cd "$(dirname $0)"; pwd)"
 
-TAG_INFO="$(curl -H "Authorization: $GITHUB_TOKEN" -sL "https://api.github.com/repos/zfl9/chinadns-ng/releases/latest")"
+TAG_INFO="$(curl -H "Authorization: Bearer $GITHUB_TOKEN" -sL "https://api.github.com/repos/zfl9/chinadns-ng/releases/latest")"
 [ -n "$TAG_INFO" ] || exit 1
 
 VERSION="$(jq -r ".tag_name" <<< "$TAG_INFO")"
