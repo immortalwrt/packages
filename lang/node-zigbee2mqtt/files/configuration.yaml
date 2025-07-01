@@ -1,0 +1,31 @@
+homeassistant:
+  enabled: false
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://localhost
+serial:
+  port: /dev/ttyUSB0
+  adapter: zstack
+  rtscts: false
+  disable_led: false
+  baudrate: 115200
+advanced:
+  homeassistant_legacy_entity_attributes: false
+  homeassistant_legacy_triggers: false
+  legacy_api: false
+  legacy_availability_payload: false
+  device_options:
+  log_level: info
+  log_directory: /tmp/log/zigbee2mqtt/%TIMESTAMP%
+  log_file: log.txt
+  log_rotation: true
+  log_output:
+    - console
+    - file
+frontend:
+  enabled: true
+  port: 8080
+  host: 0.0.0.0
+device_options:
+  legacy: false
+version: 4

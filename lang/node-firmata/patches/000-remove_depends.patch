@@ -1,0 +1,12 @@
+--- a/package.json
++++ b/package.json
+@@ -11,8 +11,7 @@
+   },
+   "main": "./lib/firmata",
+   "dependencies": {
+-    "firmata-io": "^2.3.0",
+-    "serialport": "^8.0.5"
++    "firmata-io": "^2.3.0"
+   },
+   "scripts": {
+     "test": "grunt",

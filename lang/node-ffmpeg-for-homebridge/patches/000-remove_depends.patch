@@ -1,0 +1,11 @@
+--- a/package.json
++++ b/package.json
+@@ -37,8 +37,5 @@
+     "h264_omx"
+   ],
+   "dependencies": {
+-    "dotenv": "^16.4.5",
+-    "simple-get": "^4.0.1",
+-    "tar": "^7.4.3"
+   }
+ }

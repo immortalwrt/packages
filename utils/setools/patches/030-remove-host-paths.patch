@@ -1,0 +1,11 @@
+--- a/setup.py
++++ b/setup.py
+@@ -79,7 +79,7 @@ class QtHelpCommand(Command):
+ 
+ 
+ # Library linkage
+-lib_dirs = ['.', '/usr/lib64', '/usr/lib', '/usr/local/lib']
++lib_dirs = ['.', os.environ["STAGING_DIR"] + '/usr/lib']
+ include_dirs = []
+ 
+ with suppress(KeyError):

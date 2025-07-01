@@ -1,0 +1,12 @@
+--- a/package.json
++++ b/package.json
+@@ -20,8 +20,7 @@
+   "browser": "browser.js",
+   "dependencies": {
+     "abstract-level": "^2.0.1",
+-    "browser-level": "^2.0.0",
+-    "classic-level": "^2.0.0"
++    "browser-level": "^2.0.0"
+   },
+   "devDependencies": {
+     "@types/node": "^22.10.1",

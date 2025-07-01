@@ -1,0 +1,53 @@
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -56,13 +56,6 @@ libpkcs11_la_SOURCES = $(pkcs11_la_SOURC
+ libpkcs11_la_CFLAGS = $(pkcs11_la_CFLAGS)
+ libpkcs11_la_LIBADD = $(pkcs11_la_LIBADD)
+ 
+-# OpenSSL older than 1.1.0 expected libpkcs11.so instead of pkcs11.so
+-check-local: $(LTLIBRARIES)
+-	cd .libs && $(LN_S) -f pkcs11$(SHARED_EXT) libpkcs11$(SHARED_EXT)
+-
+-install-exec-hook:
+-	cd '$(DESTDIR)$(enginesexecdir)' && $(LN_S) -f pkcs11$(SHARED_EXT) libpkcs11$(SHARED_EXT)
+-
+ if WIN32
+ # def file required for MS users to build library
+ mylibdir=$(libdir)
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -965,7 +965,7 @@ distdir-am: $(DISTFILES)
+ 	  fi; \
+ 	done
+ check-am: all-am
+-	$(MAKE) $(AM_MAKEFLAGS) check-local
++	$(MAKE) $(AM_MAKEFLAGS)
+ check: check-am
+ all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS) config.h
+ install-enginesexecLTLIBRARIES: install-libLTLIBRARIES
+@@ -1060,7 +1060,7 @@ install-dvi-am:
+ 
+ install-exec-am: install-enginesexecLTLIBRARIES install-libLTLIBRARIES
+ 	@$(NORMAL_INSTALL)
+-	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
++	$(MAKE) $(AM_MAKEFLAGS)
+ install-html: install-html-am
+ 
+ install-html-am:
+@@ -1127,14 +1127,14 @@ uninstall-am: uninstall-enginesexecLTLIB
+ .MAKE: all check-am install-am install-exec-am install-strip
+ 
+ .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am \
+-	check-local clean clean-enginesexecLTLIBRARIES clean-generic \
++	clean clean-enginesexecLTLIBRARIES clean-generic \
+ 	clean-libLTLIBRARIES clean-libtool cscopelist-am ctags \
+ 	ctags-am distclean distclean-compile distclean-generic \
+ 	distclean-hdr distclean-libtool distclean-tags distdir dvi \
+ 	dvi-am html html-am info info-am install install-am \
+ 	install-data install-data-am install-dvi install-dvi-am \
+ 	install-enginesexecLTLIBRARIES install-exec install-exec-am \
+-	install-exec-hook install-html install-html-am \
++	install-html install-html-am \
+ 	install-includeHEADERS install-info install-info-am \
+ 	install-libLTLIBRARIES install-man install-mylibDATA \
+ 	install-pdf install-pdf-am install-pkgconfigDATA install-ps \
