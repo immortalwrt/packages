@@ -346,6 +346,7 @@ define Package/ddns-scripts-aliyun
 	$(call Package/ddns-scripts/Default)
 	TITLE:=Extension for Aliyun DNS API
 	DEPENDS:=ddns-scripts +curl +openssl-util
+	PROVIDES:=ddns-scripts_aliyun
 endef
 
 define Package/ddns-scripts-aliyun/description
