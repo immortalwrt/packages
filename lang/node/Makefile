@@ -7,36 +7,27 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=node
 
 ifeq ($(CONFIG_NODEJS_20),y)
-PKG_VERSION:=20.19.0
+PKG_VERSION:=20.19.3
 PKG_RELEASE:=1
-PKG_HASH:=658572c4a0f546b0c07ea64d53b396a19c425ff183924872cb34712a17e15332
+PKG_HASH:=4c9f238ad7c57af35efa6ba6259521aebbe20c2f91f6d846860a861c97fc6b99
 PATCH_DIR:=./patches/v20.x
-NODEJS_BIN_SUM:=8a4dbcdd8bccef3132d21e8543940557e55dcf44f00f0a99ba8a062f4552e722
+NODEJS_BIN_SUM:=76272878069683c3a36b933d2f4842436a26b527daa930ae9346b477011ee2f3
 NODE_MODULE_VERSION:=115
 else
-ifeq ($(CONFIG_NODEJS_18),y)
-PKG_VERSION:=18.20.8
+ifeq ($(CONFIG_NODEJS_24),y)
+PKG_VERSION:=24.3.0
 PKG_RELEASE:=1
-PKG_HASH:=ec60a6d2344ef9e1f093991ca1bb6bbe92c61c29d1762c4b99e08f87dbb91e2f
-PATCH_DIR:=./patches/v18.x
-NODEJS_BIN_SUM:=27a9f3f14d5e99ad05a07ed3524ba3ee92f8ff8b6db5ff80b00f9feb5ec8097a
-NODE_MODULE_VERSION:=108
+PKG_HASH:=f8cc1dcde9b76fa380765204fefbb98e51123e52c919ba4adcf4ccd235bbf70b
+PATCH_DIR:=./patches/v24.x
+NODEJS_BIN_SUM:=bbeb5fb8113b44fc30f5a5887dbc0ab66af8e56139f5f9fbe7c7a1aa056246dc
+NODE_MODULE_VERSION:=137
 else
-ifeq ($(CONFIG_NODEJS_23),y)
-PKG_VERSION:=23.11.0
+PKG_VERSION:=22.17.0
 PKG_RELEASE:=1
-PKG_HASH:=0080beb9a481e2536543f70b59880093cb6c42470092efad8193563219efdc80
-PATCH_DIR:=./patches/v23.x
-NODEJS_BIN_SUM:=66f768a7f2d89ecdda8fe1e33ee71ac04ed9180111cbf1c5fb944655fe7c90c7
-NODE_MODULE_VERSION:=131
-else
-PKG_VERSION:=22.14.0
-PKG_RELEASE:=1
-PKG_HASH:=6c4e31ed5702dc45cfd8c435af56a36a474427e1bd7afe74c346136060beba8a
+PKG_HASH:=f8bf095ff559033edf04108fb1f14f72e2be337c609d4f83e8af1e299af7f4b4
 PATCH_DIR:=./patches/v22.x
-NODEJS_BIN_SUM:=9d942932535988091034dc94cc5f42b6dc8784d6366df3a36c4c9ccb3996f0c2
+NODEJS_BIN_SUM:=0fa01328a0f3d10800623f7107fbcd654a60ec178fab1ef5b9779e94e0419e1a
 NODE_MODULE_VERSION:=127
-endif
 endif
 endif
 
@@ -80,7 +71,7 @@ define Package/node/description
    package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
 
   *** The following preparations must be made on the host side. ***
-      1. gcc 10.1 or higher is required.
+      1. gcc 12.2 or higher is required.
       2. To build a 32-bit target, gcc-multilib, g++-multilib are required.
       3. Requires libatomic package. (If necessary, install the 32-bit library at the same time.)
      ex) sudo apt-get install gcc-multilib g++-multilib
@@ -109,17 +100,14 @@ define Package/node/config
 		 Select node.js version.
 		 The host package version is also the same.
 
-		config NODEJS_18
-			bool "18.x Maintenance LTS"
-
 		config NODEJS_20
 			bool "20.x Maintenance LTS"
 
 		config NODEJS_22
 			bool "22.x Active LTS"
 
-		config NODEJS_23
-			bool "23.x Current"
+		config NODEJS_24
+			bool "24.x Current"
 	endchoice
 
 	if PACKAGE_node
@@ -178,7 +166,7 @@ MAKE_VARS+= \
 HOST_MAKE_VARS+=NO_LOAD='cctest.target.mk embedtest.target.mk overlapped-checker.target.mk'
 
 CONFIGURE_VARS:= \
-	CC="$(TARGET_CC) $(TARGET_OPTIMIZATION)" \
+	CC="$(TARGET_CC) $(TARGET_OPTIMIZATION) -flax-vector-conversions" \
 	CXX="$(TARGET_CXX) $(TARGET_OPTIMIZATION)" \
 	CC_host="$(HOSTCC) $(FORCE_32BIT)" \
 	CXX_host="$(HOSTCXX) $(FORCE_32BIT)"
