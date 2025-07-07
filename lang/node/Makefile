@@ -7,11 +7,11 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=node
 
 ifeq ($(CONFIG_NODEJS_20),y)
-PKG_VERSION:=20.19.0
+PKG_VERSION:=20.19.3
 PKG_RELEASE:=1
-PKG_HASH:=658572c4a0f546b0c07ea64d53b396a19c425ff183924872cb34712a17e15332
+PKG_HASH:=4c9f238ad7c57af35efa6ba6259521aebbe20c2f91f6d846860a861c97fc6b99
 PATCH_DIR:=./patches/v20.x
-NODEJS_BIN_SUM:=8a4dbcdd8bccef3132d21e8543940557e55dcf44f00f0a99ba8a062f4552e722
+NODEJS_BIN_SUM:=76272878069683c3a36b933d2f4842436a26b527daa930ae9346b477011ee2f3
 NODE_MODULE_VERSION:=115
 else
 ifeq ($(CONFIG_NODEJS_18),y)
@@ -22,21 +22,12 @@ PATCH_DIR:=./patches/v18.x
 NODEJS_BIN_SUM:=27a9f3f14d5e99ad05a07ed3524ba3ee92f8ff8b6db5ff80b00f9feb5ec8097a
 NODE_MODULE_VERSION:=108
 else
-ifeq ($(CONFIG_NODEJS_23),y)
-PKG_VERSION:=23.10.0
+PKG_VERSION:=22.17.0
 PKG_RELEASE:=1
-PKG_HASH:=27fea91e7df3f3a18875f76afb63ba4ac60926ffb10ad2be557160ef48787266
-PATCH_DIR:=./patches/v23.x
-NODEJS_BIN_SUM:=26f85defcb75e3f8f00c6ad429f9a5b2fb1766e955045fe97e31b11c44315f2d
-NODE_MODULE_VERSION:=131
-else
-PKG_VERSION:=22.14.0
-PKG_RELEASE:=1
-PKG_HASH:=6c4e31ed5702dc45cfd8c435af56a36a474427e1bd7afe74c346136060beba8a
+PKG_HASH:=f8bf095ff559033edf04108fb1f14f72e2be337c609d4f83e8af1e299af7f4b4
 PATCH_DIR:=./patches/v22.x
-NODEJS_BIN_SUM:=9d942932535988091034dc94cc5f42b6dc8784d6366df3a36c4c9ccb3996f0c2
+NODEJS_BIN_SUM:=0fa01328a0f3d10800623f7107fbcd654a60ec178fab1ef5b9779e94e0419e1a
 NODE_MODULE_VERSION:=127
-endif
 endif
 endif
 
@@ -110,16 +101,13 @@ define Package/node/config
 		 The host package version is also the same.
 
 		config NODEJS_18
-			bool "18.x Maintenance LTS"
+			bool "18.x End-of-Life"
 
 		config NODEJS_20
 			bool "20.x Maintenance LTS"
 
 		config NODEJS_22
 			bool "22.x Active LTS"
-
-		config NODEJS_23
-			bool "23.x Current"
 	endchoice
 
 	if PACKAGE_node
@@ -178,7 +166,7 @@ MAKE_VARS+= \
 HOST_MAKE_VARS+=NO_LOAD='cctest.target.mk embedtest.target.mk overlapped-checker.target.mk'
 
 CONFIGURE_VARS:= \
-	CC="$(TARGET_CC) $(TARGET_OPTIMIZATION)" \
+	CC="$(TARGET_CC) $(TARGET_OPTIMIZATION) -flax-vector-conversions" \
 	CXX="$(TARGET_CXX) $(TARGET_OPTIMIZATION)" \
 	CC_host="$(HOSTCC) $(FORCE_32BIT)" \
 	CXX_host="$(HOSTCXX) $(FORCE_32BIT)"

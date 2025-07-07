@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=terser
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=5.39.0
+PKG_VERSION:=5.43.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=ef669abcd38fc0a31dede049f1186ae4999783c34cfa6652a5e12b4e57cccf58
+PKG_HASH:=4ef7fad3d4305120b2ccebd74ba4d8a5a47ce574d2ce14661ba209d71bf0e570
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=BSD-2-Clause

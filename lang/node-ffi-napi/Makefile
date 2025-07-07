@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 PKG_NPM_NAME:=ffi-napi
 PKG_NAME:=node-$(PKG_NPM_NAME)
 PKG_VERSION:=4.0.3
-PKG_RELEASE:=10
+PKG_RELEASE:=7
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
@@ -21,6 +21,7 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
+PKG_LIBFFI_VERSION:=3.4.2
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -44,8 +45,8 @@ NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst
 TMPNPM:=$(shell mktemp -u XXXXXXXXXX)
 NPM_CACHE_DIR:=$(if $(call qstrip,$(CONFIG_NODEJS_NPM_CACHE_DIR)),$(call qstrip,$(CONFIG_NODEJS_NPM_CACHE_DIR)),$(TMP_DIR))
 
-TARGET_CFLAGS+=$(FPIC)
-TARGET_CPPFLAGS+=$(FPIC)
+TARGET_CFLAGS+=$(FPIC) -I$(BUILD_DIR)/libffi-$(PKG_LIBFFI_VERSION)/$(GNU_TARGET_NAME)-gnu -I$(BUILD_DIR)/libffi-$(PKG_LIBFFI_VERSION)/$(GNU_TARGET_NAME)-$(TARGET_SUFFIX)
+TARGET_CPPFLAGS+=$(FPIC) -std=c++17
 
 define Build/Compile
 	rm -rf $(PKG_BUILD_DIR)/prebuilds
