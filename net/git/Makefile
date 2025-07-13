@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=git
-PKG_VERSION:=2.46.2
+PKG_VERSION:=2.46.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/software/scm/git/
-PKG_HASH:=5ee8a1c68536094a4f7f9515edc154b12a275b8a57dda4c21ecfbf1afbae2ca3
+PKG_HASH:=0d5c029edfea24abb4cbda385eff2b66ae946dd74849a350e4420f1eefa71aad
 
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
@@ -22,6 +22,10 @@ PKG_CPE_ID:=cpe:/a:git-scm:git
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
+
+ifeq ($(CONFIG_USE_LTO),y)
+	PKG_FORTIFY_SOURCE:=0
+endif
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -137,8 +141,8 @@ define Package/git/install
 		usr/lib/git-core \
 		usr/share/git-core/templates \
 	) | ( cd $(1); $(TAR) -xf - )
-	ln $(1)/usr/lib/git-core/git $(1)/usr/bin/git
-	ln $(1)/usr/lib/git-core/git-shell $(1)/usr/bin/git-shell
+	$(LN) ../lib/git-core/git $(1)/usr/bin/git
+	$(LN) ../lib/git-core/git-shell $(1)/usr/bin/git-shell
 endef
 
 define Package/git-http/install
