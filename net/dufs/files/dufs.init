@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2024 Tianling Shen <cnsztl@immortalwrt.org>
+# Copyright (C) 2024-2025 Tianling Shen <cnsztl@immortalwrt.org>
 
 START=99
 USE_PROCD=1

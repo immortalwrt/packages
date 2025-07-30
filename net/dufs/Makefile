@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024 ImmortalWrt.org
+# Copyright (C) 2024-2025 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dufs
 PKG_VERSION:=0.43.0
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/sigoden/dufs/tar.gz/v$(PKG_VERSION)?
@@ -38,6 +38,10 @@ endef
 
 define Package/dufs/conffiles
 /etc/config/dufs
+endef
+
+define Build/Compile
+	$(call Build/Compile/Cargo,,--locked)
 endef
 
 define Package/dufs/install
