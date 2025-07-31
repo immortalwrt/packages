@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=vlmcsd
-PKG_RELEASE:=7
+PKG_RELEASE:=8
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/Wind4/vlmcsd.git
@@ -39,6 +39,10 @@ define Package/vlmcsd/conffiles
 /etc/config/vlmcsd
 /etc/vlmcsd.ini
 endef
+
+MAKE_FLAGS += \
+	CC="$(TARGET_CC_NOCACHE)" \
+	VLMCSD_VERSION="$(PKG_VERSION)"
 
 define Package/vlmcsd/install
 	$(INSTALL_DIR) $(1)/usr/bin
