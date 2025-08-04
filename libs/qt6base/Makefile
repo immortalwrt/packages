@@ -119,6 +119,7 @@ CMAKE_OPTIONS+= \
 	-DFEATURE_evdev=OFF \
 	-DFEATURE_vnc=OFF \
 	-DFEATURE_linuxfb=OFF \
+	-DFEATURE_libinput=OFF \
 	-DFEATURE_network=$(if $(CONFIG_PACKAGE_libQt6Network),ON,OFF) \
 	-DFEATURE_openssl=ON \
 	-DFEATURE_openssl_runtime=ON \
