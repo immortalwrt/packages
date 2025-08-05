@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gost
 PKG_VERSION:=2.11.5
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/ginuerzh/gost/tar.gz/v$(PKG_VERSION)?
@@ -34,6 +34,11 @@ define Package/gost
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
+define Package/gost/conffiles
+/etc/config/gost
+/etc/gost/
+endef
+
 define Package/gost/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 
@@ -41,6 +46,8 @@ define Package/gost/install
 	$(INSTALL_CONF) $(CURDIR)/files/gost.config $(1)/etc/config/gost
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(CURDIR)/files/gost.init $(1)/etc/init.d/gost
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) $(CURDIR)/files/gost.uci $(1)/etc/uci-defaults/99-gost-migrate
 endef
 
 $(eval $(call GoBinPackage,gost))
