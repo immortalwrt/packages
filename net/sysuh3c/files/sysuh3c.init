@@ -1,43 +1,37 @@
 #!/bin/sh /etc/rc.common
-START=70
 
-run_h3c()
-{
-	local enable
-	config_get_bool enable $1 enable
-	
-	if [ "$enable" == 1 ]; then
-		local username
-		local password
-		local method
-		local ifname
-		local blockstartup
+USE_PROCD=1
+START=99
 
-		config_get username $1 username
-		config_get password $1 password
-		config_get method $1 method
-		config_get ifname $1 ifname
-		config_get_bool blockstartup $1 blockstartup
+CONF="sysuh3c"
 
-		if [ "$blockstartup" == 1 ]; then
-			while ! sysuh3c -u $username -p $password -i $ifname -m $method ; do
-				echo sysuh3c: process exited unexpectedly, restarting..
-				sleep 1
-			done
-		else
-			sleep 5
-			sysuh3c -u $username -p $password -i $ifname -m $method &
-		fi
-	fi
+start_service() {
+	config_load "$CONF"
+
+	local enabled
+	config_get_bool enabled "config" "enabled" "0"
+	[ "$enabled" -eq "1" ] || return 1
+
+	local username password method ifname
+	config_get username "config" "username"
+	config_get password "config" "password"
+	config_get method "config" "method"
+	config_get ifname "config" "ifname"
+
+	procd_open_instance
+	procd_set_param command "/usr/sbin/sysuh3c"
+	procd_append_param command -u "$username"
+	[ -z "$password" ] || procd_append_param command -p "$password"
+	[ -z "$method" ] || procd_append_param command -m "$method"
+	procd_append_param command -i "$ifname"
+
+	procd_set_param respawn 3600 10 5
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+
+	procd_close_instance
 }
 
-start()
-{
-	config_load sysuh3c
-	config_foreach run_h3c login
-}
-
-stop()
-{
-	killall sysuh3c >/dev/null 2>&1
+service_triggers() {
+	procd_add_reload_trigger "$CONF"
 }
