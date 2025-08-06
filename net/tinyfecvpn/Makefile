@@ -8,14 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tinyfecVPN
-PKG_VERSION:=20210116.0
-PKG_RELEASE:=2
+PKG_VERSION:=20230206.0
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/wangyu-/tinyfecVPN.git
-PKG_SOURCE_DATE:=2021-01-17
-PKG_SOURCE_VERSION:=c9b98721ea1d62ab8e1c4c9e2a0ed04394dfe0ae
-PKG_MIRROR_HASH:=28cdadf0f162e52d3c6b10b6a6cdcd22e80783b36b33e341b5dea156bfb75b74
+PKG_SOURCE_VERSION:=057b71f28d7c41ee220804cead976ec60c7fd5c8
+PKG_MIRROR_HASH:=be7486a74ee2b6fe315d0acf7d5aeb3fec68e09da1111eeec9d806d8ad77abd7
 
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=Yu Wang
@@ -34,15 +33,17 @@ define Package/tinyfecvpn
 endef
 
 define Package/tinyfecvpn/description
-  A Lightweight VPN with Build-in Forward Error Correction Support (or A Network Improving Tool
-  which works at VPN mode). Improves your Network Quality on a High-latency Lossy Link.
+  A Lightweight VPN with Build-in Forward Error Correction Support
+  (or A Network Improving Tool which works at VPN mode). Improves
+  your Network Quality on a High-latency Lossy Link.
 endef
 
-MAKE_FLAGS += nolimit_cross
+MAKE_FLAGS += \
+	cc_cross=$(TARGET_CXX) \
+	nolimit_cross
 
 define Build/Configure
-	sed -i 's/cc_cross=.*/cc_cross=$(TARGET_CXX)/g' $(PKG_BUILD_DIR)/makefile
-	sed -i '/\*gitversion/d' $(PKG_BUILD_DIR)/makefile
+	$(SED) 's,cross:git_version,cross:,g' $(PKG_BUILD_DIR)/makefile
 	echo 'const char *gitversion = "$(PKG_SOURCE_VERSION)";' > $(PKG_BUILD_DIR)/git_version.h
 
 	$(call Build/Configure/Default)
