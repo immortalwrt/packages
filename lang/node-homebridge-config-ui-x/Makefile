@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge-config-ui-x
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.78.1
+PKG_VERSION:=5.4.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=fd4a487412d847e7dad9d8c36f04b62b2eb4e30effee910814a31c6db75e33ab
+PKG_HASH:=2af0bc58a3b8bab8149656c82af4d29d05cea3680c186135a0bfd9cae49553ac
 
 PKG_BUILD_DEPENDS:=node/host node-clean-modules/host
 PKG_BUILD_FLAGS:=no-mips16
@@ -36,29 +36,12 @@ define Package/node-homebridge-config-ui-x/description
  Homebridge Config UI X is a web based management tool for Homebridge that allows you to manage all aspects of your Homebridge setup.
 
  Run as root:
-    hb-service install --user homebridge -U /usr/share/homebridge
-    hb-service restart
+    /etc/init.d/homebridge stop
+    /etc/init.d/homebridge disable
+    hb-service install --user homebridge -U /usr/share/homebridge --port 8581
 
  *** The hb-service command is not full compatible with the openwrt environment. ***
- *** You can edit config.json using the Homebridge Config UI X. ***
-
-      See: https://github.com/oznu/homebridge-config-ui-x/wiki/Manual-Configuration
-           https://github.com/oznu/homebridge-config-ui-x/wiki/Manual-Configuration#logs-from-custom-command
-           https://github.com/oznu/homebridge-config-ui-x/wiki/Manual-Configuration#sudo-mode
-
-        "platforms": [
-            {
-              "platform": "config",
-              "name": "Config",
-              "port": 8581,
-              "restart": "sudo /etc/init.d/homebridge restart",
-              "sudo": true,
-              "log": {
-                "method": "custom",
-                "command": "sudo logread -f -l 100 -e homebridge"
-              }
-            }
-        ]
+ *** The behavior in Homebridge servicemode is still unstable. ***
 endef
 
 TAR_OPTIONS+= --strip-components 1
