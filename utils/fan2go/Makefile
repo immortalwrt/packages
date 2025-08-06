@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fan2go
 PKG_VERSION:=0.11.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/markusressel/fan2go/tar.gz/$(PKG_VERSION)?
@@ -52,9 +52,7 @@ endef
 
 define Package/fan2go/postinst
 #!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	touch "/etc/sensors3.conf"
-fi
+touch "$${IPKG_INSTROOT}/etc/sensors3.conf"
 exit 0
 endef
 
