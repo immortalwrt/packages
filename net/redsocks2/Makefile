@@ -5,14 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=redsocks2
-PKG_VERSION:=0.70
+PKG_VERSION:=0.71
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/semigodking/redsocks.git
-PKG_SOURCE_DATE:=2024-09-08
-PKG_SOURCE_VERSION:=2ca40529962f78ad228a2d81f0645e9b804b7e8e
-PKG_MIRROR_HASH:=0b8d195ac38302bfb42f7c9d895c7ed3631790329c3e8bd814f5dee08417d668
+PKG_SOURCE_VERSION:=release-$(PKG_VERSION)
+PKG_MIRROR_HASH:=5c06c3646434c498fe22379cb2085269d1e384e1a2db2941ca844a0a5da1f0dc
 
 PKG_MAINTAINER:=semigodking <semigodking@gmail.com>
 PKG_LICENSE:=Apache-2.0
@@ -40,7 +39,7 @@ MAKE_VARS += DISABLE_SHADOWSOCKS=true
 
 define Package/redsocks2/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/redsocks2 $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/redsocks2 $(1)/usr/sbin/
 	$(INSTALL_DIR) $(1)/etc/redsocks2
 	$(INSTALL_DATA) ./files/redsocks2.template $(1)/etc/redsocks2/config.template
 endef
