@@ -80,3 +80,12 @@ $(eval $(call BuildPackage,python3-setuptools))
 
 $(eval $(call BuildPackage,python3-pkg-resources-src))
 $(eval $(call BuildPackage,python3-setuptools-src))
+
+define Py3Package/python3-setuptools/install
+	$(call Py3Package/$(1)/install/default)
+	# 更安全的文件清理方式
+	rm -rf $(1)/usr/lib/python*/site-packages/_distutils_hack
+	rm -f $(1)/usr/lib/python*/site-packages/distutils-precedence.pth
+	# 确保必要的__pycache__保留
+	find $(1)/usr/lib/python*/site-packages -name "__pycache__" | xargs chmod 755
+endef
