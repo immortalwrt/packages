@@ -76,7 +76,7 @@ define Build/InstallDev
 		$(PKG_INSTALL_DIR)/usr/include/*.h \
 		$(1)/usr/include/
 	$(CP) \
-		$(PKG_BUILD_DIR)/$(GNU_TARGET_NAME)-gnu/fficonfig.h \
+		$(PKG_BUILD_DIR)/$(GNU_TARGET_NAME)*/fficonfig.h \
 		$(1)/usr/include/
 endef
 
