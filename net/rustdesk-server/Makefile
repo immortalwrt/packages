@@ -41,10 +41,6 @@ define Package/rustdesk-server/conffiles
 /etc/rustdesk-server
 endef
 
-define Build/Compile
-	$(call Build/Compile/Cargo,,--locked)
-endef
-
 define Package/rustdesk-server/install
 	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/{hbbr,hbbs} $(1)/usr/bin/
