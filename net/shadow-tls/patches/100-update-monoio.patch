@@ -95,7 +95,7 @@
  
  [dependencies]
 -monoio = { version = "0.2.0", features = ["sync"] }
-+monoio = { version = "=0.2.2", features = ["sync"] }
++monoio = { version = "0.2.2", features = ["sync"] }
  monoio-rustls-fork-shadow-tls = { version = "0.3.0-mod.2" }
  rustls-fork-shadow-tls = { version = "0.20.9-mod.2", default-features = false }
  
