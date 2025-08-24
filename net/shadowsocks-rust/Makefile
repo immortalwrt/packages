@@ -32,7 +32,7 @@ define Package/shadowsocks-rust/Default
     SUBMENU:=Web Servers/Proxies
     TITLE:=shadowsocks-rust $(1)
     URL:=https://shadowsocks.org/
-    DEPENDS:=$$(RUST_ARCH_DEPENDS) @!(TARGET_x86_geode||TARGET_x86_legacy)
+    DEPENDS:=$$(RUST_ARCH_DEPENDS) @!i386
   endef
 
   define Package/shadowsocks-rust-$(1)/description
