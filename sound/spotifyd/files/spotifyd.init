@@ -27,10 +27,6 @@ append_param_bool() {
 }
 
 load_config_arg() {
-	# account info
-	append_param_arg "$1" "username"
-	append_param_arg "$1" "password"
-
 	# device info
 	append_param_arg "$1" "device_name"
 	append_param_arg "$1" "device_type"
@@ -54,10 +50,7 @@ load_config_arg() {
 
 	# cache
 	append_param_bool "$1" "no_audio_cache" "1"
-	if ! is_enabled "$1" "no_audio_cache"; then
-		append_param_arg "$1" "cache_path"
-		append_param_arg "$1" "max_cache_size"
-	fi
+	is_enabled "$1" "no_audio_cache" || append_param_arg "$1" "max_cache_size"
 
 	# advanced
 	append_param_arg "$1" "on_song_change_hook"
@@ -75,6 +68,28 @@ start_service() {
 	procd_append_param command "--no-daemon"
 
 	load_config_arg "config"
+
+	# cache path
+	local cache_path
+	config_get cache_path "config" "cache_path" "/var/run/spotifyd"
+	procd_append_param command "--cache-path" "$cache_path"
+	mkdir -p "$cache_path"
+
+	# credentials
+	local username token
+	config_get username "config" "username"
+	config_get token "config" "token"
+	if [ -n "$username" ] && [ -n "$token" ]; then
+		mkdir -p "$cache_path/oauth"
+		echo -n "{\"username\":\"$username\",\"auth_type\":1,\"auth_data\":\"$token\"}" > "$cache_path/oauth/credentials.json"
+		chmod 0600 "$cache_path/oauth/credentials.json"
+		mkdir -p "$cache_path/zeroconf"
+		cp -fp "$cache_path/oauth/credentials.json" "$cache_path/zeroconf/"
+	fi
+	chown -R "spotifyd":"spotifyd" "$cache_path"
+
+	procd_set_param user spotifyd
+	procd_set_param group spotifyd
 
 	procd_set_param respawn
 	procd_set_param stdout 1

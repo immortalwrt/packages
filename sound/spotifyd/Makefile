@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=spotifyd
-PKG_VERSION:=0.3.5
+PKG_VERSION:=0.4.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/Spotifyd/spotifyd/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=59103f7097aa4e2ed960f1cc307ac8f4bdb2f0067aad664af32344aa8a972df7
+PKG_HASH:=fdbf93c51232d85a0ef29813a02f3c23aacf733444eacf898729593e8837bcfc
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
@@ -24,6 +24,7 @@ define Package/spotifyd
   TITLE:=A spotify daemon
   DEPENDS:=$(RUST_ARCH_DEPENDS) @(!arm||TARGET_bcm53xx||HAS_FPU) @!(mips||mipsel) +alsa-lib
   URL:=https://spotifyd.rs/
+  USERID:=spotifyd:spotifyd
 endef
 
 define Package/spotifyd/description
@@ -47,6 +48,8 @@ define Package/spotifyd/install
 	$(INSTALL_CONF) $(CURDIR)/files/spotifyd.config $(1)/etc/config/spotifyd
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(CURDIR)/files/spotifyd.init $(1)/etc/init.d/spotifyd
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) $(CURDIR)/files/spotifyd.uci $(1)/etc/uci-defaults/99-spotifyd-migration
 endef
 
 $(eval $(call RustBinPackage,spotifyd))
