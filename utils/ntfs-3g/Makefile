@@ -49,7 +49,6 @@ define Package/ntfs-3g/description
   Contains:
    - ntfs-3g
    - ntfs-3g.probe
-   - mount.ntfs (symlink to ntfs-3g)
    - mount.ntfs-3g (symlink to ntfs-3g)
 
 endef
@@ -157,7 +156,6 @@ define Package/ntfs-3g/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libntfs-3g.so.* $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/sbin
-	$(LN) ../usr/bin/ntfs-3g $(1)/sbin/mount.ntfs
 	$(LN) ../usr/bin/ntfs-3g $(1)/sbin/mount.ntfs-3g
 endef
 
