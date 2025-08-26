@@ -1,6 +1,6 @@
 --- a/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
 +++ b/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
-@@ -132,7 +132,8 @@ static void rjv3_set_hdd_serial(uint8_t* serial_buf, char* fake_serial) {
+@@ -132,7 +132,8 @@ static void rjv3_set_hdd_serial(uint8_t*
          memmove(serial_buf, fake_serial, strnlen(fake_serial, MAX_PROP_LEN));
          return;
      }
