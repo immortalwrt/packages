@@ -52,7 +52,17 @@ define Package/trojan
   URL:=https://github.com/trojan-gfw/trojan
   DEPENDS:= \
     +libpthread +libstdcpp +libopenssl \
-    +boost +boost-system +boost-program_options +boost-date_time
+    +boost +boost-program_options +boost-date_time \
+    +@TROJAN_BOOST_SYSTEM:boost-system
+endef
+
+define Package/trojan/config
+	config TROJAN_BOOST_SYSTEM
+		bool "Include boost-system depends (required for Boost < 1.89.0)"
+		default y if PACKAGE_boost-system
+		help
+			Select this option if your Boost version is lower than 1.89.0.
+			For Boost versions 1.89.0 and above, the system library is integrated into the main boost library.
 endef
 
 define Package/trojan/install
