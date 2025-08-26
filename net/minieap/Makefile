@@ -46,6 +46,10 @@ define Package/minieap/install
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/minieap.conf $(1)/etc/minieap.conf
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/minieap $(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/lib/netifd
+	$(INSTALL_BIN) $(CURDIR)/files/minieap.script $(1)/lib/netifd/minieap.script
+	$(INSTALL_DIR) $(1)/lib/netifd/proto
+	$(INSTALL_BIN) $(CURDIR)/files/minieap.proto $(1)/lib/netifd/proto/minieap.sh
 endef
 
 $(eval $(call BuildPackage,minieap))
