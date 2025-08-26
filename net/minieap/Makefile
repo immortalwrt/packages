@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=minieap
 PKG_VERSION:=0.93
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/updateing/minieap/tar.gz/v$(PKG_VERSION)?
@@ -20,7 +20,6 @@ PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_PARALLEL:=1
-PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -40,11 +39,13 @@ define Package/minieap/conffiles
 /etc/minieap.conf
 endef
 
+MAKE_FLAGS += ENABLE_ICONV=false ENABLE_GBCONV=true
+
 define Package/minieap/install
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/minieap.conf $(1)/etc/minieap.conf
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/local/sbin/minieap $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/minieap $(1)/usr/sbin/
 endef
 
 $(eval $(call BuildPackage,minieap))
