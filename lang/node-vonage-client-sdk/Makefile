@@ -12,7 +12,8 @@ PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL_FILE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
-PKG_SOURCE_URL:=https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
+PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/ \
+                https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
 PKG_HASH:=cbd9b606bc377fa18c9b6299c7c71080e8c7accd83205b8a7714fe6232c51baa
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
