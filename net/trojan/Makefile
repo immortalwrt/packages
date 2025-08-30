@@ -52,7 +52,7 @@ define Package/trojan
   URL:=https://github.com/trojan-gfw/trojan
   DEPENDS:= \
     +libpthread +libstdcpp +libopenssl \
-    +boost +boost-system +boost-program_options +boost-date_time
+    +boost +boost-program_options +boost-date_time
 endef
 
 define Package/trojan/install
