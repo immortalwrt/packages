@@ -1,0 +1,22 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -810,7 +810,7 @@ endif()
+ # Boost
+ find_public_dependency(Boost REQUIRED)
+ target_link_libraries(torrent-rasterbar PUBLIC Boost::headers)
+-if (Boost_MAJOR_VERSION LESS_EQUAL 1 AND Boost_MINOR_VERSION LESS 69)
++if (Boost_MAJOR_VERSION LESS_EQUAL 1 AND Boost_MINOR_VERSION LESS 89)
+ 	find_public_dependency(Boost REQUIRED COMPONENTS system)
+ 	target_link_libraries(torrent-rasterbar PUBLIC Boost::system)
+ endif()
+--- a/examples/cmake/FindLibtorrentRasterbar.cmake
++++ b/examples/cmake/FindLibtorrentRasterbar.cmake
+@@ -121,7 +121,7 @@ function(_try_generic_mode)
+ 	set(LibtorrentRasterbar_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+ 
+ 	find_package(Boost QUIET REQUIRED)
+-	if (Boost_MAJOR_VERSION LESS_EQUAL 1 AND Boost_MINOR_VERSION LESS 69)
++	if (Boost_MAJOR_VERSION LESS_EQUAL 1 AND Boost_MINOR_VERSION LESS 89)
+ 		if (NOT Boost_SYSTEM_FOUND)
+ 			find_package(Boost QUIET REQUIRED COMPONENTS system)
+ 		endif()
