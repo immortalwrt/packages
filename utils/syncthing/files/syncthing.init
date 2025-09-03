@@ -64,7 +64,7 @@ start_service() {
 	[ "$enabled" -gt 0 ] || return 0
 
 	# For backwards compatibility
-	IDX_DB=$(readlink -n "$home"/index-v0.14.0.db)
+	IDX_DB=$(readlink -n "$home"/index-v2)
 	if [ ! -z "$IDX_DB" ]; then
 		[ -d "$IDX_DB" ] || mkdir -p "$IDX_DB"
 
