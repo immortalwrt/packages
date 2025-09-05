@@ -15,7 +15,7 @@
 
 ## ✅ Formalities
 
-- [ ] I have reviewed the [CONTRIBUTING.md](../CONTRIBUTING.md) file for detailed contributing guidelines.
+- [ ] I have reviewed the [CONTRIBUTING.md](https://github.com/immortalwrt/packages/blob/master/CONTRIBUTING.md) file for detailed contributing guidelines.
 
 ### If your PR contains a patch:
 
