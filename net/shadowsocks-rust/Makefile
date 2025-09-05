@@ -20,10 +20,10 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_BUILD_DEPENDS:=rust/host
 PKG_BUILD_PARALLEL:=1
 
-RUST_PKG_FEATURES:=aead-cipher-2022,local-dns,local-http,local-redir,local-tun,local-tunnel
+RUST_PKG_FEATURES:=local-redir
 
 include $(INCLUDE_DIR)/package.mk
-include ../../lang/rust/rust-package.mk
+include $(TOPDIR)/feeds/packages/lang/rust/rust-package.mk
 
 define Package/shadowsocks-rust/Default
   define Package/shadowsocks-rust-$(1)
@@ -31,14 +31,8 @@ define Package/shadowsocks-rust/Default
     CATEGORY:=Network
     SUBMENU:=Web Servers/Proxies
     TITLE:=shadowsocks-rust $(1)
-    URL:=https://shadowsocks.org/
-    DEPENDS:=$$(RUST_ARCH_DEPENDS) @!i386
-  endef
-
-  define Package/shadowsocks-rust-$(1)/description
-    Shadowsocks is a fast tunnel proxy that helps you bypass firewalls.
-
-    This package contains the $(1).
+    URL:=https://github.com/shadowsocks/shadowsocks-rust
+    DEPENDS:=$$(RUST_ARCH_DEPENDS)
   endef
 
   define Package/shadowsocks-rust-$(1)/install

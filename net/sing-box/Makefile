@@ -38,7 +38,7 @@ GO_PKG_BUILD_PKG:=$(GO_PKG)/cmd/sing-box
 GO_PKG_LDFLAGS_X:=$(GO_PKG)/constant.Version=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
-include ../../lang/golang/golang-package.mk
+include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/sing-box
   SECTION:=net
@@ -124,20 +124,10 @@ GO_PKG_TAGS:=$(subst $(space),$(comma),$(strip \
 ))
 
 define Package/sing-box/conffiles
-/etc/config/sing-box
-/etc/sing-box/
 endef
 
 define Package/sing-box/install
 	$(call GoPackage/Package/Install/Bin,$(1))
-
-	$(INSTALL_DIR) $(1)/etc/sing-box
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/release/config/config.json $(1)/etc/sing-box
-
-	$(INSTALL_DIR) $(1)/etc/config/
-	$(INSTALL_CONF) ./files/sing-box.conf $(1)/etc/config/sing-box
-	$(INSTALL_DIR) $(1)/etc/init.d/
-	$(INSTALL_BIN) ./files/sing-box.init $(1)/etc/init.d/sing-box
 endef
 
 $(eval $(call GoBinPackage,sing-box))

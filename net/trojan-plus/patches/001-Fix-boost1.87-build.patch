@@ -1,0 +1,84 @@
+--- a/src/core/service.cpp
++++ b/src/core/service.cpp
+@@ -546,8 +546,15 @@ void Service::udp_async_read() {
+             int read_length = (int)length;
+             int ttl         = -1;
+ 
++#if BOOST_VERSION >= 108700
++            auto buffer = udp_read_buf.prepare(config.get_udp_recv_buf());
++            char* data = static_cast<char*>(buffer.data());
++
++            targetdst = recv_tproxy_udp_msg((int)udp_socket.native_handle(), udp_recv_endpoint, data, read_length, ttl);
++#else
+             targetdst = recv_tproxy_udp_msg((int)udp_socket.native_handle(), udp_recv_endpoint,
+               boost::asio::buffer_cast<char*>(udp_read_buf.prepare(config.get_udp_recv_buf())), read_length, ttl);
++#endif
+ 
+             length = read_length < 0 ? 0 : read_length;
+             udp_read_buf.commit(length);
+--- a/src/session/session.cpp
++++ b/src/session/session.cpp
+@@ -68,7 +68,11 @@ void Session::udp_timer_async_wait(int t
+     }
+ 
+     boost::system::error_code ec;
++#if BOOST_VERSION >= 108700
++    udp_gc_timer.cancel();
++#else
+     udp_gc_timer.cancel(ec);
++#endif
+     if (ec) {
+         output_debug_info_ec(ec);
+         destroy();
+@@ -104,7 +108,11 @@ void Session::udp_timer_cancel() {
+     }
+ 
+     boost::system::error_code ec;
++#if BOOST_VERSION >= 108700
++    udp_gc_timer.cancel();
++#else
+     udp_gc_timer.cancel(ec);
++#endif
+     if (ec) {
+         output_debug_info_ec(ec);
+     }
+--- a/src/core/utils.cpp
++++ b/src/core/utils.cpp
+@@ -59,8 +59,13 @@ size_t streambuf_append(
+         return 0;
+     }
+ 
++#if BOOST_VERSION >= 108700
++    auto* dest      = static_cast<uint8_t*>(target.prepare(n).data());
++    const auto* src = static_cast<const uint8_t*>(append_buf.data().data()) + start;
++#else
+     auto* dest      = boost::asio::buffer_cast<uint8_t*>(target.prepare(n));
+     const auto* src = boost::asio::buffer_cast<const uint8_t*>(append_buf.data()) + start;
++#endif
+     memcpy(dest, src, n);
+     target.commit(n);
+     return n;
+@@ -102,7 +107,11 @@ size_t streambuf_append(boost::asio::str
+ size_t streambuf_append(boost::asio::streambuf& target, char append_char) {
+     _guard;
+     const size_t char_length = sizeof(char);
++#if BOOST_VERSION >= 108700
++    auto cp = gsl::span<char>(static_cast<char*>(target.prepare(char_length).data()), char_length);
++#else
+     auto cp = gsl::span<char>(boost::asio::buffer_cast<char*>(target.prepare(char_length)), char_length);
++#endif
+     cp[0]   = append_char;
+     target.commit(char_length);
+     return char_length;
+@@ -137,7 +146,11 @@ size_t streambuf_append(boost::asio::str
+ 
+ std::string_view streambuf_to_string_view(const boost::asio::streambuf& target) {
+     _guard;
++#if BOOST_VERSION >= 108700
++    return std::string_view(static_cast<const char*>(target.data().data()), target.size());
++#else
+     return std::string_view(boost::asio::buffer_cast<const char*>(target.data()), target.size());
++#endif
+     _unguard;
+ }
+ 

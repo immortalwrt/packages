@@ -14,11 +14,12 @@ PKG_HASH:=4699431f0bc826da2bbd3939c0a78c4e7bfc02773fc3a62b24615c37ee89b266
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-app-v$(PKG_VERSION)
 
 PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE_FILE:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/apernet/hysteria
@@ -30,13 +31,13 @@ GO_PKG_LDFLAGS_X = \
 	$(GO_PKG)/app/v2/cmd.appArch=$(GO_ARCH)
 
 include $(INCLUDE_DIR)/package.mk
-include ../../lang/golang/golang-package.mk
+include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/hysteria
   SECTION:=net
   CATEGORY:=Network
   TITLE:=A feature-packed network utility optimized for networks of poor quality
-  URL:=https://github.com/tobyxdd/hysteria
+  URL:=https://github.com/apernet/hysteria
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
@@ -50,7 +51,7 @@ endef
 define Package/hysteria/install
 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
 
-	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/app $(1)/usr/bin/hysteria
 endef
 
