@@ -1,0 +1,11 @@
+--- a/common_node.gypi
++++ b/common_node.gypi
+@@ -4,7 +4,7 @@
+       # Override common.gypi config to use C++20 for Node.js core only.
+       ['OS in "linux freebsd openbsd solaris android aix os400 cloudabi"', {
+         'cflags_cc!': ['-std=gnu++17'],
+-        'cflags_cc': ['-std=gnu++20'],
++        'cflags_cc': ['-std=gnu++2a'],
+       }],
+       ['OS=="mac" and clang==1', {
+         'xcode_settings': {
