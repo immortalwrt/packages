@@ -72,6 +72,7 @@ This package provides the following run-time libraries:
  - regex
  - serialization and wserialization
  - stackstrace
+ - system
  - thread
  - timer
  - type_erasure
@@ -362,6 +363,7 @@ $(eval $(call DefineBoostLibrary,regex,,,,icu))
 $(eval $(call DefineBoostLibrary,serialization))
 $(eval $(call DefineBoostLibrary,wserialization,serialization))
 $(eval $(call DefineBoostLibrary,stacktrace))
+$(eval $(call DefineBoostLibrary,system))
 $(eval $(call DefineBoostLibrary,thread,chrono atomic container date_time))
 $(eval $(call DefineBoostLibrary,timer,chrono))
 $(eval $(call DefineBoostLibrary,type_erasure,chrono thread))
