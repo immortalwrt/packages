@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=q
-PKG_VERSION:=0.19.2
+PKG_VERSION:=0.19.8
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/natesales/q/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=9ce80c34ba2b75fc9ea486df412e7bdf9d9dceffa1a08f4113d0ab3210757a92
+PKG_HASH:=4c3c7aa7e9344287eaffabb303ee5ce45091d99e5e287b684a8887f0be9de4c4
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
