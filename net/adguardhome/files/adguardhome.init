@@ -21,7 +21,6 @@ start_service() {
 		return 0
 	fi
 
-	local enabled
 	local config_file
 	local group
 	local pid_file
@@ -30,10 +29,6 @@ start_service() {
 	local work_dir
 
 	config_load adguardhome
-
-	config_get_bool enabled config enabled 0
-	[ "$enabled" -eq "1" ] || return 1
-
 	config_get config_file config config "/etc/adguardhome/adguardhome.yaml"
 	config_get work_dir config workdir "/var/lib/adguardhome"
 	config_get pid_file config pidfile "/run/adguardhome.pid"
