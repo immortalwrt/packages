@@ -108,7 +108,6 @@ case "${target_arch}" in
 	[ -n "${cpu_type}" ] && naive_flags+=" arm_cpu=\"${cpu_type}\""
 	;;
 "mipsel"|"mips64el")
-	naive_flags+=" use_thin_lto=false chrome_pgo_phase=0"
 	if [ -z "${cpu_type}" ] || [ "${cpu_type}" == "mips32" ]; then
 		naive_flags+=" mips_arch_variant=\"r1\""
 	else
