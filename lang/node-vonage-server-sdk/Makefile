@@ -7,14 +7,14 @@ include $(TOPDIR)/rules.mk
 PKG_NPM_SCOPE:=vonage
 PKG_NPM_NAME:=server-sdk
 PKG_NAME:=node-$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)
-PKG_VERSION:=3.22.1
+PKG_VERSION:=3.25.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_SCOPE)-$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL_FILE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
-PKG_HASH:=c1e652e0b64d08709c375f3397cebdef37319d8c4b6eac6eb8202db52f40d557
+PKG_HASH:=cce2aed46280f364c1136aab75207c5245c2c903c623bd10011b66383e77c203
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
