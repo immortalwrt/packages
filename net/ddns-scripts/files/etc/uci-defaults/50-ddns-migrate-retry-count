@@ -3,18 +3,26 @@
 . /lib/functions.sh
 
 upgrade_to_retry_max_count() {
-	local service=$1
-	local retry_count retry_max_count
+	local service="$1"
 
-	config_get retry_max_count $service retry_max_count
-	config_get retry_count $service retry_count
+	local retry_count retry_max_count
+	config_get retry_max_count "$service" retry_max_count
+	config_get retry_count "$service" retry_count
 	if [ -z "$retry_max_count" ] && [ -n "$retry_count" ]; then
-		uci_set ddns $service retry_max_count $retry_count
-		uci_commit ddns
+		uci_set ddns "$service" retry_max_count "$retry_count"
+	fi
+
+	local service_name domain
+	config_get service_name "$service" service_name
+	config_get domain "$service" domain
+	if [ "$service_name" = "aliyun.com" ] && ! echo "$domain" | grep -q "@"; then
+		uci_set ddns "$service" domain "$(echo "$domain" | sed -e '/^[^.][^.]*\.[^.][^.]*$/ s/^/@/' -e 's/^\(.*\)\.\([^.]*\.[^.]*\)$/\1@\2/')"
 	fi
 }
 
 config_load ddns
 config_foreach upgrade_to_retry_max_count service
+
+[ -z "$(uci -q changes ddns)" ] || uci -q commit ddns
 
 exit 0
