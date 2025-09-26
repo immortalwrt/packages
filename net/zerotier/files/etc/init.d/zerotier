@@ -123,5 +123,4 @@ reload_service() {
 
 service_triggers() {
 	procd_add_reload_trigger 'zerotier'
-	procd_add_interface_trigger 'interface.*.up' wan /etc/init.d/zerotier reload
 }
