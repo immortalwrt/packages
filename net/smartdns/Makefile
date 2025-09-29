@@ -28,7 +28,8 @@ define Package/smartdns
   SECTION:=net
   CATEGORY:=Network
   TITLE:=smartdns server
-  DEPENDS:=+libpthread +libopenssl
+  SUBMENU:=IP Addresses and Names
+  DEPENDS:=+i386:libatomic +libpthread +libopenssl
   URL:=https://www.github.com/pymumu/smartdns/
 endef
 
