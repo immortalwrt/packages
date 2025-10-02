@@ -1,6 +1,6 @@
 --- a/quectel-qrtr-proxy.c
 +++ b/quectel-qrtr-proxy.c
-@@ -547,7 +547,7 @@ static int recv_qmi_from_client(PQCQMIMS
+@@ -555,7 +555,7 @@ static int recv_qmi_from_client(PQCQMIMS
          }
          else if (le16toh(pQMI->CTLMsg.QMICTLMsgHdr.QMICTLType) == QMICTL_GET_CLIENT_ID_REQ) {
              uint8_t QMIType = pQMI->CTLMsg.GetClientIdReq.QMIType;
@@ -9,7 +9,7 @@
  
              if (pRsp) {
                  uint8_t ClientId = 0;
-@@ -581,7 +581,7 @@ static int recv_qmi_from_client(PQCQMIMS
+@@ -589,7 +589,7 @@ static int recv_qmi_from_client(PQCQMIMS
              }
          }
          else if (le16toh(pQMI->CTLMsg.QMICTLMsgHdr.QMICTLType) == QMICTL_RELEASE_CLIENT_ID_REQ) {
@@ -18,7 +18,7 @@
              release_qrtr_client_id(qrtr_con, pQMI->CTLMsg.ReleaseClientIdReq.QMIType, pQMI->CTLMsg.ReleaseClientIdReq.ClientId);
  
              if (pRsp) {
-@@ -610,7 +610,7 @@ static int recv_qmi_from_client(PQCQMIMS
+@@ -618,7 +618,7 @@ static int recv_qmi_from_client(PQCQMIMS
              }
          }
          else if (le16toh(pQMI->CTLMsg.QMICTLMsgHdr.QMICTLType) == QMICTL_GET_VERSION_REQ) {

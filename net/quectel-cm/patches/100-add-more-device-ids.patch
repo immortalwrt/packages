@@ -1,10 +1,9 @@
 --- a/device.c
 +++ b/device.c
-@@ -342,16 +342,20 @@ BOOL qmidevice_detect(char *qmichannel,
-             if (profile->usb_dev.idVendor == 0x2c7c) { //Quectel
+@@ -342,10 +342,12 @@ BOOL qmidevice_detect(char *qmichannel,
                  switch (profile->usb_dev.idProduct) { //EC200U
                  case 0x0901: //EC200U
-+                case 0x0902: //EC200D-EU
+                 case 0x0902: //EC200D
 +                case 0x0904: //EC200G
                  case 0x8101: //RG801H
                      atIntf = 2;
@@ -14,10 +13,3 @@
                      atIntf = 4;
                  break;
                  case 0x6026: //EC200T
-                 case 0x6005: //EC200A
-                 case 0x6002: //EC200S
-                 case 0x6001: //EC100Y
-+                case 0x6007: //EG915Q-NA
-                     atIntf = 3;
-                 break;
-                 default:
