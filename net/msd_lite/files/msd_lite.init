@@ -31,7 +31,7 @@ validate_msd_lite_section() {
 		'bind_to_cpu:bool:0' \
 		'drop_slow_clients:bool:0' \
 		'precache_size:uinteger:4096' \
-		'ring_buffer_size:uinteger:1024' \
+		'ring_buffer_size:uinteger:4096' \
 		'multicast_recv_buffer_size:uinteger:512' \
 		'multicast_recv_timeout:uinteger:2' \
 		'rejoin_time:uinteger:0'
