@@ -1,0 +1,48 @@
+From f16468e74f5bbb80773344b62beed13eef31189c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E4=B8=96=E7=95=8C?= <i@sekai.icu>
+Date: Tue, 9 Sep 2025 14:16:31 +0800
+Subject: [PATCH] Fix ipv6 tproxy listener
+
+---
+ common/listener/listener_tcp.go | 3 ++-
+ common/listener/listener_udp.go | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+--- a/common/listener/listener_tcp.go
++++ b/common/listener/listener_tcp.go
+@@ -3,6 +3,7 @@ package listener
+ import (
+ 	"net"
+ 	"net/netip"
++	"strings"
+ 	"syscall"
+ 	"time"
+ 
+@@ -56,7 +57,7 @@ func (l *Listener) ListenTCP() (net.List
+ 	if l.tproxy {
+ 		listenConfig.Control = control.Append(listenConfig.Control, func(network, address string, conn syscall.RawConn) error {
+ 			return control.Raw(conn, func(fd uintptr) error {
+-				return redir.TProxy(fd, !M.ParseSocksaddr(address).IsIPv4(), false)
++				return redir.TProxy(fd, !strings.HasSuffix(network, "4"), false)
+ 			})
+ 		})
+ 	}
+--- a/common/listener/listener_udp.go
++++ b/common/listener/listener_udp.go
+@@ -5,6 +5,7 @@ import (
+ 	"net"
+ 	"net/netip"
+ 	"os"
++	"strings"
+ 	"syscall"
+ 
+ 	"github.com/sagernet/sing-box/adapter"
+@@ -41,7 +42,7 @@ func (l *Listener) ListenUDP() (net.Pack
+ 	if l.tproxy {
+ 		listenConfig.Control = control.Append(listenConfig.Control, func(network, address string, conn syscall.RawConn) error {
+ 			return control.Raw(conn, func(fd uintptr) error {
+-				return redir.TProxy(fd, !M.ParseSocksaddr(address).IsIPv4(), true)
++				return redir.TProxy(fd, !strings.HasSuffix(network, "4"), true)
+ 			})
+ 		})
+ 	}
