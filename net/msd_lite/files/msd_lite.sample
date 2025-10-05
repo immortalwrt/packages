@@ -21,10 +21,6 @@ available.
 		<!-- 0 = auto -->
 		<fBindToCPU>@fBindToCPU@</fBindToCPU>
 		<!-- Bind threads to CPUs. -->
-		<fCacheGetTimeSyscall>yes</fCacheGetTimeSyscall>
-		<!-- Cache gettime() syscalls.. -->
-		<timerGranularity>100</timerGranularity>
-		<!-- 1/1000 sec -->
 	</threadPool>
 	<!-- HTTP server -->
 	<HTTP>
