@@ -58,6 +58,7 @@ get)
 
 	log info "Running ACME for $main_domain with validation_method $validation_method"
 
+	staging_moved=0
 	if [ -e "$domain_dir" ]; then
 		if [ "$staging" = 0 ] && grep -q "acme-staging" "$domain_dir/$main_domain.conf"; then
 			mv "$domain_dir" "$domain_dir.staging"
@@ -123,10 +124,10 @@ get)
 		fi
 		;;
 	"standalone")
-		set -- "$@" --standalone --listen-v6
+		set -- "$@" --standalone --listen-v6 --httpport "$listen_port"
 		;;
 	"alpn")
-		set -- "$@" --alpn --listen-v6
+		set -- "$@" --alpn --listen-v6 --tlsport "$listen_port"
 		;;
 	"webroot")
 		mkdir -p "$CHALLENGE_DIR"
