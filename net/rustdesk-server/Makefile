@@ -11,7 +11,7 @@ PKG_RELEASE:=5
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/rustdesk/rustdesk-server.git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_MIRROR_HASH:=e300079a0b442ef4eb4d129338d0d7b1dd1d3505720e20735dac5f6ea65ee93a
+PKG_MIRROR_HASH:=cde20ea488f654854e1a8542f248cb450c86b6be9efc3496fb81ca6053c1bb4c
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=AGPL-3.0-only
