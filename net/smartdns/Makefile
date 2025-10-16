@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=smartdns
 PKG_VERSION:=47
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/pymumu/smartdns/tar.gz/Release$(PKG_VERSION)?
@@ -97,6 +97,7 @@ ifneq ($(CONFIG_PACKAGE_smartdns-ui),)
 	( \
 		pushd $(PKG_BUILD_DIR) ; \
 		pushd smartdns-webui ; \
+		$(SED) 's/"\^/"/g' package.json ; \
 		npm install ; \
 		npm run build ; \
 		popd ; \
