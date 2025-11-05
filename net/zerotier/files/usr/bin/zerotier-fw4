@@ -31,7 +31,7 @@ while getopts "i:s" arg; do
 			nft insert rule inet fw4 forward "$rule"
 
 			rule="oifname $iface counter accept comment \"!fw4: Accept ZeroTier output forward $iface\""
-			[ -n "$fwd_ifaces" ] && rule="iifname { $fwd_ifaces } $rule"
+			[ -n "$fwd_ifaces" ] && rule="iifname { ${fwd_ifaces// /, } } $rule"
 			echo "$rule" >> "$FW_PATH/forward.nft"
 			nft insert rule inet fw4 forward "$rule"
 		fi
