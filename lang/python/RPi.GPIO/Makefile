@@ -15,6 +15,10 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENCE.txt
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 
+PKG_BUILD_DEPENDS:=python-installer/host
+
+PYTHON3_PKG_WHEEL_NAME:=rpi_gpio
+
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
