@@ -15,6 +15,8 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENCE.txt
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 
+PKG_BUILD_DEPENDS:=python-setuptools/host
+
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
