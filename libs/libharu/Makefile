@@ -5,19 +5,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libharu
-PKG_VERSION:=2.3.0
+PKG_VERSION:=2.4.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/libharu/libharu/tar.gz/RELEASE_$(subst .,_,$(PKG_VERSION))?
-PKG_HASH:=8f9e68cc5d5f7d53d1bc61a1ed876add1faf4f91070dbc360d8b259f46d9a4d2
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-RELEASE_$(subst .,_,$(PKG_VERSION))
+PKG_SOURCE_URL:=https://codeload.github.com/libharu/libharu/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=0ed3eacf3ceee18e40b6adffbc433f1afbe3c93500291cd95f1477bffe6f24fc
 
 PKG_MAINTAINER:=Elon Huang <elonhhuang@gmail.com>
 PKG_LICENSE:=zlib
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_BUILD_PARALLEL:=1
 CMAKE_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
