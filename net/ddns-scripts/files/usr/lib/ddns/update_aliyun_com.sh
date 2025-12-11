@@ -131,7 +131,7 @@ fi
 if [ -n "$specRecordId" ]; then
     write_log 7 "specRecordId: ${specRecordId}"
     idx=1
-    while json_is_a $idx object && [ "$found_match" = false ]
+    while json_is_a $idx object
     do
         json_select $idx
         json_get_var tmp RecordId
@@ -141,6 +141,7 @@ if [ -n "$specRecordId" ]; then
             json_get_var __RECORD_VALUE Value
             write_log 7 "The $idx Domain Record Value: ${__RECORD_VALUE}"
             found_match=true
+			break
         fi
         idx=$((idx+1))
         json_select ..
