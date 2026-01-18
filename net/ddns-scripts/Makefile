@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-scripts
 PKG_VERSION:=2.8.2
-PKG_RELEASE:=81
+PKG_RELEASE:=84
 
 PKG_LICENSE:=GPL-2.0
 
@@ -143,22 +143,6 @@ define Package/ddns-scripts-digitalocean/description
   'option password' the api token generated in the DO panel
 endef
 
-define Package/ddns-scripts-ovh
-  $(call Package/ddns-scripts/Default)
-  TITLE:=Extension for OVH Dynhost
-  DEPENDS:=ddns-scripts +curl +openssl-util
-  PROVIDES:=ddns-scripts_ovh-dynhost
-endef
-
-define Package/ddns-scripts-ovh/description
-  Dynamic DNS Client scripts extension for ovh.com DynHost API.
-  The script directly updates a DNS record using the OVH DynHost API.
-  It requires:
-  'option domain' the dns domain to update the record for (eg. A-record: home.<example.com>)
-  'option username' the dynhost user
-  'option password' the dynhost password
-endef
-
 define Package/ddns-scripts-dnspod
   $(call Package/ddns-scripts/Default)
   TITLE:=Extension for dnspod.cn API
@@ -268,6 +252,21 @@ define Package/ddns-scripts-gandi/description
   It requires:
   'option username' to be a valid subdomain for gandi.net
   'option password' to be a valid API key for gandi.net
+endef
+
+
+define Package/ddns-scripts-beget
+  $(call Package/ddns-scripts/Default)
+  TITLE:=Beget API
+  DEPENDS:=ddns-scripts +curl
+endef
+
+define Package/ddns-scripts-beget/description
+  Dynamic DNS Client scripts extension for 'beget.com'.
+  It requires:
+  'option domain' to contain the domain
+  'option username' to be a valid username for beget.com
+  'option password' to be a valid API key for beget.com
 endef
 
 
@@ -439,7 +438,6 @@ define Package/ddns-scripts-services/install
 	rm $(1)/usr/share/ddns/default/freedns.42.pl.json
 	rm $(1)/usr/share/ddns/default/godaddy.com-v1.json
 	rm $(1)/usr/share/ddns/default/digitalocean.com-v2.json
-	rm $(1)/usr/share/ddns/default/ovh.com.json
 	rm $(1)/usr/share/ddns/default/dnspod.cn.json
 	rm $(1)/usr/share/ddns/default/dnspod.cn-v3.json
 	rm $(1)/usr/share/ddns/default/no-ip.com.json
@@ -447,6 +445,7 @@ define Package/ddns-scripts-services/install
 	rm $(1)/usr/share/ddns/default/route53-v1.json
 	rm $(1)/usr/share/ddns/default/cnkuai.cn.json
 	rm $(1)/usr/share/ddns/default/gandi.net.json
+	rm $(1)/usr/share/ddns/default/beget.com.json
 	rm $(1)/usr/share/ddns/default/pdns.json
 	rm $(1)/usr/share/ddns/default/scaleway.com.json
 	rm $(1)/usr/share/ddns/default/transip.nl.json
@@ -573,24 +572,6 @@ define Package/ddns-scripts-digitalocean/install
 endef
 
 define Package/ddns-scripts-digitalocean/prerm
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/ddns stop
-fi
-exit 0
-endef
-
-define Package/ddns-scripts-ovh/install
-	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_BIN) ./files/usr/lib/ddns/update_ovh_com.sh \
-		$(1)/usr/lib/ddns
-
-	$(INSTALL_DIR) $(1)/usr/share/ddns/default
-	$(INSTALL_DATA) ./files/usr/share/ddns/default/ovh.com.json \
-		$(1)/usr/share/ddns/default
-endef
-
-define Package/ddns-scripts-ovh/prerm
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	/etc/init.d/ddns stop
@@ -750,6 +731,25 @@ exit 0
 endef
 
 
+define Package/ddns-scripts-beget/install
+	$(INSTALL_DIR) $(1)/usr/lib/ddns
+	$(INSTALL_BIN) ./files/usr/lib/ddns/update_beget_com.sh \
+		$(1)/usr/lib/ddns
+
+	$(INSTALL_DIR) $(1)/usr/share/ddns/default
+	$(INSTALL_DATA) ./files/usr/share/ddns/default/beget.com.json \
+		$(1)/usr/share/ddns/default
+endef
+
+define Package/ddns-scripts-beget/prerm
+#!/bin/sh
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	/etc/init.d/ddns stop
+fi
+exit 0
+endef
+
+
 define Package/ddns-scripts-pdns/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
 	$(INSTALL_BIN) ./files/usr/lib/ddns/update_pdns.sh \
@@ -891,7 +891,6 @@ $(eval $(call BuildPackage,ddns-scripts-gcp))
 $(eval $(call BuildPackage,ddns-scripts-freedns))
 $(eval $(call BuildPackage,ddns-scripts-godaddy))
 $(eval $(call BuildPackage,ddns-scripts-digitalocean))
-$(eval $(call BuildPackage,ddns-scripts-ovh))
 $(eval $(call BuildPackage,ddns-scripts-dnspod))
 $(eval $(call BuildPackage,ddns-scripts-dnspod-v3))
 $(eval $(call BuildPackage,ddns-scripts-noip))
@@ -899,6 +898,7 @@ $(eval $(call BuildPackage,ddns-scripts-nsupdate))
 $(eval $(call BuildPackage,ddns-scripts-route53))
 $(eval $(call BuildPackage,ddns-scripts-cnkuai))
 $(eval $(call BuildPackage,ddns-scripts-gandi))
+$(eval $(call BuildPackage,ddns-scripts-beget))
 $(eval $(call BuildPackage,ddns-scripts-pdns))
 $(eval $(call BuildPackage,ddns-scripts-scaleway))
 $(eval $(call BuildPackage,ddns-scripts-transip))
