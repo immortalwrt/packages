@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=php
 PKG_VERSION:=8.4.16
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
 PKG_MAINTAINER:=Michael Heimpold <mhei@heimpold.de>
 PKG_LICENSE:=PHP-3.01
@@ -40,8 +40,14 @@ PHP8_MODULES= \
 
 PKG_CONFIG_DEPENDS:= \
 	$(patsubst %,CONFIG_PACKAGE_php8-mod-%,$(PHP8_MODULES)) \
-	CONFIG_PHP8_LIBXML CONFIG_PHP8_SYSTEMTZDATA CONFIG_PHP8_GETTEXT \
-  CONFIG_PHP8_FULLICUDATA CONFIG_PHP8_INTL CONFIG_PACKAGE_apache-mod-php8
+	CONFIG_PACKAGE_apache-mod-php8 \
+	CONFIG_PHP8_FULLICUDATA \
+	CONFIG_PHP8_GETTEXT \
+	CONFIG_PHP8_INTL \
+	CONFIG_PHP8_LIBXML \
+	CONFIG_PHP8_SYSTEMTZDATA
+
+PKG_BUILD_DEPENDS:= PHP8_INTL:icu
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -61,38 +67,7 @@ define Package/php8/Default/description
 endef
 
 define Package/php8/config
-	config PHP8_LIBXML
-		bool "PHP8 LIBXML support"
-		default y
-
-	config PHP8_DOM
-		bool "PHP8 DOM support"
-    depends on PHP8_LIBXML
-		default y
-
-	config PHP8_SYSTEMTZDATA
-		bool "Use system timezone data instead of php's built-in database"
-		depends on PACKAGE_php8-cli || PACKAGE_php8-cgi || PACKAGE_apache-mod-php8
-		default y
-		help
-			Enabling this feature automatically selects the zoneinfo-core package
-			which contains data for UTC timezone. To use other timezones you have
-			to install the corresponding zoneinfo-... package(s).
-
-	config PHP8_GETTEXT
-		bool "Enable gettext"
-		default y
-
-	config PHP8_INTL
-		bool "Enable Internationalization"
-    depends on PHP8_GETTEXT
-		default y
-
-	config PHP8_FULLICUDATA
-		bool "Add dependency to full ICU Data"
-		depends on PHP8_INTL
-		default n
-
+  source "$(SOURCE)/Config.in"
 endef
 
 define Package/php8
@@ -115,7 +90,7 @@ endef
 
 define Package/php8-cli
   $(call Package/php8/Default)
-  DEPENDS+= +PHP8_GETTEXT:libstdcpp +riscv64:libatomic
+  DEPENDS+= +PHP8_INTL:libstdcpp +riscv64:libatomic
   TITLE+= (CLI)
 endef
 
@@ -126,7 +101,7 @@ endef
 
 define Package/php8-cgi
   $(call Package/php8/Default)
-  DEPENDS+= +PHP8_GETTEXT:libstdcpp +riscv64:libatomic
+  DEPENDS+= +PHP8_INTL:libstdcpp +riscv64:libatomic
   TITLE+= (CGI & FastCGI)
 endef
 
@@ -148,13 +123,18 @@ endef
 
 define Package/php8-fpm
   $(call Package/php8/Default)
-  DEPENDS+= +PHP8_GETTEXT:libstdcpp +riscv64:libatomic
+  DEPENDS+= +PHP8_INTL:libstdcpp +riscv64:libatomic
   TITLE+= (FPM)
 endef
 
 define Package/php8-fpm/description
   $(call Package/php8/Default/description)
   This package contains the FastCGI Process Manager of the PHP8 interpreter.
+endef
+
+define Package/php8-mod-gettext/description
+  Note that this package works best in combination with the intl module, so
+  please consider also selecting/installing php8-mod-intl.
 endef
 
 define Package/php8-mod-intl/description
@@ -172,9 +152,9 @@ define Package/apache-mod-php8
   SECTION:=net
   CATEGORY:=Network
   DEPENDS+=PACKAGE_apache-mod-php8:apache \
-	   +PHP8_GETTEXT:libstdcpp \
-	   +riscv64:libatomic \
-	   +libpcre2 +zlib
+    +PHP8_INTL:libstdcpp \
+    +riscv64:libatomic \
+    +libpcre2 +zlib
   TITLE:=PHP8 module for Apache Web Server
 endef
 
@@ -704,6 +684,6 @@ $(eval $(call BuildModule,sysvsem,System V shared memory))
 $(eval $(call BuildModule,sysvshm,System V semaphore))
 $(eval $(call BuildModule,tokenizer,Tokenizer))
 $(eval $(call BuildModule,xml,XML,+PHP8_LIBXML:libxml2 +!PHP8_LIBXML:libexpat))
-$(eval $(call BuildModule,xmlreader,XMLReader,@PHP8_LIBXML @PHP8_DOM +PACKAGE_php8-mod-xmlreader:php8-mod-dom +PACKAGE_php8-mod-xmlreader:libxml2))
+$(eval $(call BuildModule,xmlreader,XMLReader,@PHP8_LIBXML +PACKAGE_php8-mod-xmlreader:php8-mod-dom +PACKAGE_php8-mod-xmlreader:libxml2))
 $(eval $(call BuildModule,xmlwriter,XMLWriter,@PHP8_LIBXML +PACKAGE_php8-mod-xmlwriter:libxml2))
 $(eval $(call BuildModule,zip,ZIP,+PACKAGE_php8-mod-zip:libzip))
