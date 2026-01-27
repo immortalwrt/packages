@@ -1,5 +1,9 @@
 #!/bin/sh /etc/rc.common
+# shellcheck shell=ash
+# cspell:words CFGDIR SYSCFG USRCFG cfgfile chgrp defval getline hostlist
+# cspell:words htpasswd radicale tmpconf tmpusers multifilesystem
 
+# shellcheck disable=SC2034
 START=99
 USE_PROCD=1
 
@@ -7,7 +11,7 @@ PROG=/usr/bin/radicale3
 CFGDIR=/var/etc/radicale3
 SYSCFG=$CFGDIR/config
 USRCFG=$CFGDIR/users
-DATADIR="/srv/radicale3/data"
+DATADIR="/var/radicale3/data"
 
 conf_line() {
 	local cfgfile="$1"
@@ -68,14 +72,23 @@ conf_section() {
 		conf_getline "$cfg" "$cfgfile" ssl 0 1
 		if [ "$value" -eq 1 ]; then
 			conf_getline "$cfg" "$cfgfile" certificate
+			if [ "$value" != "" ]; then
+				chgrp radicale3 "$value"
+				chmod g+r "$value"
+			fi
 			conf_getline "$cfg" "$cfgfile" key
+			if [ "$value" != "" ]; then
+				chgrp radicale3 "$value"
+				chmod g+r "$value"
+			fi
 			conf_getline "$cfg" "$cfgfile" certificate_authority
+			if [ "$value" != "" ]; then
+				chgrp radicale3 "$value"
+				chmod g+r "$value"
+			fi
 			conf_getline "$cfg" "$cfgfile" protocol
 			conf_getline "$cfg" "$cfgfile" ciphers
 		fi
-
-		conf_getline "$cfg" "$cfgfile" dns_lookup 1 1
-		conf_getline "$cfg" "$cfgfile" realm
 		;;
 	encoding)
 		conf_getline "$cfg" "$cfgfile" request
@@ -88,6 +101,7 @@ conf_section() {
 			conf_getline "$cfg" "$cfgfile" htpasswd_encryption plain
 		fi
 
+		conf_getline "$cfg" "$cfgfile" realm
 		conf_getline "$cfg" "$cfgfile" delay
 		;;
 	rights)
@@ -102,18 +116,16 @@ conf_section() {
 		if [ -n "$value" ]; then
 			DATADIR="$value"
 		fi
-		conf_getline "$cfg" "$cfgfile" filesystem_locking 1 1
+		conf_getline "$cfg" "$cfgfile" type
 		conf_getline "$cfg" "$cfgfile" max_sync_token_age
-		conf_getline "$cfg" "$cfgfile" filesystem_close_lock_file 0 1
 		conf_getline "$cfg" "$cfgfile" hook
 		;;
 	web)
 		conf_getline "$cfg" "$cfgfile" "type"
 		;;
 	logging)
-		conf_getline "$cfg" "$cfgfile" config
-		conf_getline "$cfg" "$cfgfile" debug 0 1
-		conf_getline "$cfg" "$cfgfile" full_environment 0 1
+		conf_getline "$cfg" "$cfgfile" level info 0
+		conf_getline "$cfg" "$cfgfile" trace_on_debug 0 1
 		conf_getline "$cfg" "$cfgfile" mask_passwords 1 1
 		;;
 	headers)
@@ -135,7 +147,7 @@ add_missing_sections() {
 			echo "[$section]" >> "$cfgfile"
 			case $section in
 			server)
-				echo "hosts = 0.0.0.0:5232, [::]:5232" >> "$cfgfile"
+				echo "hosts = 127.0.0.1:5232, [::1]:5232" >> "$cfgfile"
 				;;
 			auth)
 				echo "type = htpasswd" >> "$cfgfile"
@@ -168,8 +180,11 @@ build_users() {
 }
 
 build_config() {
-	local tmpconf=$(mktemp)
-	local tmpusers=$(mktemp)
+	local tmpconf
+	local tmpusers
+
+	tmpconf=$(mktemp)
+	tmpusers=$(mktemp)
 
 	chmod 0640 "$tmpconf" "$tmpusers"
 
@@ -192,7 +207,7 @@ build_config() {
 	rm -f "$tmpconf" "$tmpusers"
 }
 
-start_service() {
+prepare_config() {
 	# If custom config (/etc/radicale3/config) absent, build it from UCI
 	if [ ! -f /etc/radicale3/config ]; then
 		build_config
@@ -206,6 +221,10 @@ start_service() {
 		# We assume user handles directory creation if using manual config,
 		# but we could attempt it if we parsed it. simpler to leave it for now.
 	fi
+}
+
+start_service() {
+	prepare_config
 
 	procd_open_instance
 	procd_set_param command "$PROG" --config "$CFG_FILE"
@@ -214,6 +233,15 @@ start_service() {
 	procd_set_param stdout 1
 	procd_set_param stderr 1
 	procd_close_instance
+}
+
+reload_service() {
+	prepare_config
+	if pgrep radicale3 >/dev/null 2>/dev/null; then
+		procd_send_signal radicale3 '*' HUP
+	else
+		start_service
+	fi
 }
 
 service_triggers() {

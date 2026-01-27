@@ -56,7 +56,6 @@ A lot of people already use adblocker plugins within their desktop browsers, but
 * Supports six different DNS backend formats: dnsmasq, unbound, named (bind), kresd, smartdns or raw (e.g. used by dnscrypt-proxy)
 * Supports three different SSL-enabled download utilities: uclient-fetch, full wget or curl
 * Supports SafeSearch for google, bing, brave, duckduckgo, yandex, youtube and pixabay
-* Supports RPZ-trigger 'RPZ-CLIENT-IP' to always allow/deny certain DNS clients based on their IP address (currently only supported by bind dns backend)
 * Fast downloads & list processing as they are handled in parallel running background jobs with multicore support
 * The download engine supports ETAG headers to download only updated feeds
 * Supports a wide range of router modes, even AP modes are supported
@@ -67,6 +66,7 @@ A lot of people already use adblocker plugins within their desktop browsers, but
 * Overall duplicate removal in generated blocklist file 'adb_list.overall'
 * Additional local allowlist for manual overrides, located in '/etc/adblock/adblock.allowlist' (only exact matches).
 * Additional local blocklist for manual overrides, located in '/etc/adblock/adblock.blocklist'
+* Implements Firewall‑Based DNS Control to force DNS interfaces/ports and to redirect to external unfiltered/filtered DNS server
 * Connection checks during blocklist update to ensure a reliable DNS backend service
 * Minimal status & error logging to syslog, enable debug logging to receive more output
 * Procd based init system support ('start', 'stop', 'restart', 'reload', 'enable', 'disable', 'running', 'status', 'suspend', 'resume', 'query', 'report')
@@ -75,8 +75,8 @@ A lot of people already use adblocker plugins within their desktop browsers, but
 * Provides comprehensive runtime information
 * Provides a detailed DNS Query Report with DNS related information about client requests, top (blocked) domains and more
 * Provides a powerful query function to quickly find blocked (sub-)domains, e.g. to allow certain domains
-* Includes an option to generate an additional, restrictive 'adb_list.jail' to block access to all domains except those listed in the allowlist file. You can use this restrictive blocklist manually e.g. for guest wifi or kidsafe configurations
 * Contains an option to route DNS queries to the local resolver via corresponding firewall rules
+* Implements a jail mode - only domains on the allowlist are permitted, all other DNS requests are rejected
 * Automatic blocklist backup & restore, these backups will be used in case of download errors and during startup
 * Send notification E-Mails, see example configuration below
 * Add new adblock feeds on your own with the 'Custom Feed Editor' in LuCI or via CLI, see example below
@@ -148,18 +148,16 @@ Available commands:
 | adb_debug          | 0, disabled                        | set to 1 to enable the debug output                                                            |
 | adb_nicelimit      | 0, standard prio.                  | valid nice level range 0-19 of the adblock processes                                           |
 | adb_dnsshift       | 0, disabled                        | shift the blocklist to the backup directory and only set a soft link to this file in memory    |
-| adb_dnsforce       | 0, disabled                        | set to 1 to force DNS requests to the local resolver                                           |
 | adb_dnsdir         | -, auto-detected                   | path for the generated blocklist file 'adb_list.overall'                                       |
 | adb_dnstimeout     | 20                                 | timeout in seconds to wait for a successful DNS backend restart                                |
-| adb_dnsinstance    | 0, first instance                  | set to the relevant dns backend instance used by adblock (dnsmasq only)                        |
+| adb_dnsinstance    | 0, first instance                  | set the relevant dnsmasq backend instance used by adblock                                      |
 | adb_dnsflush       | 0, disabled                        | set to 1 to flush the DNS Cache before & after adblock processing                              |
 | adb_lookupdomain   | localhost                          | domain to check for a successful DNS backend restart                                           |
-| adb_portlist       | 53 853 5353                        | space separated list of firewall ports which should be redirected locally                      |
 | adb_report         | 0, disabled                        | set to 1 to enable the background tcpdump gathering process for reporting                      |
 | adb_map            | 0, disabled                        | enable a GeoIP Map with blocked domains                                                        |
 | adb_reportdir      | /tmp/adblock-report                | path for DNS related report files                                                              |
 | adb_repiface       | -, auto-detected                   | name of the reporting interface or 'any' used by tcpdump                                       |
-| adb_replisten      | 53                                 | space separated list of reporting port(s) used by tcpdump                                      |
+| adb_repport        | 53                                 | list of reporting port(s) used by tcpdump                                                      |
 | adb_repchunkcnt    | 5                                  | report chunk count used by tcpdump                                                             |
 | adb_repchunksize   | 1                                  | report chunk size used by tcpdump in MB                                                        |
 | adb_represolve     | 0, disabled                        | resolve reporting IP addresses using reverse DNS (PTR) lookups                                 |
@@ -167,14 +165,26 @@ Available commands:
 | adb_basedir        | /tmp                               | path for all adblock related runtime operations, e.g. downloading, sorting, merging etc.       |
 | adb_backupdir      | /tmp/adblock-backup                | path for adblock backups                                                                       |
 | adb_safesearch     | 0, disabled                        | enforce SafeSearch for google, bing, brave, duckduckgo, yandex, youtube and pixabay            |
-| adb_safesearchlist | -, not set                         | Limit SafeSearch to certain provider (see above)                                               |
+| adb_safesearchlist | -, not set                         | limit SafeSearch to certain provider (see above)                                               |
 | adb_mail           | 0, disabled                        | set to 1 to enable notification E-Mails in case of a processing errors                         |
 | adb_mailreceiver   | -, not set                         | receiver address for adblock notification E-Mails                                              |
 | adb_mailsender     | no-reply@adblock                   | sender address for adblock notification E-Mails                                                |
 | adb_mailtopic      | adblock notification               | topic for adblock notification E-Mails                                                         |
 | adb_mailprofile    | adb_notify                         | mail profile used in 'msmtp' for adblock notification E-Mails                                  |
-| adb_jail           | 0                                  | create the additional restrictive 'adb_list.jail'                                              |
-| adb_jaildir        | /tmp                               | path for the generated jail list                                                               |
+| adb_jail           | 0                                  | jail mode - only domains on the allowlist are permitted, all other DNS requests are rejected   |
+| adb_nftforce       | 0, disabled                        | redirect all local DNS queries from specified LAN zones to the local DNS resolver              |
+| adb_nftdevforce    | -, not set                         | firewall LAN Devices/VLANs that should be forced locally                                       |
+| adb_nftportforce   | -, not set                         | firewall ports that should be forced locally                                                   |
+| adb_nftallow       | 0, disabled                        | routes MACs or interfaces to an unfiltered external DNS resolver, bypassing local adblock      |
+| adb_nftmacallow    | -, not set                         | listed MAC addresses will always use the configured unfiltered DNS server                      |
+| adb_nftdevallow    | -, not set                         | entire interfaces or VLANs will be routed to the unfiltered DNS server                         |
+| adb_allowdnsv4     | -, not set                         | IPv4 DNS resolver applied to MACs and interfaces using the unfiltered DNS policy               |
+| adb_allowdnsv6     | -, not set                         | IPv6 DNS resolver applied to MACs and interfaces using the unfiltered DNS policy               |
+| adb_nftblock       | 0, disabled                        | routes MACs or interfaces to a filtered external DNS resolver, bypassing local adblock         |
+| adb_nftmacblock    | -, not set                         | listed MAC addresses will always use the configured filtered DNS server                        |
+| adb_nftdevblock    | -, not set                         | entire interfaces or VLANs will be routed to the filtered DNS server                           |
+| adb_blockdnsv4     | -, not set                         | IPv4 DNS resolver applied to MACs and interfaces using the filtered DNS policy                 |
+| adb_blockdnsv6     | -, not set                         | IPv6 DNS resolver applied to MACs and interfaces using the filtered DNS policy                 |
 
 <a id="examples"></a>
 ## Examples
@@ -215,27 +225,28 @@ To get the status in the CLI, just call _/etc/init.d/adblock status_ or _/etc/in
 ~# /etc/init.d/adblock status
 ::: adblock runtime information
   + adblock_status  : enabled
-  + frontend_ver    : 4.4.5-r1
-  + backend_ver     : 4.4.5-r1
-  + blocked_domains : 575 335
+  + frontend_ver    : 4.5.0-r1
+  + backend_ver     : 4.5.0-r1
+  + blocked_domains : 582 457
   + active_feeds    : 1hosts, adguard, adguard_tracking, bitcoin, certpl, doh_blocklist, hagezi, phishing_army, smarttv_tracking, stevenblack, winspy
-  + dns_backend     : unbound (1.24.2-r1), /mnt/data/adblock/backup, 232.20 MB
-  + run_ifaces      : trigger: wan , report: br-lan
-  + run_directories : base: /mnt/data/adblock, dns: /var/lib/unbound, backup: /mnt/data/adblock/backup, report: /mnt/data/adblock/report, jail: /tmp
-  + run_flags       : shift: ✔, custom feed: ✘, force: ✔, flush: ✘, tld: ✔, search: ✔, report: ✔, mail: ✔, jail: ✘
-  + last_run        : mode: reload, 2025-12-13T15:55:59+01:00, duration: 0m 46s, 1411.57 MB available
-  + system_info     : cores: 4, fetch: curl, Bananapi BPI-R3, mediatek/filogic, OpenWrt SNAPSHOT (r32305-52fa3728e5)
+  + dns_backend     : unbound (1.24.2-r1), /mnt/data/adblock/backup, 234.93 MB
+  + run_ifaces      : trigger: wan, report: br-lan
+  + run_directories : base: /mnt/data/adblock, dns: /var/lib/unbound, backup: /mnt/data/adblock/backup, report: /mnt/data/adblock/report
+  + run_flags       : shift: ✔, custom feed: ✘, ext. DNS (std/prot): ✘/✘, force: ✔, flush: ✘, tld: ✔, search: ✘, report: ✔, mail: ✔, jail: ✘
+  + last_run        : mode: restart, 2026-01-18T16:45:23+01:00, duration: 0m 19s, 1403.59 MB available
+  + system_info     : cores: 4, fetch: curl, Bananapi BPI-R3, mediatek/filogic, OpenWrt SNAPSHOT (r32670-66b6791abe)
 ```
 
 <a id="best-practise-and-tweaks"></a>
 ## Best practise and tweaks
 
 **Recommendation for low memory systems**  
-Adblock does use RAM by default and never writes to the flash space of the router. To reduce the memory pressure on low memory systems (i.e. those with 128-256MB RAM), you should optimize your configuration with the following options:  
+adblock uses RAM by design and avoids writing to flash. On devices with 128–256 MB RAM, you can reduce memory pressure with the following optimizations:  
 
-* point 'adb_basedir', 'adb_backupdir' and 'adb_reportdir' to an external usb drive or ssd
-* set 'adb_cores' to '1' (only useful on a multicore system) to force sequential feed processing
-* enable the 'adb_dnsshift' option to shift the blocklist to the backup directory and only set a soft link to this file in memory
+* use external storage: point 'adb_basedir', 'adb_backupdir' and 'adb_reportdir' to an USB drive or SSD
+* limit CPU processing to one core: set 'adb_cores' to '1' to reduce peak memory usage during feed processing
+* enable blocklist shifting: activate 'adb_dnsshift' to store the blocklist in the backup directory and expose it via a symlink in RAM.
+* Firewall DNS redirection: use nftables based DNS routing to external filtered DNS serves and only use a minimal set of local blocklists
 
 **Sensible choice of blocklists**  
 The following feeds are just my personal recommendation as an initial setup:  
@@ -259,12 +270,32 @@ To make this work, adblock uses the following external components:
 **External adblock test**  
 In addition to the built‑in DNS reporting and GeoIP map, adblock users can verify the effectiveness of their configuration with an external test page. The [Adblock Test](https://adblock.turtlecute.org/) provides a simple way to check whether your current adblock setup is working as expected. It loads a series of test elements (ads, trackers, and other resources) and reports whether they are successfully blocked by your configuration.  
 
-The test runs entirely in the browser and does not require additional configuration. For best results, open the page in the same environment where adblock is active and review the results displayed.
+The test runs entirely in the browser and does not require additional configuration. For best results, open the page in the same environment where adblock is active and review the results displayed.  
 
-**Use the jail mode, a restrictive DNS blocklist:**
-You can enable a restrictive 'adb_list.jail' to block access to all domains except those listed in the allowlist file. Usually this list will be generated as an additional list for guest or kidsafe configurations (for a separate dns server instance). If the jail directory points to your primary dns directory, the jail blocklist replaces your default blocklist.
+**Firewall‑Based DNS Control**  
+adblock provides several advanced firewall‑integrated features that allow you to enforce DNS policies directly at the network layer. These mechanisms operate independently of the local DNS resolver and ensure that DNS traffic follows your filtering rules, even when clients attempt to bypass them.  
+* unfiltered external DNS Routing: routes DNS queries from selected devices or interfaces to an external unfiltered DNS resolver
+* filtered external DNS Routing: routes DNS queries from selected devices or interfaces to an external filtered DNS resolver
+* force DNS: blocks or redirects all external DNS traffic to ensure that clients use the local resolver
 
-**Enable E-Mail notification via 'msmtp':**
+The DNS routing allows you to apply external DNS (unfiltered and/or filtered) to specific devices or entire network segments. DNS queries from these targets are transparently redirected to a chosen external resolver (IPv4 and/or IPv6):  
+* MAC‑based targeting for individual devices
+* Interface/VLAN targeting for entire segments
+* separate IPv4/IPv6 resolver selection
+* transparent DNS redirection without client‑side configuration
+This mode is ideal for guest networks, IoT devices, or environments where certain clients require stricter/lesser DNS filtering.  
+
+force DNS ensures that all DNS traffic on your network by specific devices or entire network segments is processed by the local resolver. Any attempt to use external DNS servers is blocked or redirected.
+* blocks external DNS on port 53 and redirects DNS queries to the local resolver when appropriate
+* also prevents DNS bypassing by clients with hardcoded DNS settings on other ports, e.g. on port 853
+This mode guarantees that adblock’s filtering pipeline is always applied.  
+
+adblock's firewall rules are based on nftables in a separate isolated nftables table (inet adblock) and chains (prerouting), with MAC addresses stored in a nftables set. The configuration is carried out centrally in LuCI on the ‘Firewall Settings’ tab in adblock.  
+
+**Jail mode (allowlist-only):**  
+Enforces a strict allowlist‑only DNS policy in which only domains listed in the allowlist file are resolved, while every other query is rejected. This mode is intended for highly restrictive environments and depends on a carefully maintained allowlist, typically managed manually.  
+
+**Enable E-Mail notification via 'msmtp':**  
 To use the email notification you have to install & configure the package 'msmtp'.
 Modify the file '/etc/msmtprc':
 <pre><code>
