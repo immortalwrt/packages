@@ -1,6 +1,6 @@
 #
-# Copyright (C) 2018-2023, Jeffery To
-# Copyright (C) 2025-2026, George Sapkin
+# Copyright (C) 2018-2023 Jeffery To
+# Copyright (C) 2025-2026 George Sapkin
 #
 # SPDX-License-Identifier: GPL-2.0-only
 
@@ -27,10 +27,6 @@ PKG_MAINTAINER:=George Sapkin <george@sapk.in>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:golang:go
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/go-$(PKG_VERSION)
-PKG_BUILD_PARALLEL:=1
-PKG_BUILD_FLAGS:=no-mips16
 
 PKG_HOST_ONLY:=1
 
@@ -111,18 +107,17 @@ BOOTSTRAP_UNPACK:=$(HOST_TAR) -C "$(BOOTSTRAP_BUILD_DIR)" --strip-components=1 -
 BOOTSTRAP_1_17_UNPACK:=$(HOST_TAR) -C "$(BOOTSTRAP_1_17_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(BOOTSTRAP_1_17_SOURCE)"
 BOOTSTRAP_1_20_UNPACK:=$(HOST_TAR) -C "$(BOOTSTRAP_1_20_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(BOOTSTRAP_1_20_SOURCE)"
 
-# don't strip ELF executables in test data
+# Don't strip ELF executables in test data
 RSTRIP:=:
-STRIP:=:
 
 ifeq ($(GO_TARGET_SPECTRE_SUPPORTED),1)
   PKG_CONFIG_DEPENDS+=CONFIG_GOLANG_SPECTRE
 endif
 
 define Package/golang-bootstrap
+  $(call GoPackage/GoSubMenu)
   TITLE:=Go programming language (bootstrap)
   DEPENDS:=$(GO_ARCH_DEPENDS)
-  HIDDEN:=1
 endef
 
 define Package/golang-bootstrap/description
@@ -139,7 +134,7 @@ define Package/golang-bootstrap/description
 endef
 
 define Package/golang-bootstrap/config
-  source "$(SOURCE)/../Config.in"
+	source "$(SOURCE)/Config.in"
 endef
 
 BOOTSTRAP_ROOT_DIR:=$(call qstrip,$(CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT))
@@ -161,6 +156,9 @@ ifeq ($(BOOTSTRAP_ROOT_DIR),)
 
   $(eval $(call GoCompiler/AddProfile,Bootstrap,$(BOOTSTRAP_BUILD_DIR),,bootstrap,$(GO_HOST_OS_ARCH)))
 endif
+
+# Skip configuring and downloading stages when building is not configured
+ifeq ($(CONFIG_GOLANG_BUILD_BOOTSTRAP),y)
 
 # Bootstrap 1.17
 
@@ -194,6 +192,8 @@ Hooks/HostPrepare/Post+=Bootstrap-1.20/Prepare
 
 $(eval $(call GoCompiler/AddProfile,Bootstrap-1.20,$(BOOTSTRAP_1_20_BUILD_DIR),,bootstrap-1.20,$(GO_HOST_OS_ARCH)))
 
+endif
+
 # Host
 
 ifeq ($(GO_HOST_PIE_SUPPORTED),1)
@@ -203,7 +203,9 @@ endif
 # When using GO_LDFLAGS to set buildmode=pie, the PIE install suffix does not
 # apply (we also delete the std lib during Host/Install)
 
-$(eval $(call GoCompiler/AddProfile,Host,$(HOST_BUILD_DIR),$(HOST_GO_PREFIX),$(HOST_GO_VERSION_ID),$(GO_HOST_OS_ARCH)))
+ifeq ($(CONFIG_GOLANG_BUILD_BOOTSTRAP),y)
+  $(eval $(call GoCompiler/AddProfile,Host,$(HOST_BUILD_DIR),$(HOST_GO_PREFIX),$(HOST_GO_VERSION_ID),$(GO_HOST_OS_ARCH)))
+endif
 
 HOST_GO_VARS= \
 	GOHOSTARCH="$(GO_HOST_ARCH)" \
@@ -253,17 +255,27 @@ define Host/Install
 
 	rm -rf "$(HOST_GO_ROOT)/pkg/$(GO_HOST_OS_ARCH)"
 
+	$(INSTALL_DIR) "$(STAGING_DIR_HOSTPKG)/bin"
+	$(INSTALL_BIN) ../go-strip-helper "$(STAGING_DIR_HOSTPKG)/bin"
+
 	$(INSTALL_DIR) "$(HOST_GO_ROOT)/openwrt"
-	$(INSTALL_BIN) ../go-gcc-helper "$(HOST_GO_ROOT)/openwrt/"
+	$(INSTALL_BIN) ../go-gcc-helper "$(HOST_GO_ROOT)/openwrt"
 	$(LN) go-gcc-helper "$(HOST_GO_ROOT)/openwrt/gcc"
 	$(LN) go-gcc-helper "$(HOST_GO_ROOT)/openwrt/g++"
 endef
 
 define Host/Uninstall
+	rm -f "$(STAGING_DIR_HOSTPKG)/bin/go-strip-helper"
 	rm -rf "$(HOST_GO_ROOT)/openwrt"
 
 	$(call GoCompiler/Host/Uninstall)
 endef
 
-$(eval $(call HostBuild))
+# Skip downloading and building final bootstrap when building is not configured
+ifeq ($(CONFIG_GOLANG_BUILD_BOOTSTRAP),y)
+  $(eval $(call HostBuild))
+else
+  host-compile:
+endif
+
 $(eval $(call BuildPackage,golang-bootstrap))
