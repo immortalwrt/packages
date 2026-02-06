@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-pysocks
 PKG_VERSION:=1.7.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=PySocks
 PKG_HASH:=3f8804571ebe159c380ac6de37643bb4685970655d3bba243530d6558b799aa0
@@ -17,6 +17,8 @@ PKG_HASH:=3f8804571ebe159c380ac6de37643bb4685970655d3bba243530d6558b799aa0
 PKG_MAINTAINER:=Jan Pavlinec <jan.pavlinec1@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+
+PYTHON3_PKG_WHEEL_NAME:=pysocks
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
