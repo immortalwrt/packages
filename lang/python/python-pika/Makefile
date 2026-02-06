@@ -14,8 +14,6 @@ PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=
 
-PKG_BUILD_DEPENDS:=python-setuptools/host
-
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../python3-package.mk
