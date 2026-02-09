@@ -1,15 +1,16 @@
 --- a/package.json
 +++ b/package.json
-@@ -26,7 +26,7 @@
+@@ -25,9 +25,6 @@
+     "prepare": "node ./scripts/tsc.js && node ./scripts/install.js",
      "install": "node ./scripts/install.js"
    },
-   "overrides": {
+-  "overrides": {
 -    "axios": "^1.12.2"
-+    "axios": "^1.13.3"
-   },
+-  },
    "devDependencies": {
      "@types/crypto-js": "^3.1.43",
-@@ -54,7 +54,7 @@
+     "@types/jest": "^27.0.1",
+@@ -54,7 +51,7 @@
    "dependencies": {
      "@aws-sdk/util-utf8-browser": "^3.259.0",
      "@httptoolkit/websocket-stream": "^6.0.1",
