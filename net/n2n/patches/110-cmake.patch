@@ -1,0 +1,9 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ project(n2n)
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.10)
+ include(CheckFunctionExists)
+ SET(CMAKE_VERBOSE_MAKEFILE ON)
+ 
