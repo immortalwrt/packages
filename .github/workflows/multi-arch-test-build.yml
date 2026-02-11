@@ -3,7 +3,7 @@ name: Test Build
 on:
   push:
     branches:
-      - master
+      - openwrt-25.12
   pull_request:
 
 permissions:
