@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-scripts
 PKG_VERSION:=2.8.2
-PKG_RELEASE:=88
+PKG_RELEASE:=92
 
 PKG_LICENSE:=GPL-2.0
 
@@ -428,24 +428,6 @@ define Package/ddns-scripts/install
 		$(1)/etc/uci-defaults/
 endef
 
-define Package/ddns-scripts/postinst
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/ddns enabled
-	/etc/init.d/ddns start
-fi
-exit 0
-endef
-
-define Package/ddns-scripts/prerm
-#!/bin/sh
-if [ -n "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/ddns stop
-	/etc/init.d/ddns disable
-fi
-exit 0
-endef
-
 
 define Package/ddns-scripts-services/install
 	$(INSTALL_DIR) $(1)/usr/share/ddns/default
@@ -589,7 +571,7 @@ define Package/ddns-scripts-hetzner-cloud/install
 		$(1)/usr/lib/ddns
 
 	$(INSTALL_DIR) $(1)/usr/share/ddns/default
-	$(INSTALL_DATA) ./files/usr/share/ddns/default/hetzner.com.json \
+	$(INSTALL_DATA) ./files/usr/share/ddns/default/hetzner.cloud.json \
 		$(1)/usr/share/ddns/default
 endef
 
