@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+
+START=96
+USE_PROCD=1
+OAFD_BIN="/usr/bin/oafd"
+FEATURE_FILE="/tmp/feature.cfg"
+
+stop_service(){
+	killall -9 oafd
+}
+
+start_service(){
+	test -f $FEATURE_FILE &&{
+		rm $FEATURE_FILE
+	}
+	ln -s /etc/appfilter/feature.cfg $FEATURE_FILE
+	procd_open_instance
+	procd_set_param respawn 60 5 5
+	procd_set_param stderr 1
+	procd_set_param command "$OAFD_BIN"
+	procd_close_instance
+}
