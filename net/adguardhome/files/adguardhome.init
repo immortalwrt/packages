@@ -4,14 +4,13 @@
 #
 # shellcheck disable=SC3043 # ash supports local
 
-PROG=/usr/bin/AdGuardHome
-
-USE_PROCD=1
-
 # matches dnsmasq
 START=19
 # stops before networking stops
 STOP=89
+
+PROG=/usr/bin/AdGuardHome
+USE_PROCD=1
 
 config_cb() {
 	[ $# -eq 0 ] && return
@@ -88,6 +87,7 @@ start_service() {
 	procd_set_param group "$group"
 	procd_set_param capabilities /etc/capabilities/adguardhome.json
 	procd_set_param no_new_privs 1
+	procd_set_param respawn
 
 	# log is needed for logging to syslog instead of stdout
 	# procfs is needed to readlink /proc/self/exe
