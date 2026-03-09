@@ -9,16 +9,16 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=node-hid
 PKG_NAME:=$(PKG_NPM_NAME)
-PKG_VERSION:=3.2.0
+PKG_VERSION:=3.3.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=52d5ab9a6b8b20b28d9882af1d879fc1780316122f5dddd854367716ce0a75c0
+PKG_HASH:=42c3a778ee904aa8202e9a8a1cb4a5dea18f2f66f67fc0efad62ff8854ddb3d8
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=MIT OR X11
+PKG_LICENSE:=MIT X11
 PKG_LICENSE_FILES:=
 
 PKG_BUILD_DEPENDS:=node/host
