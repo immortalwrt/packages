@@ -43,6 +43,8 @@ define Package/qbittorrent-enhanced-edition/conffiles
 /etc/qBittorrent/
 endef
 
+TARGET_CXXFLAGS += -Wno-error=cpp
+
 CMAKE_OPTIONS+= \
 	-DGUI=OFF \
 	-DQT6=ON \
