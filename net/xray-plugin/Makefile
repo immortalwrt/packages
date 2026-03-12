@@ -8,9 +8,10 @@ PKG_NAME:=xray-plugin
 PKG_VERSION:=1.8.24
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/teddysun/xray-plugin/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=dc7d7bff3dfa66c002bd043c7ee60e61aecec2f548275da809f1390c45611836
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/teddysun/xray-plugin.git
+PKG_SOURCE_VERSION:=933b7affa924b397bcae38b135ab72e60ad50b91
+PKG_MIRROR_HASH:=1206eff72c2517d00d5d7eb99f30cf084fb4392ea332f64ec99a45c911c0f37a
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
