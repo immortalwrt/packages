@@ -1,0 +1,10 @@
+--- a/cmake/Modules/CommonConfig.cmake
++++ b/cmake/Modules/CommonConfig.cmake
+@@ -59,7 +59,6 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU
+         -Wold-style-cast
+         -Wnon-virtual-dtor
+         -pedantic
+-        -pedantic-errors
+     )
+ 
+     # Clang 11 still doesn't support -Wstrict-null-sentinel
