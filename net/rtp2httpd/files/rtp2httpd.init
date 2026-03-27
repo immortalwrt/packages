@@ -1,0 +1,124 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+USE_PROCD=1
+
+CONF="rtp2httpd"
+PROG="/usr/bin/$CONF"
+
+append_param_arg() {
+	eval "local val=\"\${$1}\""
+	[ -n "$val" ] && procd_append_param command "--${1//_/-}" "$val"
+}
+
+append_param_bool() {
+	eval "local val=\"\${$1}\""
+	[ "$val" -eq "1" ] && procd_append_param command "--${1//_/-}"
+}
+
+validate_rtp2httpd_section() {
+	uci_load_validate "$CONF" "instance" "$1" "$2" \
+		'enabled:bool:0' \
+		'listen:string' \
+		\
+		'verbose:uinteger' \
+		'noudpxy:uinteger' \
+		\
+		'upstream_interface:string' \
+		'upstream_interface_fcc:string' \
+		'upstream_interface_http:string' \
+		'upstream_interface_multicast:string' \
+		'upstream_interface_rtsp:string' \
+		\
+		'fcc_listen_port_range:or(port,portrange)' \
+		'http_proxy_user_agent:string' \
+		'mcast_rejoin_interval:and(uinteger, range(0,86400))' \
+		'rtsp_stun_server:string' \
+		'rtsp_user_agent:string' \
+		\
+		'maxclients:and(uinteger, range(1,5000))' \
+		'workers:and(uinteger, range(1,64))' \
+		'buffer_pool_max_size:and(uinteger, range(1024,1048576))' \
+		'udp_rcvbuf_size:and(uinteger, range(65536,16777216))' \
+		'zerocopy_on_send:bool' \
+		\
+		'hostname:host' \
+		'r2h_token:string' \
+		'cors_allow_origin:string' \
+		'xff:bool' \
+		'player_page_path:string' \
+		'status_page_path:string' \
+		'external_m3u:string' \
+		'external_m3u_update_interval:uinteger' \
+		\
+		'ffmpeg_path:string' \
+		'ffmpeg_args:string' \
+		'video_snapshot:bool'
+}
+
+start_instance() {
+	local section="$1"
+
+	[ "$2" -eq "0" ] || { logger -p daemon.err -t "$CONF" "$section Validation failed."; return 1; }
+	[ "$enabled" -eq "1" ] || return 1
+
+	procd_open_instance "$section"
+	procd_set_param command "$PROG"
+	procd_append_param command -C
+
+	for addr in $listen; do
+		procd_append_param command --listen "$addr"
+	done
+
+	append_param_arg verbose
+	append_param_bool noudpxy
+
+	append_param_arg upstream_interface
+	append_param_arg upstream_interface_fcc
+	append_param_arg upstream_interface_http
+	append_param_arg upstream_interface_multicast
+	append_param_arg upstream_interface_rtsp
+
+	append_param_arg fcc_listen_port_range
+	append_param_arg http_proxy_user_agent
+	append_param_arg mcast_rejoin_interval
+	append_param_arg rtsp_stun_server
+	append_param_arg rtsp_user_agent
+
+	append_param_arg maxclients
+	append_param_arg workers
+	append_param_arg buffer_pool_max_size
+	append_param_arg udp_rcvbuf_size
+	append_param_bool zerocopy_on_send
+
+	append_param_arg hostname
+	append_param_arg r2h_token
+	append_param_arg cors_allow_origin
+	append_param_bool xff
+	append_param_arg player_page_path
+	append_param_arg status_page_path
+	append_param_arg external_m3u
+	[ -n "$external_m3u" ] && append_param_arg external_m3u_update_interval
+
+	append_param_arg ffmpeg_path
+	append_param_arg ffmpeg_args
+	append_param_bool video_snapshot
+
+	procd_set_param limits core="unlimited"
+	procd_set_param limits nofile="1000000 1000000"
+	procd_set_param respawn
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+
+	procd_close_instance
+}
+
+start_service() {
+	config_load "$CONF"
+
+	config_foreach validate_rtp2httpd_section "instance" start_instance
+}
+
+service_triggers() {
+	procd_add_reload_trigger "$CONF"
+}
