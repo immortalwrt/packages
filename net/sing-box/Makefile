@@ -15,6 +15,7 @@ PKG_HASH:=881435f07b5ab8170ccf3cb69e87130759521dc0ed1ae4bfeacbe7772a93a158
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
+PKG_CPE_ID:=cpe:/a:sagernet:sing-box
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_SING_BOX_TINY_BUILD_ACME \
