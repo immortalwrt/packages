@@ -72,7 +72,7 @@ Package/lua-eco-net=$(call Package/lua-eco/Module,net,+lua-eco-packet +lua-eco-d
 define Package/lua-eco-ssl/config
 	choice
 		prompt "SSL Library"
-		default LUA_ECO_MBEDTLS
+		default LUA_ECO_OPENSSL
 
 		config LUA_ECO_OPENSSL
 			bool "OpenSSL"
