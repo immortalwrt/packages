@@ -8,13 +8,14 @@
 import { readfile, writefile, popen, stat, unlink, rename, open, glob, mkdir, mkstemp, symlink, chmod, chown, realpath, lsdir, access, dirname } from 'fs';
 import { cursor } from 'uci';
 import { connect } from 'ubus';
+import * as uloop from 'uloop';
 
 // ── Constants ───────────────────────────────────────────────────────
 
 const pkg = {
 	name: 'adblock-fast',
 	version: 'dev-test',
-	compat: '13',
+	compat: '14',
 	memory_threshold: 33554432,
 	config_file: '/etc/config/adblock-fast',
 	dnsmasq_file: '/var/run/adblock-fast/adblock-fast.dnsmasq',
@@ -157,7 +158,6 @@ const canary = {
 
 let state = {
 	script_name: pkg.name,
-	is_tty: false,
 	output_queue: '',
 	fw4_restart: false,
 };
@@ -182,7 +182,6 @@ let env = {
 
 	// Guard flags
 	_detected: false,
-	_config_loaded: false,
 	_loaded: false,
 };
 
@@ -312,7 +311,7 @@ env.get_downloader = function() {
 	let command, flag, ssl_supported;
 	if (is_present('curl')) {
 		command = 'curl -f --silent --insecure';
-		if (cfg.curl_additional_param) command += ' ' + cfg.curl_additional_param;
+		if (cfg.curl_additional_param) command += ' ' + shell_quote(cfg.curl_additional_param);
 		if (cfg.curl_max_file_size) command += ' --max-filesize ' + cfg.curl_max_file_size;
 		if (cfg.curl_retry) command += ' --retry ' + cfg.curl_retry;
 		if (cfg.download_timeout) command += ' --connect-timeout ' + cfg.download_timeout;
@@ -475,9 +474,8 @@ let _write = function(level, ...args) {
 	let msg = join('', args);
 	if (level != null && (cfg.verbosity & level) == 0) return;
 
-	// Print to stderr (terminal)
-	if (state.is_tty)
-		warn(replace(msg, /\\n/g, '\n'));
+	// Print to stderr (terminal / console)
+	warn(replace(msg, /\\n/g, '\n'));
 
 	// Queue for logger: flush on newline
 	if (index(msg, '\\n') >= 0 || index(msg, '\n') >= 0) {
@@ -847,6 +845,7 @@ const config_schema = { // ucode-lsp disable
 	heartbeat_sleep_timeout: ['string', '10'],
 	led:                     ['string'],
 	pause_timeout:           ['string', '20'],
+	rpcd_token:              ['string'],
 	procd_boot_wan_timeout:  ['string', '60'],
 	// Integers
 	verbosity:               ['int', 2],
@@ -900,15 +899,9 @@ function parse_options(raw, schema) { // ucode-lsp disable
 // ── env.load_config ─────────────────────────────────────────────────
 
 env.load_config = function() {
-	if (env._config_loaded) return;
-	state.is_tty = system('[ -t 2 ]') == 0 ? true : false;
 	let raw = uci(pkg.name, true).get_all(pkg.name, 'config') || {};
 	cfg = parse_options(raw, config_schema);
 	env.dns_set_output_values(cfg.dns);
-	env._loaded = false;
-	env._detected = false;
-	env._dl_cache = null;
-	env._config_loaded = true;
 };
 
 // ── load_dl_command ─────────────────────────────────────────────────
@@ -1561,7 +1554,7 @@ function resolver(action) {
 
 // ── process_file_url ────────────────────────────────────────────────
 
-function process_file_url(section, url_override, action_override) {
+function process_file_url(section, url_override, action_override, predownloaded) {
 	let url, file_action, name, size_val;
 
 	if (section && !url_override) {
@@ -1593,15 +1586,22 @@ function process_file_url(section, url_override, action_override) {
 	case 'file': type_name = 'File'; d_tmp = tmp.b; break;
 	}
 
-	if (is_https_url(url) && !env.get_downloader().ssl_supported) {
+	if (!predownloaded && is_https_url(url) && !env.get_downloader().ssl_supported) {
 		output.info(sym.fail[0]);
 		output.verbose('[ DL ] ' + type_name + ' ' + label + ' ' + sym.fail[1] + '\\n');
 		push(status_data.errors, { code: 'errorNoSSLSupport', info: name || url });
 		return true;
 	}
 
-	let r_tmp = trim(cmd_output('mktemp -q -t "' + pkg.name + '_tmp.XXXXXXXX"'));
-	if (!url || !download(url, r_tmp) || !(stat(r_tmp)?.size > 0)) {
+	let r_tmp = predownloaded || trim(cmd_output('mktemp -q -t "' + pkg.name + '_tmp.XXXXXXXX"'));
+	if (predownloaded && !(stat(r_tmp)?.size > 0)) {
+		output.info(sym.fail[0]);
+		output.verbose('[ DL ] ' + type_name + ' ' + label + ' ' + sym.fail[1] + '\\n');
+		push(status_data.errors, { code: 'errorDownloadingList', info: name || url });
+		unlink(r_tmp);
+		return true;
+	}
+	if (!predownloaded && (!url || !download(url, r_tmp) || !(stat(r_tmp)?.size > 0))) {
 		output.info(sym.fail[0]);
 		output.verbose('[ DL ] ' + type_name + ' ' + label + ' ' + sym.fail[1] + '\\n');
 		push(status_data.errors, { code: 'errorDownloadingList', info: name || url });
@@ -1718,8 +1718,44 @@ function download_lists() {
 	let download_cfgs = [];
 	uci(pkg.name).foreach(pkg.name, 'file_url', (s) => push(download_cfgs, s['.name']));
 
-	for (let cfg_name in download_cfgs)
-		process_file_url(cfg_name);
+	if (cfg.parallel_downloads && uloop && length(download_cfgs) > 1) {
+		// Parallel mode: download all files first, then process each
+		let dlt = env.get_downloader();
+		let jobs = [];
+		for (let cfg_name in download_cfgs) {
+			let sec_cur = cursor();
+			sec_cur.load(pkg.name);
+			if (sec_cur.get(pkg.name, cfg_name, 'enabled') == '0') continue;
+			let url = sec_cur.get(pkg.name, cfg_name, 'url');
+			if (!url) continue;
+			if (is_https_url(url) && !dlt.ssl_supported) {
+				let name = sec_cur.get(pkg.name, cfg_name, 'name');
+				push(status_data.errors, { code: 'errorNoSSLSupport', info: name || url });
+				output.info(sym.fail[0]);
+				continue;
+			}
+			let r_tmp = trim(cmd_output('mktemp -q -t "' + pkg.name + '_tmp.XXXXXXXX"'));
+			push(jobs, { cfg_name, url, r_tmp });
+		}
+		if (length(jobs) > 0) {
+			uloop.init();
+			let pending = length(jobs);
+			for (let job in jobs) {
+				let dl_cmd = sprintf('%s %s %s %s 2>/dev/null',
+					dlt.command, shell_quote(job.url), dlt.flag, shell_quote(job.r_tmp));
+				uloop.process('/bin/sh', ['-c', dl_cmd], {}, () => {
+					if (--pending == 0) uloop.end();
+				});
+			}
+			uloop.run();
+			uloop.done();
+			for (let job in jobs)
+				process_file_url(job.cfg_name, null, null, job.r_tmp);
+		}
+	} else {
+		for (let cfg_name in download_cfgs)
+			process_file_url(cfg_name);
+	}
 
 	if (uci_has_changes(pkg.name)) {
 		output.verbose('[PROC] Saving updated file sizes ');
@@ -1864,14 +1900,18 @@ function download_lists() {
 	logger_debug('[PERF-DEBUG] ' + step_title + ' took ' + elapsed + 's');
 
 	// Explicitly allow domains in servers mode
-	if (dns_output.allow_filter && cfg.allowed_domain) {
+	if (dns_output.allow_filter && (cfg.allowed_domain || (stat(tmp.allowed)?.size > 0))) {
 		unlink(tmp.sed); writefile(tmp.sed, '');
 		start_time = time();
 		step_title = 'Explicitly allowing domains in ' + cfg.dns;
 		output.verbose('[PROC] ' + step_title + ' ');
 		status_data.message = get_text('statusProcessing') + ': ' + step_title;
+		let allowed_list_extra = '';
+		if (stat(tmp.allowed)?.size > 0)
+			allowed_list_extra = trim(cmd_output(sprintf("sed '/^[[:space:]]*$/d' %s", shell_quote(tmp.allowed))));
+		let all_allow = (cfg.allowed_domain || '') + (allowed_list_extra ? ' ' + allowed_list_extra : '');
 		let allow_input = '';
-		for (let hf in split('' + cfg.allowed_domain, /\s+/))
+		for (let hf in split(all_allow, /\s+/))
 			if (hf) allow_input += hf + '\n';
 		if (allow_input)
 			system(sprintf("printf '%%s' %s | sed -E '%s' >> %s", shell_quote(allow_input), dns_output.allow_filter, shell_quote(tmp.sed)));
@@ -2310,6 +2350,10 @@ function start(args) {
 		output.info('Starting ' + pkg.service_name + '...\\n');
 		output.verbose('[INIT] Starting ' + pkg.service_name + '...\\n');
 		status_data.status = 'statusStarting';
+		// Ensure cache/output directories exist (on_boot skips _setup_directories)
+		for (let f in [dns_output.file, dns_output.cache]) {
+			if (f) mkdir_p(dirname(f));
+		}
 		if (adb_file('test_gzip') && !adb_file('test_cache') && !adb_file('test')) {
 			output.info('Found compressed cache file, unpacking it ');
 			output.verbose('[INIT] Found compressed cache file, unpacking it ');
@@ -2717,7 +2761,8 @@ function get_network_trigger_info() {
 
 function get_init_status(name) {
 	name = name || pkg.name;
-	env.load('rpcd');
+	env.load_config();
+	env.detect();
 
 	// Read pre-computed data from procd service (like PBR)
 	let conn = connect();
@@ -2736,7 +2781,7 @@ function get_init_status(name) {
 		packageCompat: int(pkg.compat),
 
 		// Live-computed (cheap stat/uci checks)
-		enabled: service_enabled(pkg.name) && !!cfg.enabled,
+		enabled: service_enabled(pkg.name) && uci(pkg.name, true).get(pkg.name, 'config', 'enabled') == '1',
 		running: (stat(pkg.run_file)?.size > 0),
 		outputFileExists: (stat(svc_data?.outputFile || dns_output.file)?.size > 0) || false,
 		outputCacheExists: (stat(svc_data?.outputCache || dns_output.cache)?.size > 0) || false,
@@ -2780,7 +2825,7 @@ function get_init_status(name) {
 function get_init_list(name) {
 	name = name || pkg.name;
 	let result = {};
-	let enabled_val = (uci(pkg.name).get(pkg.name, 'config', 'enabled') ?? '0');
+	let enabled_val = (uci(pkg.name, true).get(pkg.name, 'config', 'enabled') ?? '0');
 	result[name] = { enabled: (enabled_val == '1') };
 	return result;
 }
@@ -2806,7 +2851,7 @@ function get_platform_support(name) {
 
 function get_file_url_filesizes(name) {
 	name = name || pkg.name;
-	env.load('rpcd');
+	env.load_config();
 
 	let files = [];
 	uci(pkg.name).foreach(pkg.name, 'file_url', (s) => {
