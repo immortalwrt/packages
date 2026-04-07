@@ -6,28 +6,28 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=node
 
-ifeq ($(CONFIG_NODEJS_20),y)
-PKG_VERSION:=20.20.1
+ifeq ($(CONFIG_NODEJS_22),y)
+PKG_VERSION:=22.22.2
 PKG_RELEASE:=1
-PKG_HASH:=1b6eaf0fa2b99a19ec682149faa0aabbea5bb7f8af2f44ee6f6491d5ff6a9235
-PATCH_DIR:=./patches/v20.x
-NODEJS_BIN_SUM:=6362e50804cdcc110592201f67beda93bcd702fdcbe1c42840a50d590e3af0ce
-NODE_MODULE_VERSION:=115
-else
-ifeq ($(CONFIG_NODEJS_24),y)
-PKG_VERSION:=24.14.0
-PKG_RELEASE:=1
-PKG_HASH:=852c73dd5b6ba15b231d036da6312dbcdabd6295adc3940586f3187b77731cf3
-PATCH_DIR:=./patches/v24.x
-NODEJS_BIN_SUM:=dbf5b8665dec15e59e6359a517fefb47b23fdb9152d8def975b9bca3dfc6d355
-NODE_MODULE_VERSION:=137
-else
-PKG_VERSION:=22.22.1
-PKG_RELEASE:=1
-PKG_HASH:=20da57e24be78d0bd54175de1a23ab897bf7340c4ad9f32ff257b98ea9a825c5
+PKG_HASH:=f4b9606f33aef725a77b6292460102b48b80902571a8bb94cd769837ee0577df
 PATCH_DIR:=./patches/v22.x
-NODEJS_BIN_SUM:=07c8aafa60644fb81adefa1ee7da860eb1920851ffdc9a37020ab0be47fbc10e
+NODEJS_BIN_SUM:=978978a635eef872fa68beae09f0aad0bbbae6757e444da80b570964a97e62a3
 NODE_MODULE_VERSION:=127
+else
+ifeq ($(CONFIG_NODEJS_25),y)
+PKG_VERSION:=25.9.0
+PKG_RELEASE:=1
+PKG_HASH:=d55d77187039d4cd85c732f76838f44e3be552054473459dfa9cc0eb611ea664
+PATCH_DIR:=./patches/v25.x
+NODEJS_BIN_SUM:=134e55b2408448a219760fe04dc44d6851f9de8a79549021ffd870e9082d9e7b
+NODE_MODULE_VERSION:=141
+else
+PKG_VERSION:=24.14.1
+PKG_RELEASE:=1
+PKG_HASH:=8298cf1f5774093ca819f41b8dd392fd2cff058688b4d5c8805026352e2d31b3
+PATCH_DIR:=./patches/v24.x
+NODEJS_BIN_SUM:=ace9fa104992ed0829642629c46ca7bd7fd6e76278cb96c958c4b387d29658ea
+NODE_MODULE_VERSION:=137
 endif
 endif
 
@@ -95,19 +95,19 @@ define Package/node/config
 
 	choice
 		prompt "Version Selection"
-		default NODEJS_22
+		default NODEJS_24
 		help
 		 Select node.js version.
 		 The host package version is also the same.
-
-		config NODEJS_20
-			bool "20.x Maintenance LTS"
 
 		config NODEJS_22
 			bool "22.x Maintenance LTS"
 
 		config NODEJS_24
 			bool "24.x Active LTS"
+
+		config NODEJS_25
+			bool "25.x Current"
 	endchoice
 
 	if PACKAGE_node
@@ -130,10 +130,11 @@ define Package/node/config
 	endif
 
 	config NODEJS_NPM_KEEP_CACHE
-		bool "keep npm cache (experimental)"
+		bool "keep npm cache"
 		help
 		  Keep npm package cache.
 		  More space will be consumed by the cache.
+		default n
 
 	config NODEJS_NPM_CACHE_DIR
 		string "Set npm cache directory" if NODEJS_NPM_KEEP_CACHE
@@ -143,10 +144,11 @@ define Package/node/config
 		  If not set, uses './tmp'
 
 	config NODEJS_HOST_BIN
-		bool "Install the official nodejs binary package as HOSTPKG (experimental)"
+		bool "Install the official nodejs binary package as HOSTPKG"
 		depends on HOST_OS_LINUX
 		help
 		  Reduce build time for the host package.
+		default y
 
 	endmenu
 endef

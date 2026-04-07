@@ -4,15 +4,16 @@
 
 include $(TOPDIR)/rules.mk
 
+PKG_NPM_SCOPE:=homebridge-plugins
 PKG_NPM_NAME:=homebridge-eufy-security
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=4.4.2
+PKG_VERSION:=4.6.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
-PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
-                https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=a68b78e19ae71a94df1d3b59bd6fad9d79d09129a3c799d671e56b669aaaf0d9
+PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/ \
+                https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
+PKG_HASH:=82d074c201855d5736a3cadbc4585f83623efeacc689a4c22e9ec37ee019a7f9
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=Apache-2.0
@@ -29,7 +30,7 @@ define Package/node-homebridge-eufy-security
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Control Eufy Security from homebridge
-  URL:=https://www.npmjs.com/package/homebridge-eufy-security
+  URL:=https://www.npmjs.com/package/@homebridge-plugins/homebridge-eufy-security
   DEPENDS:=+node +node-homebridge +node-ffmpeg-for-homebridge
 endef
 
@@ -61,21 +62,30 @@ define Build/Compile
 endef
 
 define Package/node-homebridge-eufy-security/install
-	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
+	$(INSTALL_DIR) $(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{package.json,LICENSE} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+		$(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{*.md,*.json} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
+		$(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{dist,homebridge-ui,media,node_modules} \
-		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/usr/lib/node_modules
-	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
+		$(1)/usr/lib/node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/
+	$(INSTALL_DIR) $(1)/usr/lib/node_modules/@$(PKG_NPM_SCOPE)
+	$(LN) ../../node/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME) \
+		$(1)/usr/lib/node_modules/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)
+endef
+
+define Package/homebridge-eufy-security/preinst
+#!/bin/sh
+rm -rf /usr/lib/node_modules/homebridge-eufy-security || true
+rm -rf /usr/lib/node/homebridge-eufy-security || true
 endef
 
 define Package/node-homebridge-eufy-security/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/homebridge-eufy-security || true
-rm -rf /usr/lib/node/homebridge-eufy-security || true
+rm /usr/lib/node_modules/@homebridge-plugins/homebridge-eufy-security || true
+rm -rf /usr/lib/node/@homebridge-plugins/homebridge-eufy-security || true
+rmdir /usr/lib/node_modules/@homebridge-plugins || true
+rmdir /usr/lib/node/@homebridge-plugins || true
 endef
 
 $(eval $(call BuildPackage,node-homebridge-eufy-security))
