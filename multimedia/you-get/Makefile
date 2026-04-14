@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=you-get
 PKG_VERSION:=0.4.1718
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=you-get
 PYPI_SOURCE_NAME:=you_get
@@ -29,11 +29,11 @@ define Package/you-get
     +ca-certificates \
     +ffmpeg \
     +python3 \
-    +python3-email \
     +python3-xml \
     +python3-codecs \
     +python3-ctypes \
-    +python3-setuptools
+    +python3-setuptools \
+    +python3-urllib
 endef
 
 define Package/you-get/description

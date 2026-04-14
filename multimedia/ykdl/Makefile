@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ykdl
 PKG_VERSION:=1.8.2
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PYPI_NAME:=ykdl
 PKG_HASH:=c689b8e4bf303d1582e40d5039539a1a754f7cf897bce73ec57c7e874e354b19
@@ -28,11 +28,11 @@ define Package/ykdl
     +ca-certificates \
     +ffmpeg \
     +python3 \
-    +python3-email \
     +python3-xml \
     +python3-codecs \
     +python3-ctypes \
-    +python3-setuptools
+    +python3-setuptools \
+    +python3-urllib
 endef
 
 $(eval $(call Py3Package,ykdl))
