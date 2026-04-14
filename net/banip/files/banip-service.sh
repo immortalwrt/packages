@@ -44,7 +44,7 @@ fi
 #
 f_log "info" "start banIP download processes"
 f_getfeed
-[ "${ban_deduplicate}" = "1" ] && printf "\n" >"${ban_tmpfile}.deduplicate"
+[ "${ban_deduplicate}" = "1" ] && printf '\n' >"${ban_tmpfile}.deduplicate"
 
 # handle downloads
 #

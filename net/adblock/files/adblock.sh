@@ -1421,6 +1421,9 @@ f_search() {
 	: >"${tmp_result}"
 	read -r search_start _ < "/proc/uptime"
 	search_start="${search_start%.*}"
+
+	# search recursively for domain and its parent domains until tld is reached
+	#
 	while :; do
 		search="${domain//./\\.}"
 		res="$("${adb_awkcmd}" -F '/|\"|\t| ' "/^(${prefix}${search}${suffix})$/{i++;if(i<=9){printf \"  + %s\n\",\$${field}}else if(i==10){printf \"  + %s\n\",\"[...]\";exit}}" "${adb_finaldir}/${adb_dnsfile}")"
@@ -1430,6 +1433,9 @@ f_search() {
 		domain="${tld}"
 		tld="${domain#*.}"
 	done
+
+	# search exactly for domain in backup files and local block-/allowlist
+	#
 	if [ -d "${adb_backupdir}" ]; then
 		search="${1//./\\.}"
 		printf '%s\n%s\n%s\n' ":::" "::: domain '${1}' in backups and in local block-/allowlist" ":::" >>"${tmp_result}"
@@ -1462,7 +1468,7 @@ f_search() {
 		[ "${res}" != "true" ] && printf '%s\n\n' "  - no match" >>"${tmp_result}"
 	fi
 	"${adb_mvcmd}" -f "${tmp_result}" "${result}"
-	printf '%s\n' "$(< "${result}")"
+	"${adb_catcmd}" "${result}" 2>>"${adb_errorlog}"
 }
 
 # update runtime information
@@ -1857,7 +1863,7 @@ f_report() {
 					# ignore Reverse DNS
 					/\.in-addr\.arpa/ || /\.ip6\.arpa/ { next }
 					# domain request parser (with optional EDNS marker support)
-					/\+[[:space:]]+(\[.*\][[:space:]]+)?(A\?|AAAA\?)/ {
+					/\+[[:space:]]+(\[[0-9a-z]*\][[:space:]]+)?(A\?|AAAA\?)/ {
 						# drop unresolved previous query
 						if (pending)
 							pending = 0
@@ -1875,6 +1881,7 @@ f_report() {
 						sub(/[,\.]+$/, "", domain)
 						if (domain ~ /\.lan$/) next
 						if (domain !~ /\./) next
+						if (domain ~ /[\/:]/) next
 						qtype = $(NF-2)
 						sub(/\?$/, "", qtype)
 						last_date = date
@@ -2206,7 +2213,7 @@ f_report() {
 				jsn="$("${adb_catcmd}" ${report_jsn} ${map_jsn} 2>>"${adb_errorlog}")"
 				[ -n "${jsn}" ] && printf '[%s]]\n' "${jsn}"
 			else
-				jsn="$(< "${report_jsn}")" 2>>"${adb_errorlog}"
+				jsn="$("${adb_catcmd}" "${report_jsn}" 2>>"${adb_errorlog}")"
 				[ -n "${jsn}" ] && printf '[%s]\n' "${jsn}"
 			fi
 			;;
