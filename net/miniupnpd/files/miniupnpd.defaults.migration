@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if uci -q get upnpd.config.force_forwarding; then
+	uci -q rename upnpd.config.force_forwarding=ext_allow_private_ipv4
+	uci -q commit upnpd
+fi
+
+exit 0

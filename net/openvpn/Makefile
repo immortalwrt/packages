@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=openvpn
 
 PKG_VERSION:=2.7.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_URL:=\
 	https://build.openvpn.net/downloads/releases/ \
@@ -18,7 +18,7 @@ PKG_SOURCE_URL:=\
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_HASH:=9858477ec2894a8a672974d8650dcb1af2eeffb468981a2b619f0fa387081167
 
-PKG_MAINTAINER:=
+PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 
 PKG_INSTALL:=1
 PKG_FIXUP:=autoreconf
@@ -36,8 +36,13 @@ define Package/openvpn/Default
   URL:=http://openvpn.net
   SUBMENU:=VPN
   MENU:=1
-  DEPENDS:=+kmod-tun +libcap-ng +OPENVPN_$(1)_ENABLE_LZO:liblzo +OPENVPN_$(1)_ENABLE_LZ4:liblz4 +OPENVPN_$(1)_ENABLE_IPROUTE2:ip \
-	+OPENVPN_$(1)_ENABLE_DCO:libnl-genl $(3)
+  DEPENDS:=+kmod-tun \
+	   +libcap-ng \
+	   +OPENVPN_$(1)_ENABLE_LZO:liblzo \
+	   +OPENVPN_$(1)_ENABLE_LZ4:liblz4 \
+	   +OPENVPN_$(1)_ENABLE_IPROUTE2:ip \
+	   +OPENVPN_$(1)_ENABLE_DCO:libnl-genl \
+	   $(3)
   VARIANT:=$(1)
   PROVIDES:=openvpn openvpn-crypto
 endef

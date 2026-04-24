@@ -9,13 +9,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=miniupnpd
 PKG_VERSION:=2.3.9
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE_URL:=https://github.com/miniupnp/miniupnp/releases/download/miniupnpd_$(subst .,_,$(PKG_VERSION))
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_HASH:=66cb3c3d697ab2bb3a61d3c48628166d6ba328d7c2dbeb95898fdf2a3202af7b
 
-PKG_MAINTAINER:=
+PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:miniupnp_project:miniupnpd
@@ -98,15 +98,16 @@ define Package/miniupnpd/install/Default
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/miniupnpd $(1)/usr/sbin/miniupnpd
 	$(INSTALL_BIN) ./files/miniupnpd.init $(1)/etc/init.d/miniupnpd
 	$(INSTALL_CONF) ./files/upnpd.config $(1)/etc/config/upnpd
 	$(INSTALL_DATA) ./files/miniupnpd.hotplug $(1)/etc/hotplug.d/iface/50-miniupnpd
+	$(INSTALL_BIN) ./files/miniupnpd.defaults.migration $(1)/etc/uci-defaults/99-miniupnpd-migration
 endef
 
 define Package/miniupnpd-iptables/install
 	$(call Package/miniupnpd/install/Default,$1)
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_DIR) $(1)/usr/share/miniupnpd
 	$(INSTALL_BIN) ./files/miniupnpd.defaults.iptables $(1)/etc/uci-defaults/99-miniupnpd
 	$(INSTALL_DATA) ./files/firewall3.include $(1)/usr/share/miniupnpd/firewall.include
