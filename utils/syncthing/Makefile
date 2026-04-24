@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=syncthing
-PKG_VERSION:=2.0.15
+PKG_VERSION:=2.0.16
 PKG_RELEASE:=1
 
 PKG_SOURCE:=syncthing-source-v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/syncthing/syncthing/releases/download/v$(PKG_VERSION)
-PKG_HASH:=8104091ed30bdce7bb462b99bad5bf695704dea39459001f3a088c4cee0e1368
+PKG_HASH:=f93836f943967c8fe608e90fd6dc2c419ce00cfa0ca5266caa86c22ae290f169
 
 PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/$(PKG_NAME)
 
@@ -109,12 +109,11 @@ define SyncthingInstall
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/$(2) $(1)/usr/bin
 endef
 
-
 define Package/syncthing/install
 	$(call SyncthingInstall,$(1),syncthing)
 
 	$(INSTALL_DIR) $(1)/etc/sysctl.d/
-	$(INSTALL_BIN) $(CURDIR)/files/syncthing-sysctl.conf $(1)/etc/sysctl.d/90-syncthing-inotify.conf
+	$(INSTALL_CONF) $(CURDIR)/files/syncthing.sysctl $(1)/etc/sysctl.d/90-syncthing.conf
 endef
 
 define Package/stdiscosrv/install

@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-greenlet
-PKG_VERSION:=3.2.4
+PKG_VERSION:=3.4.0
 PKG_RELEASE:=1
 
 PYPI_NAME:=greenlet
-PKG_HASH:=0dca0d95ff849f9a364385f36ab49f50065d76964944638be9691e1832e9f86d
+PKG_HASH:=f50a96b64dafd6169e595a5c56c9146ef80333e67d4476a65a9c55f400fc22ff
 
-PKG_MAINTAINER:=Jan Pavlinec <jan.pavlinec1@gmail.com>
+PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 # FIXME: remove when GCC10 is the oldest supported compiler, or the issue goes away
