@@ -10,7 +10,7 @@ PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/stackia/rtp2httpd/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=2f9270b4a13816561faa30b67960773c36fd3dc79938b546a216928080c52cac
+PKG_HASH:=1834c1ad9f650948a707b673c66415c11b6f13d289b5ddc863b844afff80da99
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immrotalwrt.org>
 PKG_LICENSE:=GPL-2.0-or-later
