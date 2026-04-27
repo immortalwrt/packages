@@ -110,7 +110,7 @@ jobs:
           echo "$EOF" >> $GITHUB_ENV
 
       - name: Build
-        uses: immortalwrt/gh-action-sdk@v5
+        uses: immortalwrt/gh-action-sdk@v8
         env:
           ARCH: ${{ matrix.arch }}-${{ env.BRANCH }}
           FEEDNAME: packages_ci
@@ -120,7 +120,7 @@ jobs:
 
       - name: Move created packages to project dir
         if: always()
-        run: cp bin/packages/${{ matrix.arch }}/packages_ci/* . || true
+        run: cp -v bin/packages/${{ matrix.arch }}/packages_ci/* . || true
 
       - name: Store packages
         if: always()
