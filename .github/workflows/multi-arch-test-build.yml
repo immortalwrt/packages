@@ -123,7 +123,7 @@ jobs:
           echo "$EOF" >> $GITHUB_ENV
 
       - name: Build
-        uses: immortalwrt/gh-action-sdk@v7
+        uses: immortalwrt/gh-action-sdk@v8
         env:
           ARCH: ${{ matrix.arch }}-${{ env.BRANCH }}
           FEEDNAME: packages_ci
