@@ -12,13 +12,13 @@ PKG_VERSION:=1.1.0
 PKG_RELEASE:=1
 
 PYPI_NAME:=msgpack
-PKG_HASH:=skip
+PKG_HASH:=dd432ccc2c72b914e4cb77afce64aab761c1137cc698be3984eee260bcb2896e
 
 PKG_MAINTAINER:=Jan Pavlinec <jan.pavlinec1@gmail.com>
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=COPYING
 
-PKG_BUILD_DEPENDS:=python-cython/host
+PKG_BUILD_DEPENDS:=python-cython/host python-setuptools
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk

@@ -21,7 +21,8 @@ PKG_LICENSE_FILES:=LICENSE.txt
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
 PKG_BUILD_DEPENDS:= \
-	python3/host
+	python3/host \
+	python-setuptools
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
