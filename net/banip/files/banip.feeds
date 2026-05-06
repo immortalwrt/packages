@@ -74,13 +74,6 @@
 		"descr": "public DoH-Server",
 		"flag": "tcp udp 80 443"
 	},
-	"drop":{
-		"url_4": "https://www.spamhaus.org/drop/drop.txt",
-		"url_6": "https://www.spamhaus.org/drop/dropv6.txt",
-		"rule": "feed 1",
-		"chain": "in",
-		"descr": "spamhaus drop compilation"
-	},
 	"dshield":{
 		"url_4": "https://feeds.dshield.org/block.txt",
 		"rule": "feed 13",
@@ -173,6 +166,13 @@
 		"rule": "feed 1",
 		"chain": "in",
 		"descr": "open proxies"
+	},
+	"spamhaus":{
+		"url_4": "https://www.spamhaus.org/drop/drop_v4.json",
+		"url_6": "https://www.spamhaus.org/drop/drop_v6.json",
+		"rule": "feed 4 \"",
+		"chain": "in",
+		"descr": "Spamhaus DROP"
 	},
 	"threat":{
 		"url_4": "https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt",
