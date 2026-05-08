@@ -36,7 +36,20 @@
  
  #ifdef FIBOCOM_BRIDGE_MODE
      priv->bridge_mode = !!(pDev->bridge_mode & BIT(offset_id));
-@@ -1319,7 +1331,7 @@ typedef struct {
+@@ -1196,8 +1208,12 @@ static int qmap_register_device(sQmiWwan
+ 
+     priv->agg_skb = NULL;
+     priv->agg_count = 0;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6,18,0)
+     hrtimer_init(&priv->agg_hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+     priv->agg_hrtimer.function = rmnet_usb_tx_agg_timer_cb;
++#else
++    hrtimer_setup(&priv->agg_hrtimer, rmnet_usb_tx_agg_timer_cb, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++#endif
+     INIT_WORK(&priv->agg_wq, rmnet_usb_tx_agg_work);
+     ktime_get_ts64(&priv->agg_time);
+     spin_lock_init(&priv->agg_lock);
+@@ -1319,7 +1335,7 @@ typedef struct {
      unsigned int dl_minimum_padding; //0x1A
  } QMAP_SETTING;
  
@@ -45,7 +58,7 @@
      struct net_device *netdev = to_net_dev(dev);
      struct usbnet * usbnetdev = netdev_priv( netdev );
      struct qmi_wwan_state *info = (void *)&usbnetdev->data;
-@@ -1760,8 +1772,14 @@ static void ql_net_get_drvinfo(struct ne
+@@ -1760,8 +1776,14 @@ static void ql_net_get_drvinfo(struct ne
  {
      /* Inherit standard device info */
      usbnet_get_drvinfo(net, info);

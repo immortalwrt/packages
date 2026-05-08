@@ -1,0 +1,30 @@
+From 85990e155cb684ec6380bcf70f588255ec41dc69 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E7=80=AC=E5=90=8D=E7=94=B1=E5=B8=8C?=
+ <wanglei199909210927@gmail.com>
+Date: Wed, 5 Nov 2025 14:16:56 +0800
+Subject: [PATCH] qmi_wwan: return correct tx/rx stats in kernel 6.10+ (#130)
+
+---
+ driver/fibocom_QMI_WWAN/src/qmi_wwan_f.c | 9 ++++++++-
+ driver/quectel_QMI_WWAN/src/qmi_wwan_q.c | 7 +++++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+--- a/qmi_wwan_f.c
++++ b/qmi_wwan_f.c
+@@ -1910,8 +1910,15 @@ static int qmi_wwan_bind(struct usbnet *
+ 	dev_addr_mod(dev->net, 0, &addr, 1);
+ #endif
+     }
+-    if (!_usbnet_get_stats64)
++	if (!_usbnet_get_stats64)
++#if (LINUX_VERSION_CODE < KERNEL_VERSION( 6,10,0 ))
+         _usbnet_get_stats64 = dev->net->netdev_ops->ndo_get_stats64;
++#else
++		/* From kernel 6.10+, usbnet sets pcpu_stat_type = NETDEV_PCPU_STAT_TSTATS (352f5b3282), but removed ndo_get_stats64 (9cb3d523c1) */
++		/* Use dev_get_tstats64 to read per-CPU stats when NETDEV_PCPU_STAT_TSTATS was set */
++		if (dev->net->pcpu_stat_type == NETDEV_PCPU_STAT_TSTATS)
++			_usbnet_get_stats64 = dev_get_tstats64;
++#endif
+     dev->net->netdev_ops = &qmi_wwan_netdev_ops;
+ 
+     ql_net_ethtool_ops = *dev->net->ethtool_ops;
