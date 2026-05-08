@@ -1,6 +1,28 @@
 --- a/qmi_wwan_q.c
 +++ b/qmi_wwan_q.c
-@@ -1472,7 +1472,7 @@ typedef struct {
+@@ -896,7 +896,7 @@ static void usbnet_bh(unsigned long data
+ 	struct tasklet_struct *t = &pQmapDev->usbnet_bh;
+ 	bool use_callback = false;
+ 
+-#if (LINUX_VERSION_CODE > KERNEL_VERSION( 5,8,0 )) //c955e329bb9d44fab75cf2116542fcc0de0473c5
++#if (LINUX_VERSION_CODE > KERNEL_VERSION( 5,8,0 )) && (LINUX_VERSION_CODE < KERNEL_VERSION( 6,17,0 ))
+ 	use_callback = t->use_callback;
+ 	if (use_callback)
+ 		t->callback(&pQmapDev->mpNetDev->bh);
+@@ -1368,8 +1368,12 @@ static int qmap_register_device(sQmiWwan
+ #endif
+ 	priv->agg_skb = NULL;
+ 	priv->agg_count = 0;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6,18,0)
+ 	hrtimer_init(&priv->agg_hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	priv->agg_hrtimer.function = rmnet_usb_tx_agg_timer_cb;
++#else
++	hrtimer_setup(&priv->agg_hrtimer, rmnet_usb_tx_agg_timer_cb, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++#endif
+ 	INIT_WORK(&priv->agg_wq, rmnet_usb_tx_agg_work);
+ 	ktime_get_ts64(&priv->agg_time);
+ 	spin_lock_init(&priv->agg_lock);
+@@ -1472,7 +1476,7 @@ typedef struct {
  } BRMAC_SETTING;
  #endif
  
@@ -9,3 +31,14 @@
  	struct net_device *netdev = to_net_dev(dev);
  	struct usbnet * usbnetdev = netdev_priv( netdev );
  	struct qmi_wwan_state *info = (void *)&usbnetdev->data;
+@@ -2266,8 +2270,10 @@ static int qmi_wwan_bind(struct usbnet *
+ 				}
+ 
+ 				if (pQmapDev->use_rmnet_usb && !one_card_mode) {
++#if (LINUX_VERSION_CODE < KERNEL_VERSION( 6,17,0 ))
+ 					pQmapDev->usbnet_bh = dev->bh;
+ 					tasklet_init(&dev->bh, usbnet_bh, (unsigned long)pQmapDev);
++#endif
+ 				}
+ 			}
+ 		}
