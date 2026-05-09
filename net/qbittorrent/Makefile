@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=qBittorrent-Enhanced-Edition
-PKG_VERSION:=5.1.3.10
-PKG_RELEASE:=2
+PKG_NAME:=qBittorrent
+PKG_VERSION:=5.2.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/c0re100/qBittorrent-Enhanced-Edition/tar.gz/release-$(PKG_VERSION)?
-PKG_HASH:=b153428db354775de59b850751ad9d6bafb418dde115b3208b41eab14308f6d1
+PKG_SOURCE_URL:=https://codeload.github.com/qbittorrent/qBittorrent/tar.gz/release-$(PKG_VERSION)?
+PKG_HASH:=543c657362d7aaf712ccb28e80236de3b7685235112122c06d69c6a8b68ef0e0
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-release-$(PKG_VERSION)
 
 PKG_LICENSE:=GPL-2.0-or-later
@@ -19,19 +19,17 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-define Package/qbittorrent-enhanced-edition
+define Package/qbittorrent
   SUBMENU:=BitTorrent
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=bittorrent client programmed in C++ / Qt
-  URL:=https://github.com/c0re100/qBittorrent-Enhanced-Edition
+  TITLE:=A BitTorrent client in Qt
+  URL:=https://www.qbittorrent.org/
   DEPENDS:=+libtorrent-rasterbar +libQt6Core +libQt6Network +libQt6Sql \
     +libQt6Xml +qt6-plugin-libqopensslbackend +qt6-plugin-libqsqlite
-  PROVIDES:=qbittorrent
-  CONFLICTS:=qbittorrent
 endef
 
-define Package/qbittorrent-enhanced-edition/description
+define Package/qbittorrent/description
   qBittorrent is a bittorrent client programmed in C++ / Qt that uses
   libtorrent (sometimes called libtorrent-rasterbar) by Arvid Norberg.
   It aims to be a good alternative to all other bittorrent clients out
@@ -39,7 +37,7 @@ define Package/qbittorrent-enhanced-edition/description
   well as many features.
 endef
 
-define Package/qbittorrent-enhanced-edition/conffiles
+define Package/qbittorrent/conffiles
 /etc/config/qbittorrent
 /etc/qBittorrent/
 endef
@@ -51,7 +49,7 @@ CMAKE_OPTIONS+= \
 	-DWEBUI=ON \
 	-DQT_ADDITIONAL_PACKAGES_PREFIX_PATH=$(STAGING_DIR_HOSTPKG)
 
-define Package/qbittorrent-enhanced-edition/install
+define Package/qbittorrent/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/qbittorrent-nox $(1)/usr/bin
 
@@ -59,8 +57,6 @@ define Package/qbittorrent-enhanced-edition/install
 	$(INSTALL_CONF) $(CURDIR)/files/qbittorrent.config $(1)/etc/config/qbittorrent
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(CURDIR)/files/qbittorrent.init $(1)/etc/init.d/qbittorrent
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) $(CURDIR)/files/qbittorrent.uci $(1)/etc/uci-defaults/90-qbittorrent-uci-migration
 endef
 
-$(eval $(call BuildPackage,qbittorrent-enhanced-edition))
+$(eval $(call BuildPackage,qbittorrent))
