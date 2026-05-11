@@ -37,8 +37,8 @@ start_service() {
 		program=
 
 		[BitTorrent]
-		Session\AutoBanUnknownPeer=true
-		Session\AutoUpdateTrackersEnabled=true
+		Session\AddTrackersFromURLEnabled=true
+		Session\AdditionalTrackersURL=https://trackerslist.com/all.txt
 		Session\DefaultSavePath=$download_dir
 
 		[LegalNotice]
@@ -48,7 +48,6 @@ start_service() {
 		Cookies=@Invalid()
 
 		[Preferences]
-		Bittorrent\CustomizeTrackersListUrl=https://trackerslist.com/all.txt
 		WebUI\CSRFProtection=false
 		WebUI\Password_PBKDF2="@ByteArray(zH92gnE9xijRN5IjzIPU+A==:+JxpKBWsSyuzpm/9LrhO2uLQSGsBS5giqF0AYRU8COcMXn5AIaSsL2S9hIuB20wkhsMfEoN+77Q9BmAd3ysYxw==)"
 		WebUI\Port=$http_port
