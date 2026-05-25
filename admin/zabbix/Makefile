@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zabbix
-PKG_VERSION:=7.0.23
+PKG_VERSION:=7.0.26
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://cdn.zabbix.com/zabbix/sources/stable/$(basename $(PKG_VERSION))/ \
 	https://cdn.zabbix.com/zabbix/sources/oldstable/$(basename $(PKG_VERSION))/
-PKG_HASH:=43ea5fcb1e5db25e74bdc83ea8936d79b8093b614af4e889417485bc74f061e2
+PKG_HASH:=3c27a97b52c75e2eccfa43dec5e3fd7d52876f5fdd94172495b025ec9f2a13a8
 
 PKG_MAINTAINER:=Daniel F. Dickinson <dfdpublic@wildtechgarden.ca>
 PKG_LICENSE:=AGPL-3.0-only
@@ -27,6 +27,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_CONFIG_DEPENDS:= \
   CONFIG_ZABBIX_CURL \
   CONFIG_ZABBIX_CURL_GNUTLS \
+  CONFIG_ZABBIX_ENABLE_ZABBIX \
   CONFIG_ZABBIX_GNUTLS \
   CONFIG_ZABBIX_LDAP \
   CONFIG_ZABBIX_MYSQL \
@@ -42,11 +43,32 @@ define Package/zabbix-agentd/config
 endef
 
 define Package/zabbix-proxy/config
-  source "$(SOURCE)/Config-db.in"
+	choice
+		depends on ZABBIX_ENABLE_ZABBIX
+		prompt "Select Database Software for Zabbix"
+		default ZABBIX_POSTGRESQL
+
+		config ZABBIX_MYSQL
+			bool "MySQL/MariaDB"
+
+		config ZABBIX_POSTGRESQL
+			bool "PostgreSQL"
+
+		config ZABBIX_SQLITE
+			bool "SQLite3"
+	endchoice
 endef
 
 define Package/zabbix-get/config
-  source "$(SOURCE)/Config-build.in"
+	config ZABBIX_BUILD_SUPPORT_BIN
+		bool
+		depends on PACKAGE_zabbix-agentd && ZABBIX_ENABLE_ZABBIX
+		default y
+		help
+			This option exists to prevent trying to build get and/or sender when the
+			of agent is not being built. In that case get and sender are not built by
+			the Zabbix build system. This is not a dependency DEPENDS because the
+			binaries do not require the agent to function.
 endef
 
 define Package/zabbix/Default
@@ -55,6 +77,7 @@ define Package/zabbix/Default
   SUBMENU:=Zabbix
   TITLE:=Zabbix
   URL:=https://www.zabbix.com/
+  DEPENDS:=@ZABBIX_ENABLE_ZABBIX
 endef
 
 define Package/zabbix/description/Default
@@ -91,7 +114,7 @@ endef
 define Package/zabbix-agentd/Default
   $(call Package/zabbix/Default)
   TITLE+= agentd
-  DEPENDS:= \
+  DEPENDS+= \
     $(ICONV_DEPENDS) \
     +libevent2-pthreads \
     +libpcre2 \
@@ -142,7 +165,7 @@ endef
 define Package/zabbix-get
   $(call Package/zabbix/Default)
   TITLE+= get (with TLS)
-  DEPENDS:= \
+  DEPENDS+= \
     @(ZABBIX_BUILD_SUPPORT_BIN) \
     $(ICONV_DEPENDS) \
     +ZABBIX_GNUTLS:libgnutls \
@@ -164,7 +187,7 @@ endef
 
 define Package/zabbix-server-or-proxy/Default
   $(call Package/zabbix/Default)
-  DEPENDS:= \
+  DEPENDS+= \
     $(ICONV_DEPENDS) \
     +fping \
     +libevent2 \
@@ -226,7 +249,7 @@ endef
 define Package/zabbix-sender
   $(call Package/zabbix/Default)
   TITLE+= sender (with TLS)
-  DEPENDS:= \
+  DEPENDS+= \
     @(ZABBIX_BUILD_SUPPORT_BIN) \
     $(ICONV_DEPENDS) \
     +ZABBIX_GNUTLS:libgnutls \
@@ -273,7 +296,7 @@ endef
 define Package/zabbix-extra-mac80211
   $(call Package/zabbix/Default)
   TITLE+= discovery/userparameters for mac80211
-  DEPENDS:= \
+  DEPENDS+= \
     @KERNEL_DEBUG_FS \
     @PACKAGE_MAC80211_DEBUGFS \
     @zabbix-agentd-any
@@ -290,7 +313,7 @@ define Package/zabbix-extra-network
   $(call Package/zabbix/Default)
   TITLE+= discovery/userparameters for network
   PKGARCH:=all
-  DEPENDS:= \
+  DEPENDS+= \
     +libubus-lua \
     +lua \
     @zabbix-agentd-any
@@ -307,7 +330,7 @@ define Package/zabbix-extra-wifi
   $(call Package/zabbix/Default)
   TITLE+= discovery/userparameters for wifi
   PKGARCH:=all
-  DEPENDS:= \
+  DEPENDS+= \
     +libiwinfo-lua \
     +libubus-lua +lua \
     @zabbix-agentd-any
@@ -324,7 +347,7 @@ define Package/zabbix-frontend-server
   $(call Package/zabbix/Default)
   TITLE+= frontend server
   PKGARCH:=all
-  DEPENDS:= \
+  DEPENDS+= \
     php8 \
     @(!ZABBIX_SQLITE) \
     +ZABBIX_MYSQL:php8-mod-mysqli \
