@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qBittorrent
-PKG_VERSION:=5.2.0
-PKG_RELEASE:=2
+PKG_VERSION:=5.2.1
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/qbittorrent/qBittorrent/tar.gz/release-$(PKG_VERSION)?
-PKG_HASH:=543c657362d7aaf712ccb28e80236de3b7685235112122c06d69c6a8b68ef0e0
+PKG_HASH:=6288bfeeca1931ff1e1ca04d0e5f872e0d0b9d5df583ed41289cb9275ccac208
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-release-$(PKG_VERSION)
 
 PKG_LICENSE:=GPL-2.0-or-later
