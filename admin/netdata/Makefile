@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netdata
 PKG_VERSION:=1.38.1
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_MAINTAINER:=Josef Schlehofer <pepe.schlehofer@gmail.com>, Daniel Engberg <daniel.engberg.lists@pyret.net>
 PKG_LICENSE:=GPL-3.0-or-later
@@ -23,7 +23,7 @@ PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-v$(PKG_VERSION)
 
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
-PKG_BUILD_DEPENDS:=protobuf/host
+PKG_BUILD_DEPENDS:=protobuf-compat/host
 PKG_FIXUP:=autoreconf
 PKG_BUILD_FLAGS:=no-mips16 gc-sections
 
@@ -33,7 +33,7 @@ define Package/netdata
   SECTION:=admin
   CATEGORY:=Administration
   DEPENDS:=+zlib +libuuid +libuv +libmnl +libjson-c +libopenssl \
-    +libstdcpp +libatomic +protobuf +openssl-util +curl +bash
+    +libstdcpp +libatomic +protobuf-compat +openssl-util +curl +bash
   TITLE:=Real-time performance monitoring tool
   URL:=https://www.netdata.cloud/
 endef
@@ -64,6 +64,12 @@ CONFIGURE_ARGS += \
 	--disable-exporting-prometheus-remote-write \
 	--disable-unit-tests \
 	--disable-ml
+
+CONFIGURE_VARS += \
+	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/protobuf-compat/lib/pkgconfig:$(PKG_CONFIG_PATH)" \
+	CPPFLAGS="-I$(STAGING_DIR)/usr/protobuf-compat/include $(TARGET_CPPFLAGS)" \
+	CXXFLAGS="-I$(STAGING_DIR)/usr/protobuf-compat/include $(TARGET_CXXFLAGS)" \
+	LDFLAGS="-L$(STAGING_DIR)/usr/protobuf-compat/lib $(TARGET_LDFLAGS)"
 
 define Build/Configure
 	$(SED) 's/m4_esyscmd(\[git describe .*\])/$(PKG_VERSION)/' $(PKG_BUILD_DIR)/configure.ac
