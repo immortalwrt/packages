@@ -1,13 +1,10 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 
-# cspell:words TOPDIR PYPI Radicale conffiles dateutil defusedxml libpass
-# cspell:words setuptools vobject
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=radicale3
-PKG_VERSION:=3.6.0
+PKG_VERSION:=3.7.1
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-3.0-or-later
@@ -16,7 +13,7 @@ PKG_CPE_ID:=cpe:/a:radicale:radicale
 
 PYPI_NAME:=Radicale
 PYPI_SOURCE_NAME:=radicale
-PKG_HASH:=23820c71f989cac3e9eeb03fb39c7092b088fe8db5d6f3d3a739f0bb99e87cf8
+PKG_HASH:=cabb87ad9f0b6aaa724f0621810c0e0c0421ef04ef2617e988d9da63859cd8ad
 
 PKG_MAINTAINER:=Daniel F. Dickinson <dfdpublic@wildtechgarden.ca>
 
