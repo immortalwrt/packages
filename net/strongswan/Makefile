@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=strongswan
 PKG_VERSION:=6.0.7
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://download.strongswan.org/ https://download2.strongswan.org/
@@ -23,7 +23,6 @@ PKG_CPE_ID:=cpe:/a:strongswan:strongswan
 PKG_MOD_AVAILABLE:= \
 	addrblock \
 	aes \
-	af-alg \
 	agent \
 	attr \
 	attr-sql \
@@ -133,16 +132,6 @@ define Package/strongswan
 $(call Package/strongswan/Default)
   MENU:=1
   DEPENDS:= +libpthread +ip \
-	+STRONGSWAN_INCLUDE_INSECURE:kmod-crypto-aead \
-	+kmod-crypto-authenc \
-	+kmod-crypto-cbc \
-	+kmod-lib-zlib-inflate \
-	+kmod-lib-zlib-deflate \
-	+kmod-crypto-des \
-	+kmod-crypto-echainiv \
-	+kmod-crypto-hmac \
-	+kmod-crypto-md5 \
-	+kmod-crypto-sha1 \
 	+kmod-ipsec +kmod-ipsec4 +IPV6:kmod-ipsec6
 endef
 
@@ -164,7 +153,6 @@ $(call Package/strongswan/Default)
 	+strongswan-ipsec \
 	+strongswan-mod-addrblock \
 	+strongswan-mod-aes \
-	+strongswan-mod-af-alg \
 	+strongswan-mod-agent \
 	+strongswan-mod-attr \
 	+strongswan-mod-attr-sql \
@@ -655,7 +643,6 @@ $(eval $(call BuildPackage,strongswan-gencerts))
 $(eval $(call BuildPackage,strongswan-libtls))
 $(eval $(call BuildPlugin,addrblock,RFC 3779 address block constraint support,))
 $(eval $(call BuildPlugin,aes,AES crypto,))
-$(eval $(call BuildPlugin,af-alg,AF_ALG crypto interface to Linux Crypto API,+kmod-crypto-user))
 $(eval $(call BuildPlugin,agent,SSH agent signing,))
 $(eval $(call BuildPlugin,attr,file based config,))
 $(eval $(call BuildPlugin,attr-sql,SQL based config,+strongswan-charon))
