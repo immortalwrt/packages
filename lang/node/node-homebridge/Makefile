@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=homebridge
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=1.11.4
+PKG_VERSION:=2.1.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=f519796a6368e676e101df0a4fcb95951d35995b9d69c71c600f7c32fd91ca52
+PKG_HASH:=330f469a25850496a46d96c8162562fe89d982d29fac7fc5ca1d3f11e4177ebd
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_FLAGS:=no-mips16
@@ -66,12 +66,12 @@ define Package/node-homebridge/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
 	$(CP) $(PKG_BUILD_DIR)/{*.json,*.md} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/{node_modules,lib} \
+	$(CP) $(PKG_BUILD_DIR)/{node_modules,dist} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{LICENSE,bin} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/homebridge $(1)/usr/bin/homebridge
+	$(LN) ../lib/node/$(PKG_NPM_NAME)/bin/homebridge.js $(1)/usr/bin/homebridge
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/homebridge.init $(1)/etc/init.d/homebridge
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules

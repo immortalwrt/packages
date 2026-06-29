@@ -4,19 +4,19 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NPM_NAME:=npm-check-updates
+PKG_NPM_NAME:=homebridge-xiaomi-airpurifier-km81
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=22.2.3
+PKG_VERSION:=1.0.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=3b5bd7dbd6353e9a2ceeaa271c51cb532294d63d62e5cba4b8559a144df99528
+PKG_HASH:=d21c1709d824b87cf3e5d565b80bf70407d0d1a0ec3543be1b1c4d670222a9ba
 
-PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>, Patrik Laszlo <alabard@gmail.com>
-PKG_LICENSE:=Apache-2.0
-PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
+PKG_LICENSE:=ISC
+PKG_LICENSE_FILES:=
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
@@ -24,17 +24,17 @@ PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node-npm-check-updates
+define Package/node-homebridge-xiaomi-airpurifier-km81
   SUBMENU:=Node.js
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=Upgrade your NPM/Bower dependencies
-  URL:=https://www.npmjs.com/package/npm-check-updates/
-  DEPENDS:=+node +git
+  TITLE:=Homebridge plugin for Xiaomi Air Purifier (2S/Pro)
+  URL:=https://www.npmjs.com/package/homebridge-xiaomi-airpurifier-km81
+  DEPENDS:=+node +node-homebridge
 endef
 
-define Package/node-npm-check-updates/description
- The npm-check-updates program is a command-line tool that allows you to upgrade your package.json or bower.json dependencies to the latest versions, regardless of existing version constraints
+define Package/node-homebridge-xiaomi-airpurifier-km81/description
+ Homebridge plugin for Xiaomi Air Purifier (2S/Pro) with optimistic UI updates and optional Temperature/Humidity/AirQuality sensors
 endef
 
 TAR_OPTIONS+= --strip-components 1
@@ -53,32 +53,28 @@ define Build/Compile
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
 	$(if $(CONFIG_NODEJS_NPM_KEEP_CACHE), npm_config_cache=$(NPM_CACHE_DIR)/npm-cache-$(PKG_NPM_NAME),npm_config_cache=$(TMP_DIR)/npm-cache-$(TMPNPM)) \
-	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --legacy-peer-deps --ignore-scripts
+	npm install --prefer-offline --no-audit --global-style --install-strategy=shallow --no-save --omit=dev --no-package-lock --ignore-scripts
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
-	#rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
-	#find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
+	rm -f $(PKG_BUILD_DIR)/node_modules/.package-lock.json
+	find $(PKG_BUILD_DIR)/node_modules -type d -empty -print0 | xargs -0 -r rmdir || true
 endef
 
-define Package/node-npm-check-updates/install
+define Package/node-homebridge-xiaomi-airpurifier-km81/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
-	$(CP) $(PKG_BUILD_DIR)/{package.json,*.md} \
+	$(CP) $(PKG_BUILD_DIR)/{package.json,*.js} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/LICENSE \
+	$(CP) $(PKG_BUILD_DIR)/{*.md,*.json} \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(CP) $(PKG_BUILD_DIR)/build \
+	$(CP) $(PKG_BUILD_DIR)/node_modules \
 		$(1)/usr/lib/node/$(PKG_NPM_NAME)/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/build/cli.js $(1)/usr/bin/npm-check-updates
-	$(LN) ../lib/node/$(PKG_NPM_NAME)/build/cli.js $(1)/usr/bin/ncu
 	$(INSTALL_DIR) $(1)/usr/lib/node_modules
 	$(LN) ../node/$(PKG_NPM_NAME) $(1)/usr/lib/node_modules/$(PKG_NPM_NAME)
-	chmod +x $(1)/usr/lib/node/$(PKG_NPM_NAME)/build/cli.js
 endef
 
-define Package/node-npm-check-updates/postrm
+define Package/node-homebridge-xiaomi-airpurifier-km81/postrm
 #!/bin/sh
-rm /usr/lib/node_modules/npm-check-updates || true
-rm -rf /usr/lib/node/npm-check-updates || true
+rm /usr/lib/node_modules/homebridge-xiaomi-airpurifier-km81 || true
+rm -rf /usr/lib/node/homebridge-xiaomi-airpurifier-km81 || true
 endef
 
-$(eval $(call BuildPackage,node-npm-check-updates))
+$(eval $(call BuildPackage,node-homebridge-xiaomi-airpurifier-km81))
