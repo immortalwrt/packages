@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtp2httpd
-PKG_VERSION:=3.12.2
+PKG_VERSION:=3.14.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/stackia/rtp2httpd/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=fd1bf411d0d50d37c8545c83ab8f2c1300b2c65951606a1661f3dba0bc72c555
+PKG_HASH:=93b1ecdf1a7736204eec39eb5ce4bdb391c70f41090a1c7a42295d374f64fefb
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immrotalwrt.org>
 PKG_LICENSE:=GPL-2.0-or-later

@@ -46,10 +46,15 @@ validate_rtp2httpd_section() {
 		'r2h_token:string' \
 		'cors_allow_origin:string' \
 		'xff:bool' \
+		'app_path_prefix:string' \
 		'player_page_path:string' \
 		'status_page_path:string' \
 		'external_m3u:string' \
 		'external_m3u_update_interval:uinteger' \
+		'use_relative_path_in_m3u:bool' \
+		\
+		'access_log:string' \
+		'log_format:string' \
 		\
 		'ffmpeg_path:string' \
 		'ffmpeg_args:string' \
@@ -95,10 +100,17 @@ start_instance() {
 	append_param_arg r2h_token
 	append_param_arg cors_allow_origin
 	append_param_bool xff
+	append_param_arg app_path_prefix
 	append_param_arg player_page_path
 	append_param_arg status_page_path
 	append_param_arg external_m3u
-	[ -n "$external_m3u" ] && append_param_arg external_m3u_update_interval
+	if [ -n "$external_m3u" ]; then
+		append_param_arg external_m3u_update_interval
+		append_param_bool use_relative_path_in_m3u
+	fi
+
+	append_param_arg access_log
+	append_param_arg log_format
 
 	append_param_arg ffmpeg_path
 	append_param_arg ffmpeg_args
