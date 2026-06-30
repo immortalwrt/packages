@@ -69,6 +69,8 @@ start_service() {
 			uci_json_add_boolean "skip_cert_verify" "skip_cert_verify"
 			uci_json_add_int "timeout" "timeout" "5"
 			uci_json_add_string "interfaces" "interfaces"
+			uci_json_add_int "interfaces_interval" "interfaces_interval"
+			uci_json_add_string "dns_server" "dns_server"
 		json_close_object
 		json_add_object "guardian"
 			json_add_boolean "enable" "1"
