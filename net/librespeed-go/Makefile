@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=librespeed-go
-PKG_VERSION:=1.1.5
-PKG_RELEASE:=5
+PKG_VERSION:=1.1.6
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/librespeed/speedtest-go/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=a65bbb94868d9ad73f85950264cb18fafb2ba5cf4788ac67981d78b863ca67c4
+PKG_HASH:=ca7c21db3f5dce7f305b09b9e881e90d50980e8b506c161643402f93ac4ba7f2
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=LGPL-3.0-only
@@ -20,7 +20,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
-GO_PKG:=github.com/librespeed/speedtest
+GO_PKG:=github.com/librespeed/speedtest-go
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
@@ -63,7 +63,7 @@ endef
 define Package/librespeed-go/install
 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/speedtest $(1)/usr/bin/librespeed-go
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/speedtest-go $(1)/usr/bin/librespeed-go
 
 	$(INSTALL_DIR) $(1)/etc/librespeed-go
 	$(CP) $(PKG_BUILD_DIR)/database/mysql/telemetry_mysql.sql $(1)/etc/librespeed-go/
