@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=wget
 PKG_VERSION:=1.25.0
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GNU/$(PKG_NAME)
@@ -64,8 +64,8 @@ $(call Package/wget/Default)
   TITLE+= (without SSL support)
   VARIANT:=nossl
   ALTERNATIVES:=\
-    300:/usr/bin/wget:/usr/libexec/wget-nossl \
-    300:/usr/bin/wget-nossl:/usr/libexec/wget-nossl
+    100:/usr/bin/wget:/usr/libexec/wget-nossl \
+    100:/usr/bin/wget-nossl:/usr/libexec/wget-nossl
 endef
 
 define Package/wget-nossl/description
