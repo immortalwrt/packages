@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zabbix
-PKG_VERSION:=7.0.25
+PKG_VERSION:=7.0.27
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://cdn.zabbix.com/zabbix/sources/stable/$(basename $(PKG_VERSION))/ \
 	https://cdn.zabbix.com/zabbix/sources/oldstable/$(basename $(PKG_VERSION))/
-PKG_HASH:=3a42e85da9cbd8aadd11bfcbe021f0f9c6caa510f564e37f3ac1046984acb729
+PKG_HASH:=15e4c233e65c87922824d01abad624f34128bbb4af021a75e38e89b68e13e851
 
 PKG_MAINTAINER:=Daniel F. Dickinson <dfdpublic@wildtechgarden.ca>
 PKG_LICENSE:=AGPL-3.0-only
@@ -25,29 +25,48 @@ PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
 PKG_CONFIG_DEPENDS:= \
+  CONFIG_ZABBIX_CURL \
+  CONFIG_ZABBIX_CURL_GNUTLS \
+  CONFIG_ZABBIX_GNUTLS \
+  CONFIG_ZABBIX_LDAP \
   CONFIG_ZABBIX_MYSQL \
-  CONFIG_ZABBIX_POSTGRESQL \
-  CONFIG_ZABBIX_SQLITE
+  CONFIG_ZABBIX_NETSNMP \
+  CONFIG_ZABBIX_OPENSSL \
+  CONFIG_ZABBIX_POSTGRESQL
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
 
-define Package/zabbix-proxy-nossl/config
-comment "Database Software"
+define Package/zabbix-agentd/config
+	source "$(SOURCE)/Config.in"
+endef
 
-choice
-        prompt "Selected Database Software"
-        default ZABBIX_POSTGRESQL
+define Package/zabbix-proxy/config
+	choice
+		prompt "Select Database Software for Zabbix"
+		default ZABBIX_POSTGRESQL
 
-        config ZABBIX_MYSQL
-                bool "MySQL/MariaDB"
+		config ZABBIX_MYSQL
+			bool "MySQL/MariaDB"
 
-        config ZABBIX_POSTGRESQL
-                bool "PostgreSQL"
+		config ZABBIX_POSTGRESQL
+			bool "PostgreSQL"
 
-        config ZABBIX_SQLITE
-                bool "SQLite"
-endchoice
+		config ZABBIX_SQLITE
+			bool "SQLite3"
+	endchoice
+endef
+
+define Package/zabbix-get/config
+	config ZABBIX_BUILD_SUPPORT_BIN
+		bool
+		depends on PACKAGE_zabbix-agentd
+		default y
+		help
+			This option exists to prevent trying to build get and/or sender when the
+			of agent is not being built. In that case get and sender are not built by
+			the Zabbix build system. This is not a dependency DEPENDS because the
+			binaries do not require the agent to function.
 endef
 
 define Package/zabbix/Default
@@ -58,113 +77,115 @@ define Package/zabbix/Default
   URL:=https://www.zabbix.com/
 endef
 
+define Package/zabbix/description/Default
+Zabbix is a software that monitors numerous parameters of a network and the
+health and integrity of servers, virtual machines, applications, services,
+databases, websites, the cloud and more. Zabbix offers excellent reporting and
+data visualization features based on the stored data.
+.
+Only one variant may be installed per binary (e.g. agent and agentd-basic cannot
+both be installed on the same system).
+endef
+
+define Package/zabbix-basic/description/Default
+$(call Package/zabbix/description/Default)
+.
+Provides only basic functionality with SSL/TLS.
+endef
+
+define Package/zabbix-basic-sqlite/description/Default
+$(call Package/zabbix/description/Default)
+.
+Provides only the basic functionality with SSL/TLS.
+Uses SQLite3 for the database.
+endef
+
+define Package/zabbix-full/description/Default
+$(call Package/zabbix/description/Default)
+.
+Provides the full functionality available in OpenWrt with OpenSSL.
+Includes NetSNMP, cURL, and OpenLDAP support.
+Requires a database server.
+endef
+
 define Package/zabbix-agentd/Default
   $(call Package/zabbix/Default)
   TITLE+= agentd
-  DEPENDS:= \
+  DEPENDS+= \
     $(ICONV_DEPENDS) \
     +libevent2-pthreads \
     +libpcre2 \
     +zlib
-  PROVIDES:=zabbix-agentd
+  PROVIDES:=\
+    @zabbix-agentd-any \
+    zabbix-agentd-ssl \
+    zabbix-agentd-openssl
   USERID:=zabbix-agent=53:zabbix-agent=53
 endef
 
-define Package/zabbix-agentd-nossl
+define Package/zabbix-agentd
   $(call Package/zabbix-agentd/Default)
-  TITLE+= (no SSL)
-  VARIANT:=nossl
+  TITLE+= (full/with TLS)
+  DEPENDS+= \
+    +ZABBIX_CURL:libcurl \
+    +ZABBIX_CURL_GNUTLS:libcurl-gnutls \
+    +ZABBIX_GNUTLS:libgnutls \
+    +ZABBIX_LDAP:libopenldap \
+    +ZABBIX_NETSNMP:libnetsnmp-ssl \
+    +ZABBIX_OPENSSL:libopenssl
+  VARIANT:=full
   DEFAULT_VARIANT:=1
 endef
 
-define Package/zabbix-agentd-openssl
-  $(call Package/zabbix-agentd/Default)
-  TITLE+= (with OpenSSL)
-  DEPENDS+= +libopenssl
-  PROVIDES+= zabbix-agentd-ssl
-  VARIANT:=openssl
+define Package/zabbix-agentd/description
+$(call Package/zabbix-full/description/Default)
+.
+Provides 'Zabbix Agent'.
+.
+Note that 'Zabbix Agent' does not directly use the database, but sends data to
+a 'Zabbix Server' or a 'Zabbix Proxy', which writes to a database.
 endef
 
-define Package/zabbix-agentd-gnutls
+define Package/zabbix-agentd-basic
   $(call Package/zabbix-agentd/Default)
-  TITLE+= (with GnuTLS)
-  DEPENDS+= +libgnutls
-  PROVIDES+= zabbix-agentd-ssl
-  VARIANT:=gnutls
+  TITLE+= (basic/with TLS)
+  DEPENDS += +libopenssl
+  VARIANT:=basic
 endef
 
-define Package/zabbix-sender/Default
+define Package/zabbix-agentd-basic/description
+$(call Package/zabbix-basic/description/Default)
+.
+Provides 'Zabbix Agent'.
+endef
+
+define Package/zabbix-get
   $(call Package/zabbix/Default)
-  TITLE+= sender
-  DEPENDS:= \
+  TITLE+= get (with TLS)
+  DEPENDS+= \
+    @(ZABBIX_BUILD_SUPPORT_BIN) \
     $(ICONV_DEPENDS) \
+    +ZABBIX_GNUTLS:libgnutls \
+    +ZABBIX_OPENSSL:libopenssl \
     +libpcre2 \
     +zlib
-  PROVIDES:=zabbix-sender
+  PROVIDES:= \
+    zabbix-get-ssl \
+    zabbix-get-openssl
+  VARIANT:=full
 endef
 
-define Package/zabbix-sender-nossl
-  $(call Package/zabbix-sender/Default)
-  TITLE+= (no SSL)
-  VARIANT:=nossl
-  DEFAULT_VARIANT:=1
+define Package/zabbix-get/description
+$(call Package/zabbix-basic/description/Default)
+.
+Provides 'Zabbix Get'.
 endef
 
-define Package/zabbix-sender-openssl
-  $(call Package/zabbix-sender/Default)
-  TITLE+= (with OpenSSL)
-  DEPENDS+= +libopenssl
-  PROVIDES+= zabbix-sender-ssl
-  VARIANT:=openssl
-endef
-
-define Package/zabbix-sender-gnutls
-  $(call Package/zabbix-sender/Default)
-  TITLE+= (with GnuTLS)
-  DEPENDS+= +libgnutls
-  PROVIDES+= zabbix-sender-ssl
-  VARIANT:=gnutls
-endef
-
-define Package/zabbix-get/Default
-  $(call Package/zabbix/Default)
-  TITLE+= get
-  DEPENDS:= \
-    $(ICONV_DEPENDS) \
-    +libpcre2 \
-    +zlib
-  PROVIDES:=zabbix-get
-endef
-
-define Package/zabbix-get-nossl
-  $(call Package/zabbix-get/Default)
-  TITLE+= (no SSL)
-  VARIANT:=nossl
-  DEFAULT_VARIANT:=1
-endef
-
-define Package/zabbix-get-openssl
-  $(call Package/zabbix-get/Default)
-  TITLE+= (with OpenSSL)
-  DEPENDS+= +libopenssl
-  PROVIDES+= zabbix-get-ssl
-  VARIANT:=openssl
-endef
-
-define Package/zabbix-get-gnutls
-  $(call Package/zabbix-get/Default)
-  TITLE+= (with GnuTLS)
-  DEPENDS+= +libgnutls
-  PROVIDES+= zabbix-get-ssl
-  VARIANT:=gnutls
-endef
 
 define Package/zabbix-server-or-proxy/Default
   $(call Package/zabbix/Default)
-  DEPENDS:= \
+  DEPENDS+= \
     $(ICONV_DEPENDS) \
-    +ZABBIX_MYSQL:libmariadbclient \
-    +ZABBIX_POSTGRESQL:libpq \
     +fping \
     +libevent2 \
     +libevent2-pthreads \
@@ -174,103 +195,156 @@ define Package/zabbix-server-or-proxy/Default
   USERID:=zabbix-server=70:zabbix-server=70
 endef
 
-define Package/zabbix-server/Default
-  $(call Package/zabbix-server-or-proxy/Default)
-  TITLE+= server
-  DEPENDS+= @(!ZABBIX_SQLITE)
-  PROVIDES:=zabbix-server
-endef
-
-define Package/zabbix-server-nossl
-  $(call Package/zabbix-server/Default)
-  TITLE+= (no SSL)
-  VARIANT:=nossl
-  DEFAULT_VARIANT:=1
-endef
-
-define Package/zabbix-server-openssl
-  $(call Package/zabbix-server/Default)
-  TITLE+= (with OpenSSL)
-  DEPENDS+= +libopenssl
-  PROVIDES+= zabbix-server-ssl
-  VARIANT:=openssl
-endef
-
-define Package/zabbix-server-gnutls
-  $(call Package/zabbix-server/Default)
-  TITLE+= (with GnuTLS)
-  DEPENDS+= +libgnutls
-  PROVIDES+= zabbix-server-ssl
-  VARIANT:=gnutls
-endef
-
 define Package/zabbix-proxy/Default
   $(call Package/zabbix-server-or-proxy/Default)
   TITLE+= proxy
-  DEPENDS+= +ZABBIX_SQLITE:libsqlite3
-  PROVIDES:=zabbix-proxy
+  PROVIDES:=\
+    @zabbix-proxy-any \
+    zabbix-proxy-ssl \
+    zabbix-proxy-openssl
 endef
 
-define Package/zabbix-proxy-nossl
+define Package/zabbix-proxy
   $(call Package/zabbix-proxy/Default)
-  TITLE+= (no SSL)
-  VARIANT:=nossl
+  TITLE+= (full/with OpenSSL)
+  DEPENDS+= \
+    +ZABBIX_CURL:libcurl \
+    +ZABBIX_CURL_GNUTLS:libcurl-gnutls \
+    +ZABBIX_GNUTLS:libgnutls \
+    +ZABBIX_LDAP:libopenldap \
+    +ZABBIX_MYSQL:libmariadbclient \
+    +ZABBIX_NETSNMP:libnetsnmp-ssl \
+    +ZABBIX_OPENSSL:libopenssl \
+    +ZABBIX_POSTGRESQL:libpq \
+    +ZABBIX_SQLITE:libsqlite3
+  VARIANT:=full
   DEFAULT_VARIANT:=1
 endef
 
-define Package/zabbix-proxy-openssl
-  $(call Package/zabbix-proxy/Default)
-  TITLE+= (with OpenSSL)
-  DEPENDS+= +libopenssl
-  PROVIDES+= zabbix-proxy-ssl
-  VARIANT:=openssl
+define Package/zabbix-proxy/description
+$(call Package/zabbix-full/description/Default)
+.
+Provides 'Zabbix Proxy'.
 endef
 
-define Package/zabbix-proxy-gnutls
+define Package/zabbix-proxy-basic-sqlite
   $(call Package/zabbix-proxy/Default)
-  TITLE+= (with GnuTLS)
-  DEPENDS+= +libgnutls
-  PROVIDES+= zabbix-proxy-ssl
-  VARIANT:=gnutls
+  TITLE+= sqlite3 (basic/with TLS)
+  DEPENDS+= \
+    +libopenssl \
+    +libsqlite3
+  VARIANT:=basic
+endef
+
+define Package/zabbix-proxy-basic-sqlite/description
+$(call Package/zabbix-basic/description/Default)
+.
+Provides 'Zabbix Proxy' using sqlite3 for
+the database.
+endef
+
+define Package/zabbix-sender
+  $(call Package/zabbix/Default)
+  TITLE+= sender (with TLS)
+  DEPENDS+= \
+    @(ZABBIX_BUILD_SUPPORT_BIN) \
+    $(ICONV_DEPENDS) \
+    +ZABBIX_GNUTLS:libgnutls \
+    +ZABBIX_OPENSSL:libopenssl \
+    +libpcre2 \
+    +zlib
+  PROVIDES:= \
+    zabbix-sender-ssl \
+    zabbix-sender-openssl
+  VARIANT:=full
+endef
+
+define Package/zabbix-sender/description
+$(call Package/zabbix-basic/description/Default)
+.
+Provides 'Zabbix Sender'.
+endef
+
+define Package/zabbix-server
+  $(call Package/zabbix-server-or-proxy/Default)
+  TITLE+= server (full/with OpenSSL)
+  DEPENDS+= \
+    @(!ZABBIX_SQLITE) \
+    +ZABBIX_CURL:libcurl \
+    +ZABBIX_CURL_GNUTLS:libcurl-gnutls \
+    +ZABBIX_GNUTLS:libgnutls \
+    +ZABBIX_LDAP:libopenldap \
+    +ZABBIX_MYSQL:libmariadbclient \
+    +ZABBIX_OPENSSL:libopenssl \
+    +ZABBIX_NETSNMP:libnetsnmp-ssl \
+    +ZABBIX_POSTGRESQL:libpq
+  PROVIDES:= \
+    zabbix-server-ssl \
+    zabbix-server-openssl
+  VARIANT:=full
+endef
+
+define Package/zabbix-server/description
+$(call Package/zabbix-full/description/Default)
+.
+Provides 'Zabbix Server'.
 endef
 
 define Package/zabbix-extra-mac80211
   $(call Package/zabbix/Default)
   TITLE+= discovery/userparameters for mac80211
-  DEPENDS:= \
+  DEPENDS+= \
     @KERNEL_DEBUG_FS \
     @PACKAGE_MAC80211_DEBUGFS \
-    +zabbix-agentd
+    @zabbix-agentd-any
   VARIANT:=no-configure
+endef
+
+define Package/zabbix-extra-mac80211/description
+An extra package for zabbix-agentd that adds a discovery rule for mac80211 wifi phy and many userparameters.
+It contains an suid helper to allow zabbix-agentd to still run as zabbix user and not as root.
+See https://openwrt.org/docs/guide-user/services/network_monitoring/zabbix for ready to use zabbix templates.
 endef
 
 define Package/zabbix-extra-network
   $(call Package/zabbix/Default)
   TITLE+= discovery/userparameters for network
   PKGARCH:=all
-  DEPENDS:= \
+  DEPENDS+= \
     +libubus-lua \
     +lua \
-    +zabbix-agentd
+    @zabbix-agentd-any
   VARIANT:=no-configure
+endef
+
+define Package/zabbix-extra-network/description
+An extra package for zabbix-agentd that adds a discovery rule for openwrt network interfaces.
+The idea here is to discover only interfaces listed in /etc/config/network (discover br-lan and not eth0.1 and wlan0)
+See https://openwrt.org/docs/guide-user/services/network_monitoring/zabbix for ready to use zabbix templates.
 endef
 
 define Package/zabbix-extra-wifi
   $(call Package/zabbix/Default)
   TITLE+= discovery/userparameters for wifi
   PKGARCH:=all
-  DEPENDS:= \
+  DEPENDS+= \
     +libiwinfo-lua \
     +libubus-lua +lua \
-    +zabbix-agentd
+    @zabbix-agentd-any
   VARIANT:=no-configure
+endef
+
+define Package/zabbix-extra-wifi/description
+An extra package for zabbix-agentd that adds a discovery rule for wifi interfaces and many userparameters.
+As it uses libiwinfo, it works with all wifi devices supported by openwrt.
+See https://openwrt.org/docs/guide-user/services/network_monitoring/zabbix for ready to use zabbix templates.
 endef
 
 define Package/zabbix-frontend-server
   $(call Package/zabbix/Default)
   TITLE+= frontend server
   PKGARCH:=all
-  DEPENDS:= \
+  DEPENDS+= \
     php8 \
     @(!ZABBIX_SQLITE) \
     +ZABBIX_MYSQL:php8-mod-mysqli \
@@ -279,8 +353,10 @@ define Package/zabbix-frontend-server
     +php8-mod-gd \
     +php8-mod-bcmath \
     +php8-mod-ctype \
+    +php8-mod-curl \
     +php8-mod-filter \
     +php8-mod-gettext \
+    +php8-mod-ldap \
     +php8-mod-mbstring \
     +php8-mod-openssl \
     +php8-mod-session \
@@ -291,52 +367,68 @@ define Package/zabbix-frontend-server
   VARIANT:=no-configure
 endef
 
-define Package/zabbix-extra-mac80211/description
-An extra package for zabbix-agentd that adds a discovery rule for mac80211 wifi phy and many userparameters.
-It contains an suid helper to allow zabbix-agentd to still run as zabbix user and not as root.
-See https://openwrt.org/docs/guide-user/services/network_monitoring/zabbix for ready to use zabbix templates.
-endef
-
-define Package/zabbix-extra-network/description
-An extra package for zabbix-agentd that adds a discovery rule for openwrt network interfaces.
-The idea here is to discover only interfaces listed in /etc/config/network (discover br-lan and not eth0.1 and wlan0)
-See https://openwrt.org/docs/guide-user/services/network_monitoring/zabbix for ready to use zabbix templates.
-endef
-
-define Package/zabbix-extra-wifi/description
-An extra package for zabbix-agentd that adds a discovery rule for wifi interfaces and many userparameters.
-As it uses libiwinfo, it works with all wifi devices supported by openwrt.
-See https://openwrt.org/docs/guide-user/services/network_monitoring/zabbix for ready to use zabbix templates.
+define Package/zabbix-frontend-server/description
+$(call Package/zabbix/description/Default)
+.
+Provides the Web UI (frontend server) for Zabbix.
 endef
 
 ifneq ($(BUILD_VARIANT),no-configure)
+CONFIGURE_ARGS+= \
+  $(call autoconf_bool,CONFIG_IPV6,ipv6) \
+  --disable-java \
+  --with-libevent=$(STAGING_DIR)/usr/include \
+  --with-libpcre2=$(STAGING_DIR)/usr/include \
+  --with-zlib=$(STAGING_DIR)/usr/include
+endif
+
+ifeq ($(BUILD_VARIANT),basic)
+CONFIGURE_ARGS+= \
+  $(if $(CONFIG_PACKAGE_zabbix-agentd-basic),--enable-agent,--disable-agent) \
+  $(if $(CONFIG_PACKAGE_zabbix-proxy-basic-sqlite),--enable-proxy --with-sqlite3,--disable-proxy) \
+  --with-openssl="$(STAGING_DIR)/usr" \
+  --disable-server
+endif
+
+ifeq ($(BUILD_VARIANT),full)
 
 CONFIGURE_ARGS+= \
-	--enable-agent \
-	$(if $(CONFIG_ZABBIX_SQLITE),--disable-server,--enable-server) \
-	--enable-proxy \
-	$(call autoconf_bool,CONFIG_IPV6,ipv6) \
-	--disable-java \
-	$(if $(CONFIG_ZABBIX_MYSQL),--with-mysql) \
-	$(if $(CONFIG_ZABBIX_POSTGRESQL),--with-postgresql) \
-	$(if $(CONFIG_ZABBIX_SQLITE),--with-sqlite3=$(STAGING_DIR)/usr) \
-	--with-libevent=$(STAGING_DIR)/usr/include \
-	--with-libpcre2=$(STAGING_DIR)/usr/include \
-	--with-zlib=$(STAGING_DIR)/usr/include
+  $(if $(CONFIG_PACKAGE_zabbix-agentd),--enable-agent,--disable-agent) \
+  $(if $(CONFIG_PACKAGE_zabbix-proxy),--enable-proxy,--disable-proxy) \
+  $(if $(CONFIG_PACKAGE_zabbix-server),--enable-server,--disable-server) \
+  $(if $(CONFIG_ZABBIX_GNUTLS),--with-gnutls="$(STAGING_DIR)/usr",--with-gnutls="no") \
+  $(if $(CONFIG_ZABBIX_LDAP),--with-ldap="$(STAGING_DIR)/usr",--with-ldap="no") \
+  $(if $(CONFIG_ZABBIX_MYSQL),--with-mysql,--with-mysql="no") \
+  $(if $(CONFIG_ZABBIX_NETSNMP),--with-net-snmp="$(STAGING_DIR)/usr",--with-net-snmp="no") \
+  $(if $(CONFIG_ZABBIX_OPENSSL),--with-openssl="$(STAGING_DIR)/usr",--with-openssl="no") \
+  $(if $(CONFIG_ZABBIX_POSTGRESQL),--with-postgresql,--with-postgresql="no") \
+  $(if $(CONFIG_ZABBIX_SQLITE),--with-sqlite3,--with-sqlite3="no") \
+  --enable-year2038
 
-ifeq ($(BUILD_VARIANT),nossl)
-	CONFIGURE_ARGS+= --with-openssl="no" --with-gnutls="no"
+ifeq ($(CONFIG_ZABBIX_CURL),y)
+CONFIGURE_ARGS += \
+  --with-libcurl
 endif
 
-ifeq ($(BUILD_VARIANT),openssl)
-	CONFIGURE_ARGS+= --with-openssl="$(STAGING_DIR)/usr"
+ifeq ($(CONFIG_ZABBIX_CURL_GNUTLS),y)
+CONFIGURE_VARS += \
+  ac_cv_path__libcurl_config="/bin/true" \
+  LIBCURL_CPPFLAGS="-I$(STAGING_DIR)/usr/include" \
+  LIBCURL_LDFLAGS="-L$(STAGING_DIR)/usr/lib" \
+  LIBCURL_LIBS="-lcurl-gnutls" \
+  libcurl_cv_lib_curl_usable=yes \
+  libcurl_cv_lib_curl_version=8.14.1 \
+  libcurl_cv_lib_curl_version_ok=yes
+CONFIGURE_ARGS += --with-libcurl="yes"
 endif
 
-ifeq ($(BUILD_VARIANT),gnutls)
-	CONFIGURE_ARGS+= --with-gnutls="$(STAGING_DIR)/usr"
+ifeq ($(CONFIG_ZABBIX_CURL)$(CONFIG_ZABBIX_CURL_GNUTLS),)
+CONFIGURE_ARGS += --with-libcurl="no"
 endif
 
-else
+endif
+
+ifeq ($(BUILD_VARIANT),no-configure)
 
 define Build/Configure
 	true
@@ -366,118 +458,112 @@ endef
 define Build/Compile
 	$(call Build/Compile/Default)
 	$(TARGET_CC) $(TARGET_CFLAGS) \
-    $(PKG_BUILD_DIR)/zabbix-extra-mac80211/zabbix_helper_mac80211.c \
-    -o $(PKG_BUILD_DIR)/zabbix-extra-mac80211/zabbix_helper_mac80211
+		$(PKG_BUILD_DIR)/zabbix-extra-mac80211/zabbix_helper_mac80211.c \
+		-o $(PKG_BUILD_DIR)/zabbix-extra-mac80211/zabbix_helper_mac80211
 endef
 endif
 
 MAKE_FLAGS += ARCH="linux"
 
 define Package/zabbix/install/sbin
-	$(INSTALL_DIR) \
-		$(1)/usr/sbin
-
-	$(INSTALL_BIN) \
-		$(PKG_INSTALL_DIR)/usr/sbin/zabbix_$(2) \
-		$(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/zabbix_$(2) $(1)/usr/sbin/
 endef
 
 define Package/zabbix/install/bin
-	$(INSTALL_DIR) \
-		$(1)/usr/bin
-
-	$(INSTALL_BIN) \
-		$(PKG_INSTALL_DIR)/usr/bin/zabbix_$(2) \
-		$(1)/usr/bin/
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/zabbix_$(2) $(1)/usr/bin/
 endef
 
 define Package/zabbix/install/etc
-	$(INSTALL_DIR) \
-		$(1)/etc
-
-	$(INSTALL_CONF) \
-		$(PKG_INSTALL_DIR)/etc/zabbix_$(2).conf \
-		$(1)/etc/
+	$(INSTALL_DIR) $(1)/etc
+	$(INSTALL_CONF) $(PKG_INSTALL_DIR)/etc/zabbix_$(2).conf $(1)/etc/
 endef
 
 define Package/zabbix/install/init.d
-	$(INSTALL_DIR) \
-		$(1)/etc/init.d
-
-	$(INSTALL_BIN) \
-		./files/zabbix_$(2).init \
-		$(1)/etc/init.d/zabbix_$(2)
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/zabbix_$(2).init $(1)/etc/init.d/zabbix_$(2)
 endef
 
 define Package/zabbix/install/zabbix.conf.d
-	$(INSTALL_DIR) \
-		$(1)/etc/zabbix_agentd.conf.d
-
-	$(INSTALL_BIN) \
-		./files/$(2) \
-		$(1)/etc/zabbix_agentd.conf.d/$(2)
+	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
+	$(INSTALL_BIN) ./files/$(2) $(1)/etc/zabbix_agentd.conf.d/$(2)
 endef
 
-# Due to nested defines, eval, and call, the extra spaces for the nested define,
-# and tabs for the part that actually executes in a shell, is essential.
-define Package/zabbix-daemon/files
-        define Package/zabbix-$(1)-$(2)/conffiles
-  /etc/zabbix_$(1).conf
-  $(3)
-        endef
-        define Package/zabbix-$(1)-$(2)/install
-		$(INSTALL_DIR) $$(1)/etc/zabbix_$(1).conf.d
-		$(call Package/zabbix/install/sbin,$$(1),$(1))
-		$(4)
-        endef
+define Package/zabbix-agentd/conffiles
+/etc/zabbix_agentd.conf
 endef
 
-define Package/zabbix-server/conffiles-extra
+define Package/zabbix-agentd/install
+	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
+	$(call Package/zabbix/install/sbin,$(1),agentd)
+	$(call Package/zabbix/install/etc,$(1),agentd)
+	$(call Package/zabbix/install/init.d,$(1),agentd)
+endef
+
+define Package/zabbix-agentd-basic/conffiles
+/etc/zabbix_agentd.conf
+endef
+
+define Package/zabbix-agentd-basic/install
+	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
+	$(call Package/zabbix/install/sbin,$(1),agentd)
+	$(call Package/zabbix/install/etc,$(1),agentd)
+	$(call Package/zabbix/install/init.d,$(1),agentd)
+endef
+
+define Package/zabbix-proxy/conffiles
+/etc/zabbix_proxy.conf
+endef
+
+define Package/zabbix-proxy/install
+	$(INSTALL_DIR) $(1)/etc/zabbix_proxy.conf.d
+	$(call Package/zabbix/install/sbin,$(1),proxy)
+	$(call Package/zabbix/install/etc,$(1),proxy)
+endef
+
+define Package/zabbix-proxy-basic-sqlite/conffiles
+/etc/zabbix_proxy.conf
+endef
+
+define Package/zabbix-proxy-basic-sqlite/install
+	$(INSTALL_DIR) $(1)/etc/zabbix_proxy.conf.d
+	$(call Package/zabbix/install/sbin,$(1),proxy)
+	$(call Package/zabbix/install/etc,$(1),proxy)
+endef
+
+define Package/zabbix-server/conffiles
+/etc/zabbix_server.conf
 /etc/config/zabbix_server
 /etc/sysctl.d/90-zabbix-discovery-workers.conf
 endef
 
-define Package/zabbix-agentd/install-extra
-	$(call Package/zabbix/install/etc,$$(1),agentd)
-	$(call Package/zabbix/install/init.d,$$(1),agentd)
+define Package/zabbix-server/install
+	$(INSTALL_DIR) $(1)/etc/zabbix_server.conf.d
+	$(call Package/zabbix/install/sbin,$(1),server)
+	$(call Package/zabbix/install/etc,$(1),server)
+	$(call Package/zabbix/install/init.d,$(1),server)
+	$(INSTALL_DIR) $(1)/etc/sysctl.d
+	$(INSTALL_CONF) ./files/zabbix-discovery-workers.conf.sysctl $(1)/etc/sysctl.d/90-zabbix-discovery-workers.conf
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) ./files/zabbix_server.config $(1)/etc/config/zabbix_server
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./files/zabbix_server.defaults $(1)/etc/uci-defaults/90_zabbix_server
 endef
 
-define Package/zabbix-server/install-extra
-	$(call Package/zabbix/install/etc,$$(1),server)
-	$(call Package/zabbix/install/init.d,$$(1),server)
-	$(INSTALL_DIR) $$(1)/etc/sysctl.d
-	$(INSTALL_CONF) ./files/zabbix-discovery-workers.conf.sysctl \
-    $$(1)/etc/sysctl.d/90-zabbix-discovery-workers.conf
-	$(INSTALL_DIR) $$(1)/etc/config
-	$(INSTALL_CONF) ./files/zabbix_server.config $$(1)/etc/config/zabbix_server
-	$(INSTALL_DIR) $$(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/zabbix_server.defaults $$(1)/etc/uci-defaults/90_zabbix_server
+define Package/zabbix-server/postinst
+#!/bin/sh
+[ -n "$${IPKG_INSTROOT}" ] || (. /etc/uci-defaults/90_zabbix_server) && rm -f /etc/uci-defaults/90_zabbix_server
+exit 0
 endef
 
-$(foreach zvariant,nossl openssl gnutls,$(eval $(call Package/zabbix-daemon/files,agentd,$(zvariant),,$(call Package/zabbix-agentd/install-extra))))
-$(foreach zvariant,nossl openssl gnutls,$(eval $(call Package/zabbix-daemon/files,server,$(zvariant),$(call Package/zabbix-server/conffiles-extra),$(call Package/zabbix-server/install-extra))))
-$(foreach zvariant,nossl openssl gnutls,$(eval $(call Package/zabbix-daemon/files,proxy,$(zvariant))))
-
-# Due to nested defines, eval, and call, the extra spaces for the nested define
-# is essential.
-define Package/zabbix-server/postinst/Default
-        define Package/zabbix-server-$(1)/postinst
-  #!/bin/sh
-  [ -n "$$$${IPKG_INSTROOT}" ] || (. /etc/uci-defaults/90_zabbix_server) && rm -f /etc/uci-defaults/90_zabbix_server
-  exit 0
-         endef
+define Package/zabbix-get/install
+	$(call Package/zabbix/install/bin,$(1),get)
 endef
 
-$(foreach zvariant,nossl openssl gnutls,$(eval $(call Package/zabbix-server/postinst/Default,$(zvariant))))
-
-define Package/zabbix-program/files
-        define Package/zabbix-$(1)-$(2)/install
-		$(call Package/zabbix/install/bin,$$(1),$(1))
-        endef
+define Package/zabbix-sender/install
+	$(call Package/zabbix/install/bin,$(1),sender)
 endef
-
-$(foreach zvariant,nossl openssl gnutls,$(eval $(call Package/zabbix-program/files,sender,$(zvariant))))
-$(foreach zvariant,nossl openssl gnutls,$(eval $(call Package/zabbix-program/files,get,$(zvariant))))
 
 define Package/zabbix-extra-mac80211/install
 	$(call Package/zabbix/install/zabbix.conf.d,$(1),mac80211)
@@ -495,7 +581,7 @@ endef
 define Package/zabbix-extra-network/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
-	killall -s HUP ubusd
+  killall -s HUP ubusd
 fi
 endef
 
@@ -508,7 +594,7 @@ endef
 define Package/zabbix-extra-wifi/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
-	killall -s HUP ubusd
+  killall -s HUP ubusd
 fi
 endef
 
@@ -517,21 +603,15 @@ define Package/zabbix-frontend-server/install
 	$(CP) $(PKG_BUILD_DIR)/ui/* $(1)/www/zabbix
 endef
 
-$(eval $(call BuildPackage,zabbix-agentd-nossl))
-$(eval $(call BuildPackage,zabbix-agentd-openssl))
-$(eval $(call BuildPackage,zabbix-agentd-gnutls))
-$(eval $(call BuildPackage,zabbix-get-nossl))
-$(eval $(call BuildPackage,zabbix-get-openssl))
-$(eval $(call BuildPackage,zabbix-get-gnutls))
-$(eval $(call BuildPackage,zabbix-sender-nossl))
-$(eval $(call BuildPackage,zabbix-sender-openssl))
-$(eval $(call BuildPackage,zabbix-sender-gnutls))
-$(eval $(call BuildPackage,zabbix-proxy-nossl))
-$(eval $(call BuildPackage,zabbix-proxy-openssl))
-$(eval $(call BuildPackage,zabbix-proxy-gnutls))
-$(eval $(call BuildPackage,zabbix-server-nossl))
-$(eval $(call BuildPackage,zabbix-server-openssl))
-$(eval $(call BuildPackage,zabbix-server-gnutls))
+# zabbix compiled variants (configured)
+$(eval $(call BuildPackage,zabbix-agentd))
+$(eval $(call BuildPackage,zabbix-agentd-basic))
+$(eval $(call BuildPackage,zabbix-get))
+$(eval $(call BuildPackage,zabbix-sender))
+$(eval $(call BuildPackage,zabbix-server))
+$(eval $(call BuildPackage,zabbix-proxy))
+$(eval $(call BuildPackage,zabbix-proxy-basic-sqlite))
+# no-configure packages
 $(eval $(call BuildPackage,zabbix-extra-mac80211))
 $(eval $(call BuildPackage,zabbix-extra-network))
 $(eval $(call BuildPackage,zabbix-extra-wifi))

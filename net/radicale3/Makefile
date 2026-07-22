@@ -4,7 +4,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=radicale3
-PKG_VERSION:=3.7.2
+PKG_VERSION:=3.7.6
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-3.0-or-later
@@ -13,7 +13,7 @@ PKG_CPE_ID:=cpe:/a:radicale:radicale
 
 PYPI_NAME:=Radicale
 PYPI_SOURCE_NAME:=radicale
-PKG_HASH:=2c61de17ee4105a998dd250a79732b83313f74aa396bd40b71e7438b695e0edc
+PKG_HASH:=366e8337588267e9b7af189f3ac527c5f9a8d7dd6d2e3e5796b49933bc72609c
 
 PKG_MAINTAINER:=Daniel F. Dickinson <dfdpublic@wildtechgarden.ca>
 
@@ -40,7 +40,7 @@ define Package/radicale3/description
   pre-configured to work out-of-the-box.
   The Radicale Project runs on most of the UNIX-like platforms
   (Linux, BSD, MacOS X) and Windows. It is known to work with Evolution,
-  Lightning, iPhone and Android clients. It is free and open-source software,
+  Thunderbird, iOS, and Android clients. It is free and open-source software,
   released under GPL version 3.
 
   This package contains the python files.
