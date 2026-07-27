@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zabbix
 PKG_VERSION:=7.0.28
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://cdn.zabbix.com/zabbix/sources/stable/$(basename $(PKG_VERSION))/ \
@@ -360,6 +360,7 @@ define Package/zabbix-frontend-server
     +php8-mod-mbstring \
     +php8-mod-openssl \
     +php8-mod-session \
+    +php8-mod-simplexml \
     +php8-mod-sockets \
     +php8-mod-xmlreader \
     +php8-mod-xmlwriter
@@ -446,7 +447,7 @@ ifdef CONFIG_PACKAGE_zabbix-extra-mac80211
 define Build/Prepare
 	$(call Build/Prepare/Default)
 	mkdir -p $(PKG_BUILD_DIR)/zabbix-extra-mac80211
-	$(CP) ./files/zabbix_helper_mac80211.c $(PKG_BUILD_DIR)/zabbix-extra-mac80211/
+	$(CP) ./src-extra/zabbix_helper_mac80211.c $(PKG_BUILD_DIR)/zabbix-extra-mac80211/
 endef
 
 define Build/Configure
@@ -486,16 +487,18 @@ define Package/zabbix/install/init.d
 endef
 
 define Package/zabbix/install/zabbix.conf.d
-	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
-	$(INSTALL_BIN) ./files/$(2) $(1)/etc/zabbix_agentd.conf.d/$(2)
+	$(INSTALL_DIR) $(1)/usr/share/zabbix_agentd.openwrt-params.d
+	$(INSTALL_DATA) ./files/usr/share/zabbix_agentd.openwrt-params.d/$(2) $(1)/usr/share/zabbix_agentd.openwrt-params.d/$(2)
 endef
 
 define Package/zabbix-agentd/conffiles
 /etc/zabbix_agentd.conf
+/etc/zabbix_agentd.conf.d/
 endef
 
 define Package/zabbix-agentd/install
 	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
+	$(INSTALL_DIR) $(1)/usr/share/zabbix_agentd.openwrt-params.d
 	$(call Package/zabbix/install/sbin,$(1),agentd)
 	$(call Package/zabbix/install/etc,$(1),agentd)
 	$(call Package/zabbix/install/init.d,$(1),agentd)
@@ -503,10 +506,12 @@ endef
 
 define Package/zabbix-agentd-basic/conffiles
 /etc/zabbix_agentd.conf
+/etc/zabbix_agentd.conf.d/
 endef
 
 define Package/zabbix-agentd-basic/install
 	$(INSTALL_DIR) $(1)/etc/zabbix_agentd.conf.d
+	$(INSTALL_DIR) $(1)/usr/share/zabbix_agentd.openwrt-params.d
 	$(call Package/zabbix/install/sbin,$(1),agentd)
 	$(call Package/zabbix/install/etc,$(1),agentd)
 	$(call Package/zabbix/install/init.d,$(1),agentd)
@@ -514,6 +519,7 @@ endef
 
 define Package/zabbix-proxy/conffiles
 /etc/zabbix_proxy.conf
+/etc/zabbix_proxy.conf.d/
 endef
 
 define Package/zabbix-proxy/install
@@ -524,6 +530,7 @@ endef
 
 define Package/zabbix-proxy-basic-sqlite/conffiles
 /etc/zabbix_proxy.conf
+/etc/zabbix_proxy.conf.d/
 endef
 
 define Package/zabbix-proxy-basic-sqlite/install
@@ -534,8 +541,8 @@ endef
 
 define Package/zabbix-server/conffiles
 /etc/zabbix_server.conf
+/etc/zabbix_server.conf.d/
 /etc/config/zabbix_server
-/etc/sysctl.d/90-zabbix-discovery-workers.conf
 endef
 
 define Package/zabbix-server/install
@@ -543,8 +550,6 @@ define Package/zabbix-server/install
 	$(call Package/zabbix/install/sbin,$(1),server)
 	$(call Package/zabbix/install/etc,$(1),server)
 	$(call Package/zabbix/install/init.d,$(1),server)
-	$(INSTALL_DIR) $(1)/etc/sysctl.d
-	$(INSTALL_CONF) ./files/zabbix-discovery-workers.conf.sysctl $(1)/etc/sysctl.d/90-zabbix-discovery-workers.conf
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./files/zabbix_server.config $(1)/etc/config/zabbix_server
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
@@ -575,7 +580,7 @@ endef
 define Package/zabbix-extra-network/install
 	$(call Package/zabbix/install/zabbix.conf.d,$(1),network)
 	$(INSTALL_DIR) $(1)/usr/share/acl.d
-	$(INSTALL_DATA) ./files/zabbix-network-ubus-acl.json $(1)/usr/share/acl.d/zabbix-network.json
+	$(INSTALL_DATA) ./files/usr/share/acl.d/zabbix-network-ubus-acl.json $(1)/usr/share/acl.d/zabbix-network.json
 endef
 
 define Package/zabbix-extra-network/postinst
@@ -588,7 +593,7 @@ endef
 define Package/zabbix-extra-wifi/install
 	$(call Package/zabbix/install/zabbix.conf.d,$(1),wifi)
 	$(INSTALL_DIR) $(1)/usr/share/acl.d
-	$(INSTALL_DATA) ./files/zabbix-wifi-ubus-acl.json $(1)/usr/share/acl.d/zabbix-wifi.json
+	$(INSTALL_DATA) ./files/usr/share/acl.d/zabbix-wifi-ubus-acl.json $(1)/usr/share/acl.d/zabbix-wifi.json
 endef
 
 define Package/zabbix-extra-wifi/postinst
