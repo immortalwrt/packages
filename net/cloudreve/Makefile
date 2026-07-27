@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cloudreve
-PKG_VERSION:=4.15.0
+PKG_VERSION:=4.18.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/cloudreve/Cloudreve.git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_MIRROR_HASH:=61a7f84639a853d6a6e77dee72a7417fef84bac05328d9edae9f1a34396bf19d
+PKG_MIRROR_HASH:=138ceee15bba6e6a87c6d478b94b725be4c893f5c7353aff897e04a07a8a05a4
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
@@ -22,6 +22,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/cloudreve/Cloudreve/v4
+GO_PKG_EXCLUDES:=pkg/request/ssrftest
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/application/constants.BackendVersion=$(PKG_VERSION) \
 	$(GO_PKG)/application/constants.LastCommit=$(PKG_VERSION)
