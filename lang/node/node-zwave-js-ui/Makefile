@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zwave-js-ui
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=11.19.1
+PKG_VERSION:=11.22.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=cf36dc608d4fff0be153ce59de94e5d33b657e9ea79c7f14ea81215ebe9efe38
+PKG_HASH:=8a3951a9a7103396be20c6b37cc01132bd4e55da58564c3102f92ecdb3271bdd
 
 PKG_MAINTAINER:=David Woodhouse <dwmw2@infradead.org>
 PKG_LICENSE:=MIT
@@ -64,6 +64,7 @@ define Build/Compile
 	rm -rf $(PKG_BUILD_DIR)/node_modules/archiver/node_modules/bare-url/prebuilds
 	rm -rf $(PKG_BUILD_DIR)/node_modules/archiver/node_modules/bare-os/prebuilds
 	rm -rf $(PKG_BUILD_DIR)/node_modules/archiver/node_modules/bare-fs/prebuilds
+	rm -rf $(PKG_BUILD_DIR)/node_modules/archiver/node_modules/bare-path/prebuilds
 	rm -rf $(PKG_BUILD_DIR)/node_modules/zwave-js/node_modules/@serialport/bindings-cpp/prebuilds
 	rm -rf $(PKG_BUILD_DIR)/node_modules/zwave-js/node_modules/@serialport/bindings-cpp/src
 	rm -rf $(PKG_BUILD_DIR)/node_modules/zwave-js/node_modules/moment/min
@@ -107,6 +108,9 @@ define Package/node-zwave-js-ui/install
 	$(LN) ./zwave-js/node_modules/json-logic-js $(1)/opt/$(PKG_NPM_NAME)/node_modules/
 	$(LN) ./zwave-js/node_modules/json5 $(1)/opt/$(PKG_NPM_NAME)/node_modules/
 	$(LN) ./zwave-js/node_modules/pathe $(1)/opt/$(PKG_NPM_NAME)/node_modules/
+	# for BUG
+	$(INSTALL_DIR) $(1)/opt/$(PKG_NPM_NAME)/node_modules/zwave-js/build/esm/lib/controller/proprietary/zwave-me
+	$(CP) ./files/License.js $(1)/opt/$(PKG_NPM_NAME)/node_modules/zwave-js/build/esm/lib/controller/proprietary/zwave-me/
 endef
 
 define Package/node-zwave-js-ui/postrm
