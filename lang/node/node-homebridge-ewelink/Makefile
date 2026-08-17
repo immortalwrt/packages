@@ -7,13 +7,13 @@ include $(TOPDIR)/rules.mk
 PKG_NPM_SCOPE:=homebridge-plugins
 PKG_NPM_NAME:=homebridge-ewelink
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=12.14.1
+PKG_VERSION:=12.16.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/@$(PKG_NPM_SCOPE)/$(PKG_NPM_NAME)/-/
-PKG_HASH:=a76fb32c44feea69263953e6f8beab3ac46b8fe458e53f96c14ab4d5512dc859
+PKG_HASH:=03fd6cabc5e52f6633058263fbb1ea0a1c10716a42574003b1476f9342ea5084
 
 PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
 PKG_LICENSE:=MIT
