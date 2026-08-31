@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cloudflared
-PKG_VERSION:=2026.7.3
+PKG_VERSION:=2026.8.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/cloudflare/cloudflared/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=8e452b1630064f5951e18a2537e66274e006eb2e83daa0d42a0adb3fab3ee788
+PKG_HASH:=acdf125b7e872be6e1d13116e8054d27b2c4755760b0cdc3b4ee3910edd37b93
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
