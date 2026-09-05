@@ -755,10 +755,10 @@ start_service() {
 	}
 
 	if [ "$enabled" -ne 1 ]; then
-		[ -n "$PROCD_RELOAD" ] && logger -p daemon.info -t "$NAME" "frps disabled by config."
+		[ -n "$PROCD_RELOAD" ] && logger -p daemon.info -t "$NAME" "frps disabled by config"
 		return 0
 	fi
-	logger -p daemon.info -t "$NAME" "starting frps."
+	logger -p daemon.info -t "$NAME" "starting frps"
 
 	procd_open_instance
 	if [ "$_ALLOW_UNSAFE_TOKEN_SOURCE_EXEC" = "1" ]; then

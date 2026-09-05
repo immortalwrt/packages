@@ -978,10 +978,10 @@ start_service() {
 	}
 
 	if [ "$enabled" -ne 1 ]; then
-		[ -n "$PROCD_RELOAD" ] && logger -p daemon.info -t "$NAME" "frpc disabled by config."
+		[ -n "$PROCD_RELOAD" ] && logger -p daemon.info -t "$NAME" "frpc disabled by config"
 		return 0
 	fi
-	logger -p daemon.info -t "$NAME" "starting frpc."
+	logger -p daemon.info -t "$NAME" "starting frpc"
 
 	procd_open_instance
 	if [ "$_ALLOW_UNSAFE_TOKEN_SOURCE_EXEC" = "1" ]; then
