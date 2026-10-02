@@ -1,0 +1,28 @@
+--- a/option/rule_action.go
++++ b/option/rule_action.go
+@@ -323,8 +323,9 @@ func (r *RejectActionOptions) UnmarshalJ
+ }
+ 
+ type RouteActionSniff struct {
+-	Sniffer badoption.Listable[string] `json:"sniffer,omitempty" enum:"tls,http,quic,dns,stun,bittorrent,dtls,ssh,rdp,ntp"`
+-	Timeout badoption.Duration         `json:"timeout,omitempty"`
++	Sniffer             badoption.Listable[string] `json:"sniffer,omitempty" enum:"tls,http,quic,dns,stun,bittorrent,dtls,ssh,rdp,ntp"`
++	Timeout             badoption.Duration         `json:"timeout,omitempty"`
++	OverrideDestination bool                       `json:"override_destination,omitempty"`
+ }
+ 
+ type RouteActionResolve struct {
+--- a/route/rule/rule_action.go
++++ b/route/rule/rule_action.go
+@@ -105,8 +105,9 @@ func NewRuleAction(ctx context.Context,
+ 		return &RuleActionHijackDNS{}, nil
+ 	case C.RuleActionTypeSniff:
+ 		sniffAction := &RuleActionSniff{
+-			SnifferNames: action.SniffOptions.Sniffer,
+-			Timeout:      time.Duration(action.SniffOptions.Timeout),
++			SnifferNames:        action.SniffOptions.Sniffer,
++			Timeout:             time.Duration(action.SniffOptions.Timeout),
++			OverrideDestination: action.SniffOptions.OverrideDestination,
+ 		}
+ 		return sniffAction, sniffAction.build()
+ 	case C.RuleActionTypeResolve:
