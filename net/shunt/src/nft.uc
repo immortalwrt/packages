@@ -15,6 +15,11 @@ export const DEFAULTS = {
 	entry_ttl: 1200
 };
 
+// What a policy does with the traffic it selects. `route` marks it for its
+// own table, `bypass` only ends rule evaluation, so a later policy cannot
+// claim the same packet. Everything else is a configuration error.
+export const ACTIONS = { route: true, bypass: true };
+
 const RE_NAME = /^[A-Za-z0-9_]{1,24}$/;
 const RE_V4 = /^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})(\/([0-9]{1,2}))?$/;
 const RE_V6 = /^[0-9A-Fa-f:]{2,45}(\/([0-9]{1,3}))?$/;
@@ -104,6 +109,15 @@ export function addr_family(s) {
 	return null;
 };
 
+export function action_name(s) {
+	let v = lc(trim(`${s ?? ''}`));
+
+	if (!length(v))
+		return 'route';
+
+	return ACTIONS[v] ? v : null;
+};
+
 function mask_shift(mask) {
 	let n = 0;
 	while (n < 32 && !((mask >> n) & 1))
@@ -118,6 +132,7 @@ export function compile(policies, opts) {
 	// Rule records, not strings: a MAC rule belongs in prerouting only, and
 	// both chains must render from one ordered list or precedence breaks.
 	let issues = [], marks = [], sets = [], rules4 = [], rules6 = [];
+	let restore = [];
 	let idx = 0;
 	let learn = {};
 
@@ -132,6 +147,14 @@ export function compile(policies, opts) {
 		if (!valid_name(pname)) {
 			reject(pname ?? `#${pi}`, null,
 				'invalid policy name - must match [A-Za-z0-9_]{1,24}');
+			continue;
+		}
+
+		let action = action_name(p.action);
+
+		if (action == null) {
+			reject(pname, p.action,
+				"invalid action - 'route' or 'bypass'");
 			continue;
 		}
 
@@ -187,7 +210,11 @@ export function compile(policies, opts) {
 		if (length(ports) && !length(protos))
 			protos = [ 'tcp', 'udp' ];
 
-		let has_dom = length(p.domains ?? []) > 0;
+		// A named domain file counts as a domain selector whether or not it
+		// was readable at this moment: the policy's sets exist and stay
+		// empty until the file is, and `shunt flush` tears the policy down
+		// without having to read anything.
+		let has_dom = length(p.domains ?? []) + length(p.domain_files ?? []) > 0;
 		let has_dst_any = length(dst['4']) || length(dst['6']);
 
 		// Ports and protocols were asked for and none survived validation.
@@ -216,14 +243,16 @@ export function compile(policies, opts) {
 			continue;
 		}
 
-		if (++idx > capacity) {
+		// A bypass policy owns no mark, no table and no rule - it only ends
+		// evaluation - so it costs nothing from the mark capacity.
+		if (action == 'route' && ++idx > capacity) {
 			reject(pname, null,
 				sprintf('mark capacity exceeded (%d policies fit in mask 0x%08x)',
 					capacity, mask));
 			continue;
 		}
 
-		let mark = idx << shift;
+		let mark = (action == 'route') ? idx << shift : null;
 		// One transport term for all three rule shapes. `th dport` reads the
 		// port at the transport header offset, which works for tcp and udp
 		// alike, so a port without a protocol needs no rule per protocol.
@@ -239,11 +268,42 @@ export function compile(policies, opts) {
 				? sprintf('th dport %s ', ports[0])
 				: sprintf('th dport { %s } ', join(', ', ports));
 
-		let stmt = sprintf('%smeta mark set (meta mark & 0x%08x) | 0x%08x counter return',
-			l4, ~mask & 0xffffffff, mark);
+		// bypass keeps whatever mark the packet carries: no shunt rule after
+		// this one is reached, and the bits outside the mask are not ours.
+		// route also records the mark on the conntrack entry, so the flow's
+		// later packets can be marked from it without another lookup - see
+		// the restore rules below.
+		let stmt = (action == 'bypass')
+			? sprintf('%scounter return', l4)
+			: sprintf('%smeta mark set (meta mark & 0x%08x) | 0x%08x ct mark set (ct mark & 0x%08x) | 0x%08x counter return',
+				l4, ~mask & 0xffffffff, mark, ~mask & 0xffffffff, mark);
 
-		push(marks, { name: pname, index: idx, mark,
-			rt_table: 8000 + idx, rt_prio: 31000 + idx });
+		// The decision for a flow is made on its first packet and kept:
+		// later packets in the original direction take the mark from the
+		// conntrack entry, and never reach the lookups. That is what makes
+		// a set change safe for connections already running - masquerade
+		// kills a conntrack entry whose output interface changed
+		// (nf_nat_inet_fn, oif_changed), so re-marking a live flow would
+		// reset it. One rule per route policy, with its mark as a constant:
+		// nft has no expression-to-expression OR. Family-agnostic, so one
+		// rule serves both. Replies stay unmarked, as they always did - a
+		// marked reply would look up the policy table and miss the LAN.
+		if (action == 'route')
+			push(restore, sprintf(
+				'\t\tct state != new ct direction original ct mark & 0x%08x == 0x%08x meta mark set (meta mark & 0x%08x) | 0x%08x counter return',
+				mask, mark, ~mask & 0xffffffff, mark));
+
+		// Two rule priorities per routing policy, in two bands 500 apart:
+		// keep_local's main lookup keeps the band a released version already
+		// used, so an upgrade removes the old rule with the new one's del,
+		// and the policy table rule moves up out of the way.
+		push(marks, (action == 'bypass')
+			? { name: pname, action, index: null, mark: null,
+				rt_table: null, rt_prio: null, rt_prio_local: null }
+			: { name: pname, action, index: idx, mark,
+				rt_table: 8000 + idx,
+				rt_prio: 31500 + idx,
+				rt_prio_local: 31000 + idx });
 
 		if (has_mac)
 			push(sets, sprintf(
@@ -325,16 +385,24 @@ export function compile(policies, opts) {
 		}
 	}
 
+	// Every other flow past its first packet is settled too: a bypass
+	// decision, no policy, or older than the ruleset. It keeps whatever it
+	// has and is not re-evaluated against sets that changed since.
+	let settled = length(restore)
+		? [ '\t\tct state != new counter return' ] : [];
+
 	let setup = join('\n', [
 		`destroy table ${TABLE}`,
 		`table ${TABLE} {`,
 		...sets,
 		'\tchain prerouting {',
 		'\t\ttype filter hook prerouting priority mangle; policy accept;',
+		...restore, ...settled,
 		...map(rules4, (r) => r.text), ...map(rules6, (r) => r.text),
 		'\t}',
 		'\tchain output {',
 		'\t\ttype route hook output priority mangle; policy accept;',
+		...restore, ...settled,
 		...map(filter(rules4, (r) => r.out), (r) => r.text),
 		...map(filter(rules6, (r) => r.out), (r) => r.text),
 		'\t}',
@@ -345,8 +413,10 @@ export function compile(policies, opts) {
 	return { setup, marks, issues, learn };
 };
 
+// A write may carry its own timeout - the TTL of the answer it came from,
+// already clamped by the caller - or fall back to entry_ttl.
 export function refresh(writes, entry_ttl) {
-	let ttl = entry_ttl ?? DEFAULTS.entry_ttl;
+	let dflt = entry_ttl ?? DEFAULTS.entry_ttl;
 	let out = [], issues = [];
 
 	for (let w in (writes ?? [])) {
@@ -361,7 +431,7 @@ export function refresh(writes, entry_ttl) {
 
 		push(out, sprintf('destroy element %s %s { %s }', TABLE, w.set, w.addr));
 		push(out, sprintf('add element %s %s { %s timeout %ds }',
-			TABLE, w.set, w.addr, ttl));
+			TABLE, w.set, w.addr, w.ttl ?? dflt));
 	}
 
 	return { batch: length(out) ? join('\n', out) + '\n' : '', issues };
