@@ -1,0 +1,10 @@
+--- a/protocol/naive/outbound.go
++++ b/protocol/naive/outbound.go
+@@ -9,7 +9,6 @@ import (
+ 	"strings"
+ 
+ 	"github.com/sagernet/cronet-go"
+-	_ "github.com/sagernet/cronet-go/all"
+ 	"github.com/sagernet/sing-box/adapter"
+ 	"github.com/sagernet/sing-box/adapter/outbound"
+ 	"github.com/sagernet/sing-box/common/dialer"
