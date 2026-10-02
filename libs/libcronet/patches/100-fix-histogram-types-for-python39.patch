@@ -1,0 +1,44 @@
+Subject: [PATCH] metrics: reuse DomTree annotations for Python 3.9
+
+Python 3.9 cannot evaluate PEP 604 union annotations at import time.
+Reuse the existing xml_utils.DomTree alias, which expresses the same
+types using typing.Union, in all four histogram extraction functions.
+
+--- a/src/tools/metrics/histograms/extract_histograms.py
++++ b/src/tools/metrics/histograms/extract_histograms.py
+@@ -167,7 +167,7 @@ def ExpandHistogramNameWithSuffixes(
+ 
+ 
+ def ExtractEnumsFromXmlTree(
+-    tree: xml.dom.minidom.Element | xml.dom.minidom.Document,
++    tree: xml_utils.DomTree,
+ ) -> tuple[dict[str, EnumDict], ExtractionErrors]:
+   """Extracts all <enum> nodes in the tree into a dictionary.
+ 
+@@ -497,7 +497,7 @@ def _ExtractVariantNodes(node: xml.dom.m
+ 
+ 
+ def ExtractHistogramsFromXmlTree(
+-    tree: xml.dom.minidom.Element | xml.dom.minidom.Document,
++    tree: xml_utils.DomTree,
+     enums: dict[str, EnumDict]
+ ) -> tuple[dict[str, HistogramDict], dict[str, list[TokenDict]],
+            ExtractionErrors]:
+@@ -620,7 +620,7 @@ def ExtractHistogramsFromXmlTree(
+ 
+ 
+ def ExtractVariantsFromXmlTree(
+-    tree: xml.dom.minidom.Element | xml.dom.minidom.Document,
++    tree: xml_utils.DomTree,
+ ) -> tuple[dict[str, list[VariantDict]], ExtractionErrors]:
+   """Extracts all <variants> nodes in the tree into a dictionary.
+ 
+@@ -664,7 +664,7 @@ def _GetObsoleteReason(node: xml.dom.min
+ 
+ 
+ def UpdateHistogramsWithSuffixes(
+-    tree: xml.dom.minidom.Element | xml.dom.minidom.Document,
++    tree: xml_utils.DomTree,
+     histograms: dict[str, HistogramDict]) -> ExtractionErrors:
+   """Processes <histogram_suffixes> tags and combines with affected histograms.
+ 
