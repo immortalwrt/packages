@@ -8,16 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qt6base
-PKG_BASE:=6.9
-PKG_BUGFIX:=3
+PKG_BASE:=6.12
+PKG_BUGFIX:=0
 PKG_VERSION:=$(PKG_BASE).$(PKG_BUGFIX)
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=qtbase-everywhere-src-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
 		  https://mirrors.aliyun.com/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/ \
 		  http://download.qt-project.org/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules/
-PKG_HASH:=c5a1a2f660356ec081febfa782998ae5ddbc5925117e64f50e4be9cd45b8dc6e
+PKG_HASH:=a951bd163c7b80fc6b8c88d7668fb56abf91c152373e13c10666763238131307
 
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/qtbase-everywhere-src-$(PKG_VERSION)
 PKG_BUILD_DIR:=$(BUILD_DIR)/qtbase-everywhere-src-$(PKG_VERSION)
@@ -66,80 +66,87 @@ CMAKE_SHARED_LDFLAGS := $(filter-out -Wl$(comma)-Bsymbolic-functions,$(CMAKE_SHA
 
 CMAKE_HOST_OPTIONS+= \
 	-DBUILD_SHARED_LIBS=OFF \
-	-DFEATURE_optimize_full=ON \
-	-DFEATURE_glib=OFF \
-	-DFEATURE_zstd=OFF \
+	-DFEATURE_androiddeployqt=OFF \
 	-DFEATURE_concurrent=OFF \
 	-DFEATURE_dbus=ON \
+	-DFEATURE_glib=OFF \
 	-DFEATURE_gui=OFF \
+	-DFEATURE_harmonydeployqt=OFF \
 	-DFEATURE_network=ON \
 	-DFEATURE_openssl=OFF \
+	-DFEATURE_optimize_full=ON \
+	-DFEATURE_qtwaylandscanner=OFF \
 	-DFEATURE_sql=OFF \
 	-DFEATURE_testlib=OFF \
-	-DFEATURE_xml=ON
+	-DFEATURE_xml=ON \
+	-DFEATURE_zstd=OFF
 
 CMAKE_OPTIONS+= \
 	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_SYSROOT=$(STAGING_DIR) \
-	-DQT_HOST_PATH=$(STAGING_DIR_HOSTPKG) \
 	-DINSTALL_PLUGINSDIR=/usr/lib/qt6plugins \
-	-DQT_QMAKE_TARGET_MKSPEC=devices/linux-generic-g++ \
-	-DQT_QMAKE_DEVICE_OPTIONS=CROSS_COMPILE="$(TARGET_CROSS);COMPILER_FLAGS=$(TARGET_CFLAGS) $(EXTRA_CFLAGS) $(TARGET_CPPFLAGS) $(EXTRA_CPPFLAGS);LINKER_FLAGS=$(TARGET_LDFLAGS) $(EXTRA_LDFLAGS)" \
 	-DQT_BUILD_EXAMPLES=OFF \
 	-DQT_BUILD_TESTS=OFF \
 	-DQT_BUILD_TOOLS_WHEN_CROSSCOMPILING=OFF \
-	-DINPUT_opengl=no \
-	-DFEATURE_optimize_full=ON \
-	-DFEATURE_system_zlib=ON \
-	-DFEATURE_zstd=OFF \
-	-DFEATURE_backtrace=OFF \
-	-DFEATURE_system_doubleconversion=ON \
-	-DFEATURE_glib=OFF \
-	-DFEATURE_icu=OFF \
-	-DFEATURE_mimetype_database=ON \
-	-DFEATURE_system_pcre2=ON \
-	-DFEATURE_concurrent=$(if $(CONFIG_PACKAGE_libQt6Concurrent),ON,OFF) \
-	-DFEATURE_dbus=$(if $(CONFIG_PACKAGE_libQt6DBus),ON,OFF) \
-	-DFEATURE_gui=$(if $(CONFIG_PACKAGE_libQt6Gui),ON,OFF) \
-	-DFEATURE_fontconfig=OFF \
-	-DFEATURE_system_freetype=ON \
-	-DFEATURE_xkbcommon=OFF \
+	-DQT_HOST_PATH=$(STAGING_DIR_HOSTPKG) \
+	-DQT_QMAKE_DEVICE_OPTIONS=CROSS_COMPILE="$(TARGET_CROSS);COMPILER_FLAGS=$(TARGET_CFLAGS) $(EXTRA_CFLAGS) $(TARGET_CPPFLAGS) $(EXTRA_CPPFLAGS);LINKER_FLAGS=$(TARGET_LDFLAGS) $(EXTRA_LDFLAGS)" \
+	-DQT_QMAKE_TARGET_MKSPEC=devices/linux-generic-g++ \
 	-DFEATURE_accessibility=OFF \
-	-DFEATURE_harfbuzz=OFF \
-	-DFEATURE_gif=OFF \
-	-DFEATURE_ico=OFF \
-	-DFEATURE_jpeg=OFF \
-	-DFEATURE_png=OFF \
-	-DFEATURE_texthtmlparser=OFF \
+	-DFEATURE_backtrace=OFF \
+	-DFEATURE_concurrent=$(if $(CONFIG_PACKAGE_libQt6Concurrent),ON,OFF) \
 	-DFEATURE_cssparser=OFF \
-	-DFEATURE_textodfwriter=OFF \
-	-DFEATURE_textmarkdownreader=OFF \
-	-DFEATURE_textmarkdownwriter=OFF \
-	-DFEATURE_sessionmanager=OFF \
+	-DFEATURE_dbus=$(if $(CONFIG_PACKAGE_libQt6DBus),ON,OFF) \
 	-DFEATURE_evdev=OFF \
-	-DFEATURE_vnc=OFF \
-	-DFEATURE_linuxfb=OFF \
+	-DFEATURE_fontconfig=OFF \
+	-DFEATURE_gif=OFF \
+	-DFEATURE_glib=OFF \
+	-DFEATURE_gui=$(if $(CONFIG_PACKAGE_libQt6Gui),ON,OFF) \
+	-DFEATURE_harfbuzz=OFF \
+	-DFEATURE_ico=OFF \
+	-DFEATURE_icu=OFF \
+	-DFEATURE_itemmodeltester=OFF \
+	-DFEATURE_jpeg=OFF \
 	-DFEATURE_libinput=OFF \
+	-DFEATURE_liburing=OFF \
+	-DFEATURE_linuxfb=OFF \
+	-DFEATURE_mimetype_database=ON \
 	-DFEATURE_network=$(if $(CONFIG_PACKAGE_libQt6Network),ON,OFF) \
+	-DFEATURE_ocsp=OFF \
 	-DFEATURE_openssl=ON \
 	-DFEATURE_openssl_runtime=ON \
-	-DFEATURE_ocsp=OFF \
+	-DFEATURE_optimize_full=ON \
+	-DFEATURE_png=OFF \
 	-DFEATURE_printsupport=$(if $(CONFIG_PACKAGE_libQt6PrintSupport),ON,OFF) \
+	-DFEATURE_qtwaylandscanner=OFF \
+	-DFEATURE_sessionmanager=OFF \
 	-DFEATURE_sql=$(if $(CONFIG_PACKAGE_libQt6Sql),ON,OFF) \
 	-DFEATURE_sqlmodel=OFF \
-	-DFEATURE_sql_sqlite=ON \
-	-DFEATURE_system_sqlite=ON \
 	-DFEATURE_sql_db2=OFF \
 	-DFEATURE_sql_ibase=OFF \
 	-DFEATURE_sql_mysql=OFF \
-	-DFEATURE_sql_oci=OFF \
 	-DFEATURE_sql_odbc=OFF \
+	-DFEATURE_sql_oci=OFF \
 	-DFEATURE_sql_psql=OFF \
+	-DFEATURE_sql_sqlite=ON \
+	-DFEATURE_system_doubleconversion=ON \
+	-DFEATURE_system_freetype=ON \
+	-DFEATURE_system_pcre2=ON \
+	-DFEATURE_system_sqlite=ON \
+	-DFEATURE_system_zlib=ON \
 	-DFEATURE_testlib=$(if $(CONFIG_PACKAGE_libQt6Test),ON,OFF) \
-	-DFEATURE_itemmodeltester=OFF \
+	-DFEATURE_texthtmlparser=OFF \
+	-DFEATURE_textmarkdownreader=OFF \
+	-DFEATURE_textmarkdownwriter=OFF \
+	-DFEATURE_textodfwriter=OFF \
+	-DFEATURE_tuiotouch=$(if $(CONFIG_PACKAGE_qt6-plugin-libqtuiotouchplugin),ON,OFF) \
+	-DFEATURE_vnc=OFF \
+	-DFEATURE_wayland=OFF \
+	-DFEATURE_waylandscanner=OFF \
 	-DFEATURE_widgets=$(if $(CONFIG_PACKAGE_libQt6Widgets),ON,OFF) \
+	-DFEATURE_xkbcommon=OFF \
 	-DFEATURE_xml=$(if $(CONFIG_PACKAGE_libQt6Xml),ON,OFF) \
-	-DFEATURE_tuiotouch=$(if $(CONFIG_PACKAGE_qt6-plugin-libqtuiotouchplugin),ON,OFF)
+	-DFEATURE_zstd=OFF \
+	-DINPUT_opengl=no
 
 define Package/libQt6/Default/install
   	$(INSTALL_DIR) $(1)/usr/lib/
@@ -195,7 +202,7 @@ define DefineQt6PluginPackage
     TITLE+=Plugin libq$(2)
     DEPENDS+=$(foreach lib,$(3),+libQt6$(lib))
   endef
-  
+
   define Package/qt6-plugin-libq$(2)/install
 	$(call Package/qt6-plugin/Default/install,$$(1),$(1),$(2))
   endef
