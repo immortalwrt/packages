@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# (c) 2022-2024 Cezary Jackiewicz <cezary@eko.one.pl>
+# (c) 2022-2025 Cezary Jackiewicz <cezary@eko.one.pl>
 #
 # (c) 2022-2024 modified by Rafał Wabik - IceG - From eko.one.pl forum
 #
@@ -118,6 +118,9 @@ bandtxt() {
 	"88") echo "$BAND: FDD  410 MHz";;
 	"103") echo "$BAND: FDD  700 MHz";;
 	"106") echo "$BAND: FDD  900 MHz";;
+	"107") echo "$BAND: SDO  600 MHz";;
+	"108") echo "$BAND: SDO  500 MHz";;
+	"111") echo "$BAND: FDD 1800 MHz";;
 	esac
 }
 
@@ -174,6 +177,8 @@ bandtxt5g() {
 	"84") echo "$BAND: SUL 2100 MHz";;
 	"85") echo "$BAND: FDD  700 MHz";;
 	"86") echo "$BAND: SUL 1700 MHz";;
+	"87") echo "$BAND: FDD  400 MHz";;
+	"88") echo "$BAND: FDD  400 MHz";;
 	"89") echo "$BAND: SUL  850 MHz";;
 	"90") echo "$BAND: TDD 2500 MHz";;
 	"91") echo "$BAND: FDD  800/1500 MHz";;
@@ -190,6 +195,7 @@ bandtxt5g() {
 	"102") echo "$BAND: TDD 6200 MHz";;
 	"104") echo "$BAND: TDD 6700 MHz";;
 	"105") echo "$BAND: FDD  600 MHz";;
+	"110") echo "$BAND: FDD 1400 MHz";;
 	"257") echo "$BAND: 28 GHz";;
 	"258") echo "$BAND: 26 GHz";;
 	"259") echo "$BAND: 41 GHz";;
@@ -305,20 +311,60 @@ setbands5gsa() {
 	echo "Unsupported"
 }
 
+getdevicepath() {
+	devname="$(basename $1)"
+	case "$devname" in
+		'wwan'*'at'*)
+			devpath="$(readlink -f /sys/class/wwan/$devname/device)"
+			echo ${devpath%/*/*/*}
+			;;
+		'ttyACM'*)
+			devpath="$(readlink -f /sys/class/tty/$devname/device)"
+			echo ${devpath%/*}
+			;;
+		'tty'*)
+			devpath="$(readlink -f /sys/class/tty/$devname/device)"
+			echo ${devpath%/*/*}
+			;;
+		*)
+			devpath="$(readlink -f /sys/class/usbmisc/$devname/device)"
+			echo ${devpath%/*}
+			;;
+	esac
+}
 
 RES="/usr/share/modemband"
 
-_DEVS=$(awk '{gsub("="," ");
-if ($0 ~ /Bus.*Lev.*Prnt.*Port.*/) {T=$0}
-if ($0 ~ /Vendor.*ProdID/) {idvendor[T]=$3; idproduct[T]=$5}
-if ($0 ~ /Product/) {product[T]=$3}}
-END {for (idx in idvendor) {printf "%s%s\n%s%s%s\n", idvendor[idx], idproduct[idx], idvendor[idx], idproduct[idx], product[idx]}}' /sys/kernel/debug/usb/devices)
-for _DEV in $_DEVS; do
-	if [ -e "$RES/$_DEV" ]; then
-		. "$RES/$_DEV"
-		break
+_DEVICE=""
+if [ -n "$DEVICE" ]; then
+	# check the DEVICE environment variable
+	USBPATH=$(getdevicepath $DEVICE)
+	if [ -n "$USBPATH" ]; then
+		VID=$(cat ${USBPATH}/idVendor)
+		PID=$(cat ${USBPATH}/idProduct)
+		PROD=$(cat ${USBPATH}/product)
+		if [ -e "$RES/${VID}${PID}${PROD}" ]; then
+			. "$RES/${VID}${PID}${PROD}"
+			_DEVICE=$DEVICE
+		elif [ -e "$RES/${VID}${PID}" ]; then
+			. "$RES/${VID}${PID}"
+			_DEVICE=$DEVICE
+		fi
 	fi
-done
+else
+	# find first supported device
+	_DEVS=$(awk '{gsub("="," ");
+	if ($0 ~ /Bus.*Lev.*Prnt.*Port.*/) {T=$0}
+	if ($0 ~ /Vendor.*ProdID/) {idvendor[T]=$3; idproduct[T]=$5}
+	if ($0 ~ /Product/) {product[T]=$3}}
+	END {for (idx in idvendor) {printf "%s%s%s\n%s%s\n", idvendor[idx], idproduct[idx], product[idx], idvendor[idx], idproduct[idx]}}' /sys/kernel/debug/usb/devices)
+	for _DEV in $_DEVS; do
+		if [ -e "$RES/$_DEV" ]; then
+			. "$RES/$_DEV"
+			break
+		fi
+	done
+fi
 
 if [ -z "$_DEVICE" ]; then
 	if [ "x$1" = "xjson" ]; then
@@ -327,7 +373,8 @@ if [ -z "$_DEVICE" ]; then
 		echo "No supported modem was found, quitting..."
 	fi
 	exit 0
-else
+fi
+if [ -z "$DEVICE" ]; then
 	_DEVICE1=$(uci -q get modemband.@modemband[0].set_port)
 	if [ -n "$_DEVICE1" ]; then
 		_DEVICE=$_DEVICE1
@@ -463,6 +510,9 @@ case $1 in
 		echo " $0 getinfo"
 		echo " $0 json"
 		echo " $0 help"
+		echo ""
+		echo "Manually specifying interface:"
+		echo " DEVICE=/dev/ttyUSB2 $0 getinfo"
 		echo ""
 		echo "for LTE modem"
 		echo " $0 getsupportedbands"

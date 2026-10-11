@@ -1,0 +1,84 @@
+# add by @LW
+
+getsupportedbands() {
+	echo "$_DEFAULT_LTE_BANDS"
+}
+
+getbands() {
+#WCDMA,Enable Bands :1,2,4,5,6,8,9,19,
+#WCDMA,Disable Bands:
+#LTE,Enable Bands :1,2,3,4,5,7,8,12,13,14,17,18,19,20,25,26,28,29,30,32,34,38,39,40,41,42,46,48,66,71,
+#LTE,Disable Bands:
+
+	O=$(sms_tool -d $_DEVICE at "at^slband?")
+	echo "$O" | awk '/LTE,Enable Bands/{gsub("LTE,Enable Bands :",""); gsub(",", " "); print $0}' | xargs
+}
+
+setbands() {
+	BANDS="$1"
+	[ "$BANDS" = "default" ] && BANDS="$_DEFAULT_LTE_BANDS"
+
+	T=""
+	for BAND in $BANDS; do
+		case $BAND in
+			''|*[!0-9]*) continue ;;
+		esac
+		[ -n "$T" ] && T="${T},"
+		T="${T}${BAND}"
+	done
+
+	[ -n "$T" ] && sms_tool -d $_DEVICE at "at^band_pref=lte,2,$T"
+}
+
+getsupportedbands5gsa() {
+	echo "$_DEFAULT_5GSA_BANDS"
+}
+
+getbands5gsa() {
+	O=$(sms_tool -d $_DEVICE at "at^slband?")
+	echo "$O" | awk '/NR5G,Enable Bands/{gsub("NR5G,Enable Bands :",""); gsub(",", " "); print $0}' | xargs
+}
+
+setbands5gsa() {
+	BANDS="$1"
+	[ "$BANDS" = "default" ] && BANDS="$_DEFAULT_5GSA_BANDS"
+
+	T=""
+	for BAND in $BANDS; do
+		case $BAND in
+			''|*[!0-9]*) continue ;;
+		esac
+		[ -n "$T" ] && T="${T}:"
+		T="${T}${BAND}"
+	done
+
+	[ -n "$T" ] && sms_tool -d $_DEVICE at "at^band_pref=nr5g,2,$T"
+}
+
+getsupportedbands5gnsa() {
+	echo "$_DEFAULT_5GNSA_BANDS"
+}
+
+getbands5gnsa() {
+#NR5G,Enable Bands :1,2,3,5,7,8,12,20,25,28,38,41,66,71,77,78,79,
+#NR5G,Disable Bands:
+
+	O=$(sms_tool -d $_DEVICE at "at^slband?")
+	echo "$O" | awk '/NR5G,Enable Bands/{gsub("NR5G,Enable Bands :",""); gsub(",", " "); print $0}' | xargs
+}
+
+setbands5gnsa() {
+	BANDS="$1"
+	[ "$BANDS" = "default" ] && BANDS="$_DEFAULT_5GNSA_BANDS"
+
+	T=""
+	for BAND in $BANDS; do
+		case $BAND in
+			''|*[!0-9]*) continue ;;
+		esac
+		[ -n "$T" ] && T="${T},"
+		T="${T}${BAND}"
+	done
+
+	[ -n "$T" ] && sms_tool -d $_DEVICE at "at^band_pref=nr5g,2,$T"
+}
