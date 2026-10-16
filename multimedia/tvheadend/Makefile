@@ -5,9 +5,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tvheadend/tvheadend
-PKG_MIRROR_HASH:=68fda4d7563550fda07a81222fa371b8b42c6ee9517c2a7f5a374aa025301c52
-PKG_SOURCE_VERSION:=395afb8512d0d636ef223db4cccf722b70992e76
-PKG_SOURCE_DATE:=2026-04-03
+PKG_MIRROR_HASH:=da2a0c9f49c678e0c6f71c095e16555f3cbaf34d0a7b95b06ade7cfde0f98b9f
+PKG_SOURCE_VERSION:=547f8bfaec9307d3ba59370159df792295593f59
+PKG_SOURCE_DATE:=2026-09-24
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE.md
@@ -15,10 +15,19 @@ PKG_LICENSE_FILES:=LICENSE.md
 PKG_BUILD_PARALLEL:=1
 PKG_FIXUP:=autoreconf
 PKG_BUILD_FLAGS:=no-mips16
-PKG_BUILD_DEPENDS:=gettext-full/host
+PKG_BUILD_DEPENDS:=gettext-full/host node/host
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
+
+# tvheadend needs iconv //TRANSLIT to build recording file names, which musl
+# does not implement, so always build against GNU libiconv.
+# With BUILD_NLS set, nls.mk already adds these for the same prefix.
+ifneq ($(CONFIG_BUILD_NLS),y)
+	ICONV_FULL_PREFIX:=$(STAGING_DIR)/usr/lib/libiconv-full
+	TARGET_CFLAGS += -I$(ICONV_FULL_PREFIX)/include
+	TARGET_LDFLAGS += -L$(ICONV_FULL_PREFIX)/lib -Wl,-rpath-link=$(ICONV_FULL_PREFIX)/lib
+endif
 
 define Package/tvheadend
   SECTION:=multimedia
@@ -32,7 +41,7 @@ define Package/tvheadend
 	+librt \
 	+libffi \
 	+libopenssl \
-	$(ICONV_DEPENDS) \
+	+libiconv-full \
 	+zlib \
 	+TVHEADEND_AVAHI_SUPPORT:libavahi-client \
 	+TVHEADEND_REGEX_PCRE2:libpcre2 \
@@ -236,6 +245,7 @@ CONFIGURE_ARGS += \
 	--disable-libfdkaac \
 	--disable-libfdkaac_static \
 	--disable-pcloud_cache \
+	--enable-vue_build \
 	--enable-bundle \
 	--disable-uriparser \
 	--disable-execinfo \
@@ -253,12 +263,6 @@ CONFIGURE_ARGS += \
 ##	--disable-libfdkaac_static \
 ##	--disable-pcloud_cache \
 
-define Build/Prepare
-	$(call Build/Prepare/Default)
-	echo 'Tvheadend $(shell echo $(PKG_SOURCE_VERSION) | sed "s/^v//")~openwrt$(PKG_RELEASE)' \
-		> $(PKG_BUILD_DIR)/debian/changelog
-endef
-
 define Package/tvheadend/conffiles
 /etc/config/tvheadend
 /etc/tvheadend
@@ -269,8 +273,8 @@ define Package/tvheadend/install
 	$(INSTALL_BIN) ./files/tvheadend.init $(1)/etc/init.d/tvheadend
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./files/tvheadend.config $(1)/etc/config/tvheadend
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/usb
-	$(INSTALL_BIN) ./files/dvb.hotplug $(1)/etc/hotplug.d/usb/50-dvb
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/dvb
+	$(INSTALL_BIN) ./files/dvb.hotplug $(1)/etc/hotplug.d/dvb/50-dvb
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/build.linux/tvheadend $(1)/usr/bin/
 endef

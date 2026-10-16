@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=umurmur
-PKG_VERSION:=0.3.1
-PKG_RELEASE:=2
+PKG_VERSION:=0.5.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/umurmur/umurmur/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=8327dd0b2c5bd187a38d098295e896a6b85d698c9268205bcb27f6244f760a73
+PKG_HASH:=028e6ccc92e04722eb0f02d418f41845d3b0784998405b8fa48f34e33b05c0be
 
 PKG_MAINTAINER:=Martin Johansson <martin@fatbob.nu>
 PKG_LICENSE:=BSD-3-Clause
@@ -81,7 +81,8 @@ CMAKE_OPTIONS += \
 	-DLIBCONFIG_LIB_DIR="$(STAGING_DIR)/usr/lib" \
 	-DPROTOBUFC_INCLUDE_DIR="$(STAGING_DIR)/usr/include" \
 	-DPROTOBUFC_LIBRARIES="$(STAGING_DIR)/usr/lib/libprotobuf-c.so" \
-	-DPROTOBUFC_LIB_DIR="$(STAGING_DIR)/usr/lib"
+	-DPROTOBUFC_LIB_DIR="$(STAGING_DIR)/usr/lib" \
+	-DCMAKE_INSTALL_BINDIR=sbin
 
 ifeq ($(BUILD_VARIANT),openssl)
 CMAKE_OPTIONS += -DSSL=openssl

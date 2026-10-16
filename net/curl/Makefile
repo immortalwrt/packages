@@ -9,13 +9,13 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/nls.mk
 
 PKG_NAME:=curl
-PKG_VERSION:=8.19.0
-PKG_RELEASE:=2
+PKG_VERSION:=8.22.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/curl/curl/releases/download/curl-$(subst .,_,$(PKG_VERSION))/ \
 	https://curl.se/download/
-PKG_HASH:=4eb41489790d19e190d7ac7e18e82857cdd68af8f4e66b292ced562d333f11df
+PKG_HASH:=f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -62,10 +62,10 @@ PKG_CONFIG_DEPENDS:= \
   CONFIG_LIBCURL_COOKIES \
   CONFIG_LIBCURL_CRYPTO_AUTH \
   CONFIG_LIBCURL_HTTP_AUTH \
+  CONFIG_LIBCURL_KERBEROS_AUTH \
   CONFIG_LIBCURL_LIBCURL_OPTION \
   CONFIG_LIBCURL_PROXY \
   CONFIG_LIBCURL_THREADED_RESOLVER \
-  CONFIG_LIBCURL_TLS_SRP \
   CONFIG_LIBCURL_UNIX_SOCKETS \
   CONFIG_LIBCURL_VERBOSE \
   CONFIG_LIBCURL_NTLM \
@@ -97,6 +97,7 @@ define Package/libcurl
   DEPENDS:= +LIBCURL_WOLFSSL:libwolfssl +LIBCURL_OPENSSL:libopenssl +LIBCURL_GNUTLS:libgnutls +LIBCURL_MBEDTLS:libmbedtls
   DEPENDS += +LIBCURL_ZLIB:zlib +LIBCURL_ZSTD:libzstd +LIBCURL_THREADED_RESOLVER:libpthread +LIBCURL_LDAP:libopenldap
   DEPENDS += +LIBCURL_LIBIDN2:libidn2 +LIBCURL_SSH2:libssh2 +LIBCURL_HTTP2:libnghttp2 +LIBCURL_HTTP3:libnghttp3 +LIBCURL_HTTP3:libngtcp2 +ca-bundle
+  DEPENDS += +LIBCURL_KERBEROS_AUTH:krb5-libs
   TITLE:=A client-side URL transfer library
   MENU:=1
   ABI_VERSION:=4
@@ -139,6 +140,7 @@ CONFIGURE_ARGS += \
 	$(if $(CONFIG_LIBCURL_ZSTD),--with-zstd="$(STAGING_DIR)/usr",--without-zstd) \
 	$(if $(CONFIG_LIBCURL_HTTP2),--with-nghttp2="$(STAGING_DIR)/usr",--without-nghttp2) \
 	$(if $(CONFIG_LIBCURL_HTTP3),--with-nghttp3="$(STAGING_DIR)/usr" --with-ngtcp2="$(STAGING_DIR)/usr",--without-nghttp3 --without-ngtcp2) \
+	$(if $(CONFIG_LIBCURL_KERBEROS_AUTH),--with-gssapi="$(STAGING_DIR)/usr",--without-gssapi) \
 	\
 	$(call autoconf_bool,CONFIG_LIBCURL_DICT,dict) \
 	$(call autoconf_bool,CONFIG_LIBCURL_FILE,file) \
@@ -162,7 +164,6 @@ CONFIGURE_ARGS += \
 	$(call autoconf_bool,CONFIG_LIBCURL_LIBCURL_OPTION,libcurl-option) \
 	$(call autoconf_bool,CONFIG_LIBCURL_PROXY,proxy) \
 	$(call autoconf_bool,CONFIG_LIBCURL_THREADED_RESOLVER,threaded-resolver) \
-	$(call autoconf_bool,CONFIG_LIBCURL_TLS_SRP,tls-srp) \
 	$(call autoconf_bool,CONFIG_LIBCURL_UNIX_SOCKETS,unix-sockets) \
 	$(call autoconf_bool,CONFIG_LIBCURL_VERBOSE,verbose) \
 

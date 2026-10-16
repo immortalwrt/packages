@@ -49,9 +49,9 @@ trm_pidfile="${trm_rundir}/travelmate.pid"
 trm_scanfile="${trm_rundir}/travelmate.scan"
 trm_tmpfile="${trm_rundir}/travelmate.tmp"
 trm_rtfile="${trm_rundir}/travelmate.runtime.json"
+trm_revivefile="${trm_rundir}/travelmate.revive"
 trm_captiveurl="http://detectportal.firefox.com"
 trm_useragent="Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0"
-trm_action="${1}"
 trm_runmode=""
 trm_active="0"
 
@@ -75,12 +75,6 @@ f_system() {
 	#
 	[ -z "${trm_cores}" ] && trm_cores="$("${trm_grepcmd}" -cm16 '^processor' /proc/cpuinfo 2>/dev/null)"
 	case "${trm_cores}" in "" | 0 | *[!0-9]*) trm_cores="1" ;; esac
-
-	# trigger ntp sync if no lock file exists (to avoid multiple concurrent calls)
-	#
-	if [ ! -d "${trm_ntplock}" ]; then
-		"${trm_ubuscmd}" -S call hotplug.ntp call '{ "env": [ "ACTION=stratum" ] }' >/dev/null 2>&1
-	fi
 }
 
 # command selector
@@ -572,6 +566,67 @@ f_getcfg() {
 	done
 }
 
+# load the revive counter of an uplink that has been disabled by the retry limit
+#
+f_reviveload() {
+	local cnt rounds radio bssid essid load_radio="${1}" load_essid="${2}" load_bssid="${3}" found="0" revive=""
+
+	revive="$(f_getval "revive" "0")"
+	revive="${revive//[!0-9]/}"
+	[ -z "${revive}" ] || [ "${revive}" = "0" ] && return 0
+	[ "${revive}" -lt "10" ] && revive="10"
+
+	: >"${trm_revivefile}.tmp"
+	if [ -s "${trm_revivefile}" ]; then
+		while IFS="|" read -r cnt rounds radio bssid essid; do
+			if [ "${radio}" = "${load_radio}" ] && [ "${essid}" = "${load_essid}" ] && [ "${bssid}" = "${load_bssid}" ]; then
+				found="1"
+				rounds="$((rounds + 1))"
+				if [ "${rounds}" -gt "${trm_maxretry}" ]; then
+					cnt="0"
+					f_log "info" "uplink stays disabled '${load_radio}/${load_essid}/${load_bssid:-"-"}', revive limit reached"
+				else
+					cnt="${revive}"
+				fi
+			fi
+			printf "%s|%s|%s|%s|%s\n" "${cnt}" "${rounds}" "${radio}" "${bssid}" "${essid}" >>"${trm_revivefile}.tmp"
+		done <"${trm_revivefile}"
+	fi
+	[ "${found}" = "0" ] && printf "%s|%s|%s|%s|%s\n" "${revive}" "1" "${load_radio}" "${load_bssid}" "${load_essid}" >>"${trm_revivefile}.tmp"
+	mv -f "${trm_revivefile}.tmp" "${trm_revivefile}"
+
+	f_log "debug" "f_reviveload ::: radio: ${load_radio}, essid: ${load_essid}, bssid: ${load_bssid:-"-"}, revive: ${revive}, max_rounds: ${trm_maxretry}"
+}
+
+# count down the loaded uplinks and re-enable them at the end of their revive cycle
+#
+f_revive() {
+	local cnt rounds radio bssid essid
+
+	[ ! -s "${trm_revivefile}" ] && return 0
+
+	: >"${trm_revivefile}.tmp"
+	while IFS="|" read -r cnt rounds radio bssid essid; do
+		if [ "${cnt}" -gt "0" ]; then
+			cnt="$((cnt - 1))"
+			if [ "${cnt}" = "0" ]; then
+				f_getcfg "${radio}" "${essid}" "${bssid}"
+				if [ -z "${trm_uplinkcfg}" ]; then
+					continue
+				fi
+				if [ "$(uci_get "travelmate" "${trm_uplinkcfg}" "enabled")" = "0" ]; then
+					uci_set "travelmate" "${trm_uplinkcfg}" "enabled" "1"
+					uci_commit "travelmate"
+					[ ! -f "${trm_refreshfile}" ] && printf "%s" "cfg_reload" >"${trm_refreshfile}"
+					f_log "info" "uplink has been re-enabled '${radio}/${essid}/${bssid:-"-"}' (${rounds}/${trm_maxretry})"
+				fi
+			fi
+		fi
+		printf "%s|%s|%s|%s|%s\n" "${cnt}" "${rounds}" "${radio}" "${bssid}" "${essid}" >>"${trm_revivefile}.tmp"
+	done <"${trm_revivefile}"
+	mv -f "${trm_revivefile}.tmp" "${trm_revivefile}"
+}
+
 # get travelmate option value in 'uplink' sections
 #
 f_getval() {
@@ -811,11 +866,11 @@ f_addsta() {
 f_net() {
 	local parse err_msg raw marker probe_host json_raw html_raw html_cp js_cp json_ec json_rc json_cp json_cp_url json_ed result="net nok"
 
-	# host of the configured probe url, used to spot foreign redirect targets
+	# host of the configured probe url without port, used to spot foreign redirect targets
 	#
 	probe_host="${trm_captiveurl#*://}"
 	probe_host="${probe_host%%/*}"
-	probe_host="$(printf "%s" "${probe_host}" | "${trm_awkcmd}" '{printf "%s",tolower($0)}')"
+	probe_host="$(printf "%s" "${probe_host}" | "${trm_awkcmd}" '{h=tolower($0);if(h~/^\[/)sub(/\].*$/,"]",h);else sub(/:[0-9]*$/,"",h);printf "%s",h}')"
 
 	# fetch captive-detection url, curl appends '%{json}' metadata behind a unique
 	# marker - splitting on the first curly brace would break on any response body
@@ -839,9 +894,10 @@ f_net() {
 			${parse}
 		EOF
 
-		# extract lowercased host portion of the effective url
+		# extract lowercased host portion of the effective url, strip the port as
+		# the host ends up in the dnsmasq rebind allowlist
 		#
-		json_cp="$(printf "%s" "${json_cp_url}" | "${trm_awkcmd}" 'BEGIN{FS="/"}{printf "%s",tolower($3)}')"
+		json_cp="$(printf "%s" "${json_cp_url}" | "${trm_awkcmd}" 'BEGIN{FS="/"}{h=tolower($3);if(h~/^\[/)sub(/\].*$/,"]",h);else sub(/:[0-9]*$/,"",h);printf "%s",h}')"
 		if [ "${json_ec}" = "0" ]; then
 
 			# request ended up on a foreign host: captive portal at that host
@@ -874,6 +930,8 @@ f_net() {
 				if [ -n "${json_ed}" ] && [ "${json_ed}" != "${probe_host}" ]; then
 					result="net cp '${json_ed}'"
 				fi
+			elif [ -n "${json_cp}" ] && [ "${json_cp}" != "${probe_host}" ]; then
+				result="net cp '${json_cp}'"
 			fi
 		fi
 	fi
@@ -1406,12 +1464,16 @@ f_scan() {
 #
 f_main() {
 	local radio cnt retrycnt scan_list scan_essid scan_bssid scan_rsn scan_wpa scan_quality scan_open station_id retry_display
-	local section sta sta_essid sta_bssid sta_radio sta_mac open_sta open_essid config_radio config_essid config_bssid
+	local section sta sta_essid sta_bssid sta_radio sta_mac open_sta open_essid esc_essid config_radio config_essid config_bssid
 
 	# mark the run cycle as active, e.g. to distinguish 'processing' from an
 	# idle daemon in f_genstatus
 	#
 	trm_active="1"
+
+	# re-enable uplinks whose revive cycle has expired
+	#
+	f_revive
 
 	# initial check
 	#
@@ -1466,6 +1528,7 @@ f_main() {
 					section="${sta%%-*}"
 					sta_radio="$(uci_get "wireless" "${section}" "device")"
 					sta_essid="$(uci_get "wireless" "${section}" "ssid")"
+					esc_essid="\"${sta_essid//\"/\\\"}\""
 					sta_bssid="$(uci_get "wireless" "${section}" "bssid")"
 					f_normbssid "${sta_bssid}"
 					sta_bssid="${trm_normbssid}"
@@ -1511,17 +1574,19 @@ f_main() {
 								fi
 								open_essid="${scan_essid%?}"
 								open_essid="${open_essid:1}"
+								open_essid="${open_essid//\\\"/\"}"
 								open_sta="$(f_addsta "${radio}" "${open_essid}")"
 								if [ -n "${open_sta}" ]; then
 									section="${open_sta%%-*}"
 									sta_radio="$(uci_get "wireless" "${section}" "device")"
 									sta_essid="$(uci_get "wireless" "${section}" "ssid")"
+									esc_essid="\"${sta_essid//\"/\\\"}\""
 									sta_bssid=""
 									sta_mac=""
 								fi
 							fi
 							if [ -n "${sta_bssid}" ] && [ "${radio}" = "${sta_radio}" ] &&
-								[ "${scan_bssid}" != "${sta_bssid}" ] && [ "${scan_essid}" = "\"${sta_essid}\"" ]; then
+								[ "${scan_bssid}" != "${sta_bssid}" ] && [ "${scan_essid}" = "${esc_essid}" ]; then
 								if [ -n "${trm_uplinkcfg}" ]; then
 									uci_set "travelmate" "${trm_uplinkcfg}" "enabled" "0"
 									uci_commit "travelmate"
@@ -1530,7 +1595,7 @@ f_main() {
 								f_log "info" "bssid mismatch (evil-twin) '${sta_radio}/${sta_essid}/${sta_bssid} => ${scan_bssid}'"
 								continue
 							fi
-							if { { [ "${scan_essid}" = "\"${sta_essid}\"" ] && { [ -z "${sta_bssid}" ] || [ "${scan_bssid}" = "${sta_bssid}" ]; }; } ||
+							if { { [ "${scan_essid}" = "${esc_essid}" ] && { [ -z "${sta_bssid}" ] || [ "${scan_bssid}" = "${sta_bssid}" ]; }; } ||
 								{ [ "${scan_bssid}" = "${sta_bssid}" ] && [ "${scan_essid}" = "hidden" ]; }; } && [ "${radio}" = "${sta_radio}" ]; then
 								if [ "${trm_eviltwin}" = "1" ] && [ -z "${sta_bssid}" ] && [ "${scan_essid}" != "hidden" ]; then
 									if [ "$((0x${scan_bssid%%:*} & 2))" != "0" ]; then
@@ -1570,9 +1635,10 @@ f_main() {
 												uci_set "travelmate" "${trm_uplinkcfg}" "enabled" "0"
 												uci_commit "travelmate"
 												[ ! -f "${trm_refreshfile}" ] && printf "%s" "cfg_reload" >"${trm_refreshfile}"
+												f_reviveload "${sta_radio}" "${sta_essid}" "${sta_bssid}"
 											fi
 											f_log "info" "uplink has been disabled '${sta_radio}/${sta_essid}/${sta_bssid:-"-"}' (${retrycnt}/${retry_display})"
-											continue 2
+											continue 3
 										else
 											f_genstatus
 											f_log "info" "can't connect to uplink '${sta_radio}/${sta_essid}/${sta_bssid:-"-"}' (${retrycnt}/${retry_display})"
