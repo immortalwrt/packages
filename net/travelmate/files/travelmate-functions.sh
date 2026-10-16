@@ -75,12 +75,6 @@ f_system() {
 	#
 	[ -z "${trm_cores}" ] && trm_cores="$("${trm_grepcmd}" -cm16 '^processor' /proc/cpuinfo 2>/dev/null)"
 	case "${trm_cores}" in "" | 0 | *[!0-9]*) trm_cores="1" ;; esac
-
-	# trigger ntp sync if no lock file exists (to avoid multiple concurrent calls)
-	#
-	if [ ! -d "${trm_ntplock}" ]; then
-		"${trm_ubuscmd}" -S call hotplug.ntp call '{ "env": [ "ACTION=stratum" ] }' >/dev/null 2>&1
-	fi
 }
 
 # command selector
@@ -872,11 +866,11 @@ f_addsta() {
 f_net() {
 	local parse err_msg raw marker probe_host json_raw html_raw html_cp js_cp json_ec json_rc json_cp json_cp_url json_ed result="net nok"
 
-	# host of the configured probe url, used to spot foreign redirect targets
+	# host of the configured probe url without port, used to spot foreign redirect targets
 	#
 	probe_host="${trm_captiveurl#*://}"
 	probe_host="${probe_host%%/*}"
-	probe_host="$(printf "%s" "${probe_host}" | "${trm_awkcmd}" '{printf "%s",tolower($0)}')"
+	probe_host="$(printf "%s" "${probe_host}" | "${trm_awkcmd}" '{h=tolower($0);if(h~/^\[/)sub(/\].*$/,"]",h);else sub(/:[0-9]*$/,"",h);printf "%s",h}')"
 
 	# fetch captive-detection url, curl appends '%{json}' metadata behind a unique
 	# marker - splitting on the first curly brace would break on any response body
@@ -900,9 +894,10 @@ f_net() {
 			${parse}
 		EOF
 
-		# extract lowercased host portion of the effective url
+		# extract lowercased host portion of the effective url, strip the port as
+		# the host ends up in the dnsmasq rebind allowlist
 		#
-		json_cp="$(printf "%s" "${json_cp_url}" | "${trm_awkcmd}" 'BEGIN{FS="/"}{printf "%s",tolower($3)}')"
+		json_cp="$(printf "%s" "${json_cp_url}" | "${trm_awkcmd}" 'BEGIN{FS="/"}{h=tolower($3);if(h~/^\[/)sub(/\].*$/,"]",h);else sub(/:[0-9]*$/,"",h);printf "%s",h}')"
 		if [ "${json_ec}" = "0" ]; then
 
 			# request ended up on a foreign host: captive portal at that host
@@ -935,6 +930,8 @@ f_net() {
 				if [ -n "${json_ed}" ] && [ "${json_ed}" != "${probe_host}" ]; then
 					result="net cp '${json_ed}'"
 				fi
+			elif [ -n "${json_cp}" ] && [ "${json_cp}" != "${probe_host}" ]; then
+				result="net cp '${json_cp}'"
 			fi
 		fi
 	fi
@@ -1641,7 +1638,7 @@ f_main() {
 												f_reviveload "${sta_radio}" "${sta_essid}" "${sta_bssid}"
 											fi
 											f_log "info" "uplink has been disabled '${sta_radio}/${sta_essid}/${sta_bssid:-"-"}' (${retrycnt}/${retry_display})"
-											continue 2
+											continue 3
 										else
 											f_genstatus
 											f_log "info" "can't connect to uplink '${sta_radio}/${sta_essid}/${sta_bssid:-"-"}' (${retrycnt}/${retry_display})"

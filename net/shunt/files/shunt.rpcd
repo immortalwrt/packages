@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (c) 2026 Dirk Brenken <dev@brenken.org>
 
-import { popen, readfile } from 'fs';
+import { popen, readfile, access } from 'fs';
 
 const ubus = require('ubus');
 const rtnl = require('rtnl');
@@ -19,7 +19,7 @@ const RT = rtnl.const;
 import { load as config_load, parse as config_parse } from 'shunt.config';
 import { resolve as netifd_resolve } from 'shunt.netifd';
 import { compile as match_compile } from 'shunt.match';
-import { load as files_load } from 'shunt.domain_file';
+import { load as files_load } from 'shunt.list_file';
 import { action_name, compile as nft_compile } from 'shunt.nft';
 import { compile as route_compile } from 'shunt.route';
 import { names as poll_names } from 'shunt.poll';
@@ -36,6 +36,14 @@ function daemon_status() {
 	let r = conn.call('shunt', 'status');
 
 	return r ?? null;
+}
+
+// Same test as the daemon's, so LuCI reports the policy the daemon skips.
+function tproxy_available() {
+	let rel = trim(readfile('/proc/sys/kernel/osrelease') ?? '');
+
+	return !!(access('/sys/module/nft_tproxy') ||
+		(length(rel) && access(`/lib/modules/${rel}/nft_tproxy.ko`)));
 }
 
 // The same sequence as the daemon's build_state(), minus the logging: two
@@ -64,7 +72,7 @@ function render() {
 	cfg.policies = f.policies;
 
 	let m = match_compile(cfg.policies);
-	let n = nft_compile(cfg.policies);
+	let n = nft_compile(cfg.policies, { tproxy: tproxy_available() });
 	let r = route_compile(cfg.policies, n.marks);
 
 	return { cfg, files: f, matcher: m, nft: n, route: r };
@@ -268,12 +276,14 @@ return {
 						rt_table: m.rt_table,
 						rt_prio: m.rt_prio,
 						interface: (m.action == 'route') ? p?.interface : null,
-						fallback: (m.action == 'route') ? p?.fallback : null,
+						fallback: (m.action != 'bypass') ? p?.fallback : null,
+						tproxy_port: m.port,
 						domains: length(p?.domains ?? []),
 						file_domains: length(p?.file_domains ?? []),
-						rules: (m.action == 'route' && rules)
+						file_dst: length(p?.file_dst ?? []),
+						rules: (m.action != 'bypass' && rules)
 							? length(rules[m.name] ?? []) : null,
-						routes: (m.action == 'route') ? routes[m.name] : null
+						routes: (m.action != 'bypass') ? routes[m.name] : null
 					});
 				}
 
@@ -313,8 +323,9 @@ return {
 
 				let out = {};
 
+				// m_ and i_ carry no family digit, every other kind does.
 				for (let name in all) {
-					let at = (substr(name, 0, 1) == 'm') ? 2 : 3;
+					let at = (index('mi', substr(name, 0, 1)) >= 0) ? 2 : 3;
 
 					if (substr(name, at) == want)
 						out[name] = all[name];

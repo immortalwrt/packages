@@ -47,12 +47,12 @@ shunt check
 
 <a id="main-features"></a>
 ## Main Features
-* Routes by client address, client MAC, destination CIDR and domain, in any combination
+* Routes by client address, client MAC, ingress device, destination CIDR, port and domain, in any combination
 * Resolver independent: works with any DNS backend, and with an encrypted upstream, because it reads the plaintext leg between client and resolver
 * Wildcard domains (`*.example.com`), learned passively as clients use them
-* Domain lists from a file - a community-maintained set of thousands of names, without a single UCI entry per name
-* Per-policy killswitch: hold the traffic when the interface drops, instead of leaking it out of the normal uplink
-* Per-policy action: `route` marks the traffic for the policy interface, `bypass` exempts it from every policy below
+* Domain and address lists from a file - a community-maintained set of thousands of names or networks, without a single UCI entry per line
+* Per-policy killswitch: reject the traffic when the interface or proxy is gone, instead of leaking it out of the normal uplink - clients fail at once rather than on a timeout
+* Per-policy action: `route` marks the traffic for the policy interface, `bypass` exempts it from every policy below, `tproxy` hands it to a transparent proxy on the router
 * Your own networks stay reachable from a policy client, without listing them anywhere
 * Puts its own table back when something deletes it, `fw4 flush` included
 * Own nftables table and routing tables, disjoint mark range - runs beside `pbr` and `mwan3`
@@ -65,6 +65,8 @@ shunt check
 * OpenWrt with fw4/nftables
 * `ucode` plus `ucode-mod-fs`, `ucode-mod-socket`, `ucode-mod-uci`, `ucode-mod-uloop`, `ucode-mod-resolv`, `ucode-mod-ubus`, `ucode-mod-rtnl`, `ucode-mod-log` and `rpcd-mod-ucode` - all pulled in by the package; `ip` is not needed, routes and rules are written over rtnetlink
 
+`kmod-nft-tproxy` only for a `tproxy` policy. It is not pulled in: without it a tproxy policy is skipped as an issue and everything else is applied.
+
 `ucode-mod-resolv` and `ucode-mod-ubus` are soft at runtime: without resolv, poll is skipped and the observer carries the service alone; without ubus, gateway discovery and interface events are skipped and the config's own values are used. Both cost one warning in the log, not a failed start.
 
 <a id="which-tunnels-work"></a>
@@ -76,11 +78,11 @@ Any of them, and there is no supported-protocols list to check against, because 
 * **Ethernet style interfaces** - OpenVPN `tap*`, a second wired uplink, a mobile connection - use the gateway discovered from netifd, or `gw4`/`gw6` if you set them.
 * **Interfaces netifd does not manage** work by name too. On OpenWrt this is the exception rather than the rule - wireguard, OpenVPN, L2TP and the rest all have netifd protocols and are managed like any other interface. It applies to a tunnel brought up outside netifd, by `wg-quick` or a script of your own. If such an interface does need a gateway, discovery cannot find one and you have to set `gw4`/`gw6` yourself.
 
-**WireGuard: `route_allowed_ips` belongs off.** shunt renders `default dev <device>` into the policy's own table, so it needs no route from the tunnel itself. With the option on and `allowed_ips 0.0.0.0/0` netifd installs that prefix as a route in `main` instead, and the whole box follows the tunnel - the situation policy routing exists to avoid. Turning it off is all that is required; nothing else about the peer changes.
+**WireGuard: `route_allowed_ips` belongs off, unless the tunnel is the default uplink.** shunt renders `default dev <device>` into the policy's own table, so it needs no route from the tunnel itself. With the option on and `allowed_ips 0.0.0.0/0` netifd installs that prefix as a route in `main` instead, and the whole box follows the tunnel - the situation policy routing exists to avoid. Turning it off is all that is required; nothing else about the peer changes. Where the tunnel is meant to carry everything and the policies carve out the exceptions, leave it on - see [Default uplink and exceptions](#default-uplink-and-exceptions).
 
 **`AllowedIPs` is not a route, and it still applies.** `route_allowed_ips` decides only whether netifd installs routes for those prefixes - they are written to the wireguard configuration either way, and the kernel uses them as its cryptokey filter. A packet whose destination matches no peer's `AllowedIPs` is dropped inside wireguard, however correctly it was routed there. A policy meant to carry general traffic therefore needs `0.0.0.0/0` on the peer, and `::/0` if it carries IPv6; what actually enters the tunnel is decided by the policy's selectors, not by the peer. Narrowing `AllowedIPs` to a few subnets is right only when those subnets really are everything the tunnel should ever carry.
 
-The one thing that does not work is anything that is not a routable interface. Tor is the usual example: it normally offers a SOCKS port, and sending traffic there is a redirect, not a route. shunt marks a packet and looks up a routing table; without a device to put a default route on, there is nothing for it to do. Transparent proxying is out of scope by design, not for want of a special case.
+The one thing that does not work is anything that is not a routable interface. Tor is the usual example: it normally offers a SOCKS port, and sending traffic there is a redirect, not a route. shunt marks a packet and looks up a routing table; without a device to put a default route on, there is nothing for it to do.
 
 Two kernel-side prerequisites. shunt never changes either one behind your back - the first can be handed to shunt explicitly (`rp_filter_manage`, below), the second stays with fw4:
 
@@ -148,7 +150,7 @@ All functions are available from the command line, and the config file can be ed
 shunt check        # render everything, print marks and issues, change nothing
 shunt run          # foreground, the procd service entry point
 shunt flush        # tear down table, rules, routes and the mapping file
-shunt refresh      # make the running daemon re-read its domain files
+shunt refresh      # make the running daemon re-read its list files
 shunt -v <cmd>     # echo every message to the terminal as well
 ```
 
@@ -160,7 +162,7 @@ Logging goes to syslog under the tag `shunt`, so `logread -e shunt` shows everyt
 
 `shunt flush` is the escape hatch if the daemon ever dies without tearing down. It is idempotent and safe on a box that never ran shunt.
 
-`shunt refresh` asks the daemon over ubus to re-read every `domain_file` and reports what it found; it is the one change that does not need a restart. Without a running daemon it says so and exits 1 - nothing is lost, the next start reads the files anyway. Everything else in the config still takes `/etc/init.d/shunt restart`.
+`shunt refresh` asks the daemon over ubus to re-read every `domain_file` and `dst_file` and reports what it found; it is the one change that does not need a restart. Without a running daemon it says so and exits 1 - nothing is lost, the next start reads the files anyway. Everything else in the config still takes `/etc/init.d/shunt restart`.
 
 <a id="shunt-config-options"></a>
 ## shunt config options
@@ -173,7 +175,7 @@ Logging goes to syslog under the tag `shunt`, so `logread -e shunt` shows everyt
 | debug | `0` | log every observed answer and every set write |
 | rp_filter_manage | `0` | set rp_filter=2 on shunt's own policy devices, at start and on ifup |
 | poll_interval | `300` | seconds between poll cycles, at least 30 |
-| entry_ttl | `1200` | ceiling for the nftables timeout on learned elements, at least 60 |
+| entry_ttl | `1200` | ceiling for the lifetime of learned elements, at least 60 |
 | snoop | `1` | enable the passive DNS observer |
 | snoop_device | `br-lan` | LAN devices to observe, a list, one entry per segment |
 
@@ -186,20 +188,23 @@ Each `config policy` section is one routing policy. **The section must be named,
 | Option | Description |
 | :--- | :--- |
 | enabled | `0` skips the section entirely |
-| action | `route` (default) or `bypass`, see below |
+| action | `route` (default), `bypass` or `tproxy`, see below |
 | interface | netifd logical name (`wan`, `trm_wwan`) or raw netdev (`wg0`, `phy0-sta0`); `route` only |
-| fallback | `main` (default) or `block`, see below; `route` only |
+| tproxy_port | port the transparent proxy listens on; `tproxy` only, required there |
+| fallback | `main` (default) or `block`, see below; `route` and `tproxy` |
 | keep_local | `1` (default) keeps traffic on `main` where `main` has a route for it, see below; `route` only |
 | gw4 / gw6 | gateway override; normally unnecessary |
 | src | client addresses or CIDRs whose traffic this policy owns |
 | src_mac | client MAC addresses, ORed with `src` |
+| src_dev | ingress devices (`br-guest`, `lan2`), ORed with `src` and `src_mac`, see below |
 | proto | `tcp`, `udp`, or both; a port without one covers both |
 | dport | destination ports, single or a range like `8000-8080` |
 | dst | destination addresses or CIDRs |
+| dst_file | files with destination addresses or CIDRs, one per line, see below |
 | domain | domain patterns, see below |
 | domain_file | files with domain patterns, one per line, see below |
 
-`src`, `src_mac`, `dst`, `domain` and `domain_file` are lists and may repeat.
+`src`, `src_mac`, `src_dev`, `dst`, `dst_file`, `domain` and `domain_file` are lists and may repeat.
 
 Interfaces are resolved through netifd: a logical name resolves to its `l3_device`, a raw netdev is adopted if netifd knows it, and a device netifd knows nothing about passes through as given - which on OpenWrt means a tunnel started outside netifd, since wireguard and the other tunnel types have netifd protocols of their own. Gateways are discovered from the same dump, merged across sibling entries, because netifd splits families. `gw4`/`gw6` override discovery and always win; on a point to point interface no gateway is needed at all.
 
@@ -207,15 +212,15 @@ There is deliberately no list of supported tunnel protocols. shunt asks netifd f
 
 ### Selectors are ANDed, client selectors OR each other
 
-* `src` or `src_mac` alone marks everything from those clients
-* `dst`, `domain`, `dport` or `proto` alone marks that traffic from everyone
+* `src`, `src_mac` or `src_dev` alone marks everything from those clients
+* `dst`, `dst_file`, `domain`, `dport` or `proto` alone marks that traffic from everyone - `dport '25'` by itself routes everybody's smtp
 * clients plus destinations marks only those clients' traffic to those destinations
 
 `dport` and `proto` AND with everything else, so a policy with a client, a domain and `dport 443` covers that client's HTTPS traffic to that domain and nothing more. A port without a protocol matches **both** tcp and udp - "port 443" almost always means QUIC too, and requiring the protocol would let it slip through unnoticed. If ports or protocols were configured and none of them is usable, the policy is skipped rather than rendered without the narrowing.
 
 This is the single most common source of "it did not work" reports: with a client and a domain both set, a generic `curl ifconfig.me` from that client correctly takes the normal uplink, because `ifconfig.me` is not in the domain list. That is the policy working, not failing.
 
-A client MAC and a client address OR each other, so a host may be named either way. If client selectors were configured and **none** of them is usable - a typo in the only address, say - the policy is skipped with an issue rather than falling back to "every client", which is what an absent client selector otherwise means.
+A client MAC, a client address and an ingress device OR each other, so a host may be named either way. If client selectors were configured and **none** of them is usable - a typo in the only address, say - the policy is skipped with an issue rather than falling back to "every client", which is what an absent client selector otherwise means. The same holds for `dst`: if every destination address is unusable and no domain is left to narrow the policy, it is skipped rather than widened to every destination.
 
 ### Selecting clients by MAC
 
@@ -226,6 +231,22 @@ Three limits, none of them guessable:
 * **Same layer 2 segment only.** Anything behind another router arrives with that router's MAC.
 * **Never the router itself.** The `output` chain sees traffic the router generated, which has no ethernet sender, so MAC rules are not installed there. An address based policy does cover the router; a MAC-only one does not.
 * **Phones randomise their MAC**, though usually stable per network. Use the address the client shows in your DHCP leases, not the one on the label.
+
+<a id="selecting-clients-by-ingress-device"></a>
+### Selecting clients by ingress device
+
+`src_dev` selects everything that arrives on a device - a whole guest network, an IoT VLAN, a second LAN port - in both address families at once. That is what an address selector cannot do for IPv6 on a line with a dynamic prefix: the delegated prefix changes, and the prefix you configured stops matching the day it does. The device does not change.
+
+```
+config policy 'guest'
+	option interface 'wg0'
+	option fallback  'block'
+	list   src_dev   'br-guest'
+```
+
+The entry is a kernel device name - `br-guest`, `lan2`, `eth0.20` - as `ip link` shows it, not a netifd interface name. It is matched by name, so a device that does not exist yet is no error: the rule matches nothing until it appears. Like `src_mac`, it exists in prerouting only, so the router's own traffic is never covered by it.
+
+With `keep_local` at its default the devices' traffic to your other networks stays local, and traffic to the router itself - DNS, DHCP, LuCI - is delivered locally whatever the mark says. For domain policies the device has to be observed as well: add it to `snoop_device`, or names its clients ask for are learned by poll alone.
 
 ### Domain patterns
 
@@ -276,7 +297,25 @@ Run from cron that covers the reboot case as well: the first run after boot crea
 
 What a large list costs: 100k patterns take about two seconds to load and roughly 40 MB of memory on an x86 test box, so expect several seconds and a proportionally smaller footprint on a router, at start and on every refresh. A file above 4 MiB is refused outright as an issue. `shunt check` prints how many files were read and how many patterns they contributed, `shunt refresh` does the same for the running daemon, and `ubus call shunt status` shows the count under `files` together with the time of the last refresh.
 
-### Actions: route or bypass
+<a id="address-lists-from-a-file"></a>
+### Address lists from a file
+
+`dst_file` is the same mechanism for destinations: a provider's published ranges, a country list, a set of CDN networks - thousands of prefixes that have no business in UCI.
+
+```
+config policy 'streaming'
+	option interface 'wg0'
+	list   src       '192.168.1.0/24'
+	list   dst_file  'provider.txt'
+```
+
+The file holds one IPv4 or IPv6 address or prefix per line, both families mixed as they come, with `#` starting a comment and blank lines ignored. Name, location, size limit, issues and `shunt refresh` work exactly as for a [domain file](#domain-lists-from-a-file), and `dst` and `dst_file` are additive. Every entry is checked by the rules a `list dst` entry is checked by, so a bad line costs that line and never the ruleset.
+
+Overlapping prefixes are fine: the sets are created with `auto-merge`, so `10.0.0.0/8` next to `10.1.0.0/16` is folded into one instead of failing the whole batch. The policy gets its static sets for both families even while the file is missing, so a later file may bring either family. `shunt refresh` flushes and refills those sets in one nftables transaction - the set is never seen half-filled - and leaves everything else in place.
+
+A list of 100k prefixes takes about two seconds to read and roughly 40 MB of memory on an x86 test box, and nftables about two seconds to load it, at start and on every refresh; expect several times that on a router.
+
+### Actions: route, bypass or tproxy
 
 `action 'route'` (default) is the policy shape everything above describes: matching traffic is marked and looked up in the policy's own table.
 
@@ -297,10 +336,76 @@ config policy 'vpn'
 
 Order matters and only order: a bypass section placed after the policy it is meant to except from never sees the packet.
 
+<a id="transparent-proxy-tproxy"></a>
+### Transparent proxy: tproxy
+
+`action 'tproxy'` hands the selected traffic to a transparent proxy running on the router - `hev-socks5-tproxy`, `sing-box` or `xray` in tproxy mode, or anything else that accepts `IP_TRANSPARENT` connections. shunt only steers: it does not start, configure or watch the proxy. It needs `kmod-nft-tproxy`.
+
+```
+config policy 'proxy'
+	option action      'tproxy'
+	option tproxy_port '1088'
+	option fallback    'block'
+	list   src         '192.168.1.0/24'
+	list   domain      '*.example.com'
+```
+
+The selectors are the usual ones. tproxy carries tcp and udp only, so a tproxy policy without `proto` covers both, and the proxy must listen for every protocol the policy selects. A policy consumes a mark and gets a routing table holding a single `local default dev lo` route - that is how the selected packets reach a socket on the router without their destination being rewritten.
+
+shunt delivers to `127.0.0.1` and `::1`. A proxy listening on loopback or on the wildcard address is found; one bound to the router's LAN address is not. The address is not left to the kernel on purpose: without one it picks the address of the incoming interface, and a proxy bound to loopback would never be found - the statement fails silently and the traffic is not proxied.
+
+Each family needs a listener that accepts it. A proxy on `0.0.0.0` or `127.0.0.1` serves IPv4 only, so the IPv6 traffic of the policy finds no listener and follows `fallback`. Listen on `::` - which takes both families unless the proxy sets `IPV6_V6ONLY` - or on both loopback addresses.
+
+Destinations on the router itself are never proxied, nor broadcast and multicast: DNS, DHCP, LuCI and SSH of a selected client reach the router as they would without shunt, and stay reachable with `fallback 'block'` while the proxy is down. This is tproxy's counterpart to `keep_local`, built in and not switchable. It covers the router's own addresses only - traffic to your other networks is forwarded unicast and is proxied like any other. A proxy on the router cannot reach those networks on the client's behalf in a useful way, so exempt them with a `bypass` section above the tproxy policy:
+
+```
+config policy 'no_proxy'
+	option action 'bypass'
+	list  dst     '192.168.0.0/16'
+	list  dst     'fd00::/8'
+```
+
+`fallback` decides what a **new** flow does when no listener is found - proxy stopped, crashed, wrong port: `main` (default) lets it take the normal uplink, `block` rejects it - tcp with a reset, anything else with ICMP admin-prohibited, so the client gives up at once instead of on a timeout. A flow that was already proxied is rejected the same way once its listener is gone, whatever the fallback. Its state is in the proxy, and its conntrack entry was never NATed, so forwarding the rest of it would put the client's own address on the uplink - measured, which is why this does not follow `fallback`.
+
+Without `proto` or `dport` the policy owns every protocol its clients send, not only what a proxy can take. `fallback 'block'` therefore also rejects ICMP, ESP, GRE and the rest - while the proxy runs too, so `ping` from those clients never gets out. Router addresses, broadcast and multicast stay exempt as above, which keeps neighbour discovery and the router's own services working. With `proto` or `dport` the policy owns only what it names and `block` rejects only that; everything else the client sends - QUIC for a policy narrowed to `proto 'tcp'` - takes the normal uplink.
+
+`interface`, `keep_local` and the gateway overrides are not read, and `keep_local '1'` set explicitly is reported - the exemption of the router's own addresses above takes its place. It would break the policy: main would forward packets the kernel has already handed to the proxy's socket, and the kernel drops those.
+
+Only traffic passing through the router is proxied. tproxy exists in the prerouting hook alone, so the router's own traffic is not touched by a tproxy policy - which also keeps the proxy's upstream connections from looping back into it.
+
+The proxied traffic is delivered to the router itself, so fw4 applies its **input** rules, not its forward rules. On `lan`, with input `ACCEPT`, nothing needs doing. A zone with input `REJECT` or `DROP` - a guest network, typically - drops it, and shunt cannot override that from its own table, because a drop in any base chain is final. The packet still carries its original destination port, so a rule on the proxy port does not match; match the policy's mark instead (`shunt check` prints it):
+
+```
+config rule
+	option name   'Allow-guest-tproxy'
+	option src    'guest'
+	option mark   '0x01000000/0xff000000'
+	option target 'ACCEPT'
+```
+
+**Example backend: hev-socks5-tproxy.** It turns tproxy traffic into connections to a SOCKS5 server and is packaged for OpenWrt. Its sample `/etc/hev-socks5-tproxy/main.yml` already fits the policy above - tcp and udp on `::` port 1088, the SOCKS5 server expected on `127.0.0.1:1080`:
+
+```
+socks5:
+  port: 1080
+  address: 127.0.0.1
+  udp: 'udp'
+
+tcp:
+  port: 1088
+  address: '::'
+
+udp:
+  port: 1088
+  address: '::'
+```
+
+Point `socks5` at your server, then enable the service with `uci set hev-socks5-tproxy.config.enabled='1'`, `uci commit hev-socks5-tproxy` and `/etc/init.d/hev-socks5-tproxy start`. Its own connections to the SOCKS5 server start on the router, so the tproxy policy never sees them; a `route` policy can still send them through a tunnel.
+
 <a id="local-traffic-keep_local"></a>
 ### Local traffic: keep_local
 
-A policy that names only clients marks everything those clients send, and the mark decides the routing table before the destination is looked at. Without `keep_local` that includes traffic to your own networks: a marked packet to another VLAN would find only the policy table's default route and leave through the tunnel, and with `fallback 'block'` it would be dropped.
+A policy that names only clients marks everything those clients send, and the mark decides the routing table before the destination is looked at. Without `keep_local` that includes traffic to your own networks: a marked packet to another VLAN would find only the policy table's default route and leave through the tunnel, and with `fallback 'block'` it would be rejected.
 
 `keep_local '1'` (default) renders a second ip rule per family, on the same mark and one priority ahead of the policy rule, that consults `main` with the default route suppressed:
 
@@ -323,7 +428,32 @@ Note that domain precedence is resolved *before* this, at the matcher: the most 
 
 `fallback 'main'` (default) renders no default route into the policy table, so when the policy interface is down the table is empty and marked traffic falls through to `main` - the normal uplink. Traffic keeps flowing, unpolicied.
 
-`fallback 'block'` adds a blackhole default at metric 9999 to the policy table. While the interface is up its own default has the lower metric and wins; when the interface drops, the kernel withdraws that route and the blackhole catches everything. That is the killswitch: traffic belonging to the policy stops rather than leaking out of the wrong interface. It stops at the destinations the policy actually owns - see [keep_local](#local-traffic-keep_local) for what a marked packet to one of your own networks does, and how to make the killswitch hermetic.
+`fallback 'block'` adds a `prohibit` default at metric 9999 to the policy table. While the interface is up its own default has the lower metric and wins; when the interface drops, the kernel withdraws that route and the prohibit route catches everything, answering it with ICMP admin-prohibited - a connection attempt fails at once instead of on a timeout, measured. That is the killswitch: traffic belonging to the policy stops rather than leaking out of the wrong interface. It stops at the destinations the policy actually owns - see [keep_local](#local-traffic-keep_local) for what a marked packet to one of your own networks does, and how to make the killswitch hermetic.
+
+<a id="default-uplink-and-exceptions"></a>
+### Default uplink and exceptions
+
+shunt routes only what its policies select. Everything else follows `main`, and which uplink `main` uses is decided by the interface metrics, not by shunt. A box with a normal uplink and a tunnel can therefore be set up either way round:
+
+**ISP as default, selected clients through the tunnel.** The uplink keeps its default route in `main`, the tunnel installs none (`route_allowed_ips '0'`). The policy names the tunnel as its `interface`:
+
+```
+config policy 'vpn'
+	option interface 'wg0'
+	list  src_mac    'aa:bb:cc:dd:ee:ff'
+```
+
+**Tunnel as default, selected clients through the ISP.** The tunnel carries the default route in `main` (`route_allowed_ips '1'` and a lower `metric` than the uplink), and the policy names the uplink as its `interface`:
+
+```
+config policy 'isp'
+	option interface 'wan'
+	list  src_mac    'aa:bb:cc:dd:ee:ff'
+```
+
+In both forms the policy's own table decides for its clients in both address families, so the metrics matter only for traffic no policy selects. Set them explicitly on both sides anyway, including `wan6` where IPv6 comes from an interface of its own: netifd's default `metric 0` stays 0 for IPv4, but the kernel stores an IPv6 route with metric 0 as 1024. An interface left at the default therefore wins the IPv4 default route and loses the IPv6 one against any interface with an explicit metric - unselected clients then leave through different uplinks per family.
+
+`fallback 'block'` covers the policy's clients only. In the tunnel-as-default form, unselected clients move to the uplink when the tunnel goes down, because netifd withdraws the tunnel's route from `main` and the uplink's is left. Preventing that is a matter of the firewall, not of shunt.
 
 <a id="how-addresses-are-learned"></a>
 ## How addresses are learned
@@ -332,7 +462,9 @@ Two sources feed the same nftables sets, union with an element timeout. They are
 * **poll** resolves the configured names through whatever system resolver exists, on a fixed interval. It warms the sets before the first client packet, so first contact does not race. Wildcards are not names and cannot be polled, and names from a `domain_file` are not polled by design - see [Domain lists from a file](#domain-lists-from-a-file).
 * **snoop** passively observes DNS responses on the LAN side via AF_PACKET with a BPF filter matching **UDP source port 53** - answers, not questions - including one level of VLAN tagging. It covers CDN variance and wildcards, which poll cannot. It reads; it never writes anything back onto the wire and never sits between a client and its resolver. If it dies, DNS keeps working and only the policy stops applying.
 
-The two sources differ in how long an element lives. A snooped element carries the TTL of the answer it came from - the shortest one, when a message mixes several - clamped to the range 60 to `entry_ttl` seconds. So an address a CDN hands out for 30 seconds is gone from the set within a minute of the last answer that named it, while a name with a day-long TTL is capped at `entry_ttl` and re-learned on its next answer. A polled element carries `entry_ttl`: the resolver interface hands back addresses without their TTL, so poll has nothing better than the ceiling. Where both sources see the same address the shorter bound wins - the next snooped answer cuts a polled element down to its TTL, and the write cache only rewrites an element when the new expiry moves by at least half of the lifetime the answer carries, so a burst of identical answers costs one write.
+The two sources differ in how long an element lives. A snooped element carries the TTL of the answer it came from - the shortest one, when a message mixes several - clamped to the range 60 to `entry_ttl` seconds. So an address a CDN hands out for 30 seconds is gone from the set about a minute after the last answer that named it, while a name with a day-long TTL is capped at `entry_ttl` and re-learned on its next answer. A polled element carries `entry_ttl`: the resolver interface hands back addresses without their TTL, so poll has nothing better than the ceiling. Where both sources see the same address the shorter bound wins - the next snooped answer cuts a polled element down to its TTL, and the write cache only rewrites an element when the new expiry moves by at least half of the lifetime the answer carries, so a burst of identical answers costs one write.
+
+The kernel timeout runs a few seconds past that lifetime: the current write interval plus two seconds, so four on an ordinary box. A client asks again when the TTL runs out, and the write for the new answer reaches the set up to one write interval later; an element timed out to the second would be missing for exactly that gap, and a connection opened in it would start on the normal uplink and stay there. The slack follows the interval because the gap does - on a box where writes are expensive and the interval has grown, see [What shunt creates on the system](#what-shunt-creates-on-the-system), elements outlive their TTL by correspondingly more.
 
 This is also the honest answer to the question every IP-based policy router gets: what about a CDN address that the domain stops using while some other site starts to? Nothing on layer 3 can tell two names apart once they share an address, shunt included. What shunt can do is not keep the address longer than the resolver would have, which is exactly what the TTL says.
 
@@ -428,6 +560,27 @@ config policy 'subnet'
 	list  src        '192.168.1.0/24'
 ```
 
+**A whole guest network into the tunnel**
+
+`br-guest` is the device, not the netifd interface. It covers the guest network's IPv4 and IPv6 alike, whatever prefix the provider hands out:
+
+```
+config policy 'guest'
+	option interface 'wg0'
+	option fallback  'block'
+	list   src_dev   'br-guest'
+```
+
+**One port for everybody**
+
+No client, no destination - every smtp connection leaves through the second uplink:
+
+```
+config policy 'smtp'
+	option interface 'wan2'
+	list   dport     '25'
+```
+
 **A destination range without any domain**
 
 ```
@@ -460,19 +613,21 @@ table inet shunt                     own table, see below
   chain prerouting                   filter hook prerouting, priority mangle
   chain output                       route hook output, priority mangle
   set d4_<policy> / d6_<policy>      learned, flags timeout, per-element counter
-  set s4_<policy> / s6_<policy>      static dst, flags interval, counter
-  set c4_<policy> / c6_<policy>      client src selectors, interval, counter
+  set s4_<policy> / s6_<policy>      static dst and dst_file, flags interval, auto-merge, counter
+  set c4_<policy> / c6_<policy>      client src selectors, interval, auto-merge, counter
   set m_<policy>                     client MACs, no family digit, counter
+  set i_<policy>                     client ingress devices, no family digit, counter
 
 fwmark                               <index> << 24, mask 0xff000000
 ct mark                              same bits, set on a flow's first packet
 ip rule pref                         31000 + <index> keep_local's main lookup
                                      31500 + <index> the policy table
-routing table                        8000 + <index>
+routing table                        8000 + <index>, for tproxy: local default dev lo
+                                     with fallback 'block': prohibit default metric 9999
 /etc/iproute2/rt_tables.d/shunt.conf the table name mapping, for `ip route show` only
 ```
 
-A `bypass` policy is only a rule in the prerouting and output chains: no mark, no table, no ip rule, and it does not count against the 255. The mark mask is fixed at `0xff000000`, which allows 255 policies. The `output` chain is `type route` so the router's own marked traffic is re-routed after the mark is set.
+A `bypass` policy is only a rule in the prerouting and output chains: no mark, no table, no ip rule, and it does not count against the 255. A `tproxy` policy has rules in prerouting only, and no keep_local rule. The mark mask is fixed at `0xff000000`, which allows 255 policies. The `output` chain is `type route` so the router's own marked traffic is re-routed after the mark is set.
 
 Every set carries per-element counters, so "is this element ever hit" is one look at `nft list set inet shunt <set>` rather than a tcpdump session. The two kinds count different things: nftables tests a rule left to right, so a **client** set counts every packet that matched the selector, whether or not the destination matched afterwards; a **learned** set is the last lookup in the rule, so a hit there means the packet really was marked. A busy client beside learned addresses at zero is a client that has not visited any of the routed domains, not a fault.
 
@@ -595,6 +750,7 @@ These are consequences of the design, stated rather than worked around:
 * **DNS over TCP is not observed.** Port 53 over TCP needs reassembly, which is out of scope; answers large enough to force TCP are rare in the traffic shunt cares about.
 * **Route and rule application is best effort.** At boot a tunnel interface may not exist yet. A rule over an empty table falls through to `main`, so the failure mode is "policy not applied yet", never "traffic broken". Each distinct reason is one warning line.
 * **No interface hotplug.** A device that appears later is picked up on the next `ifup` event or within one poll interval, not immediately.
+* **tproxy is detected by its module file.** shunt applies a tproxy policy when `nft_tproxy` is loaded or installed under `/lib/modules`. A custom kernel with tproxy built in has neither, and its tproxy policies are skipped as an issue.
 * **An outside flush of nftables is repaired, not prevented.** Any tool may delete shunt's table - `fw4 flush` does. shunt re-applies it within one poll interval, or sooner, and until then nothing is marked.
 
 **Out of scope permanently:** resolver-integrated set population (dnsmasq `nftset`, AdGuard Home etc.). Being independent of the DNS backend is the entire point of the project, so adopting a backend-specific mechanism would give up the one property that distinguishes it. Also out: DSCP tagging and user include files.
