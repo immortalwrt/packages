@@ -6,13 +6,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NPM_NAME:=zwave-js-ui
 PKG_NAME:=node-$(PKG_NPM_NAME)
-PKG_VERSION:=11.22.3
-PKG_RELEASE:=1
+PKG_VERSION:=11.24.1
+PKG_RELEASE:=5
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/npm/$(PKG_NPM_NAME)/-/ \
                 https://registry.npmjs.org/$(PKG_NPM_NAME)/-/
-PKG_HASH:=21316acf32a1d1e32f928909a3974ca6fbd8a20c230363a9e2f64a6a73902085
+PKG_HASH:=ab837c60ed13a0e6837b52a80d723d4714cd399231659226b28732b545cb4dd2
 
 PKG_MAINTAINER:=David Woodhouse <dwmw2@infradead.org>
 PKG_LICENSE:=MIT
@@ -30,7 +30,7 @@ define Package/node-zwave-js-ui
   CATEGORY:=Languages
   TITLE:=Z-Wave control panel UI and MQTT gateway
   URL:=https://www.npmjs.org/package/zwave-js-ui
-  DEPENDS:=+node +node-bufferutil +node-utf-8-validate
+  DEPENDS:=+node +node-bufferutil +node-utf-8-validate @NODEJS_22:BROKEN
 endef
 
 define Package/node-zwave-js-ui/description
@@ -103,11 +103,12 @@ define Package/node-zwave-js-ui/install
 	$(LN) /usr/lib/node/bufferutil $(1)/opt/$(PKG_NPM_NAME)/node_modules/
 	$(LN) /usr/lib/node/utf-8-validate $(1)/opt/$(PKG_NPM_NAME)/node_modules/
 	$(LN) ./@zwave-js/core/node_modules/triple-beam $(1)/opt/$(PKG_NPM_NAME)/node_modules/
-	$(LN) ../zwave-js/node_modules/@zwave-js/config $(1)/opt/$(PKG_NPM_NAME)/node_modules/@zwave-js/
-	$(LN) ./zwave-js/node_modules/alcalzone-shared $(1)/opt/$(PKG_NPM_NAME)/node_modules/
-	$(LN) ./zwave-js/node_modules/json-logic-js $(1)/opt/$(PKG_NPM_NAME)/node_modules/
-	$(LN) ./zwave-js/node_modules/json5 $(1)/opt/$(PKG_NPM_NAME)/node_modules/
+	$(LN) ./zwave-js/node_modules/ $(1)/opt/$(PKG_NPM_NAME)/node_modules/
 	$(LN) ./zwave-js/node_modules/pathe $(1)/opt/$(PKG_NPM_NAME)/node_modules/
+	$(LN) ./zwave-js/node_modules/json5 $(1)/opt/$(PKG_NPM_NAME)/node_modules/
+	$(LN) ./zwave-js/node_modules/json-logic-js $(1)/opt/$(PKG_NPM_NAME)/node_modules/
+	$(LN) ./zwave-js/node_modules/alcalzone-shared $(1)/opt/$(PKG_NPM_NAME)/node_modules/
+	$(LN) ../zwave-js/node_modules/@zwave-js/config $(1)/opt/$(PKG_NPM_NAME)/node_modules/@zwave-js/
 	# for BUG
 	$(INSTALL_DIR) $(1)/opt/$(PKG_NPM_NAME)/node_modules/zwave-js/build/esm/lib/controller/proprietary/zwave-me
 	$(CP) ./files/License.js $(1)/opt/$(PKG_NPM_NAME)/node_modules/zwave-js/build/esm/lib/controller/proprietary/zwave-me/
