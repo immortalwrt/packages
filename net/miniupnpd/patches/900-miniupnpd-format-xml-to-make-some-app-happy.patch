@@ -1,4 +1,4 @@
-From 7651a23732d234f97137ca160a0c157eaed43ae8 Mon Sep 17 00:00:00 2001
+From bfff67fb27c4327d2a43b61ea1ad0559bfe60e29 Mon Sep 17 00:00:00 2001
 From: Chen Minqiang <ptpt52@gmail.com>
 Date: Wed, 29 Sep 2021 22:29:53 +0800
 Subject: [PATCH] miniupnpd: format xml to make some app happy
@@ -13,7 +13,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
 
 --- a/upnpdescgen.c
 +++ b/upnpdescgen.c
-@@ -947,6 +947,8 @@ genXML(char * str, int * len, int * tmpl
+@@ -946,6 +946,8 @@ genXML(char * str, int * len, int * tmpl
  				str = strcat_char(str, len, tmplen, '<');
  				str = strcat_str(str, len, tmplen, eltname);
  				str = strcat_char(str, len, tmplen, '>');
@@ -22,7 +22,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  			}
  #ifdef IGD_V2
  unstack:
-@@ -967,6 +969,8 @@ unstack:
+@@ -964,6 +966,8 @@ unstack:
  					for(c = *s; c > ' '; c = *(++s))
  						str = strcat_char(str, len, tmplen, c);
  					str = strcat_char(str, len, tmplen, '>');
@@ -31,15 +31,15 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  					top--;
  				}
  				else
-@@ -996,6 +1000,8 @@ unstack:
+@@ -993,6 +997,8 @@ unstack:
  				str = strcat_str(str, len, tmplen, configid_str);
  			}
  			str = strcat_char(str, len, tmplen, '>');
 +			str = strcat_char(str, len, tmplen, '\r');
 +			str = strcat_char(str, len, tmplen, '\n');
  			i = k & 0xffff;
- 			j = i + (k >> 16);
  			if(top < (GENXML_STACK_SIZE - 1)) {
+ 				top++;
 --- a/upnpsoap.c
 +++ b/upnpsoap.c
 @@ -75,11 +75,11 @@ BuildSendAndCloseSoapResp(struct upnphtt
@@ -83,7 +83,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  
-@@ -136,9 +136,9 @@ GetTotalBytesSent(struct upnphttp * h, c
+@@ -142,9 +142,9 @@ GetTotalBytesSent(struct upnphttp * h, c
  
  	static const char resp[] =
  		"<u:%sResponse "
@@ -96,7 +96,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -162,9 +162,9 @@ GetTotalBytesReceived(struct upnphttp *
+@@ -174,9 +174,9 @@ GetTotalBytesReceived(struct upnphttp *
  
  	static const char resp[] =
  		"<u:%sResponse "
@@ -109,7 +109,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -193,9 +193,9 @@ GetTotalPacketsSent(struct upnphttp * h,
+@@ -211,9 +211,9 @@ GetTotalPacketsSent(struct upnphttp * h,
  
  	static const char resp[] =
  		"<u:%sResponse "
@@ -122,7 +122,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -219,9 +219,9 @@ GetTotalPacketsReceived(struct upnphttp
+@@ -243,9 +243,9 @@ GetTotalPacketsReceived(struct upnphttp
  
  	static const char resp[] =
  		"<u:%sResponse "
@@ -135,7 +135,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -245,12 +245,12 @@ GetCommonLinkProperties(struct upnphttp
+@@ -275,12 +275,12 @@ GetCommonLinkProperties(struct upnphttp
  	 * DSL, POTS (plain old Telephone service), Cable, Ethernet */
  	static const char resp[] =
  		"<u:%sResponse "
@@ -154,7 +154,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[2048];
  	int bodylen;
-@@ -284,11 +284,11 @@ GetStatusInfo(struct upnphttp * h, const
+@@ -320,11 +320,11 @@ GetStatusInfo(struct upnphttp * h, const
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -171,7 +171,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -312,18 +312,18 @@ GetNATRSIPStatus(struct upnphttp * h, co
+@@ -354,18 +354,18 @@ GetNATRSIPStatus(struct upnphttp * h, co
  #if 0
  	static const char resp[] =
  		"<u:GetNATRSIPStatusResponse "
@@ -198,7 +198,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  	/* 2.2.9. RSIPAvailable
-@@ -345,9 +345,9 @@ GetExternalIPAddress(struct upnphttp * h
+@@ -393,9 +393,9 @@ GetExternalIPAddress(struct upnphttp * h
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -211,7 +211,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -417,10 +417,10 @@ AddPortMapping(struct upnphttp * h, cons
+@@ -471,10 +471,10 @@ AddPortMapping(struct upnphttp * h, cons
  
  	/*static const char resp[] =
  		"<u:AddPortMappingResponse "
@@ -224,7 +224,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -614,9 +614,9 @@ AddAnyPortMapping(struct upnphttp * h, c
+@@ -674,9 +674,9 @@ AddAnyPortMapping(struct upnphttp * h, c
  	int r;
  	static const char resp[] =
  		"<u:%sResponse "
@@ -237,7 +237,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -780,13 +780,13 @@ GetSpecificPortMappingEntry(struct upnph
+@@ -846,13 +846,13 @@ GetSpecificPortMappingEntry(struct upnph
  
  	static const char resp[] =
  		"<u:%sResponse "
@@ -256,9 +256,9 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
 +		"<NewLeaseDuration>%u</NewLeaseDuration>\r\n"
 +		"</u:%sResponse>\r\n";
  
- 	char body[1024];
+ 	char body[512+MINIUPNPD_DESC_SIZE];
  	int bodylen;
-@@ -871,12 +871,12 @@ DeletePortMapping(struct upnphttp * h, c
+@@ -951,12 +951,12 @@ DeletePortMapping(struct upnphttp * h, c
  
  	/*static const char resp[] =
  		"<u:DeletePortMappingResponse "
@@ -275,7 +275,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -981,12 +981,12 @@ DeletePortMappingRange(struct upnphttp *
+@@ -1067,12 +1067,12 @@ DeletePortMappingRange(struct upnphttp *
  	int r = -1;
  	/*static const char resp[] =
  		"<u:DeletePortMappingRangeResponse "
@@ -292,7 +292,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  	struct NameValueParserData data;
-@@ -1057,16 +1057,16 @@ GetGenericPortMappingEntry(struct upnpht
+@@ -1149,16 +1149,16 @@ GetGenericPortMappingEntry(struct upnpht
  
  	static const char resp[] =
  		"<u:%sResponse "
@@ -319,7 +319,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	long int index = 0;
  	unsigned short eport, iport;
-@@ -1140,31 +1140,31 @@ GetListOfPortMappings(struct upnphttp *
+@@ -1246,31 +1246,31 @@ GetListOfPortMappings(struct upnphttp *
  {
  	static const char resp_start[] =
  		"<u:%sResponse "
@@ -366,7 +366,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char * body;
  	size_t bodyalloc;
-@@ -1322,12 +1322,12 @@ SetDefaultConnectionService(struct upnph
+@@ -1442,12 +1442,12 @@ SetDefaultConnectionService(struct upnph
  {
  	/*static const char resp[] =
  		"<u:SetDefaultConnectionServiceResponse "
@@ -383,7 +383,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  	struct NameValueParserData data;
-@@ -1365,14 +1365,14 @@ GetDefaultConnectionService(struct upnph
+@@ -1491,14 +1491,14 @@ GetDefaultConnectionService(struct upnph
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -401,7 +401,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	/* example from UPnP_IGD_Layer3Forwarding 1.0.pdf :
  	 * uuid:44f5824f-c57d-418c-a131-f22b34e14111:WANConnectionDevice:1,
  	 * urn:upnp-org:serviceId:WANPPPConn1 */
-@@ -1443,9 +1443,9 @@ QueryStateVariable(struct upnphttp * h,
+@@ -1575,9 +1575,9 @@ QueryStateVariable(struct upnphttp * h,
  {
  	static const char resp[] =
          "<u:%sResponse "
@@ -414,7 +414,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -1515,10 +1515,10 @@ GetFirewallStatus(struct upnphttp * h, c
+@@ -1659,10 +1659,10 @@ GetFirewallStatus(struct upnphttp * h, c
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -429,7 +429,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -1709,9 +1709,9 @@ AddPinhole(struct upnphttp * h, const ch
+@@ -1885,9 +1885,9 @@ AddPinhole(struct upnphttp * h, const ch
  	int r;
  	static const char resp[] =
  		"<u:%sResponse "
@@ -442,7 +442,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  	struct NameValueParserData data;
-@@ -1885,13 +1885,13 @@ UpdatePinhole(struct upnphttp * h, const
+@@ -2068,13 +2068,13 @@ UpdatePinhole(struct upnphttp * h, const
  #if 0
  	static const char resp[] =
  		"<u:UpdatePinholeResponse "
@@ -460,7 +460,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  	struct NameValueParserData data;
-@@ -1963,9 +1963,9 @@ GetOutboundPinholeTimeout(struct upnphtt
+@@ -2152,9 +2152,9 @@ GetOutboundPinholeTimeout(struct upnphtt
  
  	static const char resp[] =
  		"<u:%sResponse "
@@ -473,7 +473,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	char body[512];
  	int bodylen;
-@@ -2028,13 +2028,13 @@ DeletePinhole(struct upnphttp * h, const
+@@ -2223,13 +2223,13 @@ DeletePinhole(struct upnphttp * h, const
  #if 0
  	static const char resp[] =
  		"<u:DeletePinholeResponse "
@@ -491,7 +491,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  
-@@ -2103,9 +2103,9 @@ CheckPinholeWorking(struct upnphttp * h,
+@@ -2304,9 +2304,9 @@ CheckPinholeWorking(struct upnphttp * h,
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -504,7 +504,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  	int r;
-@@ -2163,9 +2163,9 @@ GetPinholePackets(struct upnphttp * h, c
+@@ -2370,9 +2370,9 @@ GetPinholePackets(struct upnphttp * h, c
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -517,7 +517,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[512];
  	int bodylen;
  	struct NameValueParserData data;
-@@ -2224,9 +2224,9 @@ SendSetupMessage(struct upnphttp * h, co
+@@ -2437,9 +2437,9 @@ SendSetupMessage(struct upnphttp * h, co
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -530,7 +530,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[1024];
  	int bodylen;
  	struct NameValueParserData data;
-@@ -2265,9 +2265,9 @@ GetSupportedProtocols(struct upnphttp *
+@@ -2484,9 +2484,9 @@ GetSupportedProtocols(struct upnphttp *
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -543,7 +543,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[1024];
  	int bodylen;
  	const char * ProtocolList =
-@@ -2275,10 +2275,10 @@ GetSupportedProtocols(struct upnphttp *
+@@ -2494,10 +2494,10 @@ GetSupportedProtocols(struct upnphttp *
  		"<SupportedProtocols xmlns=\"urn:schemas-upnp-org:gw:DeviceProtection\""
  		" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
  		" xsi:schemaLocation=\"urn:schemas-upnp-org:gw:DeviceProtection"
@@ -558,7 +558,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  
  	bodylen = snprintf(body, sizeof(body), resp,
  	                   action, ns/*"urn:schemas-upnp-org:service:DeviceProtection:1"*/,
-@@ -2291,9 +2291,9 @@ GetAssignedRoles(struct upnphttp * h, co
+@@ -2516,9 +2516,9 @@ GetAssignedRoles(struct upnphttp * h, co
  {
  	static const char resp[] =
  		"<u:%sResponse "
@@ -571,7 +571,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  	char body[1024];
  	int bodylen;
  	const char * RoleList = "Public"; /* list of roles separated by spaces */
-@@ -2447,20 +2447,20 @@ SoapError(struct upnphttp * h, int errCo
+@@ -2678,20 +2678,20 @@ SoapError(struct upnphttp * h, int errCo
  	static const char resp[] =
  		"<s:Envelope "
  		"xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "

@@ -15,7 +15,7 @@ Link: https://github.com/Self-Hosting-Group/miniupnp/tree/upnp-igdv2-compat
 
 --- a/upnphttp.c
 +++ b/upnphttp.c
-@@ -303,9 +303,22 @@ ParseHttpHeaders(struct upnphttp * h)
+@@ -307,9 +307,22 @@ ParseHttpHeaders(struct upnphttp * h)
  			}
  			else if(strncasecmp(line, "user-agent:", 11) == 0)
  			{
@@ -43,7 +43,7 @@ Link: https://github.com/Self-Hosting-Group/miniupnp/tree/upnp-igdv2-compat
  			}
 --- a/upnpsoap.c
 +++ b/upnpsoap.c
-@@ -854,6 +854,14 @@ GetSpecificPortMappingEntry(struct upnph
+@@ -920,6 +920,14 @@ GetSpecificPortMappingEntry(struct upnph
  #ifdef ENABLE_PCP
  		hide_pcp_nonce(desc);
  #endif
@@ -58,7 +58,7 @@ Link: https://github.com/Self-Hosting-Group/miniupnp/tree/upnp-igdv2-compat
  		bodylen = snprintf(body, sizeof(body), resp,
  				action, ns/*SERVICE_TYPE_WANIPC*/,
  				(unsigned int)iport, int_ip, desc, leaseduration,
-@@ -1124,6 +1132,14 @@ GetGenericPortMappingEntry(struct upnpht
+@@ -1208,6 +1216,14 @@ GetGenericPortMappingEntry(struct upnpht
  #ifdef ENABLE_PCP
  		hide_pcp_nonce(desc);
  #endif
