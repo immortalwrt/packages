@@ -1,0 +1,13 @@
+--- a/src/printsupport/dialogs/qprintdialog_unix.cpp
++++ b/src/printsupport/dialogs/qprintdialog_unix.cpp
+@@ -486,8 +486,10 @@ bool QPrintPropertiesDialog::createAdvan
+                                     PDPK_PpdCustomOption, params);
+                             if (hasCustomOption) {
+                                 auto *customValueEdit = new QLineEdit;
++#if QT_CONFIG(accessibility)
+                                 customValueEdit->setAccessibleName(
+                                         tr("Custom value for %1").arg(optionText));
++#endif
+                                 choicesCbWithLabelLayout->addWidget(customValueEdit);
+                                 choicesCb->setProperty(customValueLineEditProperty,
+                                                        QVariant::fromValue(customValueEdit));
