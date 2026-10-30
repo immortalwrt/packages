@@ -30,7 +30,7 @@ define Package/node-lambda
   CATEGORY:=Languages
   TITLE:=Tools for Amazon Lambda
   URL:=https://www.npmjs.org/package/node-lambda
-  DEPENDS:=+node +node-aws-sdk
+  DEPENDS:=+node +node-aws-sdk @USE_GLIBC
 endef
 
 define Package/node-lambda/description
