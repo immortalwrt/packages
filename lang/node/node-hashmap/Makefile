@@ -49,6 +49,7 @@ TARGET_CPPFLAGS+=$(FPIC)
 
 define Build/Compile
 	cd $(PKG_BUILD_DIR); \
+	npm pkg delete devDependencies; \
 	$(MAKE_VARS) \
 	$(MAKE_FLAGS) \
 	npm_config_nodedir=$(STAGING_DIR)/usr/ \
