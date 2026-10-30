@@ -24,7 +24,7 @@
   $(CFLAGS_DEBUG) -D_REENTRANT -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
   -fPIC
  
-@@ -169,7 +169,7 @@ endif
+@@ -168,7 +168,7 @@ endif
  
  
  
@@ -33,7 +33,7 @@
  
  
  ifdef IS_MINGW
-@@ -1361,7 +1361,7 @@ predef_cc:
+@@ -1367,7 +1367,7 @@ predef_cc:
  	$(CC) $(CFLAGS) -E $(SHOW_PREDEF)  ../../../../C/CpuArch.c > predef_cc_log
  #	$(CC) $(CFLAGS) -E -dM -  < /dev/null
  predef_cxx:
