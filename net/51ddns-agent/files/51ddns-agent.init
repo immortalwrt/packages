@@ -1,0 +1,117 @@
+#!/bin/sh /etc/rc.common
+# Copyright 2026 51DDNS
+# SPDX-License-Identifier: Apache-2.0
+
+START=95
+STOP=10
+USE_PROCD=1
+
+SERVICE_NAME="51DDNS Agent"
+RUNTIME_DIR="/var/lib/51ddns"
+SECRET_DIR="/etc/51ddns"
+
+validate_agent_section() {
+	uci_load_validate 51ddns agent "$1" "$2" \
+		'enabled:bool:0' \
+		'control_url:string:https://api.51ddns.com' \
+		'account_token:string' \
+		'device_id:string' \
+		'refresh_seconds:uinteger:30' \
+		'start_delay_seconds:uinteger:0' \
+		'max_active_relays:uinteger:0'
+}
+
+start_agent_instance() {
+	local section="$1"
+	local enabled control_url account_token device_id refresh_seconds oem_voucher_file
+	local start_delay_seconds max_active_relays go_memory_limit
+
+	config_get_bool enabled "$section" enabled 0
+	[ "$enabled" -eq 1 ] || return 0
+	config_get control_url "$section" control_url 'https://api.51ddns.com'
+	config_get account_token "$section" account_token
+	config_get device_id "$section" device_id
+	config_get refresh_seconds "$section" refresh_seconds 30
+	config_get start_delay_seconds "$section" start_delay_seconds 0
+	config_get max_active_relays "$section" max_active_relays 0
+	config_get oem_voucher_file "$section" oem_voucher_file '/etc/51ddns/oem.voucher'
+
+	case "$refresh_seconds" in
+		''|*[!0-9]*) refresh_seconds=30 ;;
+	esac
+	case "$start_delay_seconds" in
+		''|*[!0-9]*) start_delay_seconds=0 ;;
+	esac
+	case "$max_active_relays" in
+		''|*[!0-9]*) max_active_relays=0 ;;
+	esac
+
+	go_memory_limit='128MiB'
+	case "$(uname -m 2>/dev/null)" in
+		mips*)
+			# Keep memory and relay concurrency conservative on MT7621-class
+			# devices. Startup remains immediate unless the administrator has
+			# explicitly configured a delay in UCI.
+			[ "$max_active_relays" -gt 0 ] || max_active_relays=1
+			go_memory_limit='48MiB'
+			;;
+	esac
+
+	if [ -z "$account_token" ]; then
+		logger -t 51ddns-agent "account token is not configured; service not started"
+		return 1
+	fi
+
+	mkdir -p "$SECRET_DIR" "$RUNTIME_DIR"
+	chmod 0700 "$SECRET_DIR" "$RUNTIME_DIR"
+	umask 077
+	printf '%s\n' "$account_token" > "$SECRET_DIR/device.token"
+	if [ -n "$device_id" ]; then
+		printf '%s\n' "$device_id" > "$SECRET_DIR/device.id"
+	elif [ ! -e "$SECRET_DIR/device.id" ]; then
+		: > "$SECRET_DIR/device.id"
+	fi
+	chmod 0600 "$SECRET_DIR/device.token" "$SECRET_DIR/device.id"
+	procd_open_instance
+	procd_set_param command /usr/libexec/51ddns-agent-start \
+		/usr/bin/51ddns-agent \
+		--device-token-file "$SECRET_DIR/device.token" \
+		--device-id-file "$SECRET_DIR/device.id" \
+		--installation-id-file "$SECRET_DIR/install.id" \
+		--oem-voucher-file "$oem_voucher_file" \
+		--control-api-url "$control_url" \
+		--frpc-path /usr/bin/frpc \
+		--config-path "$RUNTIME_DIR/frpc.toml"
+	procd_set_param env CONFIG_REFRESH_SECONDS="$refresh_seconds" \
+		MAX_ACTIVE_RELAYS="$max_active_relays" \
+		START_DELAY_SECONDS="$start_delay_seconds" \
+		GOMEMLIMIT="$go_memory_limit" \
+		GOMAXPROCS="1"
+	procd_set_param respawn 3600 5 5
+	# The Agent gives its FRP children up to five seconds to close cleanly.
+	# Keep procd's kill deadline longer so routine reloads do not end in SIGKILL.
+	procd_set_param term_timeout 10
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_set_param file /etc/config/51ddns
+	procd_close_instance
+}
+
+start_service() {
+	config_load 51ddns
+	config_foreach start_agent_instance agent
+}
+
+service_triggers() {
+	procd_add_reload_trigger 51ddns
+}
+
+reload_service() {
+	stop
+	start
+}
+
+restart_service() {
+	stop
+	start
+}
