@@ -1,0 +1,23 @@
+#!/bin/sh
+# Copyright 2026 51DDNS
+# SPDX-License-Identifier: Apache-2.0
+set -eu
+
+delay=30
+while :; do
+	sleep "$delay"
+	/etc/init.d/51ddns-agent enabled >/dev/null 2>&1 || exit 0
+	enabled="$(uci -q get 51ddns.main.enabled 2>/dev/null || :)"
+	case "$enabled" in
+		1|true|yes|on) ;;
+		*) exit 0 ;;
+	esac
+	configured_id="$(uci -q get 51ddns.main.device_id 2>/dev/null || :)"
+	[ -n "$configured_id" ] || [ -s /etc/51ddns/device.id ] || exit 0
+	/etc/init.d/51ddns-agent running >/dev/null 2>&1 && exit 0
+	logger -t 51ddns-agent "retrying pending device identity verification"
+	_51DDNS_IDENTITY_RETRY=1 /etc/init.d/51ddns-agent start >/dev/null 2>&1 || :
+	/etc/init.d/51ddns-agent running >/dev/null 2>&1 && exit 0
+	[ "$delay" -ge 300 ] || delay=$((delay * 2))
+	[ "$delay" -le 300 ] || delay=300
+done
