@@ -80,7 +80,7 @@ define Package/sing-box/config
   depends on $(subst @,,$(GO_ARCH_DEPENDS))
 
   config SING_BOX_BUILD_NAIVE_OUTBOUND
-  def_bool y
+  default y
   depends on !(arc||armeb||loongarch64||mips||mips64||powerpc||TARGET_gemini)
 endef
 
