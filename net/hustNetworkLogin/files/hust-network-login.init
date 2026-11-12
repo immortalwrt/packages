@@ -1,0 +1,54 @@
+#!/bin/sh /etc/rc.common
+# HUST 校园网自动登录 - procd 服务脚本
+# 读取 /etc/config/hust-network-login，用环境变量启动登录程序（C 实现）
+#
+# 控制语义：
+#   start / stop      正常启停（procd 托管）
+#   reload            重新启动服务，让新的配置（用户名/密码/探测地址/检测周期，都通过
+#                     环境变量传给进程）生效 —— `uci commit` 触发的 procd reload 走这条
+#   想「不改配置、立刻重新认证」请用 ubus：ubus call hust-network-login reconnect
+#   （ubus 的 reconnect 会给 worker 线程发 SIGHUP，中断当前请求并马上重跑一轮，不重启进程）
+
+USE_PROCD=1
+START=90
+STOP=10
+
+PROG="/usr/bin/hust-network-login"
+CONFIG="hust-network-login"
+
+start_service() {
+	local enabled username password test_url check_interval
+	config_load "$CONFIG"
+	config_get_bool enabled "main" "enabled" "0"
+	config_get username "main" "username"
+	config_get password "main" "password"
+	config_get test_url "main" "test_url"
+	config_get check_interval "main" "check_interval"
+
+	[ "$enabled" = "1" ] || return 0
+	[ -n "$username" ] || return 0
+	[ -n "$password" ] || return 0
+	[ -x "$PROG" ] || return 0
+
+	procd_open_instance
+	procd_set_param command "$PROG"
+	procd_set_param env HUST_NETWORK_LOGIN_USERNAME="$username" \
+	                     HUST_NETWORK_LOGIN_PASSWORD="$password" \
+	                     HUST_NETWORK_LOGIN_TEST_URL="$test_url" \
+	                     HUST_NETWORK_LOGIN_CHECK_INTERVAL="$check_interval"
+	procd_set_param respawn 3600 5 5   # 崩溃自动重启
+	procd_set_param file "/etc/config/$CONFIG"
+	procd_close_instance
+}
+
+service_triggers() {
+	procd_add_reload_trigger "$CONFIG"
+}
+
+reload_service() {
+	# 配置项是启动时通过环境变量注入进程的，改了配置必须重启才生效。
+	# （想立刻重新认证而不重启进程，用 ubus call hust-network-login reconnect）
+	logger -t hust-network-login "reload: restarting to apply the new configuration"
+	stop
+	start
+}
