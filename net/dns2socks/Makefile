@@ -45,9 +45,28 @@ define Build/Compile
 	$(TARGET_LDFLAGS) -pthread
 endef
 
+define Package/dns2socks/conffiles
+/etc/config/dns2socks
+endef
+
+define Package/dns2socks/preinst
+#!/bin/sh
+[ -n "$${IPKG_INSTROOT}" ] && exit 0
+[ "$${PKG_UPGRADE}" = "1" ] && /etc/init.d/dns2socks stop > /dev/null 2>&1
+exit 0
+endef
+
 define Package/dns2socks/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/DNS2SOCKS/dns2socks $(1)/usr/bin/dns2socks
+
+	$(INSTALL_DIR) \
+		$(1)/lib/upgrade/keep.d \
+		$(1)/etc/init.d \
+		$(1)/etc/config
+	$(INSTALL_DATA) ./files/dns2socks.upgrade $(1)/lib/upgrade/keep.d/dns2socks
+	$(INSTALL_BIN)  ./files/dns2socks.init    $(1)/etc/init.d/dns2socks
+	$(INSTALL_CONF) ./files/dns2socks.config  $(1)/etc/config/dns2socks
 endef
 
 $(eval $(call BuildPackage,dns2socks))
