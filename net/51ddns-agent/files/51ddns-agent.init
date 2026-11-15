@@ -1,0 +1,334 @@
+#!/bin/sh /etc/rc.common
+# Copyright 2026 51DDNS
+# SPDX-License-Identifier: Apache-2.0
+
+START=95
+STOP=10
+USE_PROCD=1
+
+SERVICE_USER="ddns51"
+SERVICE_GROUP="ddns51"
+RUNTIME_DIR="/var/lib/51ddns"
+SECRET_DIR="/etc/51ddns"
+ROUTER_CREDENTIAL_DIR="/var/run/51ddns-router-credential"
+
+check_device_identity() {
+	local requested="$1" saved
+	device_identity_saved=0
+	saved_device_id=''
+	if [ -n "$requested" ] && { [ "${#requested}" -ne 36 ] || ! printf '%s\n' "$requested" | grep -Eq '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'; }; then
+		logger -t 51ddns-agent "invalid configured device ID; service not started"
+		return 1
+	fi
+	if [ -L "$SECRET_DIR/device.id" ] || { [ -e "$SECRET_DIR/device.id" ] && [ ! -f "$SECRET_DIR/device.id" ]; }; then
+		logger -t 51ddns-agent "saved device identity is not a regular file; service not started"
+		return 1
+	fi
+	saved=''
+	if [ -e "$SECRET_DIR/device.id" ] && ! saved="$(cat "$SECRET_DIR/device.id")"; then
+		logger -t 51ddns-agent "saved device identity cannot be read; service not started"
+		return 1
+	fi
+	if [ -z "$saved" ]; then
+		# Keep procd's JSON namespace isolated from this service definition.
+		if [ -n "$requested" ] && (procd_running 51ddns-agent 51ddns-agent); then
+			logger -t 51ddns-agent "stop the agent before assigning a pre-created device ID"
+			return 1
+		fi
+		return 0
+	fi
+	if [ "${#saved}" -ne 36 ] || ! printf '%s\n' "$saved" | grep -Eq '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'; then
+		logger -t 51ddns-agent "saved device identity is invalid; service not started"
+		return 1
+	fi
+	if [ -n "$requested" ] && [ "$(printf '%s' "$saved" | tr 'A-F' 'a-f')" != "$(printf '%s' "$requested" | tr 'A-F' 'a-f')" ]; then
+		logger -t 51ddns-agent "configured device ID conflicts with saved identity; separate migration required"
+		return 1
+	fi
+	saved_device_id="$saved"
+	device_identity_saved=1
+}
+
+verify_device_identity() {
+	printf '%s' "$account_token" | /usr/bin/51ddns-agent verify-identity \
+		--device-id "$1" --control-api-url "$control_url" > /dev/null
+}
+
+discard_identity_stage() {
+	rm -f "$1/old.token" "$1/old.id" "$1/no.token" "$1/no.id" \
+		"$1/new.token" "$1/new.id" || return 1
+	rmdir "$1"
+}
+
+clear_stale_identity_stages() {
+	local stage
+	for stage in "$SECRET_DIR/.identity-cleanup" "$SECRET_DIR"/.identity-stage.*; do
+		[ -e "$stage" ] || [ -L "$stage" ] || continue
+		if [ -L "$stage" ] || [ ! -d "$stage" ] || ! discard_identity_stage "$stage"; then
+			logger -t 51ddns-agent "stale identity stage cannot be cleared; service not started"
+			return 1
+		fi
+	done
+}
+
+finish_identity_transaction() {
+	local pending="$SECRET_DIR/.identity-pending" cleanup="$SECRET_DIR/.identity-cleanup"
+	[ ! -e "$cleanup" ] && [ ! -L "$cleanup" ] || return 1
+	mv "$pending" "$cleanup" || return 1
+	sync || return 1
+	discard_identity_stage "$cleanup" || return 1
+	sync
+}
+
+recover_pending_identity() {
+	local pending="$SECRET_DIR/.identity-pending" name backup absent restored
+	[ -e "$pending" ] || [ -L "$pending" ] || return 0
+	if [ -L "$pending" ] || [ ! -d "$pending" ]; then
+		logger -t 51ddns-agent "identity recovery journal is invalid; service not started"
+		return 1
+	fi
+	for name in token id; do
+		backup="$pending/old.$name"
+		absent="$pending/no.$name"
+		if [ -f "$backup" ] && [ ! -L "$backup" ] && [ ! -e "$absent" ]; then
+			restored="$(mktemp "$SECRET_DIR/.identity-recover.XXXXXX")" || return 1
+			if ! cp -p "$backup" "$restored" || ! mv -f "$restored" "$SECRET_DIR/device.$name"; then
+				rm -f "$restored"
+				logger -t 51ddns-agent "identity recovery failed; service not started"
+				return 1
+			fi
+		elif [ -f "$absent" ] && [ ! -L "$absent" ] && [ ! -e "$backup" ]; then
+			rm -f "$SECRET_DIR/device.$name" || return 1
+		else
+			logger -t 51ddns-agent "identity recovery journal is incomplete; service not started"
+			return 1
+		fi
+	done
+	sync || return 1
+	finish_identity_transaction || return 1
+	logger -t 51ddns-agent "interrupted identity update recovered; service remains subject to verification"
+}
+
+write_identity_files() {
+	local stage pending name source current_token
+	pending="$SECRET_DIR/.identity-pending"
+	if [ -e "$pending" ] || [ -L "$pending" ]; then
+		logger -t 51ddns-agent "identity recovery journal remains; service not started"
+		return 1
+	fi
+	for name in token id; do
+		if [ -L "$SECRET_DIR/device.$name" ] || { [ -e "$SECRET_DIR/device.$name" ] && [ ! -f "$SECRET_DIR/device.$name" ]; }; then
+			logger -t 51ddns-agent "saved identity path is not a regular file; service not started"
+			return 1
+		fi
+	done
+	if [ -e "$SECRET_DIR/device.token" ] && [ -e "$SECRET_DIR/device.id" ] &&
+		{ [ -z "$device_id" ] || [ "$device_identity_saved" -eq 1 ]; }; then
+		current_token="$(cat "$SECRET_DIR/device.token")" || return 1
+		[ "$current_token" != "$account_token" ] || return 0
+	fi
+	stage="$(mktemp -d "$SECRET_DIR/.identity-stage.XXXXXX")" || return 1
+	for name in token id; do
+		source="$SECRET_DIR/device.$name"
+		if [ -e "$source" ]; then
+			if ! cp -p "$source" "$stage/old.$name"; then
+				discard_identity_stage "$stage"
+				return 1
+			fi
+		elif ! : > "$stage/no.$name"; then
+			discard_identity_stage "$stage"
+			return 1
+		fi
+	done
+	if ! printf '%s\n' "$account_token" > "$stage/new.token"; then
+		discard_identity_stage "$stage"
+		return 1
+	fi
+	if [ -n "$device_id" ] && [ "$device_identity_saved" -eq 0 ]; then
+		if ! printf '%s\n' "$device_id" > "$stage/new.id"; then
+			discard_identity_stage "$stage"
+			return 1
+		fi
+	elif [ -e "$SECRET_DIR/device.id" ]; then
+		if ! cp "$SECRET_DIR/device.id" "$stage/new.id"; then
+			discard_identity_stage "$stage"
+			return 1
+		fi
+	elif ! : > "$stage/new.id"; then
+		discard_identity_stage "$stage"
+		return 1
+	fi
+	if ! chown "$SERVICE_USER:$SERVICE_GROUP" "$stage/new.token" "$stage/new.id" ||
+		! chmod 0400 "$stage/new.token" || ! chmod 0600 "$stage/new.id" || ! sync ||
+		! mv "$stage" "$pending"; then
+		discard_identity_stage "$stage"
+		return 1
+	fi
+	if ! sync || ! mv -f "$pending/new.token" "$SECRET_DIR/device.token" ||
+		! mv -f "$pending/new.id" "$SECRET_DIR/device.id" || ! sync; then
+		recover_pending_identity
+		return 1
+	fi
+	finish_identity_transaction
+}
+
+write_router_web_config() (
+	. /usr/share/libubox/jshn.sh
+	local enabled target direct_host cert address stage
+	enabled="$(uci -q get 51ddns.main.router_web)"
+	target="$(uci -q get 51ddns.main.router_web_target)"
+	cert="$(uci -q get uhttpd.main.cert)"
+	json_init
+	[ "$enabled" = 1 ] && json_add_boolean enabled 1 || json_add_boolean enabled 0
+	json_add_string target "$target"
+	direct_host="$(uci -q get 51ddns.main.router_web_direct_hostname)"
+	if [ "$enabled" = 1 ] && [ -n "$direct_host" ]; then
+		json_add_string direct_hostname "$direct_host"
+	fi
+	json_add_array http
+	for address in $(uci -q get uhttpd.main.listen_http); do json_add_string '' "$address"; done
+	json_close_array
+	json_add_array https
+	for address in $(uci -q get uhttpd.main.listen_https); do json_add_string '' "$address"; done
+	json_close_array
+	if [ -f "$cert" ] && [ "$(wc -c < "$cert")" -le 32768 ]; then
+		json_add_string certificate "$(sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' "$cert")"
+	fi
+	stage="$(mktemp "$RUNTIME_DIR/.router-web.XXXXXX")" || exit 1
+	json_dump > "$stage" && chown "$SERVICE_USER:$SERVICE_GROUP" "$stage" && chmod 0600 "$stage" && mv "$stage" "$RUNTIME_DIR/router-web.json" || {
+		rm -f "$stage"
+		exit 1
+	}
+)
+
+start_service() {
+	local enabled control_url account_token device_id refresh_seconds
+	local start_delay_seconds max_active_relays oem_voucher_file
+	local go_memory_limit device_identity_saved saved_device_id verify_id previous_token
+	clear_stale_identity_stages || return 1
+	recover_pending_identity || return 1
+
+	if ! uci_validate_section 51ddns agent main \
+		'enabled:bool:0' \
+		'control_url:string:https://api.51ddns.com' \
+		'account_token:string' \
+		'device_id:string' \
+		'refresh_seconds:uinteger:30' \
+		'start_delay_seconds:uinteger:0' \
+		'max_active_relays:uinteger:0' \
+		'oem_voucher_file:string:/etc/51ddns/oem.voucher'; then
+		logger -t 51ddns-agent "invalid configuration; service not started"
+		return 1
+	fi
+	[ "$enabled" -eq 1 ] || return 0
+	if [ -z "$account_token" ]; then
+		logger -t 51ddns-agent "account token is not configured; service not started"
+		return 1
+	fi
+	check_device_identity "$device_id" || return 1
+	verify_id="$device_id"
+	[ -n "$verify_id" ] || verify_id="$saved_device_id"
+	if [ -n "$verify_id" ]; then
+		if [ -L "$SECRET_DIR/device.token" ] || { [ -e "$SECRET_DIR/device.token" ] && [ ! -f "$SECRET_DIR/device.token" ]; }; then
+			logger -t 51ddns-agent "saved account token is not a regular file; service not started"
+			return 1
+		fi
+		previous_token=''
+		if [ -e "$SECRET_DIR/device.token" ] && ! previous_token="$(cat "$SECRET_DIR/device.token")"; then
+			logger -t 51ddns-agent "saved account token cannot be read; service not started"
+			return 1
+		fi
+		if [ "$device_identity_saved" -eq 0 ] || [ "$previous_token" != "$account_token" ]; then
+			if ! verify_device_identity "$verify_id"; then
+				logger -t 51ddns-agent "account token and device ID could not be verified; identity unchanged"
+				return 1
+			fi
+		fi
+	fi
+	# Activation may have completed while the ownership request was in flight.
+	check_device_identity "$device_id" || return 1
+
+	go_memory_limit='128MiB'
+	case "$(uname -m 2> /dev/null)" in
+	mips*)
+		if [ "$max_active_relays" -eq 0 ]; then
+			max_active_relays=1
+			if [ "$(uci -q get 51ddns.main.router_web)" = 1 ]; then
+				max_active_relays=2
+			fi
+		fi
+		go_memory_limit='48MiB'
+		;;
+	esac
+
+	mkdir -p "$SECRET_DIR" "$RUNTIME_DIR" || return 1
+	chown -R "$SERVICE_USER:$SERVICE_GROUP" "$SECRET_DIR" "$RUNTIME_DIR" || return 1
+	chmod 0700 "$SECRET_DIR" "$RUNTIME_DIR" || return 1
+	umask 077
+	write_identity_files || return 1
+	write_router_web_config || return 1
+	local direct_enabled=0
+	if [ "$(uci -q get 51ddns.main.router_web)" = 1 ] &&
+		[ -n "$(uci -q get 51ddns.main.router_web_direct_hostname)" ] &&
+		[ ! -L "$ROUTER_CREDENTIAL_DIR" ] && mkdir -p "$ROUTER_CREDENTIAL_DIR" &&
+		chown root:root "$ROUTER_CREDENTIAL_DIR" && chmod 0755 "$ROUTER_CREDENTIAL_DIR"; then
+		direct_enabled=1
+	fi
+
+	procd_open_instance 51ddns-agent
+	procd_set_param command /usr/libexec/51ddns-agent-start \
+		/usr/bin/51ddns-agent \
+		--device-token-file "$SECRET_DIR/device.token" \
+		--device-id-file "$SECRET_DIR/device.id" \
+		--installation-id-file "$SECRET_DIR/install.id" \
+		--oem-voucher-file "$oem_voucher_file" \
+		--control-api-url "$control_url" \
+		--frpc-path /usr/bin/frpc \
+		--config-path "$RUNTIME_DIR/frpc.toml" \
+		--router-web-config "$RUNTIME_DIR/router-web.json"
+	procd_set_param env CONFIG_REFRESH_SECONDS="$refresh_seconds" \
+		MAX_ACTIVE_RELAYS="$max_active_relays" \
+		START_DELAY_SECONDS="$start_delay_seconds" \
+		GOMEMLIMIT="$go_memory_limit" \
+		GOMAXPROCS="1"
+	procd_set_param respawn 3600 5 5
+	procd_set_param term_timeout 10
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_set_param user "$SERVICE_USER"
+	procd_set_param group "$SERVICE_GROUP"
+	procd_set_param no_new_privs 1
+	procd_set_param file /etc/config/51ddns "$RUNTIME_DIR/router-web.json"
+
+	procd_add_jail 51ddns-agent log
+	procd_add_jail_mount /etc/hosts
+	procd_add_jail_mount /etc/resolv.conf
+	procd_add_jail_mount /etc/ssl/certs
+	procd_add_jail_mount /etc/TZ
+	procd_add_jail_mount /etc/openwrt_release
+	procd_add_jail_mount /bin/sleep
+	procd_add_jail_mount /usr/bin/51ddns-agent
+	procd_add_jail_mount /usr/bin/frpc
+	procd_add_jail_mount /usr/bin/logger
+	[ "$direct_enabled" = 0 ] || procd_add_jail_mount "$ROUTER_CREDENTIAL_DIR"
+	procd_add_jail_mount_rw "$SECRET_DIR"
+	procd_add_jail_mount_rw "$RUNTIME_DIR"
+	procd_close_instance
+}
+
+service_triggers() {
+	procd_add_reload_trigger 51ddns uhttpd
+}
+
+service_started() {
+	# A retry started by the helper must not replace that helper's own procd instance.
+	[ "${_51DDNS_IDENTITY_RETRY:-0}" = 1 ] && return 0
+	[ -x /etc/init.d/51ddns-agent-retry ] || return 0
+	/etc/init.d/51ddns-agent-retry restart > /dev/null 2>&1 ||
+		logger -t 51ddns-agent "identity retry service could not be started"
+}
+
+stop_service() {
+	[ -x /etc/init.d/51ddns-agent-retry ] || return 0
+	/etc/init.d/51ddns-agent-retry stop > /dev/null 2>&1 || :
+}
