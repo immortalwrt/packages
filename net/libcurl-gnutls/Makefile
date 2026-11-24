@@ -10,12 +10,12 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=libcurl-gnutls
 
 PKG_SOURCE_NAME:=curl
-PKG_VERSION:=8.9.1
+PKG_VERSION:=8.23.0
 PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_SOURCE_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/curl/curl/releases/download/curl-$(subst .,_,$(PKG_VERSION))/ \
 	https://curl.se/download/
-PKG_HASH:=f292f6cc051d5bbabf725ef85d432dfeacc8711dd717ea97612ae590643801e5
+PKG_HASH:=8dadd7d2536a314f982ad05a651b713f426bf7d02cc2c76cffb9796f2218e6c5
 
 PKG_MAINTAINER:=Daniel Golle <daniel@makrotopia.org>
 PKG_LICENSE:=MIT
@@ -57,7 +57,6 @@ CONFIGURE_ARGS += \
 	--without-brotli \
 	--without-libssh2 \
 	--without-winidn \
-	--without-librtmp \
 	--without-nghttp2 \
 	--without-nghttp3 \
 	--without-wolfssl \
@@ -75,8 +74,6 @@ CONFIGURE_ARGS += \
 	--disable-negotiate-auth \
 	--disable-aws \
 	--disable-ntlm \
-	--disable-ntlm-wb \
-	--disable-tls-srp \
 	--disable-ldap \
 	--disable-ldaps \
 	--disable-mqtt \
@@ -90,7 +87,6 @@ CONFIGURE_ARGS += \
 	--disable-gopher \
 	--disable-file \
 	--disable-ftp \
-	--disable-smb \
 	--disable-debug \
 	--disable-manual \
 	--disable-verbose
@@ -99,6 +95,12 @@ define Build/Compile
 	$(call Build/Compile/Default)
 	patchelf --set-soname 'libcurl-gnutls.so.$(PKG_ABI_VERSION)' $(PKG_BUILD_DIR)/lib/.libs/libcurl.so.$(PKG_ABI_VERSION).*
 endef
+
+# patchelf puts the new string table at the end of the file, sstrip -z cuts
+# its trailing zero bytes and readelf can no longer read the SONAME
+ifeq ($(CONFIG_NO_STRIP),)
+STRIP:=$(TARGET_CROSS)strip --strip-all
+endif
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/lib
