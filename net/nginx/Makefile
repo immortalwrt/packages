@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nginx
-PKG_VERSION:=1.26.3
-PKG_RELEASE:=4
+PKG_VERSION:=1.30.7
+PKG_RELEASE:=1
 
 PKG_SOURCE:=nginx-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nginx.org/download/
-PKG_HASH:=69ee2b237744036e61d24b836668aad3040dda461fe6f570f1787eab570c75aa
+PKG_HASH:=2565b5c837050e958f70fb0f73c48e2bca4542ad349fd356f46fb0c72610bc6e
 
 PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
 				Christian Marangi <ansuelsmth@gmail.com>
@@ -200,7 +200,7 @@ define Package/nginx-mod-luci
   SUBMENU:=Web Servers/Proxies
   TITLE:=Support file for Nginx
   URL:=http://nginx.org/
-  DEPENDS:=+uwsgi +uwsgi-luci-support +nginx +nginx-mod-ubus
+  DEPENDS:=nginx +uwsgi +uwsgi-luci-support +nginx-mod-ubus
 endef
 
 define Package/nginx-mod-luci/description
@@ -233,7 +233,7 @@ endef
 define Package/nginx-mod-lua-resty-lrucache
   $(call Package/nginx/default)
   TITLE:=Nginx Lua OpenResty lrucache module
-  DEPENDS:=@HAS_LUAJIT_ARCH +luajit2
+  DEPENDS:=@HAS_LUAJIT_ARCH +PACKAGE_nginx-mod-lua-resty-lrucache:luajit2
 endef
 
 define Package/nginx-mod-lua-resty-core
@@ -290,10 +290,10 @@ define Download/nginx-mod-ts
 endef
 
 define Download/nginx-mod-naxsi
-  SOURCE_DATE:=2022-09-14
-  SOURCE_VERSION:=d714f1636ea49a9a9f4f06dba14aee003e970834
-  URL:=https://github.com/nbs-system/naxsi.git
-  MIRROR_HASH:=b0cef5fbf842f283eb5f0686ddd1afcd07d83abd7027c8cfb3e84a2223a34797
+  SOURCE_DATE:=2025-01-05
+  SOURCE_VERSION:=b61ba37b3666b386c7a6d83fbcdf6ca3377395a1
+  URL:=https://github.com/wargio/naxsi.git
+  MIRROR_HASH:=c2f60a0f21a43aabfe4fda8665e2ef23bccc9dd73b202fad64e4212584982995
   PROTO:=git
 endef
 
@@ -356,7 +356,11 @@ $(foreach m,$(PKG_MOD_EXTRA),$(eval $(call Module/Download,$(m))))
 
 define Module/nginx-mod-naxsi/install
 	$(INSTALL_DIR) $(1)/etc/nginx
-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/nginx-mod-naxsi/naxsi_config/naxsi_core.rules $(1)/etc/nginx
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/nginx-mod-naxsi/naxsi_rules/naxsi_core.rules $(1)/etc/nginx
+endef
+
+define Package/nginx-mod-naxsi/conffiles
+/etc/nginx/naxsi_core.rules
 endef
 
 define Quilt/Refresh/Package
@@ -403,7 +407,7 @@ endef
 define BuildModule
   define Package/nginx-mod-$(1)
     $(call Package/nginx/default)
-    DEPENDS:=+nginx $(2)
+    DEPENDS:=nginx $(2)
     TITLE:=Nginx $(1) module
   endef
 
