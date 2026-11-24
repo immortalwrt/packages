@@ -3,22 +3,22 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=adguardhome
-PKG_VERSION:=0.107.80
+PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/AdguardTeam/AdGuardHome/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=c67cf289f1d4b05c78994f4d1d169962540814a212244eb191cd599795d90278
+PKG_HASH:=fb7b67a40bcd81063cf0f7fbc5c27cd5ae71cc6434a4b5342885ebb3e51586d6
 PKG_BUILD_DIR:=$(BUILD_DIR)/AdGuardHome-$(PKG_VERSION)
 
 FRONTEND_DEST:=$(PKG_NAME)-frontend-$(PKG_VERSION).tar.gz
 FRONTEND_URL:=https://github.com/AdguardTeam/AdGuardHome/releases/download/v$(PKG_VERSION)/
-FRONTEND_HASH:=f01f3c7713a8190dd0aaaf18c3f9a0e38235c21d696325bfca9dc681e389d894
+FRONTEND_HASH:=70537426c7438ccce1f0997843676042bd01a7fa09cd5cd1a464bcb9e65152c5
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE.txt
 PKG_CPE_ID:=cpe:/a:adguard:adguardhome
-PKG_MAINTAINER:=Dobroslaw Kijowski <dobo90@gmail.com>, George Sapkin <george@sapk.in>
+PKG_MAINTAINER:=George Sapkin <george@sapk.in>
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
@@ -29,10 +29,10 @@ GO_PKG_BUILD_PKG:=$(GO_PKG)
 
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/internal/version.channel=release \
-	$(GO_PKG)/internal/version.version=v$(PKG_VERSION) \
 	$(GO_PKG)/internal/version.committime=$(SOURCE_DATE_EPOCH) \
 	$(GO_PKG)/internal/version.goarm=$(GO_ARM) \
-	$(GO_PKG)/internal/version.gomips=$(GO_MIPS)
+	$(GO_PKG)/internal/version.gomips=$(GO_MIPS) \
+	$(GO_PKG)/internal/version.version=v$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
@@ -52,14 +52,15 @@ define Package/adguardhome/conffiles
 endef
 
 define Package/adguardhome/description
-  Free and open source, powerful network-wide ads and trackers blocking DNS server.
+  Free and open source, powerful network-wide ads and trackers blocking DNS
+  server.
 endef
 
 define Download/adguardhome-frontend
-	URL:=$(FRONTEND_URL)
-	URL_FILE:=AdGuardHome_frontend.tar.gz
-	FILE:=$(FRONTEND_DEST)
-	HASH:=$(FRONTEND_HASH)
+  URL:=$(FRONTEND_URL)
+  URL_FILE:=AdGuardHome_frontend.tar.gz
+  FILE:=$(FRONTEND_DEST)
+  HASH:=$(FRONTEND_HASH)
 endef
 
 define Build/Prepare

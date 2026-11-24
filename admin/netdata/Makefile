@@ -102,6 +102,8 @@ define Package/netdata/install
 	rm $(1)/usr/share/netdata/web/images/*.png
 	rm $(1)/usr/share/netdata/web/images/*.gif
 	rm $(1)/usr/share/netdata/web/images/*.ico
+	rm $(1)/usr/share/netdata/web/static/css/*.map
+	rm $(1)/usr/share/netdata/web/static/js/*.map
 	rm -rf $(1)/usr/share/netdata/web/old
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/netdata.init $(1)/etc/init.d/netdata
