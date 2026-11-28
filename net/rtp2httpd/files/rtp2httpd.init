@@ -40,7 +40,6 @@ validate_rtp2httpd_section() {
 		'workers:and(uinteger, range(1,64))' \
 		'buffer_pool_max_size:and(uinteger, range(1024,1048576))' \
 		'udp_rcvbuf_size:and(uinteger, range(65536,16777216))' \
-		'zerocopy_on_send:bool' \
 		\
 		'hostname:host' \
 		'r2h_token:string' \
@@ -94,7 +93,6 @@ start_instance() {
 	append_param_arg workers
 	append_param_arg buffer_pool_max_size
 	append_param_arg udp_rcvbuf_size
-	append_param_bool zerocopy_on_send
 
 	append_param_arg hostname
 	append_param_arg r2h_token
